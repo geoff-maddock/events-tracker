@@ -113,6 +113,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc']);
 
@@ -182,6 +183,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc']);
 
@@ -248,6 +250,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc']);
 
@@ -355,6 +358,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc']);
 
@@ -420,6 +424,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
             ->setParentFilter(['tag' => ucfirst($tag)]);
@@ -480,6 +485,7 @@ class ThreadsController extends Controller
         // configure the list entity results builder
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
             ->setParentFilter(['category' => strtolower($category)]);
@@ -542,6 +548,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
             ->setParentFilter(['series' => ucfirst($series)]);
@@ -604,6 +611,7 @@ class ThreadsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['threads.created_at' => 'desc'])
             ->setParentFilter(['related' => $relatedTo]);

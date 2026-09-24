@@ -28,7 +28,7 @@ class ListSortHardeningTest extends TestCase
         parent::tearDown();
     }
 
-    private function buildList(?string $sortField, ?string $sortDirection = 'desc')
+    private function buildList(?string $sortField, ?string $sortDirection = 'desc', array $allowedSortFields = [])
     {
         $params = Mockery::mock(ListQueryParameters::class);
         $params->shouldReceive('getFilters')->andReturn([]);
@@ -41,6 +41,7 @@ class ListSortHardeningTest extends TestCase
         $builder = new ListEntityResultBuilder($params);
         $builder->setQueryBuilder(Photo::query())
             ->setFilter(app(PhotoFilters::class))
+            ->setAllowedSortFields($allowedSortFields)
             ->setDefaultSort(['photos.created_at' => 'desc']);
         $builder->setMultiSort([]);
         $builder->setDefaultLimit(25);
@@ -85,6 +86,28 @@ class ListSortHardeningTest extends TestCase
     public function test_valid_sort_field_is_preserved(): void
     {
         $result = $this->buildList('photos.name');
+
+        $this->assertSame('photos.name', $result->getSort());
+        $result->getList()->get();
+        $this->assertTrue(true);
+    }
+
+    public function test_unknown_but_syntactically_valid_sort_field_falls_back_when_allowlisted(): void
+    {
+        // A value like ?sort=test passes the plain-identifier regex but is not a
+        // real column, so without an allowlist it reached orderBy() and produced
+        // "Unknown column 'test' in order clause" (EVENTREPO-YJ on /threads/all).
+        // With the allowed sort fields configured it must fall back to the default.
+        $result = $this->buildList('test', 'desc', ['photos.name', 'photos.created_at']);
+
+        $this->assertSame('photos.created_at', $result->getSort());
+        $result->getList()->get();
+        $this->assertTrue(true);
+    }
+
+    public function test_allowlisted_sort_field_is_preserved(): void
+    {
+        $result = $this->buildList('photos.name', 'desc', ['photos.name', 'photos.created_at']);
 
         $this->assertSame('photos.name', $result->getSort());
         $result->getList()->get();
