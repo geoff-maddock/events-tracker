@@ -85,8 +85,8 @@
 			"./vendor/bin/phpstan analyse"
 		],
 		"tests": [
-			"php artisan migrate --verbose",
-			"php artisan db:seed",
+			"php artisan config:clear",
+			"php artisan migrate:fresh --seed --force --env=testing",
 			"./vendor/bin/phpunit tests"
 		]
 	},
