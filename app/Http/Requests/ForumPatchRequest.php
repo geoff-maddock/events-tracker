@@ -6,7 +6,9 @@ class ForumPatchRequest extends Request
 {
     public function authorize(): bool
     {
-        return true;
+        // forums are site structure: only admins may create or change one. Checked here so a
+        // non-admin gets 403 before validation instead of a 422 for a bad payload.
+        return $this->user() !== null && $this->user()->isAdmin();
     }
 
     public function rules(): array

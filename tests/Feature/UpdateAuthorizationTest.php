@@ -116,6 +116,19 @@ class UpdateAuthorizationTest extends TestCase
         $this->assertSame('original', $forum->fresh()->description);
     }
 
+    public function test_non_admin_gets_403_not_a_validation_error_for_a_bad_forum_payload(): void
+    {
+        $forum = Forum::factory()->create();
+
+        // authorization runs before validation, so an invalid payload doesn't leak a 422
+        $this->actingAs($this->makeUser(), 'sanctum')
+            ->putJson('/api/forums/'.$forum->id, ['name' => 'x'])
+            ->assertForbidden();
+        $this->actingAs($this->makeUser(), 'sanctum')
+            ->postJson('/api/forums', ['name' => 'x'])
+            ->assertForbidden();
+    }
+
     public function test_admin_can_patch_a_forum_via_api(): void
     {
         $forum = Forum::factory()->create(['description' => 'original']);
