@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Forum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class ForumFactory extends Factory
 {
@@ -24,9 +25,12 @@ class ForumFactory extends Factory
     {
         $user = User::factory()->create();
 
+        // always valid for ForumRequest: name min 3 chars, slug lowercase/digits/hyphens
+        $name = ucfirst($this->faker->words(2, true)).' Forum';
+
         return [
-            'name' => $this->faker->word,
-            'slug' => $this->faker->sentence,
+            'name' => $name,
+            'slug' => Str::slug($name).'-'.$this->faker->unique()->numberBetween(1, 1000000),
             'description' => $this->faker->sentence,
             'visibility_id' => 3,
             'sort_order' => 0,

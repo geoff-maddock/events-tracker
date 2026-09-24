@@ -98,9 +98,7 @@ class UpdateAuthorizationTest extends TestCase
     public function test_non_admin_cannot_create_or_update_forums_via_api(): void
     {
         $member = $this->makeUser();
-        // fixed name: the factory's random word can be under ForumRequest's 3-char minimum,
-        // and validation runs before the controller's admin check
-        $forum = Forum::factory()->create(['name' => 'ZZ Forum Name', 'created_by' => $member->id, 'description' => 'original']);
+        $forum = Forum::factory()->create(['created_by' => $member->id, 'description' => 'original']);
 
         $this->actingAs($member, 'sanctum')
             ->postJson('/api/forums', ['name' => 'ZZ Forum', 'slug' => 'zz-forum', 'visibility_id' => Visibility::VISIBILITY_PUBLIC])
