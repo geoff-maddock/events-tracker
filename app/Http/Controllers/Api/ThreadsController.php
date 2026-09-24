@@ -259,73 +259,21 @@ class ThreadsController extends Controller
         return redirect()->route('threads.index');
     }
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(
-    //     Thread $thread,
-    //     Request $request,
-    //     ListParameterSessionStore $listParamSessionStore,
-    //     ListEntityResultBuilder $listEntityResultBuilder
-    // ): RedirectResponse | View {
-    //     // if the gate does not allow this user to show a thread redirect to home
-    //     if (Gate::denies('show_thread')) {
-    //         flash()->error('Unauthorized', 'Your cannot view the thread');
+    /**
+     * A single thread, subject to the same gate and visibility rules as the index.
+     */
+    public function show(Thread $thread): JsonResponse
+    {
+        if (Gate::denies('show_thread')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    //         return redirect()->back();
-    //     }
+        if (!Thread::visible($this->user)->whereKey($thread->id)->exists()) {
+            return response()->json(['message' => 'Not found.'], 404);
+        }
 
-    //     // initialized listParamSessionStore with base index key
-    //     $listParamSessionStore->setBaseIndex('internal_thread');
-    //     $listParamSessionStore->setKeyPrefix('internal_thread_index');
-
-    //     // set the index tab in the session
-    //     $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-    //     // create the base query including any required joins; needs select to make sure only event entities are returned
-    //     $baseQuery = Thread::query()->where('thread_id', $thread->id)->orderBy('created_at', 'desc')
-    //     ->select('threads.*');
-
-    //     $listEntityResultBuilder
-    //         ->setFilter($this->filter)
-    //         ->setQueryBuilder($baseQuery)
-    //         ->setDefaultSort(['threads.created_at' => 'desc']);
-
-    //     // get the result set from the builder
-    //     $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-    //     // get the query builder
-    //     $query = $listResultSet->getList();
-
-    //     /* @phpstan-ignore-next-line */
-    //     $threads = $query->visible($this->user)
-    //         ->with('visibility')
-    //         ->paginate(10000000);
-
-    //     // saves the updated session
-    //     $listParamSessionStore->save();
-
-    //     $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-    //     $threads = Thread::whereRelation('visibility','name','Public')->where('thread_id', $thread->id)->orderBy('created_at', 'desc')->paginate(1000000);
-
-    //     // pass a slug for the thread
-    //     $slug = $thread->description;
-
-    //     return view('threads.index')
-    //         ->with(array_merge(
-    //             [
-    //                 'limit' => $listResultSet->getLimit(),
-    //                 'sort' => $listResultSet->getSort(),
-    //                 'direction' => $listResultSet->getSortDirection(),
-    //                 'hasFilter' => $this->hasFilter,
-    //                 'filters' => $listResultSet->getFilters(),
-    //             ],
-    //             $this->getFilterOptions(),
-    //             $this->getListControlOptions()
-    //         ))
-    //         ->with(compact('threads', 'slug'));
-    // }
+        return response()->json($thread);
+    }
 
     /**
      * Show the form for editing the specified resource.

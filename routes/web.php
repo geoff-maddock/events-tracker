@@ -147,12 +147,6 @@ Route::get('activity/rpp-reset', ['as' => 'activities.rppReset', 'uses' => '\App
 Route::get('tools', [\App\Http\Controllers\PagesController::class, 'tools'])->name('pages.tools');
 Route::post('invite', [\App\Http\Controllers\PagesController::class, 'invite'])->name('pages.invite');
 
-Route::get('events/importPhotos', [
-    'as' => 'events.importPhotos',
-    'uses' => '\App\Http\Controllers\EventsController@importPhotos',
-]);
-
-
 Route::bind('users', function ($id) {
     return App\Models\User::whereId($id)->firstOrFail();
 });
@@ -316,9 +310,6 @@ Route::get('events/apply-filter', ['as' => 'events.applyFilterFromUrl', 'uses' =
 Route::get('events/reset', ['as' => 'events.reset', 'uses' => '\App\Http\Controllers\EventsController@reset']);
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => '\App\Http\Controllers\EventsController@rppReset']);
 
-// FB access token
-Route::get('fb-access', [\App\Http\Controllers\EventsController::class, 'fbAuthToken']);
-
 // POST to Instagram; these publish to the site's accounts, so they are POST + auth and check ownership in the controller
 Route::post('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagram'])->name('events.instagramPost')->middleware('auth');
 Route::post('events/{id}/instagram-story-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postStoryToInstagram'])->name('events.instagramStoryPost')->middleware('auth');
@@ -478,7 +469,7 @@ Route::get('posts/{id}/unlike', [
     'uses' => '\App\Http\Controllers\PostsController@unlike',
 ]);
 
-Route::resource('posts', \App\Http\Controllers\PostsController::class);
+Route::resource('posts', \App\Http\Controllers\PostsController::class)->except(['create']);
 
 // THREAD CATEGORIES
 Route::get('categories/all', [\App\Http\Controllers\CategoriesController::class, 'indexAll']);
@@ -521,7 +512,7 @@ Route::bind('blogs', function ($id) {
 Route::resource('blogs', \App\Http\Controllers\BlogsController::class);
 
 // MENUS
-Route::get('menus/all', [\App\Http\Controllers\MenusController::class, 'indexAll']);
+Route::permanentRedirect('menus/all', '/menus');
 Route::match(['get', 'post'], 'menus/filter', ['as' => 'menus.filter', 'uses' => '\App\Http\Controllers\MenusController@filter']);
 Route::get('menus/reset', ['as' => 'menus.reset', 'uses' => '\App\Http\Controllers\MenusController@reset']);
 Route::get('menus/rpp-reset', ['as' => 'menus.rppReset', 'uses' => '\App\Http\Controllers\MenusController@rppReset']);
@@ -532,7 +523,7 @@ Route::resource('menus', \App\Http\Controllers\MenusController::class);
 Route::get('menus/{id}/content', [\App\Http\Controllers\MenusController::class, 'content']);
 
 // PERMISSIONS
-Route::get('permissions/all', [\App\Http\Controllers\PermissionsController::class, 'indexAll']);
+Route::permanentRedirect('permissions/all', '/permissions');
 Route::match(['get', 'post'], 'permissions/filter', ['as' => 'permissions.filter', 'uses' => '\App\Http\Controllers\PermissionsController@filter']);
 Route::get('permissions/reset', ['as' => 'permissions.reset', 'uses' => '\App\Http\Controllers\PermissionsController@reset']);
 Route::get('permissions/rpp-reset', ['as' => 'permissions.rppReset', 'uses' => '\App\Http\Controllers\PermissionsController@rppReset']);
@@ -544,7 +535,7 @@ Route::bind('permissions', function ($id) {
 Route::resource('permissions', \App\Http\Controllers\PermissionsController::class);
 
 // EntityTypes
-Route::get('entity-types/all', [\App\Http\Controllers\EntityTypesController::class, 'indexAll']);
+Route::permanentRedirect('entity-types/all', '/entity-types');
 
 Route::match(['get', 'post'], 'entity-types/filter', ['as' => 'entity-types.filter', 'uses' => '\App\Http\Controllers\EntityTypesController@filter']);
 Route::get('entity-types/reset', ['as' => 'entityTypes.reset', 'uses' => '\App\Http\Controllers\EntityTypesController@reset']);
@@ -571,7 +562,7 @@ Route::delete('roles/{id}', [\App\Http\Controllers\RolesController::class, 'dest
 
 // GROUPS
 Route::match(['get', 'post'], 'groups/filter', ['as' => 'groups.filter', 'uses' => '\App\Http\Controllers\GroupsController@filter']);
-Route::get('groups/all', [\App\Http\Controllers\GroupsController::class, 'indexAll']);
+Route::permanentRedirect('groups/all', '/groups');
 
 Route::get('groups/reset', ['as' => 'groups.reset', 'uses' => '\App\Http\Controllers\GroupsController@reset']);
 Route::get('groups/rpp-reset', ['as' => 'groups.rppReset', 'uses' => '\App\Http\Controllers\GroupsController@rppReset']);
@@ -647,7 +638,7 @@ Route::bind('locations', function ($id) {
     return Location::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.locations', \App\Http\Controllers\LocationsController::class);
+Route::resource('entities.locations', \App\Http\Controllers\LocationsController::class)->except(['index']);
 
 Route::bind('contacts', function ($id) {
     return Contact::whereId($id)->firstOrFail();
@@ -656,13 +647,13 @@ Route::bind('contacts', function ($id) {
 Route::get('/entities/{entity:slug}/contacts/{contact:id}/create', [\App\Http\Controllers\ContactsController::class, 'create']);
 Route::get('/entities/{entity:slug}/contacts/{contact:id}/edit', [\App\Http\Controllers\ContactsController::class, 'edit']);
 Route::post('/entities/{entity:slug}/contacts/{contact:id}/update', [\App\Http\Controllers\ContactsController::class, 'update']);
-Route::resource('entities.contacts', \App\Http\Controllers\ContactsController::class);
+Route::resource('entities.contacts', \App\Http\Controllers\ContactsController::class)->except(['index']);
 
 Route::bind('links', function ($id) {
     return Link::whereId($id)->firstOrFail();
 });
 
-Route::resource('entities.links', \App\Http\Controllers\LinksController::class);
+Route::resource('entities.links', \App\Http\Controllers\LinksController::class)->except(['index']);
 
 Route::bind('comments', function ($id) {
     return Comment::whereId($id)->firstOrFail();
@@ -671,8 +662,8 @@ Route::bind('comments', function ($id) {
 Route::get('/entities/{entity:slug}/comments/{comment:id}/edit', [\App\Http\Controllers\CommentsController::class, 'edit']);
 Route::delete('/entities/{entity:slug}/comments/{comment:id}/edit', [\App\Http\Controllers\CommentsController::class, 'destroy']);
 
-Route::resource('entities.comments', \App\Http\Controllers\CommentsController::class);
-Route::resource('events.comments', \App\Http\Controllers\CommentsController::class);
+Route::resource('entities.comments', \App\Http\Controllers\CommentsController::class)->except(['index']);
+Route::resource('events.comments', \App\Http\Controllers\CommentsController::class)->except(['index']);
 Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::class);
 
 // REVIEWS
@@ -694,7 +685,6 @@ Route::get('series/createOccurrence', [
     'uses' => '\App\Http\Controllers\SeriesController@createOccurrence',
 ]);
 
-Route::get('series/type/{type}', [\App\Http\Controllers\SeriesController::class, 'indexTypes']);
 Route::get('series/tag/{tag}', [\App\Http\Controllers\SeriesController::class, 'indexTags'])->name('series.tag');
 Route::get('series/related-to/{slug}', [\App\Http\Controllers\SeriesController::class, 'indexRelatedTo']);
 Route::get('series/week', [\App\Http\Controllers\SeriesController::class, 'indexWeek']);
