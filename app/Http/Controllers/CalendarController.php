@@ -11,6 +11,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\Calendar\CalendarRange;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +21,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-
 
 class CalendarController extends Controller
 {
@@ -79,7 +79,6 @@ class CalendarController extends Controller
         $this->hasFilter = false;
         parent::__construct();
     }
-
 
     protected function getListControlOptions(): array
     {
@@ -189,7 +188,6 @@ class CalendarController extends Controller
             ->render();
     }
 
-
     /**
      * Reset the limit, sort, order.
      *
@@ -255,7 +253,6 @@ class CalendarController extends Controller
             ])
             ->render();
     }
-
 
     /**
      * Display a listing of events related to entity.
@@ -390,10 +387,17 @@ class CalendarController extends Controller
     /**
      * Display a calendar view of events.
      **/
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
-        // set the initial date of the calendar that is displayed
-        $initialDate = Carbon::now()->format('Y-m-d');
+        // FullCalendar asks this same URL (with the page's filters) for each visible
+        // range; the page itself no longer inlines every event ever (#2167)
+        $isFeed = $request->has('start');
+
+        if (!$isFeed) {
+            return $this->indexPage($request);
+        }
+
+        [$rangeStart, $rangeEnd] = CalendarRange::fromRequest($request);
 
         $eventList = [];
 
@@ -464,8 +468,10 @@ class CalendarController extends Controller
             }
         }
 
-        // get all public events with filters applied
-        $events = $eventsQuery->with('eventType', 'visibility')->get();
+        // events in the requested range, with filters applied
+        $events = $eventsQuery->whereBetween('events.start_at', [$rangeStart, $rangeEnd])
+            ->with('eventType', 'visibility')
+            ->get();
 
         // get all the upcoming series events
         // eager-load upcomingEvent so Series::nextEvent() uses the loaded relation
@@ -524,24 +530,44 @@ class CalendarController extends Controller
             ];
         }
 
-        // adds series to events list
+        // adds the next scheduled instance of each series that falls in the range
         foreach ($series as $s) {
-            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
-                // add the next instance of each series to the calendar
-                $eventList[] = [
-                    'id' => 'series-'.$s->id,
-                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
-                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
-                    'title' => $s->name,
-                    'url' => '/series/'.strtolower($s->slug),
-                    'backgroundColor' => '#99bcdb',
-                    'description' => $s->short,
-                ];
+            if (null !== $s->nextEvent()) {
+                continue;
             }
+
+            // one walk through the occurrence cycle per series (nextOccurrenceEndDate() repeats it)
+            $next = $s->nextOccurrenceDate();
+
+            if (null === $next || !$next->between($rangeStart, $rangeEnd)) {
+                continue;
+            }
+
+            $eventList[] = [
+                'id' => 'series-'.$s->id,
+                'start' => $next->format('Y-m-d H:i'),
+                'end' => $next->copy()->addHours((int) $s->length)->format('Y-m-d H:i'),
+                'title' => $s->name,
+                'url' => '/series/'.strtolower($s->slug),
+                'backgroundColor' => '#99bcdb',
+                'description' => $s->short,
+            ];
         }
 
-        $eventList = json_encode($eventList);
-        
+        return response()->json($eventList);
+    }
+
+    /**
+     * The calendar page; events are fetched per visible range from index()'s JSON feed.
+     */
+    private function indexPage(Request $request): View
+    {
+        // set the initial date of the calendar that is displayed
+        $initialDate = Carbon::now()->format('Y-m-d');
+
+        // the feed is this URL with the same filters; FullCalendar appends start/end
+        $calendarFeedUrl = $request->fullUrlWithoutQuery(['start', 'end', 'timeZone']);
+
         $filters = $request->get('filters', []);
         $effectiveFilters = array_filter($filters, function ($value, $key) {
             if ($key === 'display_type' && $value === 'all') {
@@ -551,7 +577,7 @@ class CalendarController extends Controller
         }, ARRAY_FILTER_USE_BOTH);
         $hasFilter = !empty($effectiveFilters);
 
-        return view('events.event-calendar-tw', compact('eventList', 'initialDate', 'filters', 'hasFilter'))
+        return view('events.event-calendar-tw', compact('calendarFeedUrl', 'initialDate', 'filters', 'hasFilter'))
             ->with($this->getFilterOptions());
     }
 
@@ -684,128 +710,6 @@ class CalendarController extends Controller
     {
         // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
         return view('events.event-calendar-tw');
-    }
-
-    /**
-     * API endpoint for calendar-events that collects events and series and returns json.
-     */
-    public function calendarEventsApi(Request $request): JsonResponse
-    {
-        // build the json results to return which include both series and events
-        $eventList = [];
-
-        // get the query params from
-        $start = $request->query('start', Carbon::now()->startOfMonth());
-        $end = $request->query('end', Carbon::now()->endOfMonth());
-
-        // get all public events
-        $events = Event::where('start_at', '>=', $start)
-            ->where('start_at', '<=', $end)
-            ->where(function ($query) {
-                /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
-            })->get();
-
-        // get all the upcoming series events
-        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
-
-        // filter for only events that are public or that were created by the current user and are not "no schedule"
-        $series = $series->filter(function ($e) {
-            return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
-        });
-
-        // adds events to event list
-        foreach ($events as $event) {
-            $eventList[] = [
-                'id' => 'event-'.$event->id,
-                'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
-                'title' => $event->name,
-                'url' => '/events/'.$event->slug,
-                'backgroundColor' => '#0a57ad',
-                'description' => $event->short,
-            ];
-        }
-
-        // adds series to events list
-        foreach ($series as $s) {
-            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
-                // add the next instance of each series to the calendar
-                $eventList[] = [
-                    'id' => 'series-'.$s->id,
-                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
-                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
-                    'title' => $s->name,
-                    'url' => '/series/'.strtolower($s->slug),
-                    'backgroundColor' => '#99bcdb',
-                    'description' => $s->short,
-                ];
-            }
-        }
-
-        // converts array of events into json event list
-        return response()->json($eventList);
-    }
-
-    /**
-     * API endpoint for calendar-events that collects events and series and returns json.
-     */
-    public function tagCalendarEventsApi(Request $request): JsonResponse
-    {
-        // build the json results to return which include both series and events
-        $eventList = [];
-
-        // get the query params from
-        $start = $request->query('start', Carbon::now()->startOfMonth());
-        $end = $request->query('end', Carbon::now()->endOfMonth());
-
-        // get all public events (eager-load tags for the $event->tagNames accessor)
-        $events = Event::where('start_at', '>=', $start)
-            ->where('start_at', '<=', $end)
-            ->where(function ($query) {
-                /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
-            })->with('tags')->get();
-
-        // get all the upcoming series events
-        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
-
-        // filter for only events that are public or that were created by the current user and are not "no schedule"
-        $series = $series->filter(function ($e) {
-            return (('Public' == $e->visibility->name) || ($this->user && $e->created_by === $this->user->id)) and 'No Schedule' != $e->occurrenceType->name;
-        });
-
-        // adds events to event list
-        foreach ($events as $event) {
-            $eventList[] = [
-                'id' => 'event-'.$event->id,
-                'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
-                'title' => $event->tagNames,
-                'url' => '/events/'.$event->slug,
-                'backgroundColor' => '#0a57ad',
-                'description' => $event->short,
-            ];
-        }
-
-        // adds series to events list
-        foreach ($series as $s) {
-            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
-                // add the next instance of each series to the calendar
-                $eventList[] = [
-                    'id' => 'series-'.$s->id,
-                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
-                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
-                    'title' => $s->tagNames,
-                    'url' => '/series/'.strtolower($s->slug),
-                    'backgroundColor' => '#99bcdb',
-                    'description' => $s->short,
-                ];
-            }
-        }
-
-        // converts array of events into json event list
-        return response()->json($eventList);
     }
 
     /**

@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
 use App\Services\BestEffortMailer;
+use App\Services\Calendar\CalendarRange;
 use App\Services\EventDateRange;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
@@ -1485,9 +1486,8 @@ class EventsController extends Controller
         // build the json results to return which include both series and events
         $eventList = [];
 
-        // get the query params from
-        $start = $request->query('start', Carbon::now()->startOfMonth());
-        $end = $request->query('end', Carbon::now()->endOfMonth());
+        // parsed, moved into the app timezone and capped at CalendarRange::MAX_DAYS (#2167)
+        [$start, $end] = CalendarRange::fromRequest($request);
 
         // get all public events
         $events = Event::where('start_at', '>=', $start)
@@ -1497,8 +1497,9 @@ class EventsController extends Controller
                 $query->visible($this->user);
             })->get();
 
-        // get all the upcoming series events
-        $series = Series::active()->get();
+        // get all the upcoming series events; eager loads cover the visibility/type filter
+        // and nextEvent(), which were one query each per series
+        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -1527,12 +1528,15 @@ class EventsController extends Controller
 
         // adds series to events list
         foreach ($series as $s) {
-            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+            // one walk through the occurrence cycle per series (nextOccurrenceEndDate() repeats it)
+            $next = null === $s->nextEvent() ? $s->nextOccurrenceDate() : null;
+
+            if (null !== $next) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
                     'id' => 'series-'.$s->id,
-                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
-                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'start' => $next->format('Y-m-d H:i'),
+                    'end' => $next->copy()->addHours((int) $s->length)->format('Y-m-d H:i'),
                     'title' => $s->name,
                     'url' => '/series/'.$s->slug,
                     'backgroundColor' => '#99bcdb',
@@ -1553,9 +1557,8 @@ class EventsController extends Controller
         // build the json results to return which include both series and events
         $eventList = [];
 
-        // get the query params from
-        $start = $request->query('start', Carbon::now()->startOfMonth());
-        $end = $request->query('end', Carbon::now()->endOfMonth());
+        // parsed, moved into the app timezone and capped at CalendarRange::MAX_DAYS (#2167)
+        [$start, $end] = CalendarRange::fromRequest($request);
 
         // get all public events
         $events = Event::where('start_at', '>=', $start)
@@ -1563,10 +1566,11 @@ class EventsController extends Controller
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
-            })->get();
+            })->with('tags')->get();
 
-        // get all the upcoming series events
-        $series = Series::active()->get();
+        // get all the upcoming series events; eager loads cover the visibility/type filter,
+        // nextEvent() and tagNames, which were one query each per series
+        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent', 'tags')->get();
 
         // filter for only events that are public or that were created by the current user and are not "no schedule"
         $series = $series->filter(function ($e) {
@@ -1588,12 +1592,15 @@ class EventsController extends Controller
 
         // adds series to events list
         foreach ($series as $s) {
-            if (null === $s->nextEvent() && null !== $s->nextOccurrenceDate()) {
+            // one walk through the occurrence cycle per series (nextOccurrenceEndDate() repeats it)
+            $next = null === $s->nextEvent() ? $s->nextOccurrenceDate() : null;
+
+            if (null !== $next) {
                 // add the next instance of each series to the calendar
                 $eventList[] = [
                     'id' => 'series-'.$s->id,
-                    'start' => $s->nextOccurrenceDate()->format('Y-m-d H:i'),
-                    'end' => ($s->nextOccurrenceEndDate() ? $s->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
+                    'start' => $next->format('Y-m-d H:i'),
+                    'end' => $next->copy()->addHours((int) $s->length)->format('Y-m-d H:i'),
                     'title' => $s->tagNames,
                     'url' => '/series/'.$s->slug,
                     'backgroundColor' => '#99bcdb',
