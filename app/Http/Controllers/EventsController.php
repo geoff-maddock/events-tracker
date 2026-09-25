@@ -2671,7 +2671,7 @@ class EventsController extends Controller
 
         // confirm the file is one of these types
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp|max:5120', // KB; matches Dropzone maxFilesize
         ]);
 
         // get the event
