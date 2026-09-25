@@ -587,9 +587,10 @@ class SeriesController extends Controller
         $series->tags()->attach($syncArray);
         $series->entities()->attach($request->input('entity_list'));
 
-        // link the passed event if there was one to the series
+        // link the passed event if there was one to the series, but only one the user may edit (#2165)
         if ($request->eventLinkId) {
-            if ($event = Event::find($request->eventLinkId)) {
+            $event = Event::find($request->eventLinkId);
+            if ($event && ($event->ownedBy($this->user) || $this->user->isAdmin())) {
                 $event->series_id = $series->id;
                 $event->save();
             }

@@ -23,6 +23,12 @@ class ShortUrlController extends Controller
         ]);
 
         $url = $request->input('url');
+
+        // only links back into this site: the share buttons shorten the current page,
+        // and an open shortener would make /s/{code} a redirector to anywhere (#2165)
+        if (!$this->isOwnUrl($url)) {
+            return response()->json(['message' => 'Only links to this site can be shortened.'], 422);
+        }
         $shortUrl = $this->findOrCreateShortUrl($url);
 
         return response()->json([
@@ -38,9 +44,31 @@ class ShortUrlController extends Controller
     {
         $shortUrl = ShortUrl::where('code', $code)->firstOrFail();
 
+        // older records predate the host check; never redirect off-site
+        abort_unless($this->isOwnUrl($shortUrl->url), 404);
+
         $shortUrl->increment('visit_count');
 
         return redirect()->away($shortUrl->url);
+    }
+
+    /**
+     * True for http(s) URLs on this app's host (or a subdomain of it, e.g. dev.).
+     */
+    private function isOwnUrl(string $url): bool
+    {
+        $parts = parse_url($url);
+        $appHost = strtolower((string) parse_url((string) config('app.url'), PHP_URL_HOST));
+
+        if (!is_array($parts) || $appHost === '' || isset($parts['user']) || isset($parts['pass'])
+            || !in_array(strtolower($parts['scheme'] ?? ''), ['http', 'https'], true)) {
+            return false;
+        }
+
+        $host = strtolower($parts['host'] ?? '');
+        $siteHost = preg_replace('/^(www|dev|beta|stage)\./', '', $appHost);
+
+        return $host === $appHost || $host === $siteHost || str_ends_with($host, '.'.$siteHost);
     }
 
     /**

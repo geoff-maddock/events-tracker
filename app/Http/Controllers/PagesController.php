@@ -498,10 +498,10 @@ class PagesController extends Controller
      */
     public function invite(Request $request)
     {
-        $email = $request->input('email');
+        $email = $request->validate(['email' => ['required', 'email', 'max:255']])['email'];
 
-        // check that a user with that email does not already exist.
-        $users = User::where('email', 'like', '%'.$email.'%')->orderBy('name', 'ASC')->count();
+        // check that a user with that email does not already exist (exact match, not LIKE)
+        $users = User::where('email', $email)->count();
         if ($users > 0) {
             flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.');
 

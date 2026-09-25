@@ -15,7 +15,7 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function shorten_endpoint_creates_a_short_url_record()
     {
-        $url = 'http://localhost/events/apply-filter?filters%5Bname%5D=Concert';
+        $url = url('/events/apply-filter?filters%5Bname%5D=Concert');
 
         $response = $this->postJson(route('short-url.shorten'), ['url' => $url]);
 
@@ -28,7 +28,7 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function shorten_endpoint_returns_existing_record_for_same_url()
     {
-        $url = 'http://localhost/events/apply-filter?filters%5Bname%5D=Concert';
+        $url = url('/events/apply-filter?filters%5Bname%5D=Concert');
 
         $this->postJson(route('short-url.shorten'), ['url' => $url]);
         $response = $this->postJson(route('short-url.shorten'), ['url' => $url]);
@@ -40,8 +40,8 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function shorten_endpoint_returns_different_codes_for_different_urls()
     {
-        $url1 = 'http://localhost/events/apply-filter?filters%5Bname%5D=Concert';
-        $url2 = 'http://localhost/events/apply-filter?filters%5Bname%5D=Festival';
+        $url1 = url('/events/apply-filter?filters%5Bname%5D=Concert');
+        $url2 = url('/events/apply-filter?filters%5Bname%5D=Festival');
 
         $response1 = $this->postJson(route('short-url.shorten'), ['url' => $url1]);
         $response2 = $this->postJson(route('short-url.shorten'), ['url' => $url2]);
@@ -75,7 +75,7 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function redirect_endpoint_resolves_short_code_to_full_url()
     {
-        $url = 'http://localhost/events/apply-filter?filters%5Bname%5D=Concert';
+        $url = url('/events/apply-filter?filters%5Bname%5D=Concert');
 
         $shortenResponse = $this->postJson(route('short-url.shorten'), ['url' => $url]);
         $code = $shortenResponse->json('code');
@@ -90,7 +90,7 @@ class ShortUrlTest extends TestCase
     {
         $shortUrl = ShortUrl::create([
             'code' => 'test1234',
-            'url' => 'http://localhost/events/apply-filter?filters%5Bname%5D=Concert',
+            'url' => url('/events/apply-filter?filters%5Bname%5D=Concert'),
             'visit_count' => 0,
         ]);
 
@@ -112,7 +112,7 @@ class ShortUrlTest extends TestCase
     /** @test */
     public function short_url_in_response_points_to_redirect_route()
     {
-        $url = 'http://localhost/series/filter?filters%5Bname%5D=Jazz';
+        $url = url('/series/filter?filters%5Bname%5D=Jazz');
 
         $response = $this->postJson(route('short-url.shorten'), ['url' => $url]);
 

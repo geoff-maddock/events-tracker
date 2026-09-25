@@ -751,14 +751,20 @@ class SeriesController extends Controller
             $msg .= ' Added tag '.$tag->name.'.';
         }
 
+        // only admins may create a series on someone else's behalf (#2165)
+        if (!$this->user->isAdmin() || empty($input['created_by'])) {
+            $input['created_by'] = $this->user->id;
+        }
+
         $series = $series->create($input);
 
         $series->tags()->attach($syncArray);
         $series->entities()->attach($request->input('entity_list', []));
 
-        // link the passed event if there was one to the series
+        // link the passed event if there was one to the series, but only one the user may edit
         if ($request->eventLinkId) {
-            if ($event = Event::find($request->eventLinkId)) {
+            $event = Event::find($request->eventLinkId);
+            if ($event && ($event->ownedBy($this->user) || $this->user->isAdmin())) {
                 $event->series_id = $series->id;
                 $event->save();
 
@@ -875,7 +881,13 @@ class SeriesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $series->fill($request->input())->save();
+        // ownership only changes through an admin (#2165)
+        $input = $request->input();
+        if (!$this->user->isAdmin()) {
+            unset($input['created_by']);
+        }
+
+        $series->fill($input)->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, $this->user);

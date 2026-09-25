@@ -36,7 +36,11 @@ class InviteMailFailureTest extends TestCase
 
     private function admin(): User
     {
-        return User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        // the invite form is admin-only (#2165)
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+
+        return $admin->fresh();
     }
 
     public function test_a_failed_invite_does_not_500(): void

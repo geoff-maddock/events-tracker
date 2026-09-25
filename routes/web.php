@@ -145,7 +145,8 @@ Route::get('activity/reset', ['as' => 'activities.reset', 'uses' => '\App\Http\C
 Route::get('activity/rpp-reset', ['as' => 'activities.rppReset', 'uses' => '\App\Http\Controllers\ActivityController@rppReset']);
 
 Route::get('tools', [\App\Http\Controllers\PagesController::class, 'tools'])->name('pages.tools');
-Route::post('invite', [\App\Http\Controllers\PagesController::class, 'invite'])->name('pages.invite');
+// the invite form lives on the admin tools page; it sends mail, so it is gated and throttled (#2165)
+Route::post('invite', [\App\Http\Controllers\PagesController::class, 'invite'])->name('pages.invite')->middleware(['auth', 'can:show_admin', 'throttle:10,60']);
 
 Route::bind('users', function ($id) {
     return App\Models\User::whereId($id)->firstOrFail();
@@ -768,5 +769,5 @@ Route::get('go/evt-{id}', [\App\Http\Controllers\ClickTrackController::class, 'r
 Route::get('go/ser-{id}', [\App\Http\Controllers\ClickTrackController::class, 'redirectSeries'])->name('clicktrack.series')->where('id', '[0-9]+');
 
 // Short URLs – create a short URL and resolve it
-Route::post('short-url', [\App\Http\Controllers\ShortUrlController::class, 'shorten'])->name('short-url.shorten');
+Route::post('short-url', [\App\Http\Controllers\ShortUrlController::class, 'shorten'])->name('short-url.shorten')->middleware('throttle:30,1');
 Route::get('s/{code}', [\App\Http\Controllers\ShortUrlController::class, 'redirect'])->name('short-url.redirect')->where('code', '[a-zA-Z0-9]+');
