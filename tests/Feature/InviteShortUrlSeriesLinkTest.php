@@ -73,11 +73,13 @@ class InviteShortUrlSeriesLinkTest extends TestCase
         $this->postJson(route('short-url.shorten'), ['url' => 'https://evil.example/phish'])->assertStatus(422);
         $this->postJson(route('short-url.shorten'), ['url' => 'https://arcane.city.evil.example/x'])->assertStatus(422);
 
-        $code = $this->postJson(route('short-url.shorten'), ['url' => config('app.url').'events?filters[tag]=punk'])
+        // built like the share buttons do; APP_URL may or may not end in a slash
+        $own = url('/events?filters[tag]=punk');
+        $code = $this->postJson(route('short-url.shorten'), ['url' => $own])
             ->assertOk()
             ->json('code');
 
-        $this->get(route('short-url.redirect', ['code' => $code]))->assertRedirect(config('app.url').'events?filters[tag]=punk');
+        $this->get(route('short-url.redirect', ['code' => $code]))->assertRedirect($own);
     }
 
     public function test_legacy_off_site_short_urls_do_not_redirect(): void

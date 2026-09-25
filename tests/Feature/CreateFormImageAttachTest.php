@@ -183,13 +183,15 @@ class CreateFormImageAttachTest extends TestCase
      */
     public function test_an_uploaded_series_image_wins_primary_over_copied_event_photos(): void
     {
-        $event = Event::factory()->create();
+        // only an event the user owns is linked into a new series (#2165)
+        $user = $this->activeUser();
+        $event = Event::factory()->create(['created_by' => $user->id]);
         $copied = Photo::factory()->create(['is_primary' => 1]);
         $event->addPhoto($copied);
 
         $token = $this->stashToken();
 
-        $this->actingAs($this->activeUser())
+        $this->actingAs($user)
             ->post('/series', $this->seriesPayload([
                 'image_temp_token' => $token,
                 'eventLinkId' => $event->id,
