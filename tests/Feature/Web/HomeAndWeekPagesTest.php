@@ -10,6 +10,7 @@ use App\Models\Series;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -32,13 +33,23 @@ class HomeAndWeekPagesTest extends TestCase
         $this->withExceptionHandling();
     }
 
+    /**
+     * Noon (app timezone) on the date the home page treats as today. The home page and
+     * series cycle use America/New_York while the app timezone is a fixed EST, so for an
+     * hour each night "today" differs between them; noon is the same date in both.
+     */
+    private function homeToday(): Carbon
+    {
+        return Carbon::parse(Carbon::now('America/New_York')->format('Y-m-d').' 12:00:00');
+    }
+
     private function weeklySeriesToday(array $attributes = []): Series
     {
-        // founded today, so its next occurrence is today
+        // founded on the home page's today, so its next occurrence is that day
         return Series::factory()->create(array_merge([
             'visibility_id' => Visibility::VISIBILITY_PUBLIC,
             'occurrence_type_id' => self::WEEKLY,
-            'founded_at' => now()->setTime(20, 0),
+            'founded_at' => $this->homeToday(),
             'cancelled_at' => null,
         ], $attributes));
     }
@@ -107,7 +118,7 @@ class HomeAndWeekPagesTest extends TestCase
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         $other = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
-        $event = Event::factory()->create(['start_at' => now()->setTime(21, 0), 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $event = Event::factory()->create(['start_at' => $this->homeToday(), 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
         EventResponse::create(['event_id' => $event->id, 'user_id' => $other->id, 'response_type_id' => ResponseType::ATTENDING]);
 
         // someone else attending must not show as the viewer attending

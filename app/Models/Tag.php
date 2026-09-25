@@ -176,7 +176,8 @@ class Tag extends Eloquent
      **/
     public function followers(): Collection
     {
-        return User::leftJoin('follows', 'users.id', '=', 'follows.user_id')
+        // profile is read for every follower's notification settings
+        return User::with('profile')->leftJoin('follows', 'users.id', '=', 'follows.user_id')
         ->where('follows.object_type', 'tag')
         ->where('follows.object_id', $this->id)
         ->get('users.*');

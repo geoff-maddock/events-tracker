@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\Api\EventsController;
 use App\Mail\FollowingUpdate;
 use App\Models\Entity;
 use App\Models\Event;
+use App\Services\FollowerNotifier;
 use App\Models\Follow;
 use App\Models\Photo;
 use App\Models\Profile;
@@ -17,12 +17,11 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
-use ReflectionMethod;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Tests\TestCase;
 
 /**
- * EventsController::notifyFollowing dedup (issue #1991): the tag loop keyed
+ * FollowerNotifier::event() dedup (issue #1991; formerly EventsController::notifyFollowing): the tag loop keyed
  * its notified-users map on $user->user_id, an attribute that doesn't exist
  * on followers() rows (only users.* is selected). Every follower collapsed
  * onto the null key, so only the FIRST tag follower ever received an email,
@@ -71,9 +70,8 @@ class EventNotifyFollowingTest extends TestCase
 
     private function notify(Event $event): void
     {
-        $controller = app(EventsController::class);
-        $method = new ReflectionMethod($controller, 'notifyFollowing');
-        $method->invoke($controller, $event);
+        // the controllers dispatch NotifyFollowers, which runs this (#2170)
+        app(FollowerNotifier::class)->event($event);
     }
 
     private function sentTo(string $email): int

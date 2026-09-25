@@ -950,7 +950,8 @@ class Series extends Eloquent implements HasPhotos
      **/
     public function followers(): Collection
     {
-        return User::join('follows', 'users.id', '=', 'follows.user_id')
+        // profile is read for every follower's notification settings
+        return User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
             ->where('follows.object_type', 'series')
             ->where('follows.object_id', $this->id)
             ->get('users.*');

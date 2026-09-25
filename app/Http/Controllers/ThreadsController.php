@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ThreadFilters;
+use App\Jobs\NotifyFollowers;
 use App\Http\Requests\ThreadRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\FollowingThreadUpdate;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
@@ -19,7 +19,6 @@ use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\User;
 use App\Models\Visibility;
-use App\Services\BestEffortMailer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -27,7 +26,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -692,7 +690,7 @@ class ThreadsController extends Controller
         $thread->series()->attach($request->input('series_list'));
 
         // here, make a call to notify all users who are following any of the sync'd tags
-        $this->notifyFollowing($thread);
+        NotifyFollowers::dispatch($thread);
 
         // add to activity log
         Activity::log($thread, $this->user, 1);
@@ -700,74 +698,6 @@ class ThreadsController extends Controller
         flash()->success('Success', 'Your thread has been created. '.$msg);
 
         return redirect()->route('threads.show', compact('thread'));
-    }
-
-    protected function notifyFollowing(Thread $thread): RedirectResponse
-    {
-        $admin_email = config('app.admin');
-        $reply_email = config('app.noreplyemail');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // notify users following any of the tags
-        $tags = $thread->tags()->get();
-        $users = [];
-
-        // Follower notification is best-effort — the thread is already saved,
-        // so a mail failure must not surface as a 500 on posting.
-        $mailer = new BestEffortMailer();
-
-        // notify users following any tags related to the thread
-        foreach ($tags as $tag) {
-            foreach ($tag->followers() as $user) {
-                // if the user does not have this setting, continue
-                if ($user?->profile?->setting_forum_update !== 1) {
-                    continue;
-                }
-                // Indirect (follow-driven) thread notifications are opt-in per issue #1853.
-                if ($user?->profile?->setting_notify_threads_by_follow !== 1) {
-                    continue;
-                }
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->send(
-                        $user->email,
-                        new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, $tag),
-                        ['thread_id' => $thread->id, 'user_id' => $user->id, 'via' => 'tag']
-                    );
-
-                    $users[$user->id] = $tag->name;
-                }
-            }
-        }
-
-        // notify users following any of the series
-        $series = $thread->series()->get();
-
-        foreach ($series as $s) {
-            foreach ($s->followers() as $user) {
-                // if the user does not have this setting, continue
-                if ($user?->profile?->setting_forum_update !== 1) {
-                    continue;
-                }
-                if ($user?->profile?->setting_notify_threads_by_follow !== 1) {
-                    continue;
-                }
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->send(
-                        $user->email,
-                        new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread),
-                        ['thread_id' => $thread->id, 'user_id' => $user->id, 'via' => 'series']
-                    );
-                    $users[$user->id] = $s->name;
-                }
-            }
-        }
-
-        $mailer->logSummary('ThreadsController@notifyFollowing', ['thread_id' => $thread->id]);
-
-        return back();
     }
 
     /**
