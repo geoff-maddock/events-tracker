@@ -54,7 +54,8 @@ class RegisterController extends Controller
 
         return response()->json([
             'message' => 'User registered successfully. Please check your email to verify your account.',
-            'user' => new UserResource($user)
+            // not signed in yet, but it's their own record
+            'user' => (new UserResource($user))->includePrivate()
         ], 201);
     }
 

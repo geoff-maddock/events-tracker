@@ -36,9 +36,9 @@ class SeriesFactory extends Factory
             'slug' => $this->faker->name,
             'short' => $this->faker->text(100), // Limit to 100 characters instead of paragraph
             'description' => $this->faker->paragraph,
-            'visibility_id' => function () {
-                return Visibility::all()->random()->id;
-            },
+            // public by default: private/proposal series are hidden from everyone but their
+            // creator (#2164), so tests that need one set visibility_id explicitly
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
             'event_type_id' => function () {
                 return EventType::query()
                     ->where('name', '!=', 'Radio Show')
