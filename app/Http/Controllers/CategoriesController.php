@@ -49,7 +49,8 @@ class CategoriesController extends Controller
 
     public function __construct(ThreadCategoryFilters $filter)
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        // site configuration: every write is admin-only (#2163)
+        $this->middleware(['auth', 'can:admin'], ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
 
         $this->filter = $filter;
 
