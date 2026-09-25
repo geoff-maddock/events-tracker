@@ -22,7 +22,7 @@ class PasswordResetController extends Controller
             'secret' => ['required', 'string'],
         ]);
 
-        if ($data['secret'] !== config('app.password_reset_secret')) {
+        if (!$this->secretMatches($data['secret'])) {
             return response()->json(['message' => 'Invalid secret'], 401);
         }
 
@@ -59,7 +59,7 @@ class PasswordResetController extends Controller
             'secret' => ['required', 'string'],
         ]);
 
-        if ($data['secret'] !== config('app.password_reset_secret')) {
+        if (!$this->secretMatches($data['secret'])) {
             return response()->json(['message' => 'Invalid secret'], 401);
         }
 
@@ -90,5 +90,15 @@ class PasswordResetController extends Controller
         $code = $status === Password::PASSWORD_RESET ? 200 : 400;
 
         return response()->json(['message' => __($status)], $code);
+    }
+
+    /**
+     * Constant-time comparison; an unset secret never matches (#2166).
+     */
+    private function secretMatches(string $given): bool
+    {
+        $expected = (string) config('app.password_reset_secret');
+
+        return $expected !== '' && hash_equals($expected, $given);
     }
 }

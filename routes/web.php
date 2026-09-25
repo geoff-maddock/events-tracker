@@ -153,6 +153,9 @@ Route::bind('users', function ($id) {
 });
 
 Route::get('impersonate/{user}', function (User $user) {
+    // an admin may not become another admin or a super_admin; only a super_admin can (#2166)
+    abort_if($user->isAdmin() && !Auth::user()?->hasGroup('super_admin'), 403);
+
     Auth::login($user);
 
     return redirect('/');
@@ -418,7 +421,7 @@ Route::get('threads/category/{slug}', [\App\Http\Controllers\ThreadsController::
 Route::get('threads/tag/{tag}', [\App\Http\Controllers\ThreadsController::class, 'indexTags'])->name('threads.tag');
 Route::get('threads/series/{tag}', [\App\Http\Controllers\ThreadsController::class, 'indexSeries'])->name('threads.series');
 Route::get('threads/related-to/{slug}', [\App\Http\Controllers\ThreadsController::class, 'indexRelatedTo']);
-Route::post('threads/{thread}/posts', [\App\Http\Controllers\PostsController::class, 'store']);
+Route::post('threads/{thread}/posts', [\App\Http\Controllers\PostsController::class, 'store'])->middleware('throttle:content-writes');
 Route::get('threads/{id}/lock', [\App\Http\Controllers\ThreadsController::class, 'lock'])->name('threads.lock');
 Route::get('threads/{id}/unlock', [\App\Http\Controllers\ThreadsController::class, 'unlock'])->name('threads.unlock');
 
@@ -446,7 +449,7 @@ Route::get('threads/{id}/unfollow', [
     'uses' => '\App\Http\Controllers\ThreadsController@unfollow',
 ]);
 
-Route::resource('threads', \App\Http\Controllers\ThreadsController::class);
+Route::resource('threads', \App\Http\Controllers\ThreadsController::class)->middlewareFor('store', 'throttle:content-writes');
 
 // POSTS
 Route::match(['get', 'post'], 'posts/filter', ['as' => 'posts.filter', 'uses' => '\App\Http\Controllers\PostsController@filter']);
@@ -470,7 +473,7 @@ Route::get('posts/{id}/unlike', [
     'uses' => '\App\Http\Controllers\PostsController@unlike',
 ]);
 
-Route::resource('posts', \App\Http\Controllers\PostsController::class)->except(['create']);
+Route::resource('posts', \App\Http\Controllers\PostsController::class)->except(['create'])->middlewareFor('store', 'throttle:content-writes');
 
 // THREAD CATEGORIES
 Route::get('categories/all', [\App\Http\Controllers\CategoriesController::class, 'indexAll']);
@@ -663,9 +666,9 @@ Route::bind('comments', function ($id) {
 Route::get('/entities/{entity:slug}/comments/{comment:id}/edit', [\App\Http\Controllers\CommentsController::class, 'edit']);
 Route::delete('/entities/{entity:slug}/comments/{comment:id}/edit', [\App\Http\Controllers\CommentsController::class, 'destroy']);
 
-Route::resource('entities.comments', \App\Http\Controllers\CommentsController::class)->except(['index']);
-Route::resource('events.comments', \App\Http\Controllers\CommentsController::class)->except(['index']);
-Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::class);
+Route::resource('entities.comments', \App\Http\Controllers\CommentsController::class)->except(['index'])->middlewareFor('store', 'throttle:content-writes');
+Route::resource('events.comments', \App\Http\Controllers\CommentsController::class)->except(['index'])->middlewareFor('store', 'throttle:content-writes');
+Route::resource('events.reviews', \App\Http\Controllers\EventReviewsController::class)->middlewareFor('store', 'throttle:content-writes');
 
 // REVIEWS
 Route::match(['get', 'post'], 'reviews/filter', ['as' => 'reviews.filter', 'uses' => '\App\Http\Controllers\ReviewsController@filter']);

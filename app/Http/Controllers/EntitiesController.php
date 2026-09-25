@@ -1261,7 +1261,7 @@ class EntitiesController extends Controller
         }
 
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp|max:5120', // KB; matches Dropzone maxFilesize
         ]);
 
         // attach to entity
