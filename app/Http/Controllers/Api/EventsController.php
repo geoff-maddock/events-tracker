@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\EventCreated;
+use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Exceptions\RemoteImageException;
@@ -14,7 +15,6 @@ use App\Http\Resources\EventCollection;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\MinimalResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\FollowingUpdate;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
@@ -32,7 +32,6 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
-use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\RemoteImageFetcher;
@@ -46,7 +45,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -860,78 +858,11 @@ class EventsController extends Controller
         if ($event->start_at >= Carbon::now()) {
             // only do the notification if there is a photo
             if ($photo !== null) {
-                $this->notifyFollowing($event);
+                NotifyFollowers::dispatch($event);
             }
         }
 
         return response()->json(new EventResource($event));
-    }
-
-    protected function notifyFollowing(Event $event): void
-    {
-        $admin_email = config('app.admin');
-        $reply_email = config('app.noreplyemail');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // Follower notification is best-effort — the event is already saved, so
-        // a mail failure must not surface as a 500 on event creation.
-        $mailer = new BestEffortMailer();
-
-        // notify users following any of the tags
-        $tags = $event->tags()->get();
-        $users = [];
-
-        // improve this so it will only send one email to each user per event, and include a list of all tags they were following that led to the notification
-        foreach ($tags as $tag) {
-            foreach ($tag->followers() as $user) {
-                // if the user does not have this setting, continue
-                if ($user->profile && $user->profile->setting_instant_update !== 1) {
-                    continue;
-                }
-
-                // if the user hasn't already been notified, then email them.
-                // key on $user->id — followers() selects users.*, so there is
-                // no user_id attribute (it was always null, collapsing every
-                // follower onto one key and skipping all but the first)
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->send(
-                        $user->email,
-                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag),
-                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'tag']
-                    );
-                    $users[$user->id] = $tag->name;
-                } else {
-                    $users[$user->id] = $users[$user->id].', '.$tag->name;
-                }
-            }
-        }
-
-        // notify users following any of the entities
-        $entities = $event->entities()->get();
-
-        // improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
-        foreach ($entities as $entity) {
-            foreach ($entity->followers() as $user) {
-                // if the user does not have this setting, continue
-                if ($user->profile && $user->profile->setting_instant_update !== 1) {
-                    continue;
-                }
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->send(
-                        $user->email,
-                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity),
-                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'entity']
-                    );
-                    $users[$user->id] = $entity->name;
-                } else {
-                    $users[$user->id] = $users[$user->id].', '.$entity->name;
-                }
-            }
-        }
-
-        $mailer->logSummary('Api\EventsController@notifyFollowing', ['event_id' => $event->id]);
     }
 
     /**
@@ -1634,7 +1565,7 @@ class EventsController extends Controller
         if ($event->start_at >= Carbon::now()) {
             // notify followers only when this is the event's first photo
             if (0 === $existingPhotoCount) {
-                $this->notifyFollowing($event);
+                NotifyFollowers::dispatch($event);
             }
         }
 

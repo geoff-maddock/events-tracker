@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Events\EventCreated;
+use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\FollowingUpdate;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
@@ -26,7 +26,6 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
 use App\Notifications\EventPublished;
-use App\Services\BestEffortMailer;
 use App\Services\Calendar\CalendarRange;
 use App\Services\EventDateRange;
 use App\Services\ImageHandler;
@@ -206,7 +205,6 @@ class EventsController extends Controller
             ->render();
     }
 
-
     /**
      * Return all future events in iCal format, used for calendar subscriptions.
      */
@@ -262,7 +260,6 @@ class EventsController extends Controller
 
         return $calendar;
     }
-
 
     /**
      * Display a listing of events by date.
@@ -1613,7 +1610,6 @@ class EventsController extends Controller
         return response()->json($eventList);
     }
 
-
     /**
      * Show a form to create a new event.
      **/
@@ -1655,7 +1651,6 @@ class EventsController extends Controller
 
         return response()->download($imageHandler->generateCoverImage());
     }
-
 
     /**
      * Curl API call.
@@ -1771,7 +1766,6 @@ class EventsController extends Controller
             ->render();
     }
 
-
     /**
      * Load the embeds and add to the UI
      *
@@ -1785,7 +1779,6 @@ class EventsController extends Controller
 
             return back();
         }
-
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -1960,7 +1953,7 @@ class EventsController extends Controller
         if ($event->start_at >= Carbon::now()) {
             // only do the notification if there is a photo
             if ($photo !== null) {
-                $this->notifyFollowing($event);
+                NotifyFollowers::dispatch($event);
             }
         }
 
@@ -1983,73 +1976,6 @@ class EventsController extends Controller
         }
 
         return redirect()->route('events.show', compact('event'));
-    }
-
-    protected function notifyFollowing(Event $event): void
-    {
-        $admin_email = config('app.admin');
-        $reply_email = config('app.noreplyemail');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // Follower notification is best-effort — the event is already saved, so
-        // a mail failure must not surface as a 500 on event creation.
-        $mailer = new BestEffortMailer();
-
-        // notify users following any of the tags
-        $tags = $event->tags()->get();
-        $users = [];
-
-        // improve this so it will only send one email to each user per event, and include a list of all tags they were following that led to the notification
-        foreach ($tags as $tag) {
-            foreach ($tag->followers() as $user) {
-                // if the user does not have this setting, continue
-                if ($user->profile && $user->profile->setting_instant_update !== 1) {
-                    continue;
-                }
-
-                // if the user hasn't already been notified, then email them.
-                // key on $user->id — followers() selects users.*, so there is
-                // no user_id attribute (it was always null, collapsing every
-                // follower onto one key and skipping all but the first)
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->send(
-                        $user->email,
-                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $tag),
-                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'tag']
-                    );
-                    $users[$user->id] = $tag->name;
-                } else {
-                    $users[$user->id] = $users[$user->id].', '.$tag->name;
-                }
-            }
-        }
-
-        // notify users following any of the entities
-        $entities = $event->entities()->get();
-
-        // improve this so it will only sent one email to each user per event, and include a list of entities they were following that led to the notification
-        foreach ($entities as $entity) {
-            foreach ($entity->followers() as $user) {
-                // if the user does not have this setting, continue
-                if ($user->profile && $user->profile->setting_instant_update !== 1) {
-                    continue;
-                }
-                // if the user hasn't already been notified, then email them
-                if (!array_key_exists($user->id, $users)) {
-                    $mailer->send(
-                        $user->email,
-                        new FollowingUpdate($url, $site, $admin_email, $reply_email, $user, $event, $entity),
-                        ['event_id' => $event->id, 'user_id' => $user->id, 'via' => 'entity']
-                    );
-                    $users[$user->id] = $entity->name;
-                } else {
-                    $users[$user->id] = $users[$user->id].', '.$entity->name;
-                }
-            }
-        }
-
-        $mailer->logSummary('EventsController@notifyFollowing', ['event_id' => $event->id]);
     }
 
     public function edit(Event $event): View|RedirectResponse
@@ -2422,7 +2348,6 @@ class EventsController extends Controller
             ->with(compact('related'));
     }
 
-
     /**
      * Display a listing of events that start on the specified day.
      *
@@ -2782,7 +2707,7 @@ class EventsController extends Controller
             if ($event->start_at >= Carbon::now()) {
                 // notify followers only when this is the event's first photo
                 if (0 === $existingPhotoCount) {
-                    $this->notifyFollowing($event);
+                    NotifyFollowers::dispatch($event);
                 }
             }
         }
@@ -3036,7 +2961,6 @@ class EventsController extends Controller
         return view('events.feed-tw', compact('events'));
     }
 
-
     public function rss(RssFeed $feed): Response
     {
         $rss = $feed->getRSS();
@@ -3075,7 +2999,6 @@ class EventsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -3116,7 +3039,6 @@ class EventsController extends Controller
         ))
             ->with(compact('events', 'user'));
     }
-
 
     /**
      * Display ical of events that the specified user is attending
@@ -3173,7 +3095,6 @@ class EventsController extends Controller
         return $calendar;
     }
 
-
     /**
      * Display ical of events that the specified user is interested in
      *
@@ -3221,7 +3142,6 @@ class EventsController extends Controller
 
         return redirect()->route('users.attending', ['id' => $id]);
     }
-
 
     /**
      * Reset the limit, sort, order.

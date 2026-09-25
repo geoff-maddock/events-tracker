@@ -274,7 +274,8 @@ class Thread extends Eloquent
      **/
     public function followers(): Collection
     {
-        $users = User::join('follows', 'users.id', '=', 'follows.user_id')
+        // profile is read for every follower's notification settings
+        $users = User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
         ->where('follows.object_type', 'thread')
         ->where('follows.object_id', $this->id)
         ->get('users.*');
