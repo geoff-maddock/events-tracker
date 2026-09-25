@@ -44,7 +44,8 @@ class EntityTypesController extends Controller
     public function __construct(EntityTypeFilters $filter)
     {
         $this->middleware('auth', ['except' => ['index', 'show']]);
-        $this->middleware('can:admin', ['only' => ['destroy']]);
+        // site configuration: every write is admin-only (#2163)
+        $this->middleware(['auth', 'can:admin'], ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
         $this->filter = $filter;
 
         // prefix for session storage

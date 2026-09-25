@@ -8,10 +8,12 @@
 	<!-- Page Header -->
 	<div class="flex justify-between items-center mb-6">
 		<h1 class="text-3xl font-bold text-primary">Categories</h1>
+		@can('edit_category')
 		<a href="{{ route('categories.create') }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
 			<i class="bi bi-plus-circle mr-2"></i>
 			Add Category
 		</a>
+		@endcan
 	</div>
 
 	<!-- Filters -->

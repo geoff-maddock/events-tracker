@@ -11,7 +11,8 @@ class MenuRequest extends Request
      */
     public function authorize()
     {
-        return true;
+        // site configuration is admin-only; checked here so non-admins get 403 before validation
+        return $this->user() !== null && $this->user()->isAdmin();
     }
 
     /**
