@@ -6,6 +6,7 @@ use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\NewsletterSubscriber;
 use App\Models\Series;
 use App\Models\User;
 use Carbon\Carbon;
@@ -187,6 +188,30 @@ class AdminActivitySummaryTest extends TestCase
         //     // The old one should not be counted
         //     return $mail->counts['logins'] >= 1;
         // });
+    }
+
+    /**
+     * Test that the summary email includes newsletter subscriber stats (issue #1978).
+     *
+     * @return void
+     */
+    public function test_command_includes_newsletter_subscriber_stats()
+    {
+        Mail::fake();
+
+        NewsletterSubscriber::factory()->confirmed()->create();
+        NewsletterSubscriber::factory()->create(); // unconfirmed - not counted
+        // confirmed outside the reporting window, unsubscribed within it
+        NewsletterSubscriber::factory()->unsubscribed()->create(['confirmed_at' => now()->subDays(30)]);
+
+        $exitCode = Artisan::call('admin:activity-summary', ['days' => 7]);
+
+        $this->assertEquals(0, $exitCode);
+        Mail::assertSent(\App\Mail\AdminActivitySummary::class, function ($mail) {
+            return $mail->newsletterStats['total_confirmed'] === 1
+                && $mail->newsletterStats['new_confirmed'] === 1
+                && $mail->newsletterStats['unsubscribed'] === 1;
+        });
     }
 
     /**
