@@ -731,7 +731,7 @@ class EventsController extends Controller
 
     public function show(?Event $event, OembedExtractor $embedExtractor): JsonResponse
     {
-        if (!$event) {
+        if (!$event || !$event->isVisibleTo($this->user)) {
             abort(404);
         }
 
@@ -760,7 +760,7 @@ class EventsController extends Controller
 
     public function embeds(?Event $event,  OembedExtractor $embedExtractor): JsonResponse
     {
-        if (!$event) {
+        if (!$event || !$event->isVisibleTo($this->user)) {
             abort(404);
         }
 
@@ -789,7 +789,7 @@ class EventsController extends Controller
 
     public function minimalEmbeds(?Event $event, OembedExtractor $embedExtractor): JsonResponse
     {
-        if (!$event) {
+        if (!$event || !$event->isVisibleTo($this->user)) {
             abort(404);
         }
 
@@ -1439,7 +1439,7 @@ class EventsController extends Controller
 
     public function photos(?Event $event): JsonResponse
     {
-        if (!$event) {
+        if (!$event || !$event->isVisibleTo($this->user)) {
             abort(404);
         }
 
@@ -1457,7 +1457,7 @@ class EventsController extends Controller
 
     public function allPhotos(?Event $event): JsonResponse
     {
-        if (!$event) {
+        if (!$event || !$event->isVisibleTo($this->user)) {
             abort(404);
         }
 

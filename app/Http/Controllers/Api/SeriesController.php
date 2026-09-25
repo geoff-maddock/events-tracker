@@ -555,6 +555,8 @@ class SeriesController extends Controller
 
     public function show(Series $series): JsonResponse
     {
+        abort_unless($series->isVisibleTo($this->user), 404);
+
         $events = $series->events()->paginate($this->childLimit);
         $threads = $series->threads()->paginate($this->childLimit);
 

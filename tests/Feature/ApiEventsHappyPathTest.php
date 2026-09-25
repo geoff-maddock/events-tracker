@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
+use App\Models\Visibility;
 use App\Models\User;
 use App\Models\UserStatus;
 use Carbon\Carbon;
@@ -40,7 +41,8 @@ class ApiEventsHappyPathTest extends TestCase
 
     public function test_show_returns_event_by_slug(): void
     {
-        $event = Event::factory()->create();
+        // public: private/proposal events are 404 to non-creators (#2164)
+        $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
         $response = $this->getJson('/api/events/'.$event->slug);
 

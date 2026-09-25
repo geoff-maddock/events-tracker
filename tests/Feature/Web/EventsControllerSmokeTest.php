@@ -4,6 +4,7 @@ namespace Tests\Feature\Web;
 
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\Visibility;
 use App\Models\EventType;
 use App\Models\Series;
 use App\Models\Tag;
@@ -36,7 +37,8 @@ class EventsControllerSmokeTest extends TestCase
 
     public function test_events_show_renders_for_existing_event(): void
     {
-        $event = Event::factory()->create();
+        // public: private/proposal events are 404 to non-creators (#2164)
+        $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
         $this->get('/events/'.$event->id)->assertOk();
     }

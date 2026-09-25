@@ -654,6 +654,9 @@ class SeriesController extends Controller
 
     public function show(Series $series, OembedExtractor $embedExtractor): View
     {
+        // 404 rather than 403 so private and proposal series can't be probed
+        abort_unless($series->isVisibleTo($this->user), 404);
+
         // eager-load relations consumed by the page + JSON-LD; upcomingEvent lets
         // Series::nextEvent() (used by getSeoTitleFormat()/getFestivalYear() below,
         // for both this request and the view's own title render) reuse the cached

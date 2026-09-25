@@ -2264,7 +2264,7 @@ components:
           maxLength: 60
         email:
           type: string
-          description: Email address of the user
+          description: Email address of the user. Only returned to the user themselves or to users with grant_access (as are email_verified_at and the followed_* lists).
           example: john.smith@gmail.com
           maxLength: 255
         user_status_id:

@@ -1714,7 +1714,8 @@ class EventsController extends Controller
 
     public function show(?Event $event, OembedExtractor $oembedExtractor): string
     {
-        if (!$event) {
+        // 404 rather than 403 so private and proposal events can't be probed by id
+        if (!$event || !$event->isVisibleTo($this->user)) {
             abort(404);
         }
 

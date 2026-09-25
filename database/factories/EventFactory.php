@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Visibility;
 use App\Models\Event;
 use App\Models\Entity;
 use App\Models\User;
@@ -29,7 +30,9 @@ class EventFactory extends Factory
             'slug' => $this->faker->slug(),
             'short' => $this->faker->name,
             'description' => $this->faker->paragraph,
-            'visibility_id' => random_int(1, 3),
+            // public by default: private/proposal events are hidden from everyone but their
+            // creator (#2164), so tests that need one set visibility_id explicitly
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
             'event_status_id' => random_int(1, 3),
             'event_type_id' => random_int(1, 5),
             'is_benefit' => $this->faker->boolean(),

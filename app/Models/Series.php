@@ -276,6 +276,27 @@ class Series extends Eloquent implements HasPhotos
     /**
      * Returns visible events.
      */
+    /**
+     * Whether $user may open this series's page or API record (#2164).
+     *
+     * Proposal and private series are only for their creator; guarded ones need a
+     * signed-in user; public and cancelled ones are open (cancelled pages stay
+     * reachable from shared links). Admins see everything. List queries use the
+     * visible() scope instead.
+     */
+    public function isVisibleTo(?User $user): bool
+    {
+        if ($user?->isAdmin()) {
+            return true;
+        }
+
+        return match ((int) $this->visibility_id) {
+            Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE => $user !== null && (int) $this->created_by === $user->id,
+            Visibility::VISIBILITY_GUARDED => $user !== null,
+            default => true,
+        };
+    }
+
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
         return $query->where(function ($query) use ($user) {
