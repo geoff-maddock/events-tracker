@@ -46,6 +46,7 @@ Route::middleware('auth.basic')->name('api.')->group(function () {
 
     // creating a token requires basic auth for the user
     Route::post('/tokens/create', function (Request $request) {
+        $request->validate(['token_name' => ['required', 'string', 'max:255']]);
 
         // create the token and add abilities
         $token = $request->user()->createToken($request->token_name, ['user:view-profile','event:show']);
@@ -201,7 +202,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('posts/rpp-reset', ['as' => 'posts.rppReset', 'uses' => '\App\Http\Controllers\Api\PostsController@rppReset']);
     Route::put('posts/{post}', [\App\Http\Controllers\Api\PostsController::class, 'update'])->name('posts.update');
     Route::patch('posts/{post}', [\App\Http\Controllers\Api\PostsController::class, 'patch'])->name('posts.patch');
-    Route::apiResource('posts', \App\Http\Controllers\Api\PostsController::class)->except(['update']);
+    Route::apiResource('posts', \App\Http\Controllers\Api\PostsController::class)->except(['update'])->middlewareFor('store', 'throttle:content-writes');
 
     Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => '\App\Http\Controllers\Api\ThreadsController@filter']);
     Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => '\App\Http\Controllers\Api\ThreadsController@reset']);
@@ -209,7 +210,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::get('threads/{threadId}/posts', ['as' => 'threads.posts', 'uses' => '\App\Http\Controllers\Api\ThreadsController@posts']);
     Route::put('threads/{thread}', [\App\Http\Controllers\Api\ThreadsController::class, 'update'])->name('threads.update');
     Route::patch('threads/{thread}', [\App\Http\Controllers\Api\ThreadsController::class, 'patch'])->name('threads.patch');
-    Route::apiResource('threads', \App\Http\Controllers\Api\ThreadsController::class)->except(['update']);
+    Route::apiResource('threads', \App\Http\Controllers\Api\ThreadsController::class)->except(['update'])->middlewareFor('store', 'throttle:content-writes');
 
     Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => '\App\Http\Controllers\Api\UsersController@filter']);
     Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\Api\UsersController@reset']);

@@ -102,7 +102,8 @@ return [
     |
     */
 
-    'key' => env('APP_KEY', 'SomeRandomString'),
+    // no fallback: a missing key must fail loudly rather than encrypt with a known string (#2166)
+    'key' => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 
     /*

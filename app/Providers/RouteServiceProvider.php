@@ -94,6 +94,11 @@ class RouteServiceProvider extends ServiceProvider
 
         // each photos/from-url call makes an outbound request on the caller's
         // behalf, so it gets a much tighter per-user budget than the rest of the API
+        // posting threads, posts, comments and reviews (#2166)
+        RateLimiter::for('content-writes', function (Request $request) {
+            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
+        });
+
         RateLimiter::for('photo-from-url', function (Request $request) {
             return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
         });

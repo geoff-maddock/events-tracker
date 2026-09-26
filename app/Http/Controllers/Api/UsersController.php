@@ -360,7 +360,7 @@ class UsersController extends Controller
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
     {
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp|max:5120', // KB; matches Dropzone maxFilesize
         ]);
 
         $fileName = time().'_'.$request->file->getClientOriginalName();

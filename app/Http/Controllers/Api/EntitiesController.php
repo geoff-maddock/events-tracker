@@ -828,7 +828,7 @@ class EntitiesController extends Controller
     public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): JsonResponse
     {
         $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif,webp',
+            'file' => 'required|mimes:jpg,jpeg,png,gif,webp|max:5120', // KB; matches Dropzone maxFilesize
         ]);
 
         if (!$entity = Entity::find($id)) {
