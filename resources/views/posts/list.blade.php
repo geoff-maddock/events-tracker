@@ -69,13 +69,13 @@
 			@endif
             @if ($signedIn)
                 @if ($like = $post->likedBy($user))
-                    <a href="{!! route('posts.unlike', ['id' => $post->id]) !!}"
+                    <a data-method="post" href="{!! route('posts.unlike', ['id' => $post->id]) !!}"
 					   class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors"
 					   title="Click to unlike">
 						Unlike <i class="bi bi-star-fill ml-1"></i>
 					</a>
                 @else
-                    <a href="{!! route('posts.like', ['id' => $post->id]) !!}"
+                    <a data-method="post" href="{!! route('posts.like', ['id' => $post->id]) !!}"
 					   class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors"
 					   title="Click to like">
 						Like <i class="bi bi-star ml-1"></i>

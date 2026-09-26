@@ -68,7 +68,7 @@ class UserAdminActionsGateTest extends TestCase
         $target = User::factory()->create();
 
         $this->withExceptionHandling()
-            ->get('/users/'.$target->id.'/'.$action)
+            ->post('/users/'.$target->id.'/'.$action)
             ->assertRedirect('/login');
     }
 
@@ -81,7 +81,7 @@ class UserAdminActionsGateTest extends TestCase
 
         $this->actingAs($this->activeUser())
             ->withExceptionHandling()
-            ->get('/users/'.$target->id.'/'.$action)
+            ->post('/users/'.$target->id.'/'.$action)
             ->assertStatus(403);
     }
 
@@ -93,7 +93,7 @@ class UserAdminActionsGateTest extends TestCase
 
         $this->actingAs($this->activeUser())
             ->withExceptionHandling()
-            ->get('/users/'.$target->id.'/activate')
+            ->post('/users/'.$target->id.'/activate')
             ->assertStatus(403);
 
         $this->assertSame(UserStatus::PENDING, $target->fresh()->user_status_id);
@@ -113,7 +113,7 @@ class UserAdminActionsGateTest extends TestCase
 
         $this->actingAs($admin)
             ->withExceptionHandling()
-            ->get('/users/'.$target->id.'/activate')
+            ->post('/users/'.$target->id.'/activate')
             ->assertRedirect();
 
         $target = $target->fresh();
@@ -133,7 +133,7 @@ class UserAdminActionsGateTest extends TestCase
 
         $this->actingAs($this->activeUser())
             ->withExceptionHandling()
-            ->get('/users/'.$target->id.'/weekly')
+            ->post('/users/'.$target->id.'/weekly')
             ->assertStatus(403);
 
         Mail::assertNothingSent();
@@ -148,7 +148,7 @@ class UserAdminActionsGateTest extends TestCase
 
         $this->actingAs($user)
             ->withExceptionHandling()
-            ->get('/users/'.$user->id.'/weekly')
+            ->post('/users/'.$user->id.'/weekly')
             ->assertStatus(302);
     }
 
@@ -157,7 +157,7 @@ class UserAdminActionsGateTest extends TestCase
         $target = User::factory()->create();
 
         $this->withExceptionHandling()
-            ->get('/users/'.$target->id.'/weekly')
+            ->post('/users/'.$target->id.'/weekly')
             ->assertRedirect('/login');
     }
 }

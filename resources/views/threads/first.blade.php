@@ -13,13 +13,13 @@
                 </a>
                 {!! link_form_bootstrap_icon('bi bi-trash-fill text-destructive', $thread, 'DELETE', 'Delete the [thread]', NULL, 'py-0 my-0', 'confirm') !!}
                 @if (!$thread->is_locked)
-                    <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" 
+                    <a data-method="post" href="{!! route('threads.lock', ['id' => $thread->id]) !!}" 
                        title="Lock this thread."
                        class="inline-flex items-center px-2 py-1 text-xs md:text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                         <i class="bi bi-unlock-fill"></i>
                     </a>
                 @else
-                    <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" 
+                    <a data-method="post" href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" 
                        title="Thread is locked. Click to unlock."
                        class="inline-flex items-center px-2 py-1 text-xs md:text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                         <i class="bi bi-lock-fill"></i>
@@ -28,26 +28,26 @@
             @endif
             @if ($signedIn)
                 @if ($follow = $thread->followedBy($user))
-                    <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" 
+                    <a data-method="post" href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" 
                        title="Click to unfollow"
                        class="inline-flex items-center px-2 py-1 text-xs md:text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                         <i class="bi bi-dash-circle-fill text-warning"></i>
                     </a>
                 @else
-                    <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" 
+                    <a data-method="post" href="{!! route('threads.follow', ['id' => $thread->id]) !!}" 
                        title="Click to follow"
                        class="inline-flex items-center px-2 py-1 text-xs md:text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                         <i class="bi bi-plus-circle-fill text-info"></i>
                     </a>
                 @endif
                 @if ($like = $thread->likedBy($user))
-                    <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" 
+                    <a data-method="post" href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" 
                        title="Click to unlike"
                        class="inline-flex items-center px-2 py-1 text-xs md:text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                         <i class="bi bi-star-fill"></i>
                     </a>
                 @else
-                    <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" 
+                    <a data-method="post" href="{!! route('threads.like', ['id' => $thread->id]) !!}" 
                        title="Click to like"
                        class="inline-flex items-center px-2 py-1 text-xs md:text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                         <i class="bi bi-star text-info"></i>

@@ -10,11 +10,11 @@
 
                 @if ($signedIn)
                     @if ($follow = $tag->followedBy($user))
-                        <a href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="You are following this tag. Click to unfollow" class="text-primary hover:text-primary/80 transition-colors">
+                        <a data-method="post" href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="You are following this tag. Click to unfollow" class="text-primary hover:text-primary/80 transition-colors">
                             <i class="bi bi-check-circle-fill"></i>
                         </a>
                     @else
-                        <a href="{{ route('tags.follow', ['id' => $tag->id]) }}" title="Click to follow this tag" class="text-muted-foreground hover:text-primary transition-colors">
+                        <a data-method="post" href="{{ route('tags.follow', ['id' => $tag->id]) }}" title="Click to follow this tag" class="text-muted-foreground hover:text-primary transition-colors">
                             <i class="bi bi-plus-circle"></i>
                         </a>
                     @endif

@@ -29,11 +29,11 @@
 
                     @if ($signedIn)
                         @if ($follow = $entity->followedBy($user))
-                            <a href="{{ route('entities.unfollow', ['id' => $entity->id]) }}" title="Click to unfollow" class="text-primary hover:text-primary/80 transition-colors">
+                            <a data-method="post" href="{{ route('entities.unfollow', ['id' => $entity->id]) }}" title="Click to unfollow" class="text-primary hover:text-primary/80 transition-colors">
                                 <i class="bi bi-dash-circle-fill"></i>
                             </a>
                         @else
-                            <a href="{{ route('entities.follow', ['id' => $entity->id]) }}" title="Click to follow" class="text-muted-foreground hover:text-primary transition-colors">
+                            <a data-method="post" href="{{ route('entities.follow', ['id' => $entity->id]) }}" title="Click to follow" class="text-muted-foreground hover:text-primary transition-colors">
                                 <i class="bi bi-plus-circle-fill"></i>
                             </a>
                         @endif

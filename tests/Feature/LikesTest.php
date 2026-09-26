@@ -20,7 +20,7 @@ class LikesTest extends TestCase
     public function a_guest_cannot_like_anything()
     {
         $this->withExceptionHandling()
-            ->get('/posts/1/like')
+            ->post('/posts/1/like')
             ->assertRedirect('/');
     }
 
@@ -32,7 +32,7 @@ class LikesTest extends TestCase
         $post = Post::factory()->create();
         $likes = $post->likes;
 
-        $this->get('/posts/' . $post->id . '/like');
+        $this->post('/posts/' . $post->id . '/like');
 
         $post->refresh();
 
@@ -47,7 +47,7 @@ class LikesTest extends TestCase
         $thread = Thread::factory()->create();
         $likes = $thread->likes;
 
-        $this->get('/threads/' . $thread->id . '/like');
+        $this->post('/threads/' . $thread->id . '/like');
 
         $thread->refresh();
 

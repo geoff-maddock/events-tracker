@@ -7,6 +7,7 @@ var App = (function () {
         this.setupControls();
         this.setupLoadingModal();
         this.setupAjaxAction('body');
+        this.setupPostLinks();
         $('.auto-submit').autoSubmit();
         this.setupNameToSlug();
         this.loadEmbeds();
@@ -111,6 +112,7 @@ var App = (function () {
         // confirm clicking on links
         $('a.confirm').on('click', function (e) {
             var link = $(this).attr('href');
+            var method = $(this).data('method');
             e.preventDefault();
             var form = null;
             var type = $(this).data('type');
@@ -134,8 +136,12 @@ var App = (function () {
                     console.log('form is not null')
                     form.submit();
                 } else if (result.value) {
-                    // handle Confirm button click
-                    window.location.href = link;
+                    // handle Confirm button click; state-changing links are POSTed (#2166)
+                    if (method) {
+                        postTo(link);
+                    } else {
+                        window.location.href = link;
+                    }
                 } else {
                     // handle dismissals
                     // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
@@ -216,6 +222,9 @@ var App = (function () {
             let target = $(this).data("target");
             $.ajax({
                 url: $(this).attr('href'),
+                // follow/attend change state, so they are POST routes with a CSRF token (#2166)
+                type: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken() },
             }).done(function (data) {
                 // fire a flash message
                 $(target).replaceWith(data.Success);
@@ -229,6 +238,39 @@ var App = (function () {
             }).fail(function () {
                 console.log('No events could be loaded')
             });
+        });
+    };
+
+    var csrfToken = function () {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    };
+
+    // submit a POST to url as a regular form, carrying the CSRF token
+    var postTo = function (url) {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.style.display = 'none';
+        var token = document.createElement('input');
+        token.type = 'hidden';
+        token.name = '_token';
+        token.value = csrfToken();
+        form.appendChild(token);
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    // <a href="..." data-method="post"> links (follow, attend, like, lock, admin user
+    // actions) keep their markup but submit as POST, since those routes change state (#2166).
+    // .confirm and .ajax-action links have their own handlers above.
+    var setupPostLinks = function () {
+        $(document).on('click', 'a[data-method]', function (e) {
+            if ($(this).is('.confirm, .ajax-action')) {
+                return;
+            }
+            e.preventDefault();
+            postTo($(this).attr('href'));
         });
     };
 
@@ -275,6 +317,8 @@ var App = (function () {
         setupDeleteConfirm: setupDeleteConfirm,
         setupControls: setupControls,
         setupAjaxAction: setupAjaxAction,
+        setupPostLinks: setupPostLinks,
+        postTo: postTo,
         setupLoadingModal: setupLoadingModal,
         showLoadingModal: showLoadingModal,
         setupNameToSlug: setupNameToSlug,

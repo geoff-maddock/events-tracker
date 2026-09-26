@@ -47,13 +47,13 @@
 
                 @if ($signedIn)
                     @if ($follow = $series->followedBy($user))
-                    <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}"
+                    <a data-method="post" href="{!! route('series.unfollow', ['id' => $series->id]) !!}"
                        class="text-primary hover:text-destructive transition-colors"
                        title="Unfollow">
                         <i class="bi bi-dash-circle-fill"></i>
                     </a>
                     @else
-                    <a href="{!! route('series.follow', ['id' => $series->id]) !!}"
+                    <a data-method="post" href="{!! route('series.follow', ['id' => $series->id]) !!}"
                        class="text-muted-foreground hover:text-primary transition-colors"
                        title="Follow">
                         <i class="bi bi-plus-circle-fill"></i>

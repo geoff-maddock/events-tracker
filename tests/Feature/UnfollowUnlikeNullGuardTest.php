@@ -44,7 +44,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $entity = Entity::factory()->create();
 
-        $response = $this->get('/entities/'.$entity->id.'/unfollow');
+        $response = $this->post('/entities/'.$entity->id.'/unfollow');
 
         $response->assertRedirect();
         $this->assertEquals(0, $entity->follows()->count());
@@ -56,7 +56,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $series = Series::factory()->create();
 
-        $response = $this->get('/series/'.$series->id.'/unfollow');
+        $response = $this->post('/series/'.$series->id.'/unfollow');
 
         $response->assertRedirect();
     }
@@ -67,7 +67,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $tag = Tag::factory()->create();
 
-        $response = $this->get('/tags/'.$tag->id.'/unfollow');
+        $response = $this->post('/tags/'.$tag->id.'/unfollow');
 
         $response->assertRedirect();
     }
@@ -78,7 +78,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $event = Event::factory()->create();
 
-        $response = $this->get('/events/'.$event->id.'/unattend');
+        $response = $this->post('/events/'.$event->id.'/unattend');
 
         $response->assertRedirect();
         $this->assertEquals(0, $event->eventResponses()->count());
@@ -90,7 +90,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $thread = Thread::factory()->create();
 
-        $response = $this->get('/threads/'.$thread->id.'/unfollow');
+        $response = $this->post('/threads/'.$thread->id.'/unfollow');
 
         $response->assertRedirect();
     }
@@ -101,7 +101,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $thread = Thread::factory()->create(['likes' => 3]);
 
-        $response = $this->get('/threads/'.$thread->id.'/unlike');
+        $response = $this->post('/threads/'.$thread->id.'/unlike');
 
         $response->assertRedirect();
         // Likes must not be decremented when no like existed.
@@ -114,7 +114,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->actingAs($this->activeUser());
         $post = Post::factory()->create(['likes' => 3]);
 
-        $response = $this->get('/posts/'.$post->id.'/unlike');
+        $response = $this->post('/posts/'.$post->id.'/unlike');
 
         $response->assertRedirect();
         // Likes must not be decremented when no like existed.

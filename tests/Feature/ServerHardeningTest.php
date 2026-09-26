@@ -95,12 +95,12 @@ class ServerHardeningTest extends TestCase
     {
         $admin = $this->makeUser('admin');
 
-        $this->actingAs($admin)->get(route('user.impersonate', $this->makeUser('super_admin')))->assertForbidden();
-        $this->actingAs($admin)->get(route('user.impersonate', $this->makeUser('admin')))->assertForbidden();
+        $this->actingAs($admin)->post(route('user.impersonate', $this->makeUser('super_admin')))->assertForbidden();
+        $this->actingAs($admin)->post(route('user.impersonate', $this->makeUser('admin')))->assertForbidden();
         $this->assertSame($admin->id, auth()->id());
 
         $member = $this->makeUser();
-        $this->actingAs($admin)->get(route('user.impersonate', $member))->assertRedirect('/');
+        $this->actingAs($admin)->post(route('user.impersonate', $member))->assertRedirect('/');
         $this->assertSame($member->id, auth()->id());
     }
 
@@ -110,7 +110,7 @@ class ServerHardeningTest extends TestCase
         $super->assignGroup('admin');
         $target = $this->makeUser('admin');
 
-        $this->actingAs($super->fresh())->get(route('user.impersonate', $target))->assertRedirect('/');
+        $this->actingAs($super->fresh())->post(route('user.impersonate', $target))->assertRedirect('/');
         $this->assertSame($target->id, auth()->id());
     }
 }

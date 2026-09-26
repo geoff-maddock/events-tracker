@@ -84,14 +84,14 @@
                     {!! link_form_bootstrap_icon('bi bi-trash-fill text-destructive', $post, 'DELETE', 'Delete', NULL, 'py-0 my-0', 'confirm') !!}
                     @endif
                     @if ($like = (isset($likedPostIds) ? array_key_exists($post->id, $likedPostIds) : $post->likedBy($user)))
-                    <a href="{!! route('posts.unlike', ['id' => $post->id]) !!}"
+                    <a data-method="post" href="{!! route('posts.unlike', ['id' => $post->id]) !!}"
                        class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-card border border-border rounded hover:bg-accent transition-colors"
                        title="Unlike">
                         <i class="bi bi-star-fill text-warning"></i>
                         Unlike
                     </a>
                     @else
-                    <a href="{!! route('posts.like', ['id' => $post->id]) !!}"
+                    <a data-method="post" href="{!! route('posts.like', ['id' => $post->id]) !!}"
                        class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-card border border-border rounded hover:bg-accent transition-colors"
                        title="Like">
                         <i class="bi bi-star"></i>

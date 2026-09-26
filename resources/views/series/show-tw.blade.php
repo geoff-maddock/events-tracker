@@ -39,11 +39,11 @@
 				<div class="flex items-center gap-2">
 					@if ($signedIn)
 						@if ($follow = $series->followedBy($user))
-							<a href="{{ route('series.unfollow', ['id' => $series->id]) }}" class="p-2 rounded-md hover:bg-accent" title="You're following">
+							<a data-method="post" href="{{ route('series.unfollow', ['id' => $series->id]) }}" class="p-2 rounded-md hover:bg-accent" title="You're following">
 								<i class="bi bi-star-fill text-primary text-xl"></i>
 							</a>
 						@else
-							<a href="{{ route('series.follow', ['id' => $series->id]) }}" class="p-2 rounded-md hover:bg-accent" title="Click to follow">
+							<a data-method="post" href="{{ route('series.follow', ['id' => $series->id]) }}" class="p-2 rounded-md hover:bg-accent" title="Click to follow">
 								<i class="bi bi-star text-muted-foreground text-xl"></i>
 							</a>
 						@endif

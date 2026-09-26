@@ -63,13 +63,13 @@
 
                 @if ($signedIn)
                     @if ($response = $event->getEventResponse($user))
-                    <a href="{!! route('events.unattend', ['id' => $event->id]) !!}"
+                    <a data-method="post" href="{!! route('events.unattend', ['id' => $event->id]) !!}"
                        class="text-primary hover:text-destructive transition-colors"
                        title="Unattend">
                         <i class="bi bi-check-circle-fill"></i>
                     </a>
                     @else
-                    <a href="{!! route('events.attend', ['id' => $event->id]) !!}"
+                    <a data-method="post" href="{!! route('events.attend', ['id' => $event->id]) !!}"
                        class="text-muted-foreground hover:text-primary transition-colors"
                        title="Attend">
                         <i class="bi bi-check-circle"></i>

@@ -46,11 +46,11 @@
 							<div class="flex items-center gap-2">
 								@if ($signedIn)
 									@if ($response = $event->getEventResponse($user))
-										<a href="{!! route('events.unattend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-accent" title="You're attending">
+										<a data-method="post" href="{!! route('events.unattend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-accent" title="You're attending">
 											<i class="bi bi-star-fill text-primary text-xl"></i>
 										</a>
 									@else
-										<a href="{!! route('events.attend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-accent" title="Mark as attending">
+										<a data-method="post" href="{!! route('events.attend', ['id' => $event->id]) !!}" class="p-2 rounded-md hover:bg-accent" title="Mark as attending">
 											<i class="bi bi-star text-muted-foreground text-xl"></i>
 										</a>
 									@endif

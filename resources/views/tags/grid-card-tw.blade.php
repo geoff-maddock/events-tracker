@@ -28,13 +28,13 @@
             </div>
             @if ($signedIn)
                 @if ($following)
-                <a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}"
+                <a data-method="post" href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}"
                     title="Unfollow"
                     class="flex-shrink-0 text-primary hover:text-primary/70 transition-colors">
                     <i class="bi bi-heart-fill"></i>
                 </a>
                 @else
-                <a href="{!! route('tags.follow', ['id' => $tag->id]) !!}"
+                <a data-method="post" href="{!! route('tags.follow', ['id' => $tag->id]) !!}"
                     title="Follow"
                     class="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors">
                     <i class="bi bi-heart"></i>
