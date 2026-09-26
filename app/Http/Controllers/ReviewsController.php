@@ -68,26 +68,6 @@ class ReviewsController extends Controller
     }
 
     /**
-     * Get the default sort array.
-     *
-     * @return array
-     */
-    public function getDefaultSort()
-    {
-        return ['id', 'desc'];
-    }
-
-    /**
-     * Get the default filters array.
-     *
-     * @return array
-     */
-    public function getDefaultFilters()
-    {
-        return [];
-    }
-
-    /**
      * Display a listing of the resource.
      *
      * @throws \Throwable

@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\Role;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
@@ -96,11 +95,6 @@ class RolesController extends Controller
         return redirect()->route('roles.index');
     }
 
-    public function buildCriteria(Request $request): Builder
-    {
-        return Role::orderBy($this->sort, $this->sortDirection);
-    }
-
     public function store(RoleRequest $request): JsonResponse
     {
         if ($denied = $this->requireAdmin()) {
@@ -174,19 +168,5 @@ class RolesController extends Controller
         Activity::log($role, $this->user, 3);
 
         return response()->json([], 204);
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [];
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['roles.name' => 'Name', 'roles.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
     }
 }

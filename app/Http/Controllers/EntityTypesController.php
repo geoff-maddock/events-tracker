@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\EntityType;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -220,17 +219,6 @@ class EntityTypesController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route('entity-types.index');
-    }
-
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // base criteria
-        $query = EntityType::orderBy($this->sort, $this->sortDirection);
-
-        return $query;
     }
 
     /**

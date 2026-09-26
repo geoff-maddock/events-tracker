@@ -14,11 +14,8 @@ use App\Models\TagType;
 use App\Services\StringHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -189,66 +186,6 @@ class TagsController extends Controller
             'sortOptions' => ['name' => 'Name', 'events_count' => 'Popularity', 'created_at' => 'Date Created', 'updated_at' => 'Last Updated'],
             'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
         ];
-    }
-
-    /**
-     * Show the application dataAjax.
-     */
-    public function dataAjax(Request $request): JsonResponse
-    {
-        $data = [];
-
-        if ($request->has('q')) {
-            $search = $request->q;
-            $data = DB::table('tags')
-                    ->select('id', 'name')
-                    ->where('name', 'LIKE', "%$search%")
-                    ->get();
-        }
-
-        return response()->json($data);
-    }
-
-    /**
-     * Display a listing of events by tag.
-     */
-    public function indexTags(string $tag): View
-    {
-        $tag = urldecode($tag);
-
-        // get all series linked to the tag
-        $series = Series::getByTag(ucfirst($tag))
-                    ->where(function ($query) {
-                        /* @phpstan-ignore-next-line */
-                        $query->visible($this->user);
-                    })
-                    ->orderBy('start_at', 'ASC')
-                    ->orderBy('name', 'ASC')
-                    ->paginate();
-
-        // get all the events linked to the tag
-        $events = Event::getByTag(ucfirst($tag))
-                    ->where(function ($query) {
-                        /* @phpstan-ignore-next-line */
-                        $query->visible($this->user);
-                    })
-                    ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->simplePaginate($this->limit);
-
-        // get all entities linked to the tag
-        $entities = Entity::getByTag(ucfirst($tag))
-                    ->where(function ($query) {
-                        $query->active()
-                        ->orWhere('created_by', '=', ($this->user ? $this->user->id : null));
-                    })
-                    ->orderBy('entity_type_id', 'ASC')
-                    ->orderBy('name', 'ASC')
-                    ->simplePaginate($this->limit);
-
-        $tags = Tag::orderBy('name', 'ASC')->get();
-
-        return view('tags.index-tw', compact('series', 'entities', 'events', 'tag', 'tags'));
     }
 
     /**
@@ -462,20 +399,6 @@ class TagsController extends Controller
     }
 
     /**
-     * Returns true if the user has any filters outside of the default.
-     *
-     * @return bool
-     */
-    protected function getIsFiltered(Request $request)
-    {
-        if (($filters = $this->getFilters($request)) == $this->getDefaultFilters()) {
-            return false;
-        }
-
-        return (bool) count($filters);
-    }
-
-    /**
      * Get user session attribute.
      *
      * @param string $attribute
@@ -497,36 +420,6 @@ class TagsController extends Controller
     public function getFilters(Request $request)
     {
         return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get the current page for this module.
-     *
-     * @return int
-     */
-    public function getPage(Request $request): ?int
-    {
-        return $this->getAttribute($request, 'page', 1);
-    }
-
-    /**
-     * Get the current results per page.
-     *
-     * @return int
-     */
-    public function getLimit(Request $request)
-    {
-        return $this->getAttribute($request, 'limit', $this->limit);
-    }
-
-    /**
-     * Get the sort order and column.
-     *
-     * @return array
-     */
-    public function getSort(Request $request)
-    {
-        return $this->getAttribute($request, 'sort', $this->getDefaultSort());
     }
 
     /**
@@ -555,66 +448,6 @@ class TagsController extends Controller
     public function setAttribute(Request $request, string $attribute, mixed $value): void
     {
         $request->session()->put($this->prefix.$attribute, $value);
-    }
-
-    /**
-     * Set filters attribute.
-     */
-    public function setFilters(Request $request, array $input): void
-    {
-        $this->setAttribute($request, 'filters', $input);
-    }
-
-    /**
-     * Set page attribute.
-     */
-    public function setPage(Request $request, int $input): void
-    {
-        $this->setAttribute($request, 'page', $input);
-    }
-
-    /**
-     * Set results per page attribute.
-     */
-    public function setLimit(Request $request, int $input): void
-    {
-        $this->setAttribute($request, 'limit', 5);
-    }
-
-    /**
-     * Set sort order attribute.
-     */
-    public function setSort(Request $request, array $input): void
-    {
-        $this->setAttribute($request, 'sort', $input);
-    }
-
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // get all the filters from the session
-        $filters = $this->getFilters($request);
-
-        // base criteria
-        $query = Tag::query();
-
-        // add the criteria from the session
-        // check request for passed filter values
-        if (!empty($filters['filter_name'])) {
-            // getting name from the request
-            $name = $filters['filter_name'];
-            $query->where('name', 'like', '%'.$name.'%');
-            $filters['filter_name'] = $name;
-        }
-
-        // change this - should be separate
-        if (!empty($filters['filter_limit'])) {
-            $this->limit = $filters['filter_limit'];
-        }
-
-        return $query;
     }
 
     /**

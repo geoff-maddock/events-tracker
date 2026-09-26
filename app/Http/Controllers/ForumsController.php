@@ -419,14 +419,6 @@ class ForumsController extends Controller
         return redirect()->route($this->resolveRedirectRoute($request, 'forums.index'));
     }
 
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
-    }
-
     protected function getFilterOptions(): array
     {
         return [

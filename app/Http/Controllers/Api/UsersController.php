@@ -4,40 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\UserFilters;
-use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Filters\EventFilters;
-use App\Mail\UserActivation;
-use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
 use App\Http\Resources\EventCollection;
 use App\Models\Activity;
-use App\Models\Group;
-use App\Models\Photo;
 use App\Models\Profile;
 use App\Models\User;
-use App\Models\UserStatus;
-use App\Models\Visibility;
 use App\Services\BestEffortMailer;
-use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
-use Eluceo\iCal\Component\Calendar;
-use Eluceo\iCal\Component\Event;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
 
 class UsersController extends Controller
@@ -234,31 +219,11 @@ class UsersController extends Controller
     }
 
     /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
-    }
-
-    /**
      * Get the default tags array.
      */
     public function getDefaultTabs(): array
     {
         return ['events' => 'created', 'following' => 'tags'];
-    }
-
-    public function setTabs(Request $request): void
-    {
-        if (null !== $request->input('tabs')) {
-            $request->session()->put($this->prefix.'tabs', $request->input('tabs'));
-        }
-    }
-
-    public function getTabs(Request $request): array
-    {
-        return $request->session()->get($this->prefix.'tabs', $this->getDefaultTabs());
     }
 
     public function show(User $user, Request $request): JsonResponse
@@ -350,228 +315,6 @@ class UsersController extends Controller
         $user->delete();
 
         return response()->json([], 204);
-    }
-
-    /**
-     * Add a photo to a user.
-     *
-     * @throws ValidationException
-     */
-    public function addPhoto(int $id, Request $request, ImageHandler $imageHandler): void
-    {
-        $this->validate($request, [
-            'file' => 'required|mimes:jpg,jpeg,png,gif,webp|max:5120', // KB; matches Dropzone maxFilesize
-        ]);
-
-        $fileName = time().'_'.$request->file->getClientOriginalName();
-        $filePath = $request->file('file')->storePubliclyAs('photos', $fileName, 'external');
-
-        // attach to user
-        if ($user = User::find($id)) {
-            // make the photo based on the stored file
-            $photo = $imageHandler->makePhoto($request->file('file'));
-
-            // count existing photos, and if zero, make this primary
-            if (isset($user->photos) && 0 === count($user->photos)) {
-                $photo->is_primary = 1;
-            }
-
-            $photo->save();
-
-            // attach to user
-            $user->addPhoto($photo);
-        }
-    }
-
-    protected function makePhoto(UploadedFile $file): ?Photo
-    {
-        return Photo::named($file->getClientOriginalName())
-            ->makeThumbnail();
-    }
-
-    /**
-     * Mark user as activated.
-     */
-    public function activate(int $id, Request $request): JsonResponse
-    {
-        // // check if there is a logged in user
-        // if (!$this->user) {
-        //     flash()->error('Error', 'No user is logged in.');
-
-        //     return back();
-        // }
-
-        // Get the user by id
-        if (!$user = User::find($id)) {
-            return response()->json([]);
-        }
-
-        // add the following response
-        $user->user_status_id = UserStatus::ACTIVE;
-        $user->email_verified_at = Carbon::now();
-        $user->save();
-
-        Log::info('User '.$user->name.' is activated.');
-
-        // add to activity log
-        Activity::log($user, $this->user, 10);
-
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // The activation itself succeeded; a mail failure is logged and
-        // reported, not turned into a failed API response.
-        (new BestEffortMailer())->send($user->email, new UserActivation($url, $site, $admin_email, $reply_email, $user), ['user_id' => $user->id]);
-
-        return response()->json(new UserResource($user));
-    }
-
-    /**
-     * Mark user as suspended.
-     */
-    public function suspend(int $id, Request $request): Response | RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        // add the following response
-        $user->user_status_id = 3;
-        $user->save();
-
-        // add to activity log
-        Activity::log($user, $this->user, 11);
-
-        Log::info('User '.$user->name.' is suspended.');
-
-        flash()->success('Success', 'User '.$user->name.' is now suspended.');
-
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // The suspension itself succeeded; a mail failure is logged and
-        // reported, not turned into a failed API response.
-        (new BestEffortMailer())->send($user->email, new UserSuspended($url, $site, $admin_email, $reply_email, $user), ['user_id' => $user->id]);
-
-        return back();
-    }
-
-    /**
-     * Send a site update reminder to the user.
-     */
-    public function reminder(int $id, Request $request): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        // email the user
-        $this->notifyUser($user);
-
-        // add to activity log
-        Activity::log($user, $this->user, 12);
-
-        Log::info('User '.$user->name.' was sent a reminder');
-
-        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
-
-        return back();
-    }
-
-    /**
-     * Send a weekly site update reminder to the user.
-     */
-    public function weekly(int $id, Request $request): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        // if the user does not have this setting, continue
-        if ($user->profile->setting_weekly_update !== 1) {
-            flash()->error('Error', 'User has weekly updates disabled');
-
-            return back();
-        }
-
-        // email the user
-        $this->notifyUserWeekly($user);
-
-        // add to activity log
-        Activity::log($user, $this->user, 12);
-
-        Log::info('User '.$user->name.' was sent a weekly reminder');
-
-        flash()->success('Success', 'A weekly reminder email was sent to  '.$user->name.' at '.$user->email);
-
-        return back();
-    }
-
-    /**
-     * Mark user as deleted.
-     *
-     * @return Response|RedirectResponse
-     */
-    public function delete(int $id, Request $request)
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        // add the following response
-        $user->user_status_id = 5;
-        $user->save();
-
-        Log::info('User '.$user->name.' is deleted.');
-
-        flash()->success('Success', 'User '.$user->name.' is now deleted.');
-
-        // add to activity log
-        Activity::log($user, $this->user, 3);
-
-        $user->delete();
-
-        return back();
     }
 
 
@@ -793,30 +536,5 @@ class UsersController extends Controller
             ->paginate($listResultSet->getLimit());
 
         return response()->json(new EventCollection($events));
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['users.name' => 'Name', 'user_statuses.name' => 'Status', 'users.created_at' => 'Created At', 'last_active' => 'Last Active'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [
-            'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-        ];
-    }
-
-    protected function getFormOptions(): array
-    {
-        return [
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'userStatusOptions' => ['' => ''] + UserStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'groupOptions' => Group::orderBy('name')->pluck('name', 'id')->all(),
-        ];
     }
 }

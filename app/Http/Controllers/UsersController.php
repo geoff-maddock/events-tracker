@@ -29,7 +29,6 @@ use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use App\Services\Calendar\ICalBuilder;
@@ -262,14 +261,6 @@ class UsersController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route('users.index');
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
     }
 
     /**

@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\File as HttpFile;
 use Storage;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class EventInstagramController extends Controller
@@ -86,59 +85,6 @@ class EventInstagramController extends Controller
     }
 
 
-    /**
-     * Use code to generate an image
-     *
-     * @param int $id
-     */
-    public function generateImage($id, ImageHandler $imageHandler): BinaryFileResponse
-    {
-        $event = Event::findOrFail($id);
-
-        return response()->download($imageHandler->generateCoverImage());
-    }
-
-
-    /**
-     * Curl API call.
-     */
-    private function makeApiCall(string $endpoint, string $type, array $params): array
-    {
-        $ch = curl_init();
-
-        // create endpoint with params
-        if (empty($params)) {
-            $apiEndpoint = $endpoint;
-        } else {
-            $apiEndpoint = $endpoint.'?'.http_build_query($params);
-        }
-
-        // set other curl options
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        // set values based on type
-        if ($type == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, true);
-        } elseif ($type == 'PUT') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        } elseif ($type == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        }
-
-        // get response
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        return [
-            'type' => $type,
-            'endpoint' => $endpoint,
-            'params' => $params,
-            'api_endpoint' => $apiEndpoint,
-            'data' => json_decode($response, true),
-        ];
-    }
 
     /**
      * Queue a single event photo to be posted to Instagram.

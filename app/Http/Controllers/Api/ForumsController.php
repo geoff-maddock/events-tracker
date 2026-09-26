@@ -15,9 +15,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Session;
 
 class ForumsController extends Controller
 {
@@ -117,52 +115,6 @@ class ForumsController extends Controller
 
         // get the forums
         $forums = $query->paginate($listResultSet->getLimit());
-
-        return response()->json(new ForumCollection($forums));
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function indexAll(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): JsonResponse {
-        // if the gate does not allow this user to show a forum redirect to home
-        if (Gate::denies('show_forum')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix('internal_forum_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Forum::query()
-        ->select('forums.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['forums.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $forums = $query->visible($this->user)
-            ->with(['visibility', 'threadsCount'])
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
 
         return response()->json(new ForumCollection($forums));
     }
@@ -284,17 +236,6 @@ class ForumsController extends Controller
         return response()->json($forum);
     }
 
-    protected function unauthorized(ForumRequest $request): RedirectResponse | Response
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
-    }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -351,14 +292,6 @@ class ForumsController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route($request->get('redirect') ?? 'forums.index');
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
     }
 
 }

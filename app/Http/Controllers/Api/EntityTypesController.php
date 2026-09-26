@@ -13,11 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\EntityType;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
 
 class EntityTypesController extends Controller
 {
@@ -150,17 +148,6 @@ class EntityTypesController extends Controller
     }
 
     /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // base criteria
-        $query = EntityType::orderBy($this->sort, $this->sortDirection);
-
-        return $query;
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      */
@@ -241,20 +228,5 @@ class EntityTypesController extends Controller
         Activity::log($entityType, $this->user, 3);
 
         return response()->json([], 204);
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return  [
-        ];
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return  [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['entity_types.name' => 'Name', 'entity_types.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc']
-        ];
     }
 }

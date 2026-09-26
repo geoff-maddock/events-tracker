@@ -13,9 +13,7 @@ use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
-use App\Models\EventReview;
 use App\Models\EventType;
-use App\Models\Follow;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
 use App\Models\OccurrenceWeek;
@@ -34,17 +32,14 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use App\Services\TempImageStore;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -1464,18 +1459,6 @@ class EventsController extends Controller
     }
 
     /**
-     * Displays the calendar based on passed events and tag.
-     *
-     * @param array|null $series
-     * @param null       $tag
-     */
-    public function renderCalendar(Collection $events, $series = null, $tag = null): View
-    {
-        // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
-        return view('events.event-calendar-tw');
-    }
-
-    /**
      * API endpoint for calendar-events that collects events and series and returns json.
      */
     public function calendarEventsApi(Request $request): JsonResponse
@@ -1650,47 +1633,6 @@ class EventsController extends Controller
         $event = Event::findOrFail($id);
 
         return response()->download($imageHandler->generateCoverImage());
-    }
-
-    /**
-     * Curl API call.
-     */
-    private function makeApiCall(string $endpoint, string $type, array $params): array
-    {
-        $ch = curl_init();
-
-        // create endpoint with params
-        if (empty($params)) {
-            $apiEndpoint = $endpoint;
-        } else {
-            $apiEndpoint = $endpoint.'?'.http_build_query($params);
-        }
-
-        // set other curl options
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        // set values based on type
-        if ($type == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, true);
-        } elseif ($type == 'PUT') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        } elseif ($type == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        }
-
-        // get response
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        return [
-            'type' => $type,
-            'endpoint' => $endpoint,
-            'params' => $params,
-            'api_endpoint' => $apiEndpoint,
-            'data' => json_decode($response, true),
-        ];
     }
 
     protected function checkBlackList(?Event $event): bool
@@ -2188,41 +2130,6 @@ class EventsController extends Controller
     }
 
     /**
-     * Record a user's review of the event.
-     */
-    public function review(int $id, Request $request): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // add the event review
-        $review = new EventReview();
-        $review->event_id = $id;
-        $review->user_id = $this->user->id;
-        $review->review_type_id = 1; // 1 = Informational, 2 = Positive, 3 = Neutral, 4 = Negative
-        $review->attended = $request->input('attended', 0);
-        $review->confirmed = $request->input('confirmed', 0);
-        $review->expectation = $request->input('expectation', null);
-        $review->rating = $request->input('rating', null);
-        $review->review = $request->input('review', null);
-        $review->save();
-
-        flash()->success('Success', 'You reviewed the event - '.$event->name);
-
-        return back();
-    }
-
-    /**
      * Display a listing of events by tag.
      */
     public function indexTags(
@@ -2712,61 +2619,6 @@ class EventsController extends Controller
                 }
             }
         }
-    }
-
-    public function follow(int $id): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // add the following response
-        $follow = new Follow();
-        $follow->object_id = $id;
-        $follow->user_id = $this->user->id;
-        $follow->object_type = 'event';
-        $follow->save();
-
-        Log::info('User '.$id.' is following '.$event->name);
-
-        flash()->success('Success', 'You are now following the event - '.$event->name);
-
-        return back();
-    }
-
-    public function unfollow(int $id): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // delete the follow
-        $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'event')->first();
-        if ($response) {
-            $response->delete();
-        }
-
-        flash()->success('Success', 'You are no longer following the event.');
-
-        return back();
     }
 
     protected function getSeriesFormOptions(): array

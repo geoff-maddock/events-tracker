@@ -21,7 +21,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostsController extends Controller
@@ -494,17 +493,6 @@ class PostsController extends Controller
         flash()->success('Success', 'You are no longer liking the post.');
 
         return back();
-    }
-
-    protected function unauthorized(PostRequest $request): RedirectResponse | Response
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        \Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
     }
 
     /**

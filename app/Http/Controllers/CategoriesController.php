@@ -13,14 +13,7 @@ use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
-use Redirect;
-use Str;
 
 class CategoriesController extends Controller
 {
@@ -369,17 +362,6 @@ class CategoriesController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route($this->resolveRedirectRoute($request, 'categories.index'));
-    }
-
-    protected function unauthorized(Request $request): RedirectResponse | Response
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
     }
 
     protected function getListControlOptions(): array

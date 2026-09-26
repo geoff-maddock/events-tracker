@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\Role;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -238,17 +237,6 @@ class RolesController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route('roles.index');
-    }
-
-    /**
-     * Builds the criteria from the session.
-     */
-    public function buildCriteria(Request $request): Builder
-    {
-        // base criteria
-        $query = Role::orderBy($this->sort, $this->sortDirection);
-
-        return $query;
     }
 
     /**

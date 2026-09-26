@@ -338,21 +338,6 @@ class ActivityController extends Controller
         return "CONCAT(COALESCE(actions.name, '{$unknown}'), ' ', COALESCE(activities.object_table, '{$unknown}'))";
     }
 
-    public function destroy(Activity $activity): RedirectResponse
-    {
-        $activity->delete();
-
-        return redirect('activity');
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
-    }
-
     /**
      * Reset the rpp, sort, order.
      *
