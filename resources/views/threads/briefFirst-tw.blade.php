@@ -21,11 +21,11 @@
                 </form>
 
                 @if (!$thread->is_locked)
-                    <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread" class="text-muted-foreground hover:text-foreground">
+                    <a data-method="post" href="{!! route('threads.lock', ['id' => $thread->id]) !!}" title="Lock this thread" class="text-muted-foreground hover:text-foreground">
                         <i class="bi bi-unlock-fill"></i>
                     </a>
                 @else
-                    <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Unlock this thread" class="text-muted-foreground hover:text-foreground">
+                    <a data-method="post" href="{!! route('threads.unlock', ['id' => $thread->id]) !!}" title="Unlock this thread" class="text-muted-foreground hover:text-foreground">
                         <i class="bi bi-lock-fill"></i>
                     </a>
                 @endif
@@ -33,21 +33,21 @@
             
             @if ($signedIn)
                 @if ($follow = $thread->followedBy($user))
-                    <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Unfollow" class="text-primary hover:text-primary/90">
+                    <a data-method="post" href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Unfollow" class="text-primary hover:text-primary/90">
                         <i class="bi bi-dash-circle-fill"></i>
                     </a>
                 @else
-                    <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Follow" class="text-muted-foreground hover:text-primary">
+                    <a data-method="post" href="{!! route('threads.follow', ['id' => $thread->id]) !!}" title="Follow" class="text-muted-foreground hover:text-primary">
                         <i class="bi bi-plus-circle-fill"></i>
                     </a>
                 @endif
                 
                 @if ($like = $thread->likedBy($user))
-                    <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Unlike" class="text-yellow-500 hover:text-yellow-400">
+                    <a data-method="post" href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Unlike" class="text-yellow-500 hover:text-yellow-400">
                         <i class="bi bi-star-fill"></i>
                     </a>
                 @else
-                    <a href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Like" class="text-muted-foreground hover:text-yellow-500">
+                    <a data-method="post" href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Like" class="text-muted-foreground hover:text-yellow-500">
                         <i class="bi bi-star"></i>
                     </a>
                 @endif

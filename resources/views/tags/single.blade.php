@@ -2,11 +2,11 @@
 	<h1>{!! link_to_route('tags.show', $tag->name, [$tag->slug], ['class' => 'item-title']) !!}
 		@if ($signedIn)
 			@if ($follow = $tag->followedBy($user))
-			<a href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow">
+			<a data-method="post" href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow">
 				<i class="bi bi-check-circle-fill text-info"></i>
 			</a>
 			@else
-			<a href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><i class="bi bi-plus-circle text-warning"></i></a>
+			<a data-method="post" href="{!! route('tags.follow', ['id' => $tag->id]) !!}" title="Click to follow this tag."><i class="bi bi-plus-circle text-warning"></i></a>
 			@endif
 
             @if ($signedIn &&  Auth::user()->id == Config::get('app.superuser'))

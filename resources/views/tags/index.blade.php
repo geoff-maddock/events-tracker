@@ -48,14 +48,14 @@ Keyword Tags
 						</a>
 						@if ($signedIn)
 							@if ($following->contains($t))
-							<a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" 
+							<a data-method="post" href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" 
 								data-target="#tag-{{ $t->id }}" 
 								title="Click to unfollow"
 								class="ml-2 text-primary hover:text-primary-hover">
 								<i class="bi bi-check-circle-fill"></i>
 							</a>
 							@else
-							<a href="{!! route('tags.follow', ['id' => $t->id]) !!}" 
+							<a data-method="post" href="{!! route('tags.follow', ['id' => $t->id]) !!}" 
 								data-target="#tag-{{ $t->id }}" 
 								title="Click to follow"
 								class="ml-2 text-gray-500 hover:text-primary">

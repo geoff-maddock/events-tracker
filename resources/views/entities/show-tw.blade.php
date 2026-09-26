@@ -42,14 +42,14 @@
 				<div class="flex items-center gap-2">
 					@if ($signedIn)
 						@if ($follow = $entity->followedBy($user))
-						<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"
+						<a data-method="post" href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"
 							class="p-2 rounded-md hover:bg-accent"
 							title="Following - click to unfollow"
 							aria-label="Unfollow {{ $entity->name }}">
 							<i class="bi bi-star-fill text-yellow-500 text-xl" aria-hidden="true"></i>
 						</a>
 						@else
-						<a href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
+						<a data-method="post" href="{!! route('entities.follow', ['id' => $entity->id]) !!}"
 							class="p-2 rounded-md hover:bg-accent"
 							title="Click to follow"
 							aria-label="Follow {{ $entity->name }}">

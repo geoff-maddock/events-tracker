@@ -56,7 +56,7 @@ Tags
 				@endphp
 
 				<!-- Follow/Unfollow Star -->
-				<a href="{{ $isFollowing ? route('tags.unfollow', ['id' => $tagObject->id]) : route('tags.follow', ['id' => $tagObject->id]) }}"
+				<a data-method="post" href="{{ $isFollowing ? route('tags.unfollow', ['id' => $tagObject->id]) : route('tags.follow', ['id' => $tagObject->id]) }}"
 					class="p-2 rounded-md hover:bg-accent transition-colors"
 					aria-label="{{ $isFollowing ? 'Unfollow' : 'Follow' }}"
 					title="{{ $isFollowing ? 'Unfollow' : 'Follow' }}">

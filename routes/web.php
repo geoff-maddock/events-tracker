@@ -152,7 +152,7 @@ Route::bind('users', function ($id) {
     return App\Models\User::whereId($id)->firstOrFail();
 });
 
-Route::get('impersonate/{user}', function (User $user) {
+Route::post('impersonate/{user}', function (User $user) {
     // an admin may not become another admin or a super_admin; only a super_admin can (#2166)
     abort_if($user->isAdmin() && !Auth::user()?->hasGroup('super_admin'), 403);
 
@@ -163,12 +163,12 @@ Route::get('impersonate/{user}', function (User $user) {
 
 Route::post('users/{id}/photos', [\App\Http\Controllers\UsersController::class, 'addPhoto']);
 
-Route::get('users/{id}/activate', [
+Route::post('users/{id}/activate', [
     'as' => 'users.activate',
     'uses' => '\App\Http\Controllers\UsersController@activate',
 ])->middleware(['auth', 'can:grant_access']);
 
-Route::get('users/{id}/reminder', [
+Route::post('users/{id}/reminder', [
     'as' => 'users.reminder',
     'uses' => '\App\Http\Controllers\UsersController@reminder',
 ])->middleware(['auth', 'can:grant_access']);
@@ -176,12 +176,12 @@ Route::get('users/{id}/reminder', [
 // Self-service as well as admin: the profile page offers "Send Weekly Update"
 // to the account owner, so the owner-or-grant_access check lives in the
 // controller rather than in a can:grant_access middleware.
-Route::get('users/{id}/weekly', [
+Route::post('users/{id}/weekly', [
     'as' => 'users.weekly',
     'uses' => '\App\Http\Controllers\UsersController@weekly',
 ])->middleware('auth');
 
-Route::get('users/{id}/suspend', [
+Route::post('users/{id}/suspend', [
     'as' => 'users.suspend',
     'uses' => '\App\Http\Controllers\UsersController@suspend',
 ])->middleware(['auth', 'can:grant_access']);
@@ -191,7 +191,7 @@ Route::get('users/{id}/ical', [
     'uses' => '\App\Http\Controllers\UsersController@ical',
 ]);
 
-Route::get('users/{id}/delete', [
+Route::post('users/{id}/delete', [
     'as' => 'users.delete',
     'uses' => '\App\Http\Controllers\UsersController@delete',
 ])->middleware(['auth', 'can:grant_access']);
@@ -370,12 +370,12 @@ Route::post('events/{id}/tweet', [
     'uses' => '\App\Http\Controllers\EventsController@tweet',
 ])->middleware('auth');
 
-Route::get('events/{id}/attend', [
+Route::post('events/{id}/attend', [
     'as' => 'events.attend',
     'uses' => '\App\Http\Controllers\EventsController@attend',
 ]);
 
-Route::get('events/{id}/unattend', [
+Route::post('events/{id}/unattend', [
     'as' => 'events.unattend',
     'uses' => '\App\Http\Controllers\EventsController@unattend',
 ]);
@@ -422,29 +422,29 @@ Route::get('threads/tag/{tag}', [\App\Http\Controllers\ThreadsController::class,
 Route::get('threads/series/{tag}', [\App\Http\Controllers\ThreadsController::class, 'indexSeries'])->name('threads.series');
 Route::get('threads/related-to/{slug}', [\App\Http\Controllers\ThreadsController::class, 'indexRelatedTo']);
 Route::post('threads/{thread}/posts', [\App\Http\Controllers\PostsController::class, 'store'])->middleware('throttle:content-writes');
-Route::get('threads/{id}/lock', [\App\Http\Controllers\ThreadsController::class, 'lock'])->name('threads.lock');
-Route::get('threads/{id}/unlock', [\App\Http\Controllers\ThreadsController::class, 'unlock'])->name('threads.unlock');
+Route::post('threads/{id}/lock', [\App\Http\Controllers\ThreadsController::class, 'lock'])->name('threads.lock');
+Route::post('threads/{id}/unlock', [\App\Http\Controllers\ThreadsController::class, 'unlock'])->name('threads.unlock');
 
 Route::match(['get', 'post'], 'threads/filter', ['as' => 'threads.filter', 'uses' => '\App\Http\Controllers\ThreadsController@filter']);
 Route::get('threads/reset', ['as' => 'threads.reset', 'uses' => '\App\Http\Controllers\ThreadsController@reset']);
 Route::get('threads/rpp-reset', ['as' => 'threads.rppReset', 'uses' => '\App\Http\Controllers\ThreadsController@rppReset']);
 
-Route::get('threads/{id}/like', [
+Route::post('threads/{id}/like', [
     'as' => 'threads.like',
     'uses' => '\App\Http\Controllers\ThreadsController@like',
 ]);
 
-Route::get('threads/{id}/unlike', [
+Route::post('threads/{id}/unlike', [
     'as' => 'threads.unlike',
     'uses' => '\App\Http\Controllers\ThreadsController@unlike',
 ]);
 
-Route::get('threads/{id}/follow', [
+Route::post('threads/{id}/follow', [
     'as' => 'threads.follow',
     'uses' => '\App\Http\Controllers\ThreadsController@follow',
 ]);
 
-Route::get('threads/{id}/unfollow', [
+Route::post('threads/{id}/unfollow', [
     'as' => 'threads.unfollow',
     'uses' => '\App\Http\Controllers\ThreadsController@unfollow',
 ]);
@@ -463,12 +463,12 @@ Route::bind('posts', function ($id) {
     return Post::whereId($id)->firstOrFail();
 });
 
-Route::get('posts/{id}/like', [
+Route::post('posts/{id}/like', [
     'as' => 'posts.like',
     'uses' => '\App\Http\Controllers\PostsController@like',
 ]);
 
-Route::get('posts/{id}/unlike', [
+Route::post('posts/{id}/unlike', [
     'as' => 'posts.unlike',
     'uses' => '\App\Http\Controllers\PostsController@unlike',
 ]);
@@ -611,12 +611,12 @@ Route::post('entities/{id}/instagram-post', [\App\Http\Controllers\EntitiesContr
 Route::post('entities/{id}/instagram-story-post', [\App\Http\Controllers\EntitiesController::class, 'postStoryToInstagram'])->name('entities.instagramStoryPost')->middleware('auth');
 Route::get('entities/{id}/send-update-summary', [\App\Http\Controllers\EntitiesController::class, 'sendUpdateSummary'])->name('entities.sendUpdateSummary')->middleware('auth');
 
-Route::match(['get', 'post'], 'entities/{id}/follow', [
+Route::post('entities/{id}/follow', [
     'as' => 'entities.follow',
     'uses' => '\App\Http\Controllers\EntitiesController@follow',
 ]);
 
-Route::get('entities/{id}/unfollow', [
+Route::post('entities/{id}/unfollow', [
     'as' => 'entities.unfollow',
     'uses' => '\App\Http\Controllers\EntitiesController@unfollow',
 ]);
@@ -706,12 +706,12 @@ Route::get('series/apply-filter', ['as' => 'series.applyFilterFromUrl', 'uses' =
 Route::get('series/reset', ['as' => 'series.reset', 'uses' => '\App\Http\Controllers\SeriesController@reset']);
 Route::get('series/rpp-reset', ['as' => 'series.rppReset', 'uses' => '\App\Http\Controllers\SeriesController@rppReset']);
 
-Route::get('series/{id}/follow', [
+Route::post('series/{id}/follow', [
     'as' => 'series.follow',
     'uses' => '\App\Http\Controllers\SeriesController@follow',
 ]);
 
-Route::get('series/{id}/unfollow', [
+Route::post('series/{id}/unfollow', [
     'as' => 'series.unfollow',
     'uses' => '\App\Http\Controllers\SeriesController@unfollow',
 ]);
@@ -729,12 +729,12 @@ Route::get('tags/create', [\App\Http\Controllers\TagsController::class, 'create'
 Route::get('tags/{tag}', [\App\Http\Controllers\TagsController::class, 'show'])->name('tags.show');
 Route::get('tags/{tag}/edit', [\App\Http\Controllers\TagsController::class, 'edit'])->name('tags.edit');
 
-Route::get('tags/{id}/follow', [
+Route::post('tags/{id}/follow', [
     'as' => 'tags.follow',
     'uses' => '\App\Http\Controllers\TagsController@follow',
 ]);
 
-Route::get('tags/{id}/unfollow', [
+Route::post('tags/{id}/unfollow', [
     'as' => 'tags.unfollow',
     'uses' => '\App\Http\Controllers\TagsController@unfollow',
 ]);

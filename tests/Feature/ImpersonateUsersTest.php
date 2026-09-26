@@ -25,7 +25,7 @@ class ImpersonateUsersTest extends TestCase
 
         // try to impersonate the user without signing in
         $response = $this->withExceptionHandling()
-            ->get('/impersonate/' . $user->id)
+            ->post('/impersonate/' . $user->id)
             ->assertStatus(403);
     }
 

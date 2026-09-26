@@ -85,13 +85,13 @@
 
                         @can('grant_access')
                             @if (!$user->isActive)
-                                <a href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors confirm">
+                                <a data-method="post" href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors confirm">
                                     <i class="bi bi-check-circle mr-3 w-4 text-center"></i>
                                     Activate
                                 </a>
                             @endif
                             @if ($user->isActive)
-                                <a href="{{ route('users.reminder', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                                <a data-method="post" href="{{ route('users.reminder', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
                                     <i class="bi bi-bell mr-3 w-4 text-center"></i>
                                     Send Reminder
                                 </a>
@@ -99,7 +99,7 @@
                         @endcan
 
                         @if ($user->isActive)
-                            <a href="{{ route('users.weekly', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                            <a data-method="post" href="{{ route('users.weekly', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
                                 <i class="bi bi-envelope mr-3 w-4 text-center"></i>
                                 Send Weekly Update
                             </a>
@@ -121,7 +121,7 @@
 
                         @can('impersonate_user')
                             <div class="border-t border-border my-1"></div>
-                            <a href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors confirm">
+                            <a data-method="post" href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors confirm">
                                 <i class="bi bi-person-badge mr-3 w-4 text-center"></i>
                                 Impersonate
                             </a>

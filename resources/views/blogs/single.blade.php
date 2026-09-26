@@ -19,9 +19,9 @@
 	
 	@if ($signedIn)
 		@if ($follow = $permission->followedBy($user))
-		<a href="{!! route('entities.unfollow', ['id' => $permission->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill"></i></a>
+		<a data-method="post" href="{!! route('entities.unfollow', ['id' => $permission->id]) !!}" title="Click to unfollow"><i class="bi bi-dash-circle-fill"></i></a>
 		@else
-		<a href="{!! route('entities.follow', ['id' => $permission->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill"></i></a>
+		<a data-method="post" href="{!! route('entities.follow', ['id' => $permission->id]) !!}" title="Click to follow"><i class="bi bi-plus-circle-fill"></i></a>
 		@endif
 	@endif 
 

@@ -47,13 +47,13 @@
             </a>
             {!! link_form_bootstrap_icon('bi bi-trash-fill text-destructive', $thread, 'DELETE', 'Delete', NULL, 'py-0 my-0', 'confirm') !!}
             @if (!$thread->is_locked)
-            <a href="{!! route('threads.lock', ['id' => $thread->id]) !!}"
+            <a data-method="post" href="{!! route('threads.lock', ['id' => $thread->id]) !!}"
                title="Lock"
                class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                 <i class="bi bi-unlock-fill"></i>
             </a>
             @else
-            <a href="{!! route('threads.unlock', ['id' => $thread->id]) !!}"
+            <a data-method="post" href="{!! route('threads.unlock', ['id' => $thread->id]) !!}"
                title="Unlock"
                class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                 <i class="bi bi-lock-fill"></i>
@@ -61,27 +61,27 @@
             @endif
             @endif
             @if ($follow = ($threadFollow ?? $thread->followedBy($user)))
-            <a href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}"
+            <a data-method="post" href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}"
                title="Unfollow"
                class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                 <i class="bi bi-dash-circle-fill text-warning"></i>
             </a>
             @else
-            <a href="{!! route('threads.follow', ['id' => $thread->id]) !!}"
+            <a data-method="post" href="{!! route('threads.follow', ['id' => $thread->id]) !!}"
                title="Follow"
                class="inline-flex items-center px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                 <i class="bi bi-plus-circle-fill text-info"></i>
             </a>
             @endif
             @if ($like = ($threadLike ?? $thread->likedBy($user)))
-            <a href="{!! route('threads.unlike', ['id' => $thread->id]) !!}"
+            <a data-method="post" href="{!! route('threads.unlike', ['id' => $thread->id]) !!}"
                title="Unlike"
                class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                 <i class="bi bi-star-fill text-warning"></i>
                 @if($thread->likes > 0)<span class="text-xs">{{ $thread->likes }}</span>@endif
             </a>
             @else
-            <a href="{!! route('threads.like', ['id' => $thread->id]) !!}"
+            <a data-method="post" href="{!! route('threads.like', ['id' => $thread->id]) !!}"
                title="Like"
                class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-card border border-border rounded hover:bg-accent transition-colors">
                 <i class="bi bi-star"></i>

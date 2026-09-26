@@ -6,11 +6,11 @@
         </a>
         @if ($signedIn)
             @if ($follow = $tag->followedBy($user))
-                <a href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="Unfollow" class="ml-1 text-green-500 hover:text-green-400">
+                <a data-method="post" href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="Unfollow" class="ml-1 text-green-500 hover:text-green-400">
                     <i class="bi bi-check-circle-fill"></i>
                 </a>
             @else
-                <a href="{{ route('tags.follow', ['id' => $tag->id]) }}" title="Follow" class="ml-1 text-gray-400 hover:text-primary">
+                <a data-method="post" href="{{ route('tags.follow', ['id' => $tag->id]) }}" title="Follow" class="ml-1 text-gray-400 hover:text-primary">
                     <i class="bi bi-plus-circle"></i>
                 </a>
             @endif
@@ -30,11 +30,11 @@
         </a>
         @if ($signedIn)
             @if ($follow = $related->followedBy($user))
-                <a href="{{ route('entities.unfollow', ['id' => $related->id]) }}" title="Unfollow" class="ml-1 text-green-500 hover:text-green-400">
+                <a data-method="post" href="{{ route('entities.unfollow', ['id' => $related->id]) }}" title="Unfollow" class="ml-1 text-green-500 hover:text-green-400">
                     <i class="bi bi-check-circle-fill"></i>
                 </a>
             @else
-                <a href="{{ route('entities.follow', ['id' => $related->id]) }}" title="Follow" class="ml-1 text-gray-400 hover:text-primary">
+                <a data-method="post" href="{{ route('entities.follow', ['id' => $related->id]) }}" title="Follow" class="ml-1 text-gray-400 hover:text-primary">
                     <i class="bi bi-plus-circle"></i>
                 </a>
             @endif
