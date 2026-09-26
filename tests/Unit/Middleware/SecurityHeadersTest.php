@@ -5,7 +5,7 @@ namespace Tests\Unit\Middleware;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class SecurityHeadersTest extends TestCase
 {
