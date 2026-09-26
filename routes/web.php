@@ -771,6 +771,9 @@ Route::get('visualist/{slug}', [\App\Http\Controllers\EntitiesController::class,
 Route::get('go/evt-{id}', [\App\Http\Controllers\ClickTrackController::class, 'redirectEvent'])->name('clicktrack.event')->where('id', '[0-9]+');
 Route::get('go/ser-{id}', [\App\Http\Controllers\ClickTrackController::class, 'redirectSeries'])->name('clicktrack.series')->where('id', '[0-9]+');
 
+// CSP violation reports from browsers (report-only policy, #2166); no session or CSRF token
+Route::post('csp-report', \App\Http\Controllers\CspReportController::class)->name('csp.report')->middleware('throttle:60,1');
+
 // Short URLs – create a short URL and resolve it
 Route::post('short-url', [\App\Http\Controllers\ShortUrlController::class, 'shorten'])->name('short-url.shorten')->middleware('throttle:30,1');
 Route::get('s/{code}', [\App\Http\Controllers\ShortUrlController::class, 'redirect'])->name('short-url.redirect')->where('code', '[a-zA-Z0-9]+');

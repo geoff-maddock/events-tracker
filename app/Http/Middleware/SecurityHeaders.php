@@ -23,6 +23,25 @@ class SecurityHeaders
         // terminated upstream (reverse proxy / load balancer) before reaching Laravel.
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 
+        // report-only: violations are reported to /csp-report, nothing is blocked (#2166)
+        if (config('csp.enabled') && !$response->headers->has('Content-Security-Policy-Report-Only')) {
+            $response->headers->set('Content-Security-Policy-Report-Only', $this->reportOnlyPolicy());
+        }
+
         return $response;
+    }
+
+    private function reportOnlyPolicy(): string
+    {
+        $directives = (array) config('csp.directives', []);
+        $parts = [];
+
+        foreach ($directives as $name => $sources) {
+            $parts[] = trim($name.' '.implode(' ', (array) $sources));
+        }
+
+        $parts[] = 'report-uri '.route('csp.report', [], false);
+
+        return implode('; ', $parts);
     }
 }
