@@ -204,15 +204,35 @@ npm run build
 # Developers
 ## CI and Testing
 
-Github PRs are configured with CI pipeline that includes
-- PHPStan for static analysis [Level 2]
-- MySQL container config to set up database for fixtures
-- PHPUnit for tests
-- Build process
+Pull requests and pushes to `main` run `.github/workflows/php.yml`:
+- `composer validate`, `composer audit` and `npm audit --audit-level=high`
+- ESLint (`npm run lint`) and the Vite production build (`npm run build`)
+- PHPStan (Larastan, level 3, with `phpstan-baseline.neon`)
+- the PHPUnit suite against a MySQL 8 service container (migrate + seed first)
 
 Run parts of CI manually:
 
-./phpunit tests
+```bash
+composer phpstan
+composer tests            # clears cached config, migrate:fresh --seed on the testing DB, then phpunit
+npm run lint && npm run build
+```
+
+## Deploying to production
+
+`.github/workflows/build-prod.yml` (**Actions → Build Prod → Run workflow**) deploys `main`. It first checks that the **PHP Composer** CI run for that exact commit passed, and refuses to deploy otherwise. On the server it runs these steps, which are also the checklist for a manual deploy:
+
+```bash
+cd /var/www/events-tracker && git checkout main && git pull
+rm -f bootstrap/cache/*.php                 # stale config/route caches can fatal the next artisan call
+composer install --no-dev --optimize-autoloader --no-interaction   # always: lockfile changes need it
+php artisan migrate --force                 # additive migrations ship with the code that needs them
+npm ci && npm run build
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+php artisan queue:restart                   # the supervised worker keeps old code until restarted
+```
+
+Only cache config and routes on **production**. On the dev checkout, a cached config makes PHPUnit ignore `.env.testing`. The test suite refuses to run in that case, and `php artisan config:clear && php artisan route:clear` fixes it.
 
 ## Environments:  Dev, Testing, Production
 * Dev environment notes

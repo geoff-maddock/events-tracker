@@ -26,11 +26,11 @@ jobs:
           --health-cmd="mysqladmin ping"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=10
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -41,7 +41,7 @@ jobs:
           ini-values: "post_max_size=256M" #optional
 
       - name: Check PHP Version
-        run: php
+        run: php -v
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -50,7 +50,7 @@ jobs:
         run: composer validate
 
       - name: Install dependencies
-        run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       # Fails the build on any unignored advisory; known-abandoned packages are reported, not gated.
       - name: Composer security audit
@@ -62,14 +62,19 @@ jobs:
           node-version: 22
           cache: npm
 
+      # npm ci installs exactly what package-lock.json pins (and fails if it is out of date)
       - name: Install NPM Dependencies
-        run: npm install
+        run: npm ci
 
       - name: NPM security audit
         run: npm audit --audit-level=high
 
       - name: Lint JS
         run: npm run lint
+
+      # the Vite build used to run for the first time on the production server
+      - name: Build frontend assets
+        run: npm run build
 
       - name: Clear Config
         run: php artisan config:clear

@@ -3,22 +3,52 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Only deploy a commit whose CI ("PHP Composer") run on main passed (#2181).
+  ci-check:
+    name: Require green CI
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - name: Check CI for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          conclusion=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow php.yml --commit "$GITHUB_SHA" \
+            --json conclusion --jq '.[0].conclusion')
+          echo "CI for $GITHUB_SHA: ${conclusion:-no run found}"
+          if [ "$conclusion" != "success" ]; then
+            echo "::error::CI has not passed for $GITHUB_SHA; not deploying."
+            exit 1
+          fi
+
   build:
     name: Build Prod
+    needs: ci-check
     runs-on: ubuntu-latest
     steps:
       - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@master
+        # pinned to v1.2.5 by commit, so a moved tag can't change what runs with prod credentials
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
+            # stop at the first failing step instead of carrying on with a half-deployed app
+            set -e
+
             cd /var/www/events-tracker
             git checkout main
             git remote update
             git pull
+
+            # deploy exactly the commit CI checked; if main moved since, re-run the workflow
+            if [ "$(git rev-parse HEAD)" != "${{ github.sha }}" ]; then
+              echo "main is at $(git rev-parse HEAD), expected ${{ github.sha }}; aborting."
+              exit 1
+            fi
 
             # Drop stale bootstrap caches before any artisan command boots Laravel,
             # so a cached config referencing a removed provider can't fatal
@@ -29,10 +59,18 @@ jobs:
             # composer install here is what caused the link_to_route "cannot
             # redeclare" outage when a package was removed from composer.json.
             composer install --no-dev --optimize-autoloader --no-interaction
-            npm install
+
+            # Additive schema changes ship with the code that needs them.
+            php artisan migrate --force
+
+            # npm ci installs exactly what package-lock.json pins.
+            npm ci
             npm run build
 
             # Rebuild the production caches from the freshly deployed code.
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
+
+            # The supervised queue worker keeps old code in memory until restarted.
+            php artisan queue:restart
