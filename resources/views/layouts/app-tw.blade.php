@@ -50,12 +50,6 @@
 	<!-- Icons (deferred to avoid render-blocking) -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 	<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css"></noscript>
-	<!-- Fonts -->
-	<link rel="DNS-prefetch" href="//fonts.googleapis.com"/>
-	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
-	<link href="//fonts.googleapis.com/css?family=Roboto:400,300&display=swap" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
-	<link href="https://fonts.bunny.net/css?family=nunito:400,600,700,800&display=swap" rel="stylesheet" media="print" onload="this.onload=null;this.removeAttribute('media');">
-	<noscript><link href="https://fonts.bunny.net/css?family=nunito:400,600,700,800&display=swap" rel="stylesheet"></noscript>
 	<!-- Lightbox -->
 	<link href="{{ asset('/css/lightbox.min.css') }}" rel="stylesheet" type="text/css" media="print" onload="this.onload=null;this.removeAttribute('media');">
 
@@ -113,11 +107,14 @@
 		</div>
 	</div>
 
-	<!-- Alpine.js for reactive components -->
-	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Alpine.js for reactive components; pinned, so a new release can't change the site unannounced -->
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.4/dist/cdn.min.js" integrity="sha384-5/joNqFnRyVWzXp99bHot6RHG+EksGp+USSgZwPar7T9SD9PKKER37n/8bXBAZGd" crossorigin="anonymous"></script>
 
 	<script src="{{ asset('/js/jquery-3.5.1.min.js') }}"></script>
-	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+	{{-- select2 loads up front only on pages that declare it; custom.js fetches it for any other page with a .select2 field --}}
+	@hasSection('select2.include')
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js" integrity="sha384-HCjW0//bc6Gu9bS3OISjenLhzVqjRipLVVj9LZtzKu+FYXXOZVCN7WDv2TYxCfmo" crossorigin="anonymous"></script>
+	@endif
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
 	<script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>

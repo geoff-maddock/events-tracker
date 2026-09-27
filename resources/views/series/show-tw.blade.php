@@ -472,7 +472,7 @@ $(document).ready(function(){
 	}
 
 	// Start trying to initialize Dropzone
-	initDropzone();
+	window.loadLibrary('Dropzone').then(initDropzone);
 })
 </script>
 @endif

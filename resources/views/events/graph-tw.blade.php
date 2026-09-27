@@ -151,7 +151,8 @@
 
 @section('footer')
 <script type="module">
-    (function () {
+    // chart.js is loaded on demand (#2175)
+    window.loadLibrary('Chart').then(function (Chart) {
         const labels = @json($labels);
         const groupBy = @json($groupBy);
         const rawDatasets = @json($datasets);
@@ -263,6 +264,6 @@
                 chart = new Chart(canvas, buildConfig(currentType, currentStacked));
             });
         });
-    })();
+    });
 </script>
 @endsection

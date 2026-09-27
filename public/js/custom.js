@@ -186,13 +186,19 @@ var App = (function () {
         });
     };
 
-    var setupControls = function (target) {
-        if (typeof target === 'undefined' || !target) {
-            var target = 'body';
-        }
+    var select2Loading = null;
 
-        // select2
-        $(target + ' .select2').each(function () {
+    var loadSelect2 = function () {
+        select2Loading = select2Loading || $.ajax({
+            url: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js',
+            dataType: 'script',
+            cache: true
+        });
+        return select2Loading;
+    };
+
+    var setupSelect2 = function ($elements) {
+        $elements.each(function () {
             var $this = $(this);
             $this.select2({
                 placeholder: $this.data('placeholder'),
@@ -202,6 +208,21 @@ var App = (function () {
                 theme: $this.data('theme') || 'tailwind',
             });
         });
+    };
+
+    var setupControls = function (target) {
+        if (typeof target === 'undefined' || !target) {
+            var target = 'body';
+        }
+
+        // select2; the layout only includes it on pages that declare select2.include,
+        // so fetch it here if this page has a .select2 field without it (#2175)
+        var $select2 = $(target + ' .select2');
+        if ($select2.length && !$.fn.select2) {
+            loadSelect2().then(function () { setupSelect2($select2); });
+        } else {
+            setupSelect2($select2);
+        }
 
         // enable tooltips (only if Bootstrap tooltip function exists)
         if (typeof $.fn.tooltip === 'function') {

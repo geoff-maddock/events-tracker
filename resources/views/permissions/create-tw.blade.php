@@ -2,6 +2,11 @@
 
 @section('title', 'Add Permission')
 
+@section('select2.include')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+@endsection
+
 @section('content')
 
 <div class="max-w-4xl mx-auto">
