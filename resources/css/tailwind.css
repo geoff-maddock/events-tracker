@@ -2,7 +2,6 @@
 @import './select2-base.css';
 @import './select2-tailwind.css';
 @import '../../node_modules/dropzone/dist/dropzone.css';
-@import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 @config '../../tailwind.config.js';
 @reference 'tailwindcss';
 
@@ -243,83 +242,9 @@
   @apply bg-muted;
 }
 
-/* Flatpickr Dark Mode Styling */
-.dark .flatpickr-calendar {
-  @apply bg-card border-border shadow-xl;
-}
-
-.dark .flatpickr-months {
-  @apply bg-card;
-}
-
-.dark .flatpickr-current-month {
-  @apply text-foreground;
-}
-
-.dark .flatpickr-month {
-  @apply text-foreground;
-}
-
-.dark .flatpickr-weekday {
-  @apply text-muted-foreground;
-}
-
-.dark .flatpickr-day {
-  @apply text-foreground border-border;
-}
-
-.dark .flatpickr-day:hover {
-  @apply bg-accent text-foreground;
-}
-
-.dark .flatpickr-day.today {
-  @apply border-primary;
-}
-
-.dark .flatpickr-day.selected {
-  @apply bg-primary text-primary-foreground border-primary;
-}
-
-.dark .flatpickr-time {
-  @apply bg-card border-border;
-}
-
-.dark .flatpickr-time input {
-  @apply bg-input text-foreground;
-}
-
-.dark .flatpickr-time input:hover {
-  @apply bg-accent;
-}
-
-.dark .numInputWrapper:hover {
-  @apply bg-accent;
-}
-
-.dark .flatpickr-monthDropdown-months {
-  color-scheme: dark;
-}
-
 /* datetime-local dark mode */
 .dark input[type="datetime-local"] {
   color-scheme: dark;
-}
-
-/* Light mode overrides */
-.flatpickr-calendar {
-  @apply bg-card border-border shadow-lg;
-}
-
-.flatpickr-monthDropdown-months {
-  color-scheme: light;
-}
-
-.flatpickr-day.selected {
-  @apply bg-primary text-primary-foreground border-primary;
-}
-
-.flatpickr-day:hover {
-  @apply bg-accent;
 }
 
 /* SweetAlert2 Dark Mode Styling */

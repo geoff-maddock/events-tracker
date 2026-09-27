@@ -516,9 +516,9 @@
 @section('scripts.footer')
 <script>
 $(document).ready(function() {
-    if ($('#myDropzone').length) {
-        Dropzone.autoDiscover = false;
-        var myDropzone = new window.Dropzone('#myDropzone', {
+    // Dropzone is loaded on demand (#2175)
+    if ($('#myDropzone').length) window.loadLibrary('Dropzone').then(function (Dropzone) {
+        var myDropzone = new Dropzone('#myDropzone', {
             dictDefaultMessage: "Drop a file here to add a user profile picture. (5MB max)"
         });
 
@@ -551,7 +551,7 @@ $(document).ready(function() {
         };
 
         myDropzone.options.addPhotosForm.init();
-    }
+    });
 
     // Delete confirmation
     $('input.delete').on('click', function(e) {

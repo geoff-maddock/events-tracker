@@ -148,9 +148,10 @@
 
 @section('footer')
 <script type="module">
-	(function () {
+	// chart.js is loaded on demand (#2175)
+	window.loadLibrary('Chart').then(function (Chart) {
 		const canvas = document.getElementById('entityStatsChart');
-		if (!canvas || !window.Chart) return;
+		if (!canvas) return;
 
 		const series = @json($stats['chart']);
 		const color = (hue) => `hsl(${hue}, 70%, 55%)`;
@@ -176,6 +177,6 @@
 				},
 			},
 		});
-	})();
+	});
 </script>
 @stop

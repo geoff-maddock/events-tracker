@@ -131,7 +131,7 @@ $(document).ready(function() {
 		myDropzone.options.addPhotosForm.init();
 	}
 
-	initDropzone();
+	window.loadLibrary('Dropzone').then(initDropzone);
 });
 </script>
 @stop

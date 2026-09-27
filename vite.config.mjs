@@ -12,6 +12,8 @@ export default defineConfig({
         }),
     ],
     build: {
-        sourcemap: true,
+        // no public .map files: nothing consumes them, and they publish the
+        // unminified source next to the bundle (#2175)
+        sourcemap: false,
     },
 });
