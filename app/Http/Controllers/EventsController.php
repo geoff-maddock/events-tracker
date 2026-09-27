@@ -49,6 +49,11 @@ use App\Services\Embeds\OembedExtractor;
 
 class EventsController extends Controller
 {
+    /**
+     * Relations the text feeds (events/feed-tw) read on every row.
+     */
+    private const FEED_EAGER_LOAD = ['visibility', 'venue.locations.visibility', 'eventType', 'entities', 'tags', 'series'];
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -1250,9 +1255,10 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // venue.locations.visibility feeds getPrimaryLocationAddress() on every row (#2172)
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue', 'eventType', 'entities', 'tags', 'series')
+            ->with(self::FEED_EAGER_LOAD)
             ->paginate(1000);
 
         return view('events.feed-tw', compact('events'));
@@ -1264,7 +1270,7 @@ class EventsController extends Controller
     public function feedTags(string $tag): View
     {
         // set number of results per page
-        $events = Event::getByTag(ucfirst($tag))->future()->simplePaginate(10000);
+        $events = Event::getByTag(ucfirst($tag))->future()->with(self::FEED_EAGER_LOAD)->simplePaginate(10000);
 
         return view('events.feed-tw', compact('events'));
     }
@@ -1301,9 +1307,10 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
+        // the brief list prints each event's tags (#2172)
         // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue', 'tags')
             ->paginate(1000);
 
         return view('events.briefText', compact('events'));
