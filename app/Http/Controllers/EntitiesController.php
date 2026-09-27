@@ -111,7 +111,7 @@ class EntitiesController extends Controller
         $baseQuery = Entity::query()
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
-            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
+            ->with(Entity::CARD_EAGER_LOAD)
             ->withCount('follows')
         ;
 
@@ -125,7 +125,7 @@ class EntitiesController extends Controller
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
             ->where('entity_status_id', '<>', EntityStatus::UNLISTED)
-            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
+            ->with(Entity::CARD_EAGER_LOAD)
             ->withCount('follows')
             ;
     
@@ -133,7 +133,7 @@ class EntitiesController extends Controller
             $baseQuery = Entity::query()
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
-            ->with(['entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations', 'aliases'])
+            ->with(Entity::CARD_EAGER_LOAD)
             ->withCount('follows')
             ;    
         }
@@ -152,23 +152,14 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the entities - relationships already loaded in baseQuery, just add user
+        // get the entities - card relationships are already loaded in baseQuery
         $entities = $query
-            ->with('user')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // count the most common entities in the recent past - only load minimal data
-        $latestEntities = Entity::withCount(['events' => function (Builder $query) {
-            $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
-        }])
-        ->with('tags', 'entityType', 'locations', 'entityStatus', 'roles', 'user')
-        ->orderBy('events_count', 'desc')
-        ->paginate(6);
 
         return view('entities.index-tw')
             ->with(array_merge(
@@ -182,7 +173,7 @@ class EntitiesController extends Controller
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
             ))
-            ->with(compact('entities', 'latestEntities'))
+            ->with(compact('entities'))
             ->render();
     }
 
@@ -230,6 +221,7 @@ class EntitiesController extends Controller
 
         // get the entities
         $entities = $query
+            ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -294,8 +286,9 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
+        // get the entities
         $entities = $query
+            ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -355,7 +348,7 @@ class EntitiesController extends Controller
         $query = $listResultSet->getList();
 
         // get the entities
-        $entities = $query->paginate($listResultSet->getLimit());
+        $entities = $query->with(Entity::CARD_EAGER_LOAD)->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
@@ -418,6 +411,7 @@ class EntitiesController extends Controller
 
         // get the entities
         $entities = $query
+            ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -562,10 +556,10 @@ class EntitiesController extends Controller
         $query = $listResultSet->getList();
 
         // Get the entities
-        // roles is eager-loaded because index-json-ld calls getSchemaType(), which checks
-        // hasRole() per entity; without it that's an N+1 query per row (EVENTREPO-VN).
+        // the card relations include roles, which index-json-ld's getSchemaType() checks
+        // per entity; without it that's an N+1 query per row (EVENTREPO-VN).
         $entities = $query
-            ->with('roles')
+            ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // Save the updated session
@@ -622,8 +616,9 @@ class EntitiesController extends Controller
         // get the query builder
         $query = $listResultSet->getList();
 
-        // get the threads
+        // get the entities
         $entities = $query
+            ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -785,6 +780,8 @@ class EntitiesController extends Controller
         Cache::forget('form-opts-entities-active');
         Cache::forget('filter-opts-venues-slug');
         Cache::forget('filter-opts-entities-slug');
+        Cache::forget('filter-opts-venues-name');
+        Cache::forget('filter-opts-entities-name');
 
         flash()->success('Success', 'Your entity has been created');
         return redirect()->route('entities.show', compact('entity'));
@@ -848,6 +845,8 @@ class EntitiesController extends Controller
         Cache::forget('form-opts-entities-active');
         Cache::forget('filter-opts-venues-slug');
         Cache::forget('filter-opts-entities-slug');
+        Cache::forget('filter-opts-venues-name');
+        Cache::forget('filter-opts-entities-name');
 
         return response()->json([
             'id' => $entity->id,
@@ -1221,6 +1220,8 @@ class EntitiesController extends Controller
         Cache::forget('form-opts-entities-active');
         Cache::forget('filter-opts-venues-slug');
         Cache::forget('filter-opts-entities-slug');
+        Cache::forget('filter-opts-venues-name');
+        Cache::forget('filter-opts-entities-name');
 
         // flash this message
         flash()->success('Success', $msg);
@@ -1877,7 +1878,7 @@ class EntitiesController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-slug', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
             'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityStatusOptions' => ['' => ''] +  EntityStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
@@ -1889,10 +1890,10 @@ class EntitiesController extends Controller
         return [
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'entityStatusOptions' => EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => ''] + Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
         ];
     }
 }

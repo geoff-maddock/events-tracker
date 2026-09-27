@@ -124,7 +124,8 @@ class SeriesController extends Controller
 
         // get the series
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            // everything series/card-tw reads per card (#2173)
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -277,7 +278,7 @@ class SeriesController extends Controller
 
         // get the series
         $series = $query
-            ->with('visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos', 'upcomingEvent','occurrenceType','occurrenceWeek','occurrenceDay')
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -337,7 +338,8 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            // everything series/card-tw reads per card (#2173)
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -416,7 +418,8 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            // everything series/card-tw reads per card (#2173)
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -476,7 +479,8 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            // everything series/card-tw reads per card (#2173)
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -536,7 +540,8 @@ class SeriesController extends Controller
         // get the events
         // @phpstan-ignore-next-line
         $series = $query->visible($this->user)
-            ->with('occurrenceType', 'visibility', 'tags')
+            // everything series/card-tw reads per card (#2173)
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -596,7 +601,8 @@ class SeriesController extends Controller
 
         // get the events
         $series = $query
-            ->with('occurrenceType', 'visibility', 'tags')
+            // everything series/card-tw reads per card (#2173)
+            ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session

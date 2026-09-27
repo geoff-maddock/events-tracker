@@ -22,7 +22,7 @@
 		<!-- Follow Button -->
 		<div class="absolute top-2 right-2">
 			@if ($signedIn)
-				@if ($follow = $entity->followedBy($user))
+				@if (in_array($entity->id, $user->followedIds('entity'), true))
 				<a href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"
 					data-target="#entity-card-{{ $entity->id }}"
 					class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
@@ -127,7 +127,7 @@
 				</a>
 
 				<!-- Edit (if owner) -->
-				@if ($signedIn && $entity->ownedBy($user))
+				@if ($signedIn && $entity->isOwnedBy($user))
 				<a href="{!! route('entities.edit', ['entity' => $entity->slug]) !!}"
 					title="Edit {{ $entity->name }}"
 					class="text-muted-foreground hover:text-primary transition-colors">

@@ -15,6 +15,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Filters\TagFilters;
 
@@ -49,6 +50,17 @@ class Tag extends Eloquent
                 $tag->created_by = Auth::id();
             }
         });
+
+        // the tag dropdowns on the event/entity forms and list filters are cached;
+        // a new tag missing from a form's options would be dropped when it's saved
+        static::saved(fn () => static::forgetOptionCaches());
+        static::deleted(fn () => static::forgetOptionCaches());
+    }
+
+    public static function forgetOptionCaches(): void
+    {
+        Cache::forget('form-opts-tags');
+        Cache::forget('filter-opts-tags-slug');
     }
 
     public function getRouteKeyName()
@@ -218,24 +230,26 @@ class Tag extends Eloquent
      */
     public function relatedTags(): array
     {
-        $total = [];
-
-        $events = $this->events()->with('tags')->get();
-        foreach ($events as $event) {
-            foreach ($event->tags as $tag) {
-                if ($tag->name == $this->name) {
-                    continue;
-                }
-                if (isset($total[$tag->name])) {
-                    ++$total[$tag->name];
-                } else {
-                    $total[$tag->name] = 1;
-                }
-            }
-        }
-        arsort($total);
-
-        return array_slice($total, 0, 5);
+        // One grouped self-join on event_tag instead of hydrating every tagged
+        // event with its tags (#2173). Counts by name, as before, so duplicate
+        // tags sharing a name are merged and this tag's name is never listed.
+        return DB::table('event_tag as mine')
+            ->join('events', 'events.id', '=', 'mine.event_id')
+            ->join('event_tag as other', function ($join) {
+                $join->on('other.event_id', '=', 'mine.event_id')
+                    ->on('other.tag_id', '<>', 'mine.tag_id');
+            })
+            ->join('tags', 'tags.id', '=', 'other.tag_id')
+            ->where('mine.tag_id', $this->id)
+            ->where('tags.name', '<>', $this->name)
+            ->groupBy('tags.name')
+            ->orderByDesc('total')
+            ->orderBy('tags.name')
+            ->limit(5)
+            ->selectRaw('tags.name, COUNT(*) as total')
+            ->pluck('total', 'name')
+            ->map(fn ($total) => (int) $total)
+            ->all();
     }
 
     /**

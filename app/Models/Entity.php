@@ -103,6 +103,16 @@ class Entity extends Eloquent implements HasPhotos
     use HasFactory;
     use Notifiable;
 
+    /**
+     * Relations entities/card-tw reads for each card; list pages eager-load these
+     * so a page of cards costs a fixed number of queries (#2173).
+     *
+     * @var array<int, string>
+     */
+    public const CARD_EAGER_LOAD = [
+        'entityStatus', 'entityType', 'links', 'tags', 'roles', 'photos', 'locations.visibility', 'aliases', 'owners',
+    ];
+
     protected $fillable = [
         'name', 'slug', 'short', 'description', 'entity_type_id', 'entity_status_id', 'facebook_username', 'twitter_username', 'instagram_username','created_by', 'started_at',
     ];
