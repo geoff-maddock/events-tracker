@@ -404,7 +404,7 @@
 								<i class="bi bi-geo-alt-fill"></i>
 							</a>
 							@endif
-							@if ($signedIn && ($entity->ownedBy($user) || $user->hasGroup('super_admin')))
+							@if ($signedIn && ($entity->isOwnedBy($user) || $user->hasGroup('super_admin')))
 							<a href="{!! route('entities.locations.edit', ['entity' => $entity->slug, 'location' => $location->id]) !!}"
 								class="text-muted-foreground hover:text-primary transition-colors"
 								title="Edit location">
@@ -451,7 +451,7 @@
 						@if ($contact->phone)
 						<div class="text-muted-foreground">{{ $contact->phone }}</div>
 						@endif
-						@if ($signedIn && $entity->ownedBy($user))
+						@if ($signedIn && $entity->isOwnedBy($user))
 						<a href="{!! route('entities.contacts.edit', ['entity' => $entity->slug, 'contact' => $contact->id]) !!}"
 							class="text-muted-foreground hover:text-primary transition-colors"
 							title="Edit contact">
@@ -493,7 +493,7 @@
 							{{ $link->text ?? $link->url }}
 						</a>
 						<i class="bi bi-box-arrow-up-right text-xs text-muted-foreground"></i>
-						@if ($signedIn && $entity->ownedBy($user))
+						@if ($signedIn && $entity->isOwnedBy($user))
 						<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}"
 							class="text-muted-foreground hover:text-primary transition-colors ml-auto"
 							title="Edit link">

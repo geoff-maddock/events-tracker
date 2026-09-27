@@ -200,7 +200,7 @@ class TagsController extends Controller
 
         // get limited series linked to the tag (8 for preview)
         $series = Series::getByTag($slug)
-            ->with('visibility', 'venue','tags', 'entities','eventType','threads','occurrenceType','occurrenceWeek','occurrenceDay')
+            ->with(Series::CARD_EAGER_LOAD)
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
@@ -211,7 +211,7 @@ class TagsController extends Controller
 
         // get limited events linked to the tag (16 upcoming, 8 past for preview)
         $eventsBase = fn () => Event::getByTag($slug)
-            ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
+            ->with(EventsController::cardEventEagerLoad($this->user))
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
@@ -231,7 +231,7 @@ class TagsController extends Controller
 
         // get limited entities linked to the tag (8 for preview)
         $entities = Entity::getByTag($slug)
-            ->with('tags', 'events','entityType','locations','entityStatus','user','photos')
+            ->with(Entity::CARD_EAGER_LOAD)
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->active();

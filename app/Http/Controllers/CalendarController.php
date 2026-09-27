@@ -12,6 +12,7 @@ use App\Services\Calendar\CalendarRange;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -85,10 +86,11 @@ class CalendarController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
-            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            // cached like EventsController's; the entity lists are cleared by EntitiesController on save (#2173)
+            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-slug', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
+            'venueOptions' => ['' => ''] + Cache::remember('filter-opts-venues-name', 3600, fn () => Entity::getVenues()->pluck('name', 'name')->all()),
+            'relatedOptions' => ['' => ''] + Cache::remember('filter-opts-entities-name', 3600, fn () => Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
+            'eventTypeOptions' => ['' => ''] + Cache::remember('filter-opts-event-types-name', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
         ];
     }
 

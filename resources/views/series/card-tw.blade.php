@@ -22,7 +22,7 @@
         <!-- Follow/Unfollow Button -->
         <div class="absolute top-2 right-2">
             @if ($signedIn)
-                @if ($follow = $series->followedBy($user))
+                @if (in_array($series->id, $user->followedIds('series'), true))
                 <a href="{!! route('series.unfollow', ['id' => $series->id]) !!}"
                     data-target="#series-card-{{ $series->id }}"
                     class="ajax-action p-2 bg-background/80 rounded-full hover:bg-background transition-colors"

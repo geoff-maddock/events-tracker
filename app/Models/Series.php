@@ -132,6 +132,16 @@ class Series extends Eloquent implements HasPhotos
 
     public const FORM_OPTIONS_CACHE_KEY = 'form-opts-series';
 
+    /**
+     * Relations series/card-tw reads for each card; list pages eager-load these
+     * so a page of cards costs a fixed number of queries (#2173).
+     *
+     * @var array<int, string>
+     */
+    public const CARD_EAGER_LOAD = [
+        'visibility', 'occurrenceType', 'tags', 'entities', 'photos', 'upcomingEvent', 'venue.locations.visibility',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -704,7 +714,12 @@ class Series extends Eloquent implements HasPhotos
      */
     public function upcomingEvent(): HasOne
     {
-        return $this->hasOne(Event::class)->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'asc');
+        // ofMany, so eager loading a page of series fetches one event per series
+        // instead of every future event of every series (#2173)
+        return $this->hasOne(Event::class)->ofMany(
+            ['start_at' => 'min', 'id' => 'min'],
+            fn ($query) => $query->where('start_at', '>=', Carbon::now())
+        );
     }
 
     /**
@@ -714,7 +729,10 @@ class Series extends Eloquent implements HasPhotos
      */
     public function latestEvent(): HasOne
     {
-        return $this->hasOne(Event::class)->where('start_at', '<', Carbon::now())->orderBy('start_at', 'desc');
+        return $this->hasOne(Event::class)->ofMany(
+            ['start_at' => 'max', 'id' => 'max'],
+            fn ($query) => $query->where('start_at', '<', Carbon::now())
+        );
     }
 
     /**

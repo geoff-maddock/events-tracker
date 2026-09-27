@@ -21,7 +21,7 @@
                         <span class="text-xs text-amber-500">[Inactive]</span>
                     @endif
 
-                    @if ($signedIn && $entity->ownedBy($user))
+                    @if ($signedIn && $entity->isOwnedBy($user))
                         <a href="{{ route('entities.edit', ['entity' => $entity->slug]) }}" class="text-muted-foreground hover:text-foreground transition-colors">
                             <i class="bi bi-pencil text-sm"></i>
                         </a>

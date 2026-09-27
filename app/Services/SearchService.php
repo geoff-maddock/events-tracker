@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\EventsController;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\Event;
@@ -13,6 +14,7 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
@@ -91,7 +93,8 @@ class SearchService
         $useFulltext = $this->useFulltext($keyword);
 
         $query = Event::query()
-            ->with('visibility', 'venue', 'tags', 'entities', 'series', 'eventType', 'threads')
+            // what events/card-tw reads per card (#2173)
+            ->with(EventsController::cardEventEagerLoad($user))
             ->where(function (Builder $q) use ($keyword, $slug, $useFulltext) {
                 // Text match on event's own columns.
                 if ($useFulltext) {
@@ -104,11 +107,20 @@ class SearchService
                 }
 
                 // Related-entity / tag / series matches (case-insensitive).
-                $q->orWhereHas('entities', fn ($r) => $r->where('slug', strtolower($slug)))
-                    ->orWhereHas('tags', $this->ciNameMatch($keyword))
-                    ->orWhereHas('series', $this->ciNameMatch($keyword))
-                    ->orWhereHas('venue', $this->ciNameMatch($keyword))
-                    ->orWhereHas('promoter', $this->ciNameMatch($keyword));
+                // IN (subquery) rather than orWhereHas: OR'd EXISTS subqueries run
+                // once per event row, and cost ~0.3s per query on the full table (#2173).
+                $lower = mb_strtolower($keyword);
+                $q->orWhereIn('events.id', DB::table('entity_event')
+                        ->join('entities', 'entities.id', '=', 'entity_event.entity_id')
+                        ->where('entities.slug', strtolower($slug))
+                        ->select('entity_event.event_id'))
+                    ->orWhereIn('events.id', DB::table('event_tag')
+                        ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
+                        ->whereRaw('LOWER(tags.name) = ?', [$lower])
+                        ->select('event_tag.event_id'))
+                    ->orWhereIn('events.series_id', DB::table('series')->whereRaw('LOWER(name) = ?', [$lower])->select('id'))
+                    ->orWhereIn('events.venue_id', DB::table('entities')->whereRaw('LOWER(name) = ?', [$lower])->select('id'))
+                    ->orWhereIn('events.promoter_id', DB::table('entities')->whereRaw('LOWER(name) = ?', [$lower])->select('id'));
             })
             ->visible($user);
 
@@ -129,7 +141,7 @@ class SearchService
         $useFulltext = $this->useFulltext($keyword);
 
         $query = Series::query()
-            ->with('visibility', 'venue', 'tags', 'entities', 'eventType', 'threads', 'occurrenceType', 'occurrenceWeek', 'occurrenceDay')
+            ->with(Series::CARD_EAGER_LOAD)
             ->where(function (Builder $q) use ($keyword, $slug, $useFulltext) {
                 if ($useFulltext) {
                     $q->whereRaw(
@@ -162,7 +174,7 @@ class SearchService
         $useFulltext = $this->useFulltext($keyword);
 
         $query = Entity::query()
-            ->with('tags', 'events', 'entityType', 'locations', 'entityStatus', 'user')
+            ->with(Entity::CARD_EAGER_LOAD)
             ->where('entity_status_id', '<>', EntityStatus::UNLISTED)
             ->where(function (Builder $q) use ($keyword, $useFulltext) {
                 if ($useFulltext) {
@@ -211,7 +223,9 @@ class SearchService
         $useFulltext = $this->useFulltext($keyword);
 
         $query = Thread::query()
-            ->with('visibility', 'entities', 'tags', 'posts', 'event', 'user')
+            // threads/card-tw needs the post count and last poster, not every post
+            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
+            ->withCount('posts')
             ->where(function (Builder $q) use ($keyword, $useFulltext) {
                 if ($useFulltext) {
                     $q->whereRaw(
