@@ -5,12 +5,13 @@ namespace Tests\Feature\Services;
 use App\Services\ImageHandler;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mockery;
 use Tests\TestCase;
 
 /**
  * Exercises the real Intervention Image v3 pipeline (GD driver) against the
- * faked external disk: Photo::makeWebp / Photo::makeThumbnail read the stored
- * bytes via Storage::get(), re-encode locally, and upload the variants back.
+ * faked external disk: makePhoto() stores the original, then encodes the webp
+ * and thumbnail variants from the local upload and writes them alongside.
  */
 class ImageHandlerTest extends TestCase
 {
@@ -22,8 +23,7 @@ class ImageHandlerTest extends TestCase
         (new ImageHandler())->makePhoto($file);
 
         // The original upload lands on the external disk under photos/ with a
-        // timestamp_event.png filename (the webp/thumb variants are rewrites
-        // performed by Photo::makeWebp / Photo::makeThumbnail).
+        // timestamp_event.png filename, next to its webp and thumbnail variants.
         $stored = Storage::disk('external')->allFiles('photos');
         $original = array_filter($stored, fn ($p) => (bool) preg_match('#^photos/\d+_event\.png$#', $p));
 
@@ -34,8 +34,7 @@ class ImageHandlerTest extends TestCase
     {
         Storage::fake('external');
 
-        // After makeWebp() the Photo's name is rewritten to the .webp variant
-        // (see Photo::makeWebp → saveAs($webpName)). Assert the final shape.
+        // The Photo's name is the .webp variant. Assert the final shape.
         $file = UploadedFile::fake()->image('promo.png');
         $photo = (new ImageHandler())->makePhoto($file);
 
@@ -66,11 +65,51 @@ class ImageHandlerTest extends TestCase
         $file = UploadedFile::fake()->image('flyer.jpg');
         (new ImageHandler())->makePhoto($file);
 
-        // Find what was originally uploaded; .jpg before webp re-saves over it.
+        // Find what was originally uploaded; the original is kept as-is.
         $stored = Storage::disk('external')->allFiles('photos');
         $jpgs = array_filter($stored, fn ($p) => str_ends_with($p, '_flyer.jpg'));
 
         $this->assertNotEmpty($jpgs, 'Expected the original .jpg upload to be stored.');
+    }
+
+    public function test_make_photo_caps_the_main_image_and_squares_the_thumbnail(): void
+    {
+        Storage::fake('external');
+
+        $file = UploadedFile::fake()->image('poster.jpg', 3000, 1500);
+        $photo = (new ImageHandler())->makePhoto($file);
+
+        $main = getimagesizefromstring(Storage::disk('external')->get($photo->path));
+        $this->assertSame([ImageHandler::MAX_DIMENSION, ImageHandler::MAX_DIMENSION / 2], [$main[0], $main[1]]);
+
+        $thumb = getimagesizefromstring(Storage::disk('external')->get($photo->thumbnail));
+        $this->assertSame([ImageHandler::THUMBNAIL_SIZE, ImageHandler::THUMBNAIL_SIZE], [$thumb[0], $thumb[1]]);
+        $this->assertSame('image/webp', $thumb['mime']);
+    }
+
+    public function test_make_photo_does_not_enlarge_small_images(): void
+    {
+        Storage::fake('external');
+
+        $photo = (new ImageHandler())->makePhoto(UploadedFile::fake()->image('small.png', 400, 300));
+
+        $main = getimagesizefromstring(Storage::disk('external')->get($photo->path));
+        $this->assertSame([400, 300], [$main[0], $main[1]]);
+    }
+
+    public function test_make_photo_writes_three_files_and_reads_nothing_back(): void
+    {
+        Storage::fake('external');
+
+        // the variants are built from the local upload; reading the stored
+        // original back from the external disk was two downloads per upload
+        $disk = Mockery::mock(Storage::disk('external'))->makePartial();
+        $disk->shouldNotReceive('get', 'readStream');
+        Storage::set('external', $disk);
+
+        (new ImageHandler())->makePhoto(UploadedFile::fake()->image('flyer.jpg', 800, 600));
+
+        $this->assertCount(3, $disk->allFiles('photos'));
     }
 
     public function test_generate_cover_image_writes_local_jpeg(): void
