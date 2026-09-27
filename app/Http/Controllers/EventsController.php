@@ -1255,8 +1255,8 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
-        // @phpstan-ignore-next-line
         // venue.locations.visibility feeds getPrimaryLocationAddress() on every row (#2172)
+        // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
             ->with(self::FEED_EAGER_LOAD)
             ->paginate(1000);
@@ -1307,8 +1307,8 @@ class EventsController extends Controller
         $query = $listResultSet->getList();
 
         // get the events
-        // @phpstan-ignore-next-line
         // the brief list prints each event's tags (#2172)
+        // @phpstan-ignore-next-line
         $events = $query->visible($this->user)
             ->with('visibility', 'venue', 'tags')
             ->paginate(1000);
