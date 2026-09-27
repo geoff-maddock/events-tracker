@@ -10,22 +10,16 @@ use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
-use App\Models\Entity;
-use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
-use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
-use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
-use Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostsController extends Controller
@@ -159,73 +153,6 @@ class PostsController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['posts.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $posts = $query->visible($this->user)
-        ->with('visibility')
-        ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $posts;
-        }
-
-        return view('posts.index')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('posts'))->render();
-    }
-
-    /**
-     * Display a listing of posts by tag.
-     */
-    public function indexTags(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder,
-        string $slug,
-        StringHelper $stringHelper
-    ): string {
-        // convert the slug to name
-        $tag = $stringHelper->SlugToName($slug);
-
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix('internal_post_tags');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
-
-        $baseQuery = Post::query()
-        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
-        ->select('posts.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['posts.created_at' => 'desc'])
-            ->setParentFilter(['tag' => $slug]);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -427,78 +354,6 @@ class PostsController extends Controller
         flash()->success('Success', 'Your post has been deleted!');
 
         return redirect()->route('threads.show', ['thread' => $id]);
-    }
-
-    /**
-     * Mark user as liking the post.
-     */
-    public function like(int $id, Request $request): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$post = Post::find($id)) {
-            flash()->error('Error', 'No such post');
-
-            return back();
-        }
-
-        // add the like response
-        $like = new Like();
-        $like->object_id = $id;
-        $like->user()->associate($this->user);
-        $like->object_type = 'post';
-        $like->save();
-
-        // update the likes
-        ++$post->likes;
-        $post->save();
-
-        // log the like
-        // Log::info('User '.$id.' is liking '.$post->name);
-
-        flash()->success('Success', 'You are now liking the selected post.');
-
-        return back();
-    }
-
-    /**
-     * Mark user as unliking the post.
-     *
-     * @return Response
-     */
-    public function unlike(int $id, Request $request)
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$post = Post::find($id)) {
-            flash()->error('Error', 'No such post');
-
-            return back();
-        }
-
-        // delete the like
-        $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'post')->first();
-        if ($response) {
-            $response->delete();
-
-            // update the likes
-            --$post->likes;
-            $post->save();
-        }
-
-        flash()->success('Success', 'You are no longer liking the post.');
-
-        return back();
     }
 
     protected function unauthorized(PostRequest $request): RedirectResponse | Response

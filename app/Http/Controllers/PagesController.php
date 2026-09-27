@@ -78,35 +78,6 @@ class PagesController extends Controller
     }
 
     /**
-     * Update the page list parameters from the request.
-     */
-    protected function updatePaging(Request $request): void
-    {
-        // set starting day offset
-        if ($request->input('day_offset')) {
-            $this->offset = $request->input('day_offset');
-        }
-
-        // set results per page
-        if ($request->input('limit')) {
-            $this->limit = $request->input('limit');
-        }
-    }
-
-    public function index(): View
-    {
-        $future_events = Event::where('start_at', '>=', Carbon::now())
-                        ->orderBy('start_at', 'asc')
-                        ->get();
-
-        $past_events = Event::where('start_at', '<', Carbon::now())
-                        ->orderBy('start_at', 'desc')
-                        ->get();
-
-        return view('events.index', compact('future_events', 'past_events'));
-    }
-
-    /**
      * Primary site searchbar action.
      */
     public function search(Request $request, SearchService $searchService): View
@@ -419,14 +390,6 @@ class PagesController extends Controller
     }
 
     /**
-     * Get session filters.
-     */
-    protected function getFilters(Request $request): array
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
      * Get user session attribute.
      */
     protected function getAttribute(Request $request, string $attribute, mixed $default = null): mixed
@@ -441,23 +404,6 @@ class PagesController extends Controller
     protected function getDefaultFilters(): array
     {
         return [];
-    }
-
-    protected function getDefaultlimitFilters(): array
-    {
-        return [
-            'limit' => $this->defaultLimit,
-            'sort' => $this->defaultSort,
-            'sortDirection' => $this->defaultSortDirection,
-        ];
-    }
-
-    /**
-     * Set filters attribute.
-     */
-    protected function setFilters(Request $request, array $input): void
-    {
-        $this->setAttribute('filters', $input, $request);
     }
 
     /**

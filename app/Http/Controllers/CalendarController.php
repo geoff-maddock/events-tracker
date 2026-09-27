@@ -3,22 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Filters\EventFilters;
-use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventType;
 use App\Models\Series;
 use App\Models\Tag;
-use App\Models\User;
-use App\Models\Visibility;
 use App\Services\Calendar\CalendarRange;
-use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -111,147 +104,6 @@ class CalendarController extends Controller
             ->filter(fn ($item) => $item !== '')
             ->values()
             ->all();
-    }
-
-    protected function getFormOptions(): array
-    {
-        return [
-            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
-            'promoterOptions' => ['' => ''] + Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-        ];
-    }
-
-    /**
-     * Filter the list of events.
-     *
-     * @throws \Throwable
-     */
-    public function filter(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // nothing really happens until here in cadence
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        // @phpstan-ignore-next-line
-        $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('events.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('events'))
-            ->render();
-    }
-
-    /**
-     * Reset the limit, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_index';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($this->resolveRedirectRoute($request, 'events.index'));
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_index';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($this->resolveRedirectRoute($request, 'events.index'));
-    }
-
-    /**
-     * Get the events for one passed day.
-     *
-     * @return Response|string
-     *
-     * @throws \Throwable
-     */
-    public function day(string $day)
-    {
-        if (!$day) {
-            flash()->error('Error', 'No such day');
-
-            return back();
-        }
-        $day = Carbon::parse($day);
-
-        return view('events.day-tw')
-            ->with([
-                'day' => $day,
-                'position' => 0,
-                'offset' => 0,
-            ])
-            ->render();
     }
 
     /**
@@ -698,18 +550,6 @@ class CalendarController extends Controller
         $eventList = json_encode($eventList);
 
         return view('events.dynamic-tag-event-calendar-tw', compact('eventList'));
-    }
-
-    /**
-     * Displays the calendar based on passed events and tag.
-     *
-     * @param array|null $series
-     * @param null       $tag
-     */
-    public function renderCalendar(Collection $events, $series = null, $tag = null): View
-    {
-        // Change this to instead pass in the json EventsList directly here and render, that way I can just pass anything to this function to display the calendar
-        return view('events.event-calendar-tw');
     }
 
     /**

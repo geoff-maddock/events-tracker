@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
-			identifier: preInc.type
-			count: 1
-			path: app/Http/Controllers/Api/BlogsController.php
-
-		-
-			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
-			identifier: preDec.type
-			count: 1
-			path: app/Http/Controllers/Api/BlogsController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -37,18 +25,6 @@ parameters:
 			path: app/Http/Controllers/Api/EventsController.php
 
 		-
-			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
-			identifier: preInc.type
-			count: 1
-			path: app/Http/Controllers/Api/PostsController.php
-
-		-
-			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
-			identifier: preDec.type
-			count: 1
-			path: app/Http/Controllers/Api/PostsController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -59,18 +35,6 @@ parameters:
 			identifier: method.notFound
 			count: 2
 			path: app/Http/Controllers/Api/SeriesController.php
-
-		-
-			message: '#^Cannot use \+\+ on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
-			identifier: preInc.type
-			count: 1
-			path: app/Http/Controllers/BlogsController.php
-
-		-
-			message: '#^Cannot use \-\- on Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Like\>\.$#'
-			identifier: preDec.type
-			count: 1
-			path: app/Http/Controllers/BlogsController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$email\.$#'

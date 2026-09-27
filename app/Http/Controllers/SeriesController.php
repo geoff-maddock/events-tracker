@@ -1184,14 +1184,4 @@ class SeriesController extends Controller
         flash()->success('Error', 'You cannot load embeds directly');
         return back();
     }
-
-    /**
-     * Get the default filters array.
-     *
-     * @return array
-     */
-    public function getDefaultFilters()
-    {
-        return [];
-    }
 }

@@ -12,7 +12,6 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class PhotosController extends Controller
@@ -70,16 +69,6 @@ class PhotosController extends Controller
 
         $this->defaultSortCriteria = ['photos.created_at' => 'desc'];
         parent::__construct();
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function indexSimple(): View
-    {
-        $photos = Photo::get();
-
-        return view('photos.index-tw', compact('photos'));
     }
 
     /**

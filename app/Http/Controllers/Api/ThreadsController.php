@@ -10,9 +10,6 @@ use App\Http\Resources\ThreadCollection;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Thread;
-use App\Models\Series;
-use App\Models\Tag;
-use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Contracts\View\View;
@@ -133,53 +130,6 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function indexAll(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore,
-        ListEntityResultBuilder $listEntityResultBuilder
-    ): JsonResponse {
-        // if the gate does not allow this user to show a thread redirect to home
-        if (Gate::denies('show_thread')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()
-        ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        return response()->json(new ThreadCollection($threads));
-    }
-
-    /**
      * Filter a list of threads.
      */
     public function filter(
@@ -227,19 +177,6 @@ class ThreadsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): ViewView
-    {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-
-        $thread = new Thread();
-        $thread->visibility_id = Visibility::VISIBILITY_PUBLIC;
-
-        return view('threads.create', compact('thread'))->with($this->getFormOptions());
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(ThreadRequest $request, Thread $thread): RedirectResponse
@@ -273,16 +210,6 @@ class ThreadsController extends Controller
         }
 
         return response()->json($thread);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Thread $thread): View
-    {
-        $this->middleware('auth');
-
-        return view('threads.edit', compact('thread'))->with($this->getFormOptions());
     }
 
     /**
@@ -410,32 +337,6 @@ class ThreadsController extends Controller
         $listParamSessionStore->clearSort();
 
         return redirect()->route($request->get('redirect') ?? 'threads.index');
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-        ];
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['threads.name' => 'Name', 'threads.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
     }
 
     protected function getFormOptions(): array

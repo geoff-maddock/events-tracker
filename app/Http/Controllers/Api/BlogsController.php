@@ -7,19 +7,16 @@ use App\Filters\BlogFilters;
 use App\Http\Requests\BlogPatchRequest;
 use App\Http\Requests\BlogRequest;
 use App\Http\Resources\BlogCollection;
-use App\Http\Resources\BlogResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Blog;
-use App\Models\Like;
 use App\Models\Tag;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
-use Str;
 use App\Models\Action;
 
 class BlogsController extends Controller
@@ -266,76 +263,6 @@ class BlogsController extends Controller
         $blog->delete();
 
         return response()->json([], 204);
-    }
-
-    /**
-     * Mark user as liking the blog.
-     */
-    public function like(int $id): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$blog = Blog::find($id)) {
-            flash()->error('Error', 'No such blog');
-
-            return back();
-        }
-
-        // add the like response
-        $like = new Like();
-        $like->object_id = $id;
-        $like->user()->associate($this->user);
-        $like->object_type = 'blog';
-        $like->save();
-
-        // update the likes
-        ++$blog->likes;
-        $blog->save();
-
-        // log the like
-        // Log::info('User '.$id.' is liking '.$blog->name);
-
-        flash()->success('Success', 'You are now liking the selected blog.');
-
-        return back();
-    }
-
-    /**
-     * Mark user as unliking the blog.
-     */
-    public function unlike(int $id): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$blog = Blog::find($id)) {
-            flash()->error('Error', 'No such blog');
-
-            return back();
-        }
-
-        // delete the like
-        $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'blog')->first();
-        if ($response) {
-            $response->delete();
-
-            // update the likes
-            --$blog->likes;
-            $blog->save();
-        }
-
-        flash()->success('Success', 'You are no longer liking the blog.');
-
-        return back();
     }
 
     /**

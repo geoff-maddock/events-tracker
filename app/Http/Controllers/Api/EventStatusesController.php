@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\EventStatus;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
@@ -104,13 +103,6 @@ class EventStatusesController extends Controller
         return redirect()->route('event-statuses.index');
     }
 
-    public function buildCriteria(Request $request): Builder
-    {
-        $query = EventStatus::orderBy($this->sort, $this->sortDirection);
-
-        return $query;
-    }
-
     public function store(EventStatusRequest $request): JsonResponse
     {
         if ($denied = $this->requireAdmin()) {
@@ -178,19 +170,5 @@ class EventStatusesController extends Controller
         Activity::log($eventStatus, $this->user, 3);
 
         return response()->json([], 204);
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [];
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['event_statuses.name' => 'Name', 'event_statuses.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
     }
 }

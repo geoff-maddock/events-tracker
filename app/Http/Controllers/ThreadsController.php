@@ -23,10 +23,8 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -700,18 +698,6 @@ class ThreadsController extends Controller
         return redirect()->route('threads.show', compact('thread'));
     }
 
-    /**
-     * Create a conversation slug.
-     */
-    public function makeSlugFromTitle(string $title): string
-    {
-        $slug = Str::slug($title);
-
-        $count = Thread::whereRaw("slug RLIKE '^{$slug}(-[0-9]+)?$'")->count();
-
-        return $count ? "{$slug}-{$count}" : $slug;
-    }
-
     public function show(Thread $thread): RedirectResponse | View
     {
         // if the gate does not allow this user to show a forum redirect to home
@@ -822,17 +808,6 @@ class ThreadsController extends Controller
         flash('Success', 'Your thread has been updated');
 
         return redirect('threads');
-    }
-
-    protected function unauthorized(ThreadRequest $request): RedirectResponse | Response
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
     }
 
     /**
@@ -991,23 +966,6 @@ class ThreadsController extends Controller
         flash()->success('Success', 'You are no longer liking the thread.');
 
         return back();
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
-    }
-
-    protected function getDefaultLimitFilters(): array
-    {
-        return [
-            'limit' => $this->defaultLimit,
-            'sort' => $this->defaultSort,
-            'sortDirection' => $this->defaultSortDirection,
-        ];
     }
 
     protected function getFilterOptions(): array

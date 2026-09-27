@@ -254,11 +254,6 @@ class EntitiesController extends Controller
             ->render();
     }
 
-    protected function getDefaultFilters(): array
-    {
-        return [];
-    }
-
     /**
      * Gets the base query.
      */
@@ -1764,14 +1759,6 @@ class EntitiesController extends Controller
         flash()->success('Success', 'Update summary sent to ' . $contact->email);
 
         return back();
-    }
-
-    /**
-     * Get the default sort array.
-     */
-    protected function getDefaultSortCriteria(): array
-    {
-        return ['id' => 'desc'];
     }
 
     /**

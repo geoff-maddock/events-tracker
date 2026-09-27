@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Filters\ActivityFilters;
 use App\Http\Resources\ActivityCollection;
 use App\Http\Resources\ActivityResource;
-use App\Http\Requests\SeriesRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Action;
 use App\Models\Activity;
@@ -15,8 +14,6 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Session;
 
 class ActivityController extends Controller
 {
@@ -157,17 +154,6 @@ class ActivityController extends Controller
         return response()->json(new ActivityResource($activity));
     }
 
-    protected function unauthorized(SeriesRequest $request): Response | RedirectResponse
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        Session::flash('flash_message', 'Not authorized');
-
-        return redirect('/');
-    }
-
     public function destroy(Activity $activity): JsonResponse
     {
         if ($denied = $this->requireAdmin()) {
@@ -177,14 +163,6 @@ class ActivityController extends Controller
         $activity->delete();
 
         return response()->json([], 204);
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    public function getDefaultFilters(): array
-    {
-        return [];
     }
 
     /**
