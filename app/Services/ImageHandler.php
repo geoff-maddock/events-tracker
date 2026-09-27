@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Photo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Typography\FontFactory;
 use Carbon\Carbon;
@@ -17,28 +18,49 @@ class ImageHandler
     const CONTAINER_LIMIT = 4;
 
 
-    // Make a photo based on the passed in file
+    /** Longest side of the stored main (webp) image; larger uploads are scaled down. */
+    public const MAX_DIMENSION = 2000;
+
+    /** Side of the square thumbnail. */
+    public const THUMBNAIL_SIZE = 600;
+
+    public const WEBP_QUALITY = 75;
+
+    /**
+     * Make a photo from an uploaded file.
+     *
+     * Stores the untouched original, then builds the main webp image (capped at
+     * MAX_DIMENSION) and the square thumbnail from the local upload, so nothing
+     * is downloaded back from the external disk (#2174). The photo's name and
+     * path point at the webp; the thumbnail is tn-<webp name>.
+     */
     public function makePhoto(UploadedFile $file): Photo
     {
         // store the file with a unique name based on time
         $fileName = time().'_'.$file->getClientOriginalName();
 
-        // from here, this file has been stored publicly under it's unique name and original format
-        $filePath = $file->storePubliclyAs('photos', $fileName, 'external');
+        // keep the original, publicly, under its unique name and original format
+        $file->storePubliclyAs('photos', $fileName, 'external');
 
         // sets all the photo private name and path values
-        $photo = Photo::named($fileName);
+        $photo = Photo::named(pathinfo($fileName, PATHINFO_FILENAME).'.webp');
 
         // attribute the photo to the uploader; without this the column keeps
         // its DB default of 1 and photo management breaks for everyone else
         $photo->created_by = auth()->id() ?? 1;
 
-        // make a webp version of the image
-        $webp = $photo->makeWebp();
+        // decode the upload once; read() applies the EXIF orientation
+        $image = app(ImageManager::class)->read($file->getRealPath());
+        $image->scaleDown(self::MAX_DIMENSION, self::MAX_DIMENSION);
 
-        return $photo->makeThumbnail();
+        $disk = Storage::disk('external');
+        $disk->put($photo->path, (string) $image->toWebp(self::WEBP_QUALITY), 'public');
+
+        $image->cover(self::THUMBNAIL_SIZE, self::THUMBNAIL_SIZE);
+        $disk->put($photo->thumbnail, (string) $image->toWebp(self::WEBP_QUALITY), 'public');
+
+        return $photo;
     }
-    
 
     /**
      * Generate an image to use with posting to instagram.

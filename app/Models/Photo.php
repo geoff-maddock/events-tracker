@@ -181,58 +181,6 @@ class Photo extends Eloquent
         return $this;
     }
 
-    public function makeWebp(int $quality = 75): Photo
-    {
-        // extracts the parts of the file name
-        $parts = pathinfo($this->name);
-
-        // creates a valid name for a webp file
-        $webpName = $parts['filename'].'.webp';
-
-        // read the original from the external disk and re-encode it as webp locally
-        $localPath = sys_get_temp_dir().'/'.uniqid('photo-', true).'-'.$webpName;
-        app(ImageManager::class)
-            ->read(Storage::disk('external')->get($this->path))
-            ->toWebp($quality)
-            ->save($localPath);
-
-        Storage::disk('external')->putFileAs('photos', new HttpFile($localPath), $webpName, 'public');
-
-        // clean up local files
-        unlink($localPath);
-
-        // save the webp file as the name
-        $this->saveAs($webpName);
-
-        return $this;
-    }
-
-    public function makeJpg(int $quality = 75): Photo
-    {
-        // extracts the parts of the file name
-        $parts = pathinfo($this->name);
-
-        // creates a valid name for a jpg file
-        $webpName = $parts['filename'].'.jpg';
-
-        // read the original from the external disk and re-encode it as jpg locally
-        $localPath = sys_get_temp_dir().'/'.uniqid('photo-', true).'-'.$webpName;
-        app(ImageManager::class)
-            ->read(Storage::disk('external')->get($this->path))
-            ->toJpeg($quality)
-            ->save($localPath);
-
-        Storage::disk('external')->putFileAs('photos', new HttpFile($localPath), $webpName, 'public');
-
-        // clean up local files
-        unlink($localPath);
-
-        // save the webp file as the name
-        $this->saveAs($webpName);
-
-        return $this;
-    }
-
     public function delete()
     {
         Storage::disk('external')->delete([$this->path, $this->thumbnail]);
