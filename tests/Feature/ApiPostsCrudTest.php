@@ -96,6 +96,6 @@ class ApiPostsCrudTest extends TestCase
 
         $this->putJson('/api/posts/'.$post->id, [])
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['body', 'visibility_id', 'thread_id']);
+            ->assertJsonValidationErrors(['body', 'visibility_id']);
     }
 }

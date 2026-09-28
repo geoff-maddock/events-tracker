@@ -41,7 +41,8 @@ class LocationRequest extends Request
             'longitude' => 'nullable|numeric',
             'capacity' => 'nullable|integer|min:0',
             'map_url' => 'nullable|string|max:255',
-            'entity_id' => 'nullable|integer|exists:entities,id',
+            // a location always belongs to an entity (NOT NULL): optional on update, never null
+            'entity_id' => 'sometimes|required|integer|exists:entities,id',
         ];
     }
 }

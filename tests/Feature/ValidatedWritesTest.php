@@ -210,4 +210,35 @@ class ValidatedWritesTest extends TestCase
 
         $this->assertSame($this->entity->id, (int) $location->fresh()->entity_id);
     }
+
+    public function test_editing_a_post_cannot_move_it_to_another_thread(): void
+    {
+        $this->actingAs($this->owner);
+        $thread = \App\Models\Thread::factory()->create();
+        $other = \App\Models\Thread::factory()->create();
+        $post = \App\Models\Post::factory()->create(['thread_id' => $thread->id, 'created_by' => $this->owner->id]);
+
+        $this->put("/posts/{$post->id}", [
+            'body' => 'Edited body ZZ', 'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'thread_id' => $other->id,
+        ])->assertSessionHasNoErrors();
+        $this->assertSame('Edited body ZZ', $post->fresh()->body);
+        $this->assertSame($thread->id, (int) $post->fresh()->thread_id);
+
+        $this->actingAs($this->owner, 'sanctum')
+            ->patchJson("/api/posts/{$post->id}", ['thread_id' => $other->id])
+            ->assertOk();
+        $this->assertSame($thread->id, (int) $post->fresh()->thread_id);
+    }
+
+    public function test_api_location_update_rejects_a_null_entity(): void
+    {
+        $location = Location::factory()->create(['entity_id' => $this->entity->id, 'slug' => 'zz-null-entity']);
+
+        $this->actingAs($this->owner, 'sanctum')
+            ->patchJson("/api/locations/{$location->id}", ['entity_id' => null])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('entity_id');
+
+        $this->assertSame($this->entity->id, (int) $location->fresh()->entity_id);
+    }
 }

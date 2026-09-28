@@ -30,7 +30,7 @@ class LocationPatchRequest extends Request
             'longitude' => 'sometimes|nullable|numeric',
             'capacity' => 'sometimes|nullable|integer|min:0',
             'map_url' => 'sometimes|nullable|string|max:255',
-            'entity_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'entity_id' => 'sometimes|required|integer|exists:entities,id',
         ];
     }
 }

@@ -24,10 +24,11 @@ class PostRequest extends Request
      */
     public function rules()
     {
+        // no thread_id: a post stays in its thread. The edit form sends it as a hidden
+        // field, and accepting it let an author move a post into any thread (#2180)
         return [
             'body' => 'required|min:3',
             'visibility_id' => 'required',
-            'thread_id' => 'required',
             'name' => 'nullable|string|max:255',
             'slug' => 'nullable|string|max:255',
             'description' => 'nullable|string',
