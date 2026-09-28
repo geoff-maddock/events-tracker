@@ -433,64 +433,6 @@ class EventsController extends Controller
         return response()->json(new EventCollection($events));
     }
 
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['events.name' => 'Name', 'events.start_at' => 'Start At', 'event_types.name' => 'Event Type', 'events.updated_at' => 'Updated At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
-            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-        ];
-    }
-
-    /**
-     * Reset the limit, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_index';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('events.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): JsonResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_index';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return response()->json([]);
-    }
-
 
  
 
@@ -762,15 +704,9 @@ class EventsController extends Controller
         return Tag::resolveList($tagArray, $this->user)->modelKeys();
     }
 
-    protected function unauthorized(Request $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): JsonResponse
     {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
+        return response()->json(['message' => 'Not authorized'], 403);
     }
 
     public function destroy(Event $event, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response

@@ -111,47 +111,6 @@ class SeriesController extends Controller
     }
 
     /**
-     * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_series_index';
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('api.series.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_series_index';
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($request->get('redirect') ?? 'api.series.index');
-    }
-
-    /**
      * @throws \Throwable
      */
     public function index(
@@ -411,15 +370,9 @@ class SeriesController extends Controller
         return Tag::resolveList($tagArray, $this->user)->modelKeys();
     }
 
-    protected function unauthorized(Request $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): JsonResponse
     {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
+        return response()->json(['message' => 'Not authorized'], 403);
     }
 
     public function destroy(Series $series, Request $request): JsonResponse|\Symfony\Component\HttpFoundation\Response

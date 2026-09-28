@@ -315,12 +315,12 @@ Route::get('events/reset', ['as' => 'events.reset', 'uses' => '\App\Http\Control
 Route::get('events/rpp-reset', ['as' => 'events.rppReset', 'uses' => '\App\Http\Controllers\EventsController@rppReset']);
 
 // POST to Instagram; these publish to the site's accounts, so they are POST + auth and check ownership in the controller
-Route::post('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagram'])->name('events.instagramPost')->middleware('auth');
-Route::post('events/{id}/instagram-story-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postStoryToInstagram'])->name('events.instagramStoryPost')->middleware('auth');
-Route::post('events/{id}/instagram-post-single', [\App\Http\Controllers\Api\EventInstagramController::class, 'postToInstagram'])->name('events.instagramPostSingle')->middleware('auth');
-Route::post('events/instagram-post-week', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekToInstagram'])->name('events.instagramPostWeek')->middleware('auth');
-Route::post('events/instagram-weekend-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postWeekendPreviewToInstagram'])->name('events.instagramWeekendPreview')->middleware('auth');
-Route::post('events/instagram-todays-preview', [\App\Http\Controllers\Api\EventInstagramController::class, 'postTodaysPreviewToInstagram'])->name('events.instagramTodaysPreview')->middleware('auth');
+Route::post('events/{id}/instagram-post', [\App\Http\Controllers\EventInstagramController::class, 'postCarouselToInstagram'])->name('events.instagramPost')->middleware('auth');
+Route::post('events/{id}/instagram-story-post', [\App\Http\Controllers\EventInstagramController::class, 'postStoryToInstagram'])->name('events.instagramStoryPost')->middleware('auth');
+Route::post('events/{id}/instagram-post-single', [\App\Http\Controllers\EventInstagramController::class, 'postToInstagram'])->name('events.instagramPostSingle')->middleware('auth');
+Route::post('events/instagram-post-week', [\App\Http\Controllers\EventInstagramController::class, 'postWeekToInstagram'])->name('events.instagramPostWeek')->middleware('auth');
+Route::post('events/instagram-weekend-preview', [\App\Http\Controllers\EventInstagramController::class, 'postWeekendPreviewToInstagram'])->name('events.instagramWeekendPreview')->middleware('auth');
+Route::post('events/instagram-todays-preview', [\App\Http\Controllers\EventInstagramController::class, 'postTodaysPreviewToInstagram'])->name('events.instagramTodaysPreview')->middleware('auth');
 
 // POST to Discord (issue #2058). POST, not GET — this leaves the server.
 Route::post('events/{id}/discord-post', [\App\Http\Controllers\EventDiscordController::class, 'store'])

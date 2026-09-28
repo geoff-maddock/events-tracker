@@ -91,8 +91,6 @@ class ThreadsController extends Controller
     ): JsonResponse {
         // if the gate does not allow this user to show a thread redirect to home
         if (Gate::denies('show_thread')) {
-            flash()->error('Unauthorized', 'Your cannot view the thread index');
-
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -178,21 +176,14 @@ class ThreadsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ThreadRequest $request, Thread $thread): RedirectResponse
+    public function store(ThreadRequest $request, Thread $thread): JsonResponse
     {
-        $msg = '';
-
-        // get the request
-        $input = $request->all();
-
-        $thread = $thread->create($input);
+        $thread = $thread->create($request->all());
 
         // add to activity log
         Activity::log($thread, $this->user, 1);
 
-        flash()->success('Success', 'Your thread has been created');
-
-        return redirect()->route('threads.index');
+        return response()->json($thread, 201);
     }
 
     /**
@@ -267,21 +258,15 @@ class ThreadsController extends Controller
         return response()->json($thread);
     }
 
-    protected function unauthorized(ThreadRequest $request): RedirectResponse | Response
+    protected function unauthorized(ThreadRequest $request): JsonResponse
     {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
+        return response()->json(['message' => 'Not authorized'], 403);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Thread $thread): RedirectResponse|JsonResponse
+    public function destroy(Thread $thread): JsonResponse
     {
         if (!$thread->ownedBy($this->user)) {
             return response()->json(['message' => 'No way.'], 403);
@@ -292,50 +277,7 @@ class ThreadsController extends Controller
 
         $thread->delete();
 
-        flash()->success('Success', 'Your thread has been deleted!');
-
-        return redirect('threads');
-    }
-
-    /**
-     * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_thread_index';
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('threads.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_thread_index';
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($request->get('redirect') ?? 'threads.index');
+        return response()->json([], 204);
     }
 
     protected function getFormOptions(): array

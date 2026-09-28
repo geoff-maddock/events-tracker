@@ -84,8 +84,6 @@ class ForumsController extends Controller
     ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum index');
-
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -251,47 +249,6 @@ class ForumsController extends Controller
         $forum->delete();
 
         return response()->json([], 204);
-    }
-
-    /**
-     * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_forum_index';
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('forums.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_forum_index';
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($request->get('redirect') ?? 'forums.index');
     }
 
 }

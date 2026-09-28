@@ -70,31 +70,6 @@ class RolesController extends Controller
         return response()->json($roles);
     }
 
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        $keyPrefix = $request->get('key') ?? 'internal_role_index';
-        $listParamSessionStore->setBaseIndex('internal_role');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('roles.index');
-    }
-
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): Response {
-        $keyPrefix = $request->get('key') ?? 'internal_role_index';
-        $listParamSessionStore->setBaseIndex('internal_role');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('roles.index');
-    }
-
     public function store(RoleRequest $request): JsonResponse
     {
         if ($denied = $this->requireAdmin()) {

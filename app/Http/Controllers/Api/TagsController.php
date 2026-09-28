@@ -134,7 +134,6 @@ class TagsController extends Controller
                 ->with(['tagType'])
                 ->paginate($listResultSet->getLimit());
 
-        // return view('tags.index', compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags'));
         return response()->json(new TagCollection($tags));
     }
 
@@ -239,8 +238,6 @@ class TagsController extends Controller
         ]);
 
         $tagObject = $tag->create($input);
-
-        flash()->success('Success', sprintf('You added a new tag %s.', $tagObject->name));
 
         Activity::log($tagObject, $this->user, 1);
 

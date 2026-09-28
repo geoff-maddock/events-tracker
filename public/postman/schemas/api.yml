@@ -5986,6 +5986,87 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Posts"
+    post:
+      tags:
+        - posts
+      summary: Create post
+      description: Adds a post (reply) to the thread given by thread_id, as the authenticated user. Optional tag_list takes tag ids or names.
+      operationId: createPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - thread_id
+                - body
+              properties:
+                thread_id:
+                  type: integer
+                  example: 12
+                body:
+                  type: string
+                  minLength: 3
+                  example: Thanks, see you there.
+                tag_list:
+                  type: array
+                  items:
+                    oneOf:
+                      - type: integer
+                      - type: string
+      responses:
+        "201":
+          description: The created post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "422":
+          description: Missing thread_id or body, or no such thread
+  /api/posts/{postId}:
+    parameters:
+      - name: postId
+        description: The unique identifier of the post
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+    get:
+      tags:
+        - posts
+      summary: Get Post
+      description: Returns a single post by its ID.
+      operationId: getPostById
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "403":
+          description: Not allowed to view the forum
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+    delete:
+      tags:
+        - posts
+      summary: Delete Post
+      description: Deletes a post. Allowed for its author within 24 hours of posting, or an admin.
+      operationId: deletePostById
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Not the author (or past the 24-hour window), and not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/series:
     post:
       tags:
