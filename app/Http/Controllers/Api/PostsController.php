@@ -234,7 +234,7 @@ class PostsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         foreach (['name', 'slug', 'description'] as $field) {
             if (!array_key_exists($field, $input)) {
@@ -262,7 +262,7 @@ class PostsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $scalarInput = array_intersect_key($input, array_flip($post->getFillable()));
         if (!empty($scalarInput)) {

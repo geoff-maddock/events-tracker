@@ -17,6 +17,7 @@ class ForumPatchRequest extends Request
             'name' => ['sometimes', 'required', 'min:3'],
             'slug' => ['sometimes', 'required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
             'visibility_id' => ['sometimes', 'required'],
+            'description' => 'sometimes|nullable|string',
         ];
     }
 }

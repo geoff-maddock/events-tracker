@@ -79,7 +79,7 @@ class LocationsController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $location = Location::create($input);
 
@@ -105,7 +105,7 @@ class LocationsController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $optionalFields = [
             'attn',
@@ -117,7 +117,6 @@ class LocationsController extends Controller
             'country',
             'latitude',
             'longitude',
-            'entity_id',
             'capacity',
             'map_url',
         ];
@@ -141,7 +140,7 @@ class LocationsController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($location->getFillable()));
         if (!empty($scalarInput)) {
             $location->fill($scalarInput)->save();

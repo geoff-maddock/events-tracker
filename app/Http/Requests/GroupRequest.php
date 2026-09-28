@@ -28,6 +28,11 @@ class GroupRequest extends Request
             'name' => 'required|min:3',
             'label' => 'required|min:3',
             'level' => 'required',
+            'description' => 'nullable|string',
+            'permission_list' => 'nullable|array',
+            'permission_list.*' => 'integer|exists:permissions,id',
+            'user_list' => 'nullable|array',
+            'user_list.*' => 'integer|exists:users,id',
         ];
     }
 }

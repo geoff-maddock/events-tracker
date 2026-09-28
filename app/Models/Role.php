@@ -14,6 +14,15 @@ class Role extends Eloquent
         'name', 'slug', 'short',
     ];
 
+    /**
+     * roles.short is NOT NULL without a default, but the forms and the API treat it as
+     * optional; store a missing short as '' rather than failing the insert.
+     */
+    public function setShortAttribute(?string $value): void
+    {
+        $this->attributes['short'] = $value ?? '';
+    }
+
     protected $appends = ['plural'];
 
     protected $casts = [

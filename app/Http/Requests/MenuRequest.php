@@ -27,6 +27,7 @@ class MenuRequest extends Request
             'slug' => 'required|min:3|regex:/^[a-z0-9-]+$/',
             'body' => 'required',
             'visibility_id' => 'required',
+            'menu_parent_id' => 'nullable|integer|exists:menus,id',
         ];
     }
 }

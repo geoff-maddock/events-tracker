@@ -64,7 +64,7 @@ class EventReviewsController extends Controller
         $msg = '';
 
         // get the request
-        $input = $request->all();
+        $input = $request->validated();
         $input['event_id'] = $event->id;
         $input['user_id'] = $this->user->id;
         if (isset($input['attended'])) {

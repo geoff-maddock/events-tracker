@@ -250,9 +250,8 @@ class CategoriesController extends Controller
     {
         $msg = '';
 
-        $input = $request->all();
 
-        $category = $category->create($input);
+        $category = $category->create($request->validated());
 
         flash()->success('Success', 'Your category has been created');
 
@@ -290,7 +289,7 @@ class CategoriesController extends Controller
     {
         $msg = '';
 
-        $category->fill($request->input())->save();
+        $category->fill($request->validated())->save();
 
         // add to activity log
         Activity::log($category, $this->user, Action::UPDATE);

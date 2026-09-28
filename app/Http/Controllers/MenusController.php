@@ -227,9 +227,8 @@ class MenusController extends Controller
     {
         $msg = '';
 
-        $input = $request->all();
 
-        $menu = $menu->create($input);
+        $menu = $menu->create($request->validated());
 
         flash()->success('Success', 'Your menu has been created');
 
@@ -281,7 +280,7 @@ class MenusController extends Controller
     {
         $msg = '';
 
-        $menu->fill($request->input())->save();
+        $menu->fill($request->validated())->save();
 
         return redirect('menus');
     }

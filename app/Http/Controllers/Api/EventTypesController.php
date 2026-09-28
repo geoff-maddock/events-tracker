@@ -114,7 +114,7 @@ class EventTypesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $eventType = EventType::create($input);
 
@@ -140,7 +140,7 @@ class EventTypesController extends Controller
             return $denied;
         }
 
-        $eventType->fill($request->all())->save();
+        $eventType->fill($request->validated())->save();
 
         return response()->json($eventType);
     }
@@ -154,7 +154,7 @@ class EventTypesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($eventType->getFillable()));
         if (!empty($scalarInput)) {
             $eventType->fill($scalarInput)->save();

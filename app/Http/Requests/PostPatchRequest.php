@@ -15,10 +15,14 @@ class PostPatchRequest extends Request
      */
     public function rules(): array
     {
+        // no thread_id: a post stays in its thread. The edit form sends it as a hidden
+        // field, and accepting it let an author move a post into any thread (#2180)
         return [
             'body' => ['sometimes', 'required', 'min:3'],
             'visibility_id' => ['sometimes', 'required'],
-            'thread_id' => ['sometimes', 'required'],
+            'name' => 'sometimes|nullable|string|max:255',
+            'slug' => 'sometimes|nullable|string|max:255',
+            'description' => 'sometimes|nullable|string',
         ];
     }
 }

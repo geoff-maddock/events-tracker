@@ -15,6 +15,10 @@ class ContactsController extends Controller
     protected array $rules = [
         'name' => ['required', 'min:3'],
         'visibility_id' => ['required'],
+        'type' => ['nullable', 'string', 'max:255'],
+        'email' => ['nullable', 'string', 'max:255'],
+        'phone' => ['nullable', 'string', 'max:255'],
+        'other' => ['nullable', 'string', 'max:255'],
     ];
 
     public function __construct()
@@ -47,12 +51,7 @@ class ContactsController extends Controller
         $msg = '';
 
         // get the request
-        $input = $request->all();
-        $input['entity_id'] = $entity->id;
-
-        $this->validate($request, $this->rules);
-
-        $contact = Contact::create($input);
+        $contact = Contact::create($this->validate($request, $this->rules));
 
         $entity->contacts()->attach($contact->id);
 
@@ -92,7 +91,7 @@ class ContactsController extends Controller
 
         $msg = '';
 
-        $contact->fill($request->input())->save();
+        $contact->fill($request->validated())->save();
 
         flash()->success('Success', 'Your contact has been updated!');
 

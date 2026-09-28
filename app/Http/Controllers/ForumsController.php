@@ -240,9 +240,8 @@ class ForumsController extends Controller
         $msg = '';
 
         // get the request
-        $input = $request->all();
 
-        $forum = $forum->create($input);
+        $forum = $forum->create($request->validated());
 
         // add to activity log
         Activity::log($forum, $this->user, 1);
@@ -335,13 +334,9 @@ class ForumsController extends Controller
      */
     public function update(ForumRequest $request, Forum $forum): RedirectResponse
     {
-        $msg = '';
-
-        $forum->fill($request->input())->save();
-
-        if (!$forum->ownedBy($this->user)) {
-            $this->unauthorized($request);
-        }
+        // ForumRequest::authorize() limits forum changes to admins; the ownership check
+        // that used to follow the save never took effect, and admins edit each other's forums
+        $forum->fill($request->validated())->save();
 
         // add to activity log
         Activity::log($forum, $this->user, 2);
@@ -349,17 +344,6 @@ class ForumsController extends Controller
         flash('Success', 'Your forum has been updated');
 
         return redirect('forums');
-    }
-
-    protected function unauthorized(ForumRequest $request): RedirectResponse | Response
-    {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
     }
 
     /**

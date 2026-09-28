@@ -287,7 +287,7 @@ class PostsController extends Controller
     public function store(Request $request, Thread $thread)
     {
         // the reply forms send only body and tag_list, so PostRequest (which also
-        // requires visibility_id and thread_id) doesn't fit; same body rule
+        // requires visibility_id) doesn't fit; same body rule
         $request->validate(['body' => 'required|min:3']);
 
         $msg = '';
@@ -379,7 +379,7 @@ class PostsController extends Controller
 
         $this->authorize('update', $post);
 
-        $post->fill($request->input())->save();
+        $post->fill($request->validated())->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, auth()->user());

@@ -54,8 +54,7 @@ class CommentsController extends Controller
         $msg = '';
         $type = null;
 
-        // get the request
-        $input = $request->all();
+        $input = $this->validate($request, $this->rules);
 
         if (isset($entity->id)) {
             $input['commentable_type'] = 'entity';
@@ -68,8 +67,6 @@ class CommentsController extends Controller
             $input['commentable_id'] = $event->id;
             $type = 'events';
         }
-
-        $this->validate($request, $this->rules);
 
         $comment = Comment::create($input);
         $comment->save();

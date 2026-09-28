@@ -91,7 +91,7 @@ class MenusController extends Controller
             return $denied;
         }
 
-        $menu = $menu->create($request->all());
+        $menu = $menu->create($request->validated());
 
         return response()->json(new MenuResource($menu), 201);
     }
@@ -106,7 +106,7 @@ class MenusController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         if (!array_key_exists('menu_parent_id', $input)) {
             $input['menu_parent_id'] = null;
@@ -126,7 +126,7 @@ class MenusController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($menu->getFillable()));
         if (!empty($scalarInput)) {
             $menu->fill($scalarInput)->save();

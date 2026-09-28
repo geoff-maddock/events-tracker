@@ -223,9 +223,7 @@ class GroupsController extends Controller
     {
         $msg = '';
 
-        $input = $request->all();
-
-        $group = $group->create($input);
+        $group = $group->create($this->validatedFields($request));
 
         $group->permissions()->attach($request->input('permission_list', []));
         $group->users()->attach($request->input('user_list', []));
@@ -257,11 +255,11 @@ class GroupsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Group $group, Request $request): RedirectResponse
+    public function update(Group $group, GroupRequest $request): RedirectResponse
     {
         $msg = '';
 
-        $group->fill($request->input())->save();
+        $group->fill($this->validatedFields($request))->save();
 
         $group->permissions()->sync($request->input('permission_list', []));
 
@@ -303,5 +301,19 @@ class GroupsController extends Controller
             'permissionOptions' => Permission::orderBy('name')->pluck('name', 'id')->all(),
             'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
+    }
+
+    /**
+     * The validated fields, with a blank description stored as '' — the column is
+     * NOT NULL without a default, so a null description was a 500.
+     *
+     * @return array<string, mixed>
+     */
+    protected function validatedFields(GroupRequest $request): array
+    {
+        $fields = $request->validated();
+        $fields['description'] = $fields['description'] ?? '';
+
+        return $fields;
     }
 }

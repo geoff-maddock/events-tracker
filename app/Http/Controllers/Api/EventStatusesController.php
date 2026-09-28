@@ -82,7 +82,7 @@ class EventStatusesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $eventStatus = EventStatus::create($input);
 
@@ -103,7 +103,7 @@ class EventStatusesController extends Controller
             return $denied;
         }
 
-        $eventStatus->fill($request->all())->save();
+        $eventStatus->fill($request->validated())->save();
 
         return response()->json($eventStatus);
     }
@@ -117,7 +117,7 @@ class EventStatusesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($eventStatus->getFillable()));
         if (!empty($scalarInput)) {
             $eventStatus->fill($scalarInput)->save();

@@ -236,9 +236,8 @@ class EntityTypesController extends Controller
      */
     public function store(EntityTypeRequest $request, EntityType $entityType): RedirectResponse
     {
-        $input = $request->all();
 
-        $entityType->create($input);
+        $entityType->create($request->validated());
 
         return redirect()->route('entity-types.index');
     }
@@ -267,7 +266,7 @@ class EntityTypesController extends Controller
      */
     public function update(EntityType $entityType, EntityTypeRequest $request): RedirectResponse
     {
-        $entityType->fill($request->input())->save();
+        $entityType->fill($request->validated())->save();
 
         return redirect('entity-types');
     }
