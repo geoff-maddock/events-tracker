@@ -30,6 +30,7 @@ class ForumRequest extends Request
             'name' => 'required|min:3',
             'slug' => 'required|min:3|regex:/^[a-z0-9-]+$/',
             'visibility_id' => 'required',
+            'description' => 'nullable|string',
         ];
     }
 }

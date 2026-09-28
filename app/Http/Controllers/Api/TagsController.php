@@ -14,6 +14,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -308,7 +309,16 @@ class TagsController extends Controller
             return $denied;
         }
 
-        $tag->fill($request->only(['name', 'slug', 'tag_type_id', 'description']))->save();
+        // PUT and PATCH share this action, so every field is optional; the rules
+        // otherwise match TagRequest (the web tag form's validation)
+        $input = $this->validate($request, [
+            'name' => ['sometimes', 'required', 'min:3', 'max:16'],
+            'slug' => ['sometimes', 'required', 'regex:/^[a-z0-9-]+$/', Rule::unique('tags')->ignore($tag->id)],
+            'tag_type_id' => ['sometimes', 'nullable', 'exists:tag_types,id'],
+            'description' => ['sometimes', 'nullable', 'string'],
+        ]);
+
+        $tag->fill($input)->save();
 
         return response()->json(new TagResource($tag));
     }

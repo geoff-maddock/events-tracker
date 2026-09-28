@@ -114,7 +114,7 @@ class EntityTypesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $entityType = EntityType::create($input);
 
@@ -141,7 +141,7 @@ class EntityTypesController extends Controller
             return $denied;
         }
 
-        $entityType->fill($request->all())->save();
+        $entityType->fill($request->validated())->save();
 
         return response()->json($entityType);
     }
@@ -155,7 +155,7 @@ class EntityTypesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($entityType->getFillable()));
         if (!empty($scalarInput)) {
             $entityType->fill($scalarInput)->save();

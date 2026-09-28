@@ -34,6 +34,17 @@ class LocationsController extends Controller
         'city' => ['required', 'min:3'],
         'visibility_id' => ['required'],
         'location_type_id' => ['required'],
+        'attn' => ['nullable', 'string', 'max:255'],
+        'address_one' => ['nullable', 'string', 'max:255'],
+        'address_two' => ['nullable', 'string', 'max:255'],
+        'neighborhood' => ['nullable', 'string', 'max:255'],
+        'state' => ['nullable', 'string', 'max:255'],
+        'postcode' => ['nullable', 'string', 'max:255'],
+        'country' => ['nullable', 'string', 'max:255'],
+        'latitude' => ['nullable', 'numeric'],
+        'longitude' => ['nullable', 'numeric'],
+        'capacity' => ['nullable', 'integer', 'min:0'],
+        'map_url' => ['nullable', 'string', 'max:255'],
     ];
 
     public function __construct()
@@ -86,10 +97,8 @@ class LocationsController extends Controller
         $msg = '';
 
         // get the request
-        $input = $request->all();
+        $input = $this->validate($request, $this->rules);
         $input['entity_id'] = $entity->id;
-
-        $this->validate($request, $this->rules);
 
         $location = Location::create($input);
 
@@ -130,7 +139,7 @@ class LocationsController extends Controller
 
         $msg = '';
 
-        $location->fill($request->input())->save();
+        $location->fill($this->validate($request, $this->rules))->save();
 
         flash()->success('Success', 'Your location has been updated!');
 

@@ -26,6 +26,10 @@ class EventReviewRequest extends Request
         return [
             'review' => 'required|min:3',
             'review_type_id' => 'required',
+            'expectation' => 'nullable|integer|min:0|max:10',
+            'rating' => 'nullable|integer|min:0|max:10',
+            'attended' => 'nullable',
+            'confirmed' => 'nullable',
         ];
     }
 }

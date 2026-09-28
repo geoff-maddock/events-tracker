@@ -173,7 +173,7 @@ class ForumsController extends Controller
             return $denied;
         }
 
-        $forum = $forum->create($request->all());
+        $forum = $forum->create($request->validated());
 
         // add to activity log
         Activity::log($forum, $this->user, 1);
@@ -199,7 +199,7 @@ class ForumsController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         foreach (['description'] as $field) {
             if (!array_key_exists($field, $input)) {
@@ -223,7 +223,7 @@ class ForumsController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($forum->getFillable()));
         if (!empty($scalarInput)) {
             $forum->fill($scalarInput)->save();

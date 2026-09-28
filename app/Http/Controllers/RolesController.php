@@ -264,9 +264,8 @@ class RolesController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        $input = $request->all();
 
-        $role->create($input);
+        $role->create($request->validated());
 
         flash()->success('Success', 'Your role has been created!');
 
@@ -310,7 +309,7 @@ class RolesController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        $role->fill($request->input())->save();
+        $role->fill($request->validated())->save();
 
         flash()->success('Success', 'Your role has been updated!');
 

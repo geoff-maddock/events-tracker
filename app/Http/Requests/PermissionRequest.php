@@ -27,6 +27,9 @@ class PermissionRequest extends Request
             'name' => 'required|min:3',
             'label' => 'required|min:3',
             'level' => 'required',
+            'description' => 'nullable|string',
+            'group_list' => 'nullable|array',
+            'group_list.*' => 'integer|exists:groups,id',
         ];
     }
 }

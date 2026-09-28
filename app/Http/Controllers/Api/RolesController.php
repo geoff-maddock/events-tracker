@@ -76,7 +76,7 @@ class RolesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $role = Role::create($input);
 
         return response()->json($role, 201);
@@ -97,7 +97,7 @@ class RolesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         if (!array_key_exists('short', $input)) {
             $input['short'] = null;
@@ -117,7 +117,7 @@ class RolesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($role->getFillable()));
         if (!empty($scalarInput)) {
             $role->fill($scalarInput)->save();

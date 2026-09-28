@@ -379,7 +379,7 @@ class PostsController extends Controller
 
         $this->authorize('update', $post);
 
-        $post->fill($request->input())->save();
+        $post->fill($request->validated())->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, auth()->user());

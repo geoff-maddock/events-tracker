@@ -16,6 +16,7 @@ class MenuPatchRequest extends Request
             'slug' => ['sometimes', 'required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
             'body' => ['sometimes', 'required'],
             'visibility_id' => ['sometimes', 'required'],
+            'menu_parent_id' => 'sometimes|nullable|integer|exists:menus,id',
         ];
     }
 }

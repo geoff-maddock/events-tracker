@@ -113,7 +113,7 @@ class EntityStatusesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $entityStatus = EntityStatus::create($input);
 
@@ -138,7 +138,7 @@ class EntityStatusesController extends Controller
             return $denied;
         }
 
-        $entityStatus->fill($request->all())->save();
+        $entityStatus->fill($request->validated())->save();
 
         return response()->json($entityStatus);
     }
@@ -152,7 +152,7 @@ class EntityStatusesController extends Controller
             return $denied;
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($entityStatus->getFillable()));
         if (!empty($scalarInput)) {
             $entityStatus->fill($scalarInput)->save();

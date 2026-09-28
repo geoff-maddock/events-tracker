@@ -281,7 +281,7 @@ class TagsController extends Controller
         $msg = '';
 
         // get the request
-        $input = $request->all();
+        $input = $request->validated();
 
         // if the tag name does not exist, create
         if (!Tag::where('name', '=', $input['name'])->first()) {
@@ -459,7 +459,7 @@ class TagsController extends Controller
 
         $msg = '';
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $input['slug'] = Str::slug($request->input('name', '-'));
 

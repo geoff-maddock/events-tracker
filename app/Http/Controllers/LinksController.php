@@ -32,6 +32,8 @@ class LinksController extends Controller
     protected array $rules = [
         'text' => ['required', 'min:3'],
         'url' => ['required', 'min:3'],
+        'title' => ['nullable', 'string', 'max:255'],
+        'is_primary' => ['nullable'],
     ];
 
     public function __construct()
@@ -75,11 +77,8 @@ class LinksController extends Controller
         $msg = '';
 
         // get the request
-        $input = $request->all();
-        $input['entity_id'] = $entity->id;
+        $input = $this->validate($request, $this->rules);
         $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
-
-        $this->validate($request, $this->rules);
 
         $link = Link::create($input);
 
@@ -118,7 +117,7 @@ class LinksController extends Controller
         $this->authorize('update', $entity);
         $this->ensureBelongsToEntity($entity, $link);
 
-        $input = $request->all();
+        $input = $this->validate($request, $this->rules);
         $input['is_primary'] = isset($input['is_primary']) ? 1 : 0;
 
         $link->fill($input)->save();

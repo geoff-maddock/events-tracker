@@ -19,6 +19,9 @@ class PostPatchRequest extends Request
             'body' => ['sometimes', 'required', 'min:3'],
             'visibility_id' => ['sometimes', 'required'],
             'thread_id' => ['sometimes', 'required'],
+            'name' => 'sometimes|nullable|string|max:255',
+            'slug' => 'sometimes|nullable|string|max:255',
+            'description' => 'sometimes|nullable|string',
         ];
     }
 }

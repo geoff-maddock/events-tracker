@@ -25,6 +25,9 @@ class ContactRequest extends Request
             'name' => 'required|min:3',
             'type' => 'required|min:3',
             'visibility_id' => 'required',
+            'email' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:255',
+            'other' => 'nullable|string|max:255',
         ];
     }
 }

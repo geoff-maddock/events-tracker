@@ -28,6 +28,9 @@ class PostRequest extends Request
             'body' => 'required|min:3',
             'visibility_id' => 'required',
             'thread_id' => 'required',
+            'name' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
         ];
     }
 }
