@@ -518,7 +518,8 @@ class Entity extends Eloquent implements HasPhotos
     {
         // check if the relation is loaded
         if ($this->relationLoaded('links')) {
-            return $this->links->where('url', 'LIKE', '%bandcamp%')->sortBy('created_at')->first();
+            // Collection::where() has no LIKE operator: it compared url == 'LIKE' and never matched
+            return $this->links->filter(fn (Link $link) => false !== stripos((string) $link->url, 'bandcamp'))->sortBy('created_at')->first();
         }
         
         return $this->links()->where('url', 'LIKE', '%bandcamp%')->orderBy('created_at', 'ASC')->first();
@@ -531,7 +532,8 @@ class Entity extends Eloquent implements HasPhotos
     {
         // check if the relation is loaded
         if ($this->relationLoaded('links')) {
-            return $this->links->where('url', 'LIKE', '%soundcloud%')->sortBy('created_at')->first();
+            // Collection::where() has no LIKE operator: it compared url == 'LIKE' and never matched
+            return $this->links->filter(fn (Link $link) => false !== stripos((string) $link->url, 'soundcloud'))->sortBy('created_at')->first();
         }
         
         return $this->links()->where('url', 'LIKE', '%soundcloud%')->orderBy('created_at', 'ASC')->first();

@@ -151,9 +151,7 @@ class CommentsController extends Controller
 
         $comment->delete();
 
-        \Session::flash('flash_message', 'Your comment has been deleted!');
-
-        flash()->success('Success', 'Your comment deleted');
+        flash()->success('Success', 'Your comment has been deleted.');
 
         return back();
     }

@@ -28,7 +28,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class SeriesController extends Controller
@@ -418,7 +417,7 @@ class SeriesController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        Session::flash('flash_message', 'Not authorized');
+        flash()->error('Error', 'Not authorized');
 
         return redirect('/');
     }

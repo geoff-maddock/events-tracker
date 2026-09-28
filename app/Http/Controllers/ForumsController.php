@@ -19,7 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View as ViewView;
 
 class ForumsController extends Controller
@@ -358,7 +357,7 @@ class ForumsController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        Session::flash('flash_message', 'Not authorized');
+        flash()->error('Error', 'Not authorized');
 
         return redirect('/');
     }

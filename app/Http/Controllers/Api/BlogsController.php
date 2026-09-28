@@ -16,7 +16,6 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Session;
 use App\Models\Action;
 
 class BlogsController extends Controller
@@ -310,7 +309,7 @@ class BlogsController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        Session::flash('flash_message', 'Not authorized');
+        flash()->error('Error', 'Not authorized');
 
         return redirect('/');
     }

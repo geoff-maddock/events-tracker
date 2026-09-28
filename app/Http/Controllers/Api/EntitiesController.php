@@ -992,7 +992,7 @@ class EntitiesController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        \Session::flash('flash_message', 'Not authorized');
+        flash()->error('Error', 'Not authorized');
 
         return redirect('/');
     }

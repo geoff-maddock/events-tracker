@@ -33,7 +33,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class EventsController extends Controller
@@ -769,7 +768,7 @@ class EventsController extends Controller
             return response(['message' => 'No way.'], 403);
         }
 
-        Session::flash('flash_message', 'Not authorized');
+        flash()->error('Error', 'Not authorized');
 
         return redirect('/');
     }
