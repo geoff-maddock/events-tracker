@@ -158,8 +158,6 @@ class BlogsController extends Controller
 
         $blog = $blog->create($input);
 
-        flash()->success('Success', 'Your blog has been created');
-
         // add to activity log
         Activity::log($blog, $this->user, Action::CREATE);
 
@@ -264,54 +262,9 @@ class BlogsController extends Controller
         return response()->json([], 204);
     }
 
-    /**
-     * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_blog_index';
-        $listParamSessionStore->setBaseIndex('internal_blog');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear all sort
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('blogs.index');
-    }
-
-    /**
-     * Reset the filtering of blogs.
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_blog_index';
-        $listParamSessionStore->setBaseIndex('internal_blog');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($request->get('redirect') ?? 'blogs.index');
-    }
-
-    protected function unauthorized(Request $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): JsonResponse
     {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
+        return response()->json(['message' => 'Not authorized'], 403);
     }
 
 }

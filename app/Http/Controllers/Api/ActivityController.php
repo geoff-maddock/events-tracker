@@ -64,7 +64,7 @@ class ActivityController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string {
+    ): JsonResponse {
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_activity');
         $listParamSessionStore->setKeyPrefix('internal_activity_index');
@@ -94,22 +94,7 @@ class ActivityController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('activities.index')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('activities'))
-            ->render();
+        return response()->json(new ActivityCollection($activities));
     }
 
     public function index(
@@ -165,59 +150,4 @@ class ActivityController extends Controller
         return response()->json([], 204);
     }
 
-    /**
-     * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_activity_index';
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear sorting from session
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('activities.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_activity_index';
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($request->get('redirect') ?? 'activities.index');
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return  [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['activities.object_name' => 'Name', 'activities.object_table' => 'Table', 'activities.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return  [
-            'actionOptions' => ['' => '&nbsp;'] + Action::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-        ];
-    }
 }

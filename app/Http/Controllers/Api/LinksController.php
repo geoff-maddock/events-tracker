@@ -6,9 +6,9 @@ use App\Filters\LinkFilters;
 use App\Models\Entity;
 use App\Models\Link;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LinkCollection;
+use App\Http\Resources\LinkResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\JsonResponse;
@@ -85,9 +85,9 @@ class LinksController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entity $entity, Link $link): View
+    public function show(Link $link): JsonResponse
     {
-        return view('links.show', compact('entity', 'link'));
+        return response()->json(new LinkResource($link));
     }
 
     /**

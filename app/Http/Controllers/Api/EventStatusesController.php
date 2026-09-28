@@ -76,33 +76,6 @@ class EventStatusesController extends Controller
         return response()->json($eventStatuses);
     }
 
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        $keyPrefix = $request->get('key') ?? 'internal_event_status_index';
-        $listParamSessionStore->setBaseIndex('internal_event_status');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('event-statuses.index');
-    }
-
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): Response {
-        $keyPrefix = $request->get('key') ?? 'internal_event_status_index';
-        $listParamSessionStore->setBaseIndex('internal_event_status');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('event-statuses.index');
-    }
-
     public function store(EventStatusRequest $request): JsonResponse
     {
         if ($denied = $this->requireAdmin()) {

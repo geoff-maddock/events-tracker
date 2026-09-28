@@ -105,49 +105,6 @@ class EntityTypesController extends Controller
 
 
     /**
-     * Reset the rpp, sort, order
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_entity_type_index';
-        $listParamSessionStore->setBaseIndex('internal_entity_type');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('entity-types.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return Response
-     *
-     * @throws \Throwable
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): Response {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_entity_type_index';
-        $listParamSessionStore->setBaseIndex('internal_entity_type');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('entity-types.index');
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      */

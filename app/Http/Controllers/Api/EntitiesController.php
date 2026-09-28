@@ -986,34 +986,9 @@ class EntitiesController extends Controller
         return response()->json([], 204);
     }
 
-    protected function unauthorized(Request $request): RedirectResponse | Response
+    protected function unauthorized(Request $request): JsonResponse
     {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['entities.name' => 'Name', 'entity_types.name' => 'Entity Type', 'entities.created_at' => 'Created At', 'follows_count' => 'Popularity'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-            'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'entityStatusOptions' => ['' => ''] +  EntityStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-        ];
+        return response()->json(['message' => 'Not authorized'], 403);
     }
 
     public function embeds(?Entity $entity,  OembedExtractor $embedExtractor): JsonResponse

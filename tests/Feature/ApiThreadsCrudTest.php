@@ -44,8 +44,10 @@ class ApiThreadsCrudTest extends TestCase
     {
         $payload = $this->payload(['name' => 'ZZ Test Thread '.uniqid()]);
 
-        // store returns a redirect to threads.index.
-        $this->postJson('/api/threads', $payload)->assertStatus(302);
+        // the API answers with the created thread, not a redirect (#2179)
+        $this->postJson('/api/threads', $payload)
+            ->assertStatus(201)
+            ->assertJsonPath('name', $payload['name']);
 
         $this->assertDatabaseHas('threads', ['name' => $payload['name']]);
     }

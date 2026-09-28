@@ -8,6 +8,7 @@ use App\Filters\PostFilters;
 use App\Http\Requests\PostPatchRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostCollection;
+use App\Http\Resources\PostResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Post;
@@ -82,9 +83,6 @@ class PostsController extends Controller
     ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            // return unauthorized response
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -130,12 +128,10 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
-    ): string|RedirectResponse {
+    ): JsonResponse {
         // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // initialized listParamSessionStore with base index key
@@ -168,38 +164,21 @@ class PostsController extends Controller
         // saves the updated session
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $posts;
-        }
-
-        return view('posts.index')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('posts'))->render();
+        return response()->json(new PostCollection($posts));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @return Response
-     *
-     * @internal param Request $request
+     * Add a post to the thread given by thread_id.
      */
-    public function store(Request $request, Thread $thread)
+    public function store(Request $request): JsonResponse
     {
-        $msg = '';
+        // POST api/posts has no {thread} segment, so the thread comes from the body
+        $request->validate([
+            'thread_id' => 'required|exists:threads,id',
+            'body' => 'required|min:3',
+        ]);
+
+        $thread = Thread::findOrFail($request->input('thread_id'));
 
         // TODO change this to use the trust_post permission to allow html
         if (auth()->id() === config('app.superuser')) {
@@ -208,23 +187,16 @@ class PostsController extends Controller
             $allow_html = 0;
         }
 
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, $request->user());
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
+        $tags = Tag::resolveList($request->input('tag_list', []), $request->user());
 
-        $thread->addPost([
-            'body' => request('body'),
+        $post = $thread->addPost([
+            'body' => $request->input('body'),
             'created_by' => auth()->id(),
             'visibility_id' => 1,
             'allow_html' => $allow_html,
         ]);
 
-        $post = Post::where('thread_id', '=', $thread->id)->orderBy('id', 'DESC')->first();
-
-        $post->tags()->sync($syncArray);
+        $post->tags()->sync($tags->modelKeys());
 
         // here, notify anybody following the thread
         NotifyFollowers::dispatch($post);
@@ -232,7 +204,7 @@ class PostsController extends Controller
         // add to activity log
         Activity::log($post, $this->user, 1);
 
-        return back();
+        return response()->json(new PostResource($post), 201);
     }
 
     /**
@@ -240,22 +212,13 @@ class PostsController extends Controller
      *
      * @internal param int $id
      */
-    public function show(Post $post): RedirectResponse
+    public function show(Post $post): JsonResponse
     {
-        // if the gate does not allow this user to show a forum redirect to home
         if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // call a log for this and prevent it from going out of control
-        ++$post->views;
-        $post->save();
-
-        $route = route('threads.show', ['thread' => $post->thread_id]).'#post-'.$post->id;
-
-        return redirect($route);
+        return response()->json(new PostResource($post));
     }
 
     /**
@@ -335,15 +298,10 @@ class PostsController extends Controller
      *
      * @internal param int $id
      */
-    public function destroy(Post $post): RedirectResponse
+    public function destroy(Post $post): JsonResponse
     {
-        $id = $post->thread_id;
-        $thread = $post->thread;
-
         if ($this->user->cannot('destroy', $post)) {
-            flash('Error', 'Your are not authorized to delete the post.');
-
-            return redirect()->route('threads.show', ['thread' => $id]);
+            return response()->json(['message' => 'You are not authorized to delete this post.'], 403);
         }
 
         // add to activity log
@@ -351,77 +309,12 @@ class PostsController extends Controller
 
         $post->delete();
 
-        flash()->success('Success', 'Your post has been deleted!');
-
-        return redirect()->route('threads.show', ['thread' => $id]);
+        return response()->json([], 204);
     }
 
-    protected function unauthorized(PostRequest $request): RedirectResponse | Response
+    protected function unauthorized(PostRequest $request): JsonResponse
     {
-        if ($request->ajax()) {
-            return response(['message' => 'No way.'], 403);
-        }
-
-        flash()->error('Error', 'Not authorized');
-
-        return redirect('/');
+        return response()->json(['message' => 'Not authorized'], 403);
     }
 
-    /**
-     * Reset the limit, sort, direction.
-     *
-     * @throws \Throwable
-     */
-    public function rppReset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ): RedirectResponse {
-        // set the limit, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_post_index';
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route('posts.index');
-    }
-
-    /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
-     */
-    public function reset(
-        Request $request,
-        ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_post_index';
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
-
-        return redirect()->route($request->get('redirect') ?? 'posts.index');
-    }
-
-    protected function getFilterOptions(): array
-    {
-        return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-        ];
-    }
-
-    protected function getListControlOptions(): array
-    {
-        return [
-            'limitOptions' => [5 => 5, 10 => 10, 25 => 25, 100 => 100, 1000 => 1000],
-            'sortOptions' => ['posts.name' => 'Name', 'users.name' => 'User', 'posts.created_at' => 'Created At'],
-            'directionOptions' => ['asc' => 'asc', 'desc' => 'desc'],
-        ];
-    }
 }
