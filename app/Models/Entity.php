@@ -1024,20 +1024,22 @@ class Entity extends Eloquent implements HasPhotos
         ];
 
         foreach ($this->links as $link) {
-            if (empty($link->url)) {
+            // only well-formed http(s) URLs (#2220)
+            if (!$url = $link->safeUrl()) {
                 continue;
             }
             foreach ($identityPlatforms as $platform) {
-                if (str_contains($link->url, $platform)) {
-                    $sameAs[] = $link->url;
+                if (str_contains($url, $platform)) {
+                    $sameAs[] = $url;
                     break;
                 }
             }
         }
 
         $primary = $this->primaryLink();
-        if ($primary && !empty($primary->url) && !in_array($primary->url, $sameAs)) {
-            $sameAs[] = $primary->url;
+        $primaryUrl = $primary?->safeUrl();
+        if ($primaryUrl && !in_array($primaryUrl, $sameAs)) {
+            $sameAs[] = $primaryUrl;
         }
 
         return array_values(array_unique($sameAs));

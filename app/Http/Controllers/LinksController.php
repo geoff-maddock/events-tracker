@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Entity;
 use App\Models\Link;
+use App\Rules\LinkUrl;
 use App\Models\Visibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,6 +41,9 @@ class LinksController extends Controller
     {
         // per-entity ownership is checked in each action via EntityPolicy::update
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+
+        // http(s) only; scheme-less input is stored as https:// (#2220)
+        $this->rules['url'] = ['required', new LinkUrl()];
 
         // default list variables
         $this->defaultLimit = 5;

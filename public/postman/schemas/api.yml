@@ -1084,7 +1084,7 @@ components:
         url:
           type: string
           maxLength: 255
-          description: A url representing a link
+          description: An http(s) URL. Input without a scheme (www.example.com) is stored with https://; any other scheme is rejected with 422.
           example: https://lazercrunk.com
         is_primary:
           type: boolean

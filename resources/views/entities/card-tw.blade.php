@@ -174,15 +174,16 @@
 				</a>
 				@endif
 
-				@if ($entity->soundcloudLink !== null)
-				<a href="{{ $entity->soundcloudLink->url}}"
+				{{-- safeUrl(): only http(s) links become an href (#2220) --}}
+				@if ($entity->soundcloudLink?->safeUrl())
+				<a href="{{ $entity->soundcloudLink->safeUrl() }}"
 					target="_blank"
 					title="SoundCloud"
 					class="text-muted-foreground hover:text-primary transition-colors">
 					<i class="bi bi-music-note-beamed"></i>
 				</a>
-				@elseif ($entity->bandcampLink !== null)
-				<a href="{{ $entity->bandcampLink->url}}"
+				@elseif ($entity->bandcampLink?->safeUrl())
+				<a href="{{ $entity->bandcampLink->safeUrl() }}"
 					target="_blank"
 					title="Bandcamp"
 					class="text-muted-foreground hover:text-primary transition-colors">

@@ -19,6 +19,7 @@ use App\Models\EntityType;
 use App\Models\Follow;
 use App\Models\Photo;
 use App\Models\Link;
+use App\Rules\LinkUrl;
 use App\Models\Location;
 use App\Models\Contact;
 use App\Models\Role;
@@ -542,7 +543,7 @@ class EntitiesController extends Controller
     {
         $this->validate($request, [
             'text' => ['required', 'min:3'],
-            'url' => ['required', 'min:3'],
+            'url' => ['required', new LinkUrl()],
         ]);
 
         if ($entity = Entity::find($id)) {
@@ -572,7 +573,7 @@ class EntitiesController extends Controller
     {
         $this->validate($request, [
             'text' => ['required', 'min:3'],
-            'url' => ['required', 'min:3'],
+            'url' => ['required', new LinkUrl()],
             'title' => ['nullable', 'string'],
             'is_primary' => ['nullable', 'boolean'],
         ]);
@@ -607,7 +608,7 @@ class EntitiesController extends Controller
     {
         $this->validate($request, [
             'text' => ['sometimes', 'required', 'min:3'],
-            'url' => ['sometimes', 'required', 'min:3'],
+            'url' => ['sometimes', 'required', new LinkUrl()],
             'title' => ['sometimes', 'nullable', 'string'],
             'is_primary' => ['sometimes', 'nullable', 'boolean'],
         ]);

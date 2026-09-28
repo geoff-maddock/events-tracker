@@ -70,12 +70,13 @@
 	</a>
 	@endif
 
-	@if ($entity->soundcloudLink !== null)
-	<a href="{{ $entity->soundcloudLink->url}}" target="_">	
+	{{-- safeUrl(): only http(s) links become an href (#2220) --}}
+	@if ($entity->soundcloudLink?->safeUrl())
+	<a href="{{ $entity->soundcloudLink->safeUrl() }}" target="_">	
 			<i class="bi bi-music-note-beamed card-actions"></i>
 	</a>
-	@elseif ($entity->bandcampLink !== null)
-	<a href="{{ $entity->bandcampLink->url}}" target="_">	
+	@elseif ($entity->bandcampLink?->safeUrl())
+	<a href="{{ $entity->bandcampLink->safeUrl() }}" target="_">	
 		<i class="bi bi-music-note-beamed card-actions"></i>
 	</a>
 	@endif

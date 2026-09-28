@@ -487,12 +487,17 @@
 				<div class="space-y-2">
 					@foreach ($entity->links as $link)
 					<div class="flex items-center gap-2">
-						<a href="{{ $link->url }}"
+						{{-- only http(s) links become an href (#2220) --}}
+						@if ($linkUrl = $link->safeUrl())
+						<a href="{{ $linkUrl }}"
 							target="_blank"
 							class="text-primary hover:text-primary/90 text-sm break-all">
 							{{ $link->text ?? $link->url }}
 						</a>
 						<i class="bi bi-box-arrow-up-right text-xs text-muted-foreground"></i>
+						@else
+						<span class="text-sm break-all">{{ $link->text ?? $link->url }}</span>
+						@endif
 						@if ($signedIn && $entity->isOwnedBy($user))
 						<a href="{!! route('entities.links.edit', ['entity' => $entity->slug, 'link' => $link->id]) !!}"
 							class="text-muted-foreground hover:text-primary transition-colors ml-auto"
