@@ -551,12 +551,8 @@ class Event extends Model implements HasPhotos
      */
     public function getAttendingCountAttribute(): int
     {
-        $responses = $this->eventResponses()->get();
-        $responses->filter(function ($e) {
-            return 'Attending' === $e->responseType->name;
-        });
-
-        return \count($responses);
+        // the filter() result used to be discarded, so this counted every response type
+        return $this->eventResponses()->where('response_type_id', ResponseType::ATTENDING)->count();
     }
 
     /**

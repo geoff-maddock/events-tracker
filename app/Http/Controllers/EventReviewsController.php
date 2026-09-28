@@ -148,7 +148,7 @@ class EventReviewsController extends Controller
 
         $review->delete();
 
-        \Session::flash('flash_message', 'Your review has been deleted!');
+        flash()->success('Success', 'Your review has been deleted.');
 
         return redirect()->route('events.show', $event->id);
     }

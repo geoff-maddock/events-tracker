@@ -286,6 +286,10 @@ class PostsController extends Controller
      */
     public function store(Request $request, Thread $thread)
     {
+        // the reply forms send only body and tag_list, so PostRequest (which also
+        // requires visibility_id and thread_id) doesn't fit; same body rule
+        $request->validate(['body' => 'required|min:3']);
+
         $msg = '';
 
         // TODO change this to use the trust_post permission to allow html
@@ -302,14 +306,14 @@ class PostsController extends Controller
             $msg .= ' Added tag '.$tag->name.'.';
         }
 
-        $thread->addPost([
+        // use the created post: re-reading the thread's newest post could pick up
+        // someone else's reply saved at the same moment
+        $post = $thread->addPost([
             'body' => request('body'),
             'created_by' => auth()->id(),
             'visibility_id' => 1,
             'allow_html' => $allow_html,
         ]);
-
-        $post = Post::where('thread_id', '=', $thread->id)->orderBy('id', 'DESC')->first();
 
         $post->tags()->sync($syncArray);
 

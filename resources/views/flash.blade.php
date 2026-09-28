@@ -1,10 +1,15 @@
 @if (session()->has('flash_message'))
+	@php
+		// flash() stores [title, message, level]; show a bare string as the message rather than an empty alert
+		$flashMessage = session('flash_message');
+		$flashMessage = is_array($flashMessage) ? $flashMessage : ['title' => '', 'message' => (string) $flashMessage, 'level' => 'info'];
+	@endphp
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
 		const options = {
-			title: @json((string) session('flash_message.title')),
-			text: @json((string) session('flash_message.message')),
-			icon: @json((string) session('flash_message.level')),
+			title: @json((string) ($flashMessage['title'] ?? '')),
+			text: @json((string) ($flashMessage['message'] ?? '')),
+			icon: @json((string) ($flashMessage['level'] ?? 'info')),
 			timer: 2500,
 			showConfirmButton: false,
 			preConfirm: function() {
