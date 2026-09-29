@@ -56,6 +56,17 @@ class EventPatchRequest extends Request
             // entity_id integer column (EVENTREPO-XV).
             'entity_list' => ['sometimes', 'nullable', 'array'],
             'entity_list.*' => ['integer', 'exists:entities,id'],
+            'created_by' => 'sometimes|nullable|integer|exists:users,id',
+            'description' => 'sometimes|nullable|string',
+            'venue_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'promoter_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'series_id' => 'sometimes|nullable|integer|exists:series,id',
+            'event_status_id' => 'sometimes|nullable|integer|exists:event_statuses,id',
+            'min_age' => 'sometimes|nullable|integer|min:0|max:99',
+            'is_benefit' => 'sometimes|nullable|boolean',
+            'do_not_repost' => 'sometimes|nullable|boolean',
+            'soundcheck_at' => 'sometimes|nullable|date',
+            'cancelled_at' => 'sometimes|nullable|date',
         ];
     }
 }

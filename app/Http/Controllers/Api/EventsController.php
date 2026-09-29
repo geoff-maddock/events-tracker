@@ -531,7 +531,7 @@ class EventsController extends Controller
 
         $msg = '';
 
-        $input = $request->all();
+        $input = $request->validated();
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -587,7 +587,13 @@ class EventsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
+
+        // an owner may transfer the event, but a null created_by must not reach the
+        // NOT NULL column (EVENTREPO-VM)
+        if (empty($input['created_by'])) {
+            unset($input['created_by']);
+        }
         $input['updated_by'] = $this->user->id;
 
         $nonNullableBooleans = $this->nonNullableBooleanEventFields();
@@ -631,7 +637,13 @@ class EventsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
+
+        // an owner may transfer the event, but a null created_by must not reach the
+        // NOT NULL column (EVENTREPO-VM)
+        if (empty($input['created_by'])) {
+            unset($input['created_by']);
+        }
 
         $scalarInput = array_intersect_key($input, array_flip($event->getFillable()));
         if (!empty($scalarInput)) {
