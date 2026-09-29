@@ -154,7 +154,7 @@ class BlogsController extends Controller
 
         $msg = '';
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $blog = $blog->create($input);
 
@@ -185,7 +185,7 @@ class BlogsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         // Reset truly optional (nullable) fields not supplied in the body.
         if (!array_key_exists('menu_id', $input)) {
@@ -212,7 +212,7 @@ class BlogsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $scalarInput = array_intersect_key($input, array_flip($blog->getFillable()));
         if (!empty($scalarInput)) {

@@ -30,6 +30,10 @@ class BlogPatchRequest extends Request
             'body' => ['sometimes', 'required', 'min:3', 'max:65535'],
             'visibility_id' => ['sometimes', 'required', 'integer'],
             'content_type_id' => ['sometimes', 'required', 'integer'],
+            'menu_id' => 'sometimes|nullable|integer|exists:menus,id',
+            'sort_order' => 'sometimes|nullable|integer',
+            'entity_list' => 'sometimes|nullable|array',
+            'entity_list.*' => 'integer|exists:entities,id',
         ];
     }
 }

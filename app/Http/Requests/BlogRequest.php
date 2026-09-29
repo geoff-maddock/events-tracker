@@ -37,6 +37,11 @@ class BlogRequest extends Request
             'body' => 'required|min:3|max:65535',
             'visibility_id' => 'required|integer',
             'content_type_id' => 'required|integer',
+            // the rest of the form's fields, so controllers can save validated() alone (#2180)
+            'menu_id' => 'nullable|integer|exists:menus,id',
+            'sort_order' => 'nullable|integer',
+            'entity_list' => 'nullable|array',
+            'entity_list.*' => 'integer|exists:entities,id',
         ];
     }
 }

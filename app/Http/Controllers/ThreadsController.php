@@ -62,6 +62,8 @@ class ThreadsController extends Controller
     public function __construct(ThreadFilters $filter)
     {
         $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        // locking changes a thread for everyone, so it needs a signed-in user who may edit it
+        $this->middleware('auth', ['only' => ['lock', 'unlock']]);
 
         // prefix for session storage
         $this->prefix = 'app.threads.';
@@ -671,8 +673,7 @@ class ThreadsController extends Controller
     {
         $msg = '';
 
-        // get the request
-        $input = $request->all();
+        $input = $request->validated();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, $this->user);
@@ -742,6 +743,10 @@ class ThreadsController extends Controller
 
             return back();
         }
+
+        // the author, a super_admin or an admin, as for editing the thread
+        $this->authorize('update', $thread);
+
         // call a log for this and prevent it from going out of control
         $thread->locked_by = $this->user->id;
         $thread->locked_at = Carbon::now();
@@ -761,6 +766,9 @@ class ThreadsController extends Controller
 
             return back();
         }
+
+        // the author, a super_admin or an admin, as for editing the thread
+        $this->authorize('update', $thread);
 
         // call a log for this and prevent it from going out of control
         $thread->locked_by = null;
@@ -786,7 +794,7 @@ class ThreadsController extends Controller
 
         $this->authorize('update', $thread);
 
-        $thread->fill($request->input())->save();
+        $thread->fill($request->validated())->save();
 
         $tagArray = $request->input('tag_list', []);
         $syncArray = [];
