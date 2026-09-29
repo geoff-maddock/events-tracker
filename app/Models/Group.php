@@ -58,7 +58,7 @@ class Group extends Model
     public static function getByUser(string $name): Builder
     {
         // get a list of groups that have the passed user
-        return self::whereHas('user', function ($q) use ($name) {
+        return self::whereHas('users', function ($q) use ($name) {
             $q->where('name', '=', $name);
         });
     }
@@ -69,7 +69,7 @@ class Group extends Model
     public static function getByPermission(string $name): Builder
     {
         // get a list of groups that have the passed permission
-        $groups = self::whereHas('permission', function ($q) use ($name) {
+        $groups = self::whereHas('permissions', function ($q) use ($name) {
             $q->where('name', '=', $name);
         });
 
