@@ -153,12 +153,43 @@ class LinkUrlSchemesTest extends TestCase
         $bad = $this->storedLink('javascript:alert(1)');
         $good = $this->storedLink('http://already.example.com');
 
+        $underscore = $this->storedLink('my_band.example.com/zz');
+
+        ob_start();
         (require database_path('migrations/2026_09_29_000000_normalize_link_url_schemes.php'))->up();
+        $output = (string) ob_get_clean();
+
+        // the rows left alone are listed on the console for a hand fix
+        $this->assertStringContainsString("#{$text->id}  pgh no wave collective", $output);
+        $this->assertStringContainsString("#{$bad->id}  javascript:alert(1)", $output);
+        $this->assertStringNotContainsString('shop.example.com', $output);
+        $this->assertSame('https://my_band.example.com/zz', $underscore->fresh()->url);
 
         $this->assertSame('https://shop.example.com', $bare->fresh()->url);
         $this->assertSame('https://hyperfollow.com/ZZ', $typo->fresh()->url);
         $this->assertSame('pgh no wave collective', $text->fresh()->url);
         $this->assertSame('javascript:alert(1)', $bad->fresh()->url);
         $this->assertSame('http://already.example.com', $good->fresh()->url);
+    }
+
+    public function test_real_world_urls_that_are_not_strictly_rfc_valid_are_accepted_and_linked(): void
+    {
+        $urls = [
+            'https://www.discogs.com/artist/123-Björk' => 'https://www.discogs.com/artist/123-Björk',
+            'my_band.example.com' => 'https://my_band.example.com',
+            'example.com:8080/zz' => 'https://example.com:8080/zz',
+        ];
+        $this->actingAs($this->owner);
+
+        foreach ($urls as $input => $stored) {
+            $this->post("/entities/{$this->entity->slug}/links", ['text' => 'Real ZZ '.$stored, 'url' => $input])
+                ->assertSessionHasNoErrors();
+            $this->assertSame($stored, Link::where('text', 'Real ZZ '.$stored)->sole()->url);
+        }
+
+        $html = $this->get("/entities/{$this->entity->slug}")->assertOk()->getContent();
+        foreach ($urls as $stored) {
+            $this->assertStringContainsString('href="'.e($stored).'"', $html);
+        }
     }
 }

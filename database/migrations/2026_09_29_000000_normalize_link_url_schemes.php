@@ -27,11 +27,11 @@ return new class extends Migration
 
                 if (preg_match('#^(https?);//#i', $url, $m)) {
                     $fixed = strtolower($m[1]).'://'.substr($url, strlen($m[0]));
-                } elseif (preg_match('#^(//)?[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}(:\d+)?([/?\#]\S*)?$#i', $url)) {
+                } elseif (preg_match('#^(//)?[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,}(:\d+)?([/?\#]\S*)?$#i', $url)) {
                     $fixed = 'https://'.ltrim($url, '/');
                 }
 
-                if (null !== $fixed && false !== filter_var($fixed, FILTER_VALIDATE_URL)) {
+                if (null !== $fixed && '' !== (string) parse_url($fixed, PHP_URL_HOST)) {
                     DB::table('links')->where('id', $link->id)->update(['url' => $fixed]);
                 } elseif ('' !== $url) {
                     $unfixed[] = ['id' => $link->id, 'url' => $url];
@@ -40,6 +40,12 @@ return new class extends Migration
 
         if ($unfixed) {
             Log::warning('Links without an http(s) URL, left for review (#2220)', ['links' => $unfixed]);
+
+            // also on the console, so whoever runs `migrate` sees what needs a hand fix
+            echo PHP_EOL.'  Links without an http(s) URL, left for review (#2220):'.PHP_EOL;
+            foreach ($unfixed as $link) {
+                echo '    #'.$link['id'].'  '.$link['url'].PHP_EOL;
+            }
         }
     }
 

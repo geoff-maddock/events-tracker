@@ -76,20 +76,39 @@ class Link extends Model
     }
 
     /**
-     * The URL for use as a link target: null unless it is a well-formed
-     * http(s) URL, so a stored value with any other scheme is never rendered
-     * as an href (#2220). Mirrors Location::safeMapUrl().
+     * Whether a URL is fit to be a link target: an http(s) scheme, a host, and
+     * no control characters (#2220). Deliberately looser than FILTER_VALIDATE_URL,
+     * which rejects real links such as a Discogs URL with "ö" in the path or a
+     * host with an underscore; Blade escapes the rest when it's rendered.
+     */
+    public static function isWebUrl(?string $url): bool
+    {
+        $url = trim((string) $url);
+
+        if ('' === $url || preg_match('/[\x00-\x1F\x7F]/', $url)) {
+            return false;
+        }
+
+        $parts = parse_url($url);
+        $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+        $host = (string) ($parts['host'] ?? '');
+
+        return false !== $parts
+            && in_array($scheme, ['http', 'https'], true)
+            && '' !== $host
+            && !preg_match('/\s/u', $host);
+    }
+
+    /**
+     * The URL for use as a link target: null unless isWebUrl(), so a stored
+     * value with any other scheme is never rendered as an href (#2220).
+     * Mirrors Location::safeMapUrl().
      */
     public function safeUrl(): ?string
     {
         $url = trim((string) $this->url);
-        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
 
-        if (!in_array($scheme, ['http', 'https'], true) || false === filter_var($url, FILTER_VALIDATE_URL)) {
-            return null;
-        }
-
-        return $url;
+        return self::isWebUrl($url) ? $url : null;
     }
 
     /**
