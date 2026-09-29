@@ -23,6 +23,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Arr;
 use Throwable;
 
 class UsersController extends Controller
@@ -220,21 +222,42 @@ class UsersController extends Controller
 
         $isAdmin = $this->user->can('grant_access');
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['sometimes', 'required', 'min:6', 'max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/'],
+            // users are looked up by slug, so it must stay unique and URL-safe (#2180)
+            'slug' => ['sometimes', 'required', 'string', 'max:255', 'regex:/^[a-z0-9-]+$/', Rule::unique('users', 'slug')->ignore($user->id)],
             'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'password' => ['sometimes', 'required', 'min:8', 'max:60'],
+            'user_status_id' => ['sometimes', 'integer', 'exists:user_statuses,id'],
             'profile' => ['sometimes', 'array'],
+            'profile.first_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.last_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.alias' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.location' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.bio' => ['sometimes', 'nullable', 'string'],
+            'profile.default_theme' => ['sometimes', 'nullable', 'in:dark,light'],
+            'profile.facebook_username' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.twitter_username' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.instagram_username' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile.setting_weekly_update' => ['sometimes', 'nullable', 'boolean'],
+            'profile.setting_daily_update' => ['sometimes', 'nullable', 'boolean'],
+            'profile.setting_instant_update' => ['sometimes', 'nullable', 'boolean'],
+            'profile.setting_forum_update' => ['sometimes', 'nullable', 'boolean'],
+            'profile.setting_public_profile' => ['sometimes', 'nullable', 'boolean'],
+            // NOT NULL columns
+            'profile.setting_notify_threads_by_follow' => ['sometimes', 'boolean'],
+            'profile.setting_feedback_requests' => ['sometimes', 'boolean'],
             'group_list' => ['sometimes', 'array'],
             'group_list.*' => ['integer', 'exists:groups,id'],
         ]);
 
         // status and group membership are admin-only fields
-        $userFields = $request->only($isAdmin
+        $userFields = Arr::only($validated, $isAdmin
             ? ['name', 'slug', 'email', 'password', 'user_status_id']
             : ['name', 'slug', 'email', 'password']);
 
-        $profileFields = $request->input('profile', []);
+        // only the validated profile fields (not e.g. the onboarding timestamps)
+        $profileFields = $validated['profile'] ?? [];
 
         $user->fill($userFields)->save();
 
