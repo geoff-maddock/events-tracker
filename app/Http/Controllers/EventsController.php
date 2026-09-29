@@ -36,7 +36,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
@@ -1846,10 +1845,9 @@ class EventsController extends Controller
     {
         $msg = '';
 
-        $input = $request->all();
-
-        // Carried by the create form for photo attachment only, never a model attribute.
-        Arr::forget($input, TempImageStore::TOKEN_FIELDS);
+        // validated() leaves out the photo-attachment tokens and anything else
+        // the form carries that isn't an event attribute
+        $input = $request->validated();
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -1949,12 +1947,12 @@ class EventsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->input();
+        $input = $request->validated();
         $input['updated_by'] = $this->user->id;
 
-        // The Owner select may reassign created_by, but an empty value (coerced to
-        // null by ConvertEmptyStringsToNull) must not overwrite it and trip the
-        // NOT NULL constraint (EVENTREPO-VM).
+        // The Owner select may reassign created_by (an event's owner can transfer it),
+        // but an empty value (coerced to null by ConvertEmptyStringsToNull) must not
+        // overwrite it and trip the NOT NULL constraint (EVENTREPO-VM).
         if (empty($input['created_by'])) {
             unset($input['created_by']);
         }

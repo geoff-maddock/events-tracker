@@ -64,6 +64,17 @@ class EventRequest extends Request
             // the entity_id integer column with a raw SQL error (EVENTREPO-XV).
             'entity_list' => ['nullable', 'array'],
             'entity_list.*' => ['integer', 'exists:entities,id'],
+            // the rest of the form's fields, so controllers can save validated() alone (#2180)
+            'description' => 'nullable|string',
+            'venue_id' => 'nullable|integer|exists:entities,id',
+            'promoter_id' => 'nullable|integer|exists:entities,id',
+            'series_id' => 'nullable|integer|exists:series,id',
+            'event_status_id' => 'nullable|integer|exists:event_statuses,id',
+            'min_age' => 'nullable|integer|min:0|max:99',
+            'is_benefit' => 'nullable|boolean',
+            'do_not_repost' => 'nullable|boolean',
+            'soundcheck_at' => 'nullable|date',
+            'cancelled_at' => 'nullable|date',
         ];
     }
 
