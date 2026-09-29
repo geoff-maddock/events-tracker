@@ -212,7 +212,7 @@ class BlogsController extends Controller
 
         $msg = '';
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $blog = $blog->create($input);
 
@@ -257,7 +257,7 @@ class BlogsController extends Controller
 
         $this->authorize('update', $blog);
 
-        $blog->fill($request->input())->save();
+        $blog->fill($request->validated())->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, $this->user);

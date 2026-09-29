@@ -38,7 +38,7 @@ class RegisterController extends Controller
         }
 
         // Create the user
-        $user = $this->create($request->all());
+        $user = $this->create($validator->validated());
 
         // Fire the Registered event to trigger email verification
         // Store frontend-url in user instance temporarily if provided

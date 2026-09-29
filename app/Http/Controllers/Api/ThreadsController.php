@@ -178,7 +178,7 @@ class ThreadsController extends Controller
      */
     public function store(ThreadRequest $request, Thread $thread): JsonResponse
     {
-        $thread = $thread->create($request->all());
+        $thread = $thread->create($request->validated());
 
         // add to activity log
         Activity::log($thread, $this->user, 1);
@@ -212,18 +212,16 @@ class ThreadsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
         // Reset truly-nullable fillable fields not present in the request.
-        // `views` is NOT NULL with a default of 0 and is never user-supplied,
-        // so it should never be reset here.
+        // `views` and the lock (locked_at/locked_by) are server-controlled and never
+        // user-supplied, so they are never reset here: a PUT used to unlock a thread.
         $optionalFields = [
             'description',
             'slug',
             'thread_category_id',
             'event_id',
-            'locked_at',
-            'locked_by',
         ];
         foreach ($optionalFields as $field) {
             if (!array_key_exists($field, $input)) {
@@ -247,7 +245,7 @@ class ThreadsController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
         $scalarInput = array_intersect_key($input, array_flip($thread->getFillable()));
         if (!empty($scalarInput)) {
             $thread->fill($scalarInput)->save();
