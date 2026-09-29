@@ -35,7 +35,8 @@ class LocationRequest extends Request
             'address_two' => 'nullable|string|max:255',
             'neighborhood' => 'nullable|string|max:255',
             'state' => 'nullable|string|max:255',
-            'postcode' => 'nullable|string|max:255',
+            // no 'string': an API client may send a postcode as a JSON number (max then checks length)
+            'postcode' => 'nullable|max:255',
             'country' => 'nullable|string|max:255',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',

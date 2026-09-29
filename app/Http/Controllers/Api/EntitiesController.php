@@ -659,7 +659,8 @@ class EntitiesController extends Controller
             'address_two' => [...$optional, 'string', 'max:255'],
             'neighborhood' => [...$optional, 'string', 'max:255'],
             'state' => [...$optional, 'string', 'max:255'],
-            'postcode' => [...$optional, 'string', 'max:255'],
+            // no 'string': an API client may send a postcode as a JSON number (max then checks length)
+            'postcode' => [...$optional, 'max:255'],
             'country' => [...$optional, 'string', 'max:255'],
             'latitude' => [...$optional, 'numeric'],
             'longitude' => [...$optional, 'numeric'],

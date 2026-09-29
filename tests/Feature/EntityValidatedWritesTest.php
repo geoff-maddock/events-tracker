@@ -140,4 +140,28 @@ class EntityValidatedWritesTest extends TestCase
             );
         }
     }
+
+    public function test_a_numeric_postcode_from_an_api_client_is_accepted(): void
+    {
+        $this->actingAs($this->owner, 'sanctum');
+        $typeId = Location::factory()->make()->location_type_id;
+        $base = ['city' => 'Pittsburgh', 'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'location_type_id' => $typeId];
+
+        $this->postJson("/api/entities/{$this->entity->id}/locations", ['name' => 'ZZ Numeric', 'slug' => 'zz-numeric', 'postcode' => 15213] + $base)
+            ->assertStatus(201);
+        $this->assertSame('15213', Location::where('slug', 'zz-numeric')->sole()->postcode);
+
+        $this->postJson('/api/locations', ['name' => 'ZZ Numeric Two', 'slug' => 'zz-numeric-two', 'entity_id' => $this->entity->id, 'postcode' => 15201] + $base)
+            ->assertSuccessful();
+        $location = Location::where('slug', 'zz-numeric-two')->sole();
+        $this->assertSame('15201', $location->postcode);
+
+        $this->patchJson("/api/locations/{$location->id}", ['postcode' => 15222])->assertOk();
+        $this->assertSame('15222', $location->fresh()->postcode);
+
+        // still length-checked
+        $this->patchJson("/api/locations/{$location->id}", ['postcode' => str_repeat('1', 256)])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('postcode');
+    }
 }
