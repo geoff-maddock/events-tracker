@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\LinkFilters;
 use App\Models\Entity;
 use App\Models\Link;
+use App\Rules\LinkUrl;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LinkCollection;
@@ -43,6 +44,9 @@ class LinksController extends Controller
     public function __construct(LinkFilters $filter)
     {
         $this->middleware('auth', ['only' => ['store', 'update']]);
+
+        // http(s) only; scheme-less input is stored as https:// (#2220)
+        $this->rules['url'] = ['required', new LinkUrl()];
 
         // default list variables
         $this->defaultLimit = 5;

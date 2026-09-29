@@ -26,10 +26,15 @@
                 <div>
                     <label class="text-sm font-medium text-muted-foreground">URL</label>
                     <p class="text-foreground mt-1">
-                        <a href="{{ $link->url }}" target="_blank" class="text-primary hover:underline">
+                        {{-- only http(s) links become an href (#2220) --}}
+                        @if ($linkUrl = $link->safeUrl())
+                        <a href="{{ $linkUrl }}" target="_blank" class="text-primary hover:underline">
                             {{ $link->url }}
                             <i class="bi bi-box-arrow-up-right ml-1 text-xs"></i>
                         </a>
+                        @else
+                        {{ $link->url }}
+                        @endif
                     </p>
                 </div>
             @endif
