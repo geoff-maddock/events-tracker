@@ -48,7 +48,9 @@ class ActivityController extends Controller
     public function __construct(ActivityFilters $filter)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update']]);
-        $this->middleware(['auth', 'can:admin'], ['only' => ['graph', 'exportGraph']]);
+        // the activity log records logins, failed logins (with the email typed) and
+        // other account events, so every view of it is admin-only
+        $this->middleware(['auth', 'can:admin'], ['only' => ['index', 'graph', 'exportGraph', 'reset', 'rppReset']]);
         $this->filter = $filter;
 
         // prefix for session storage

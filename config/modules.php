@@ -23,7 +23,6 @@
 
 return [
     'public' => [
-        ['name' => 'Activity', 'url' => '/activity', 'icon' => 'bi-activity', 'description' => 'View recent site activity'],
         ['name' => 'Calendar', 'url' => '/calendar', 'icon' => 'bi-calendar3', 'description' => 'Browse events by calendar'],
         ['name' => 'Entities', 'url' => '/entities', 'icon' => 'bi-people', 'description' => 'Artists, venues, promoters'],
         ['name' => 'Events', 'url' => '/events', 'icon' => 'bi-calendar-event', 'description' => 'Concerts and club nights'],
@@ -50,6 +49,7 @@ return [
     ],
 
     'admin' => [
+        ['name' => 'Activity', 'url' => '/activity', 'icon' => 'bi-activity', 'description' => 'Site activity log, including logins'],
         ['name' => 'Activity Graph', 'url' => '/activity/graph', 'icon' => 'bi-activity', 'description' => 'Visualize and export activity trends'],
         ['name' => 'Blogs', 'url' => '/blogs', 'icon' => 'bi-journal-text', 'description' => 'Manage blog posts'],
         ['name' => 'Categories', 'url' => '/categories', 'icon' => 'bi-folder', 'description' => 'Manage forum categories'],
