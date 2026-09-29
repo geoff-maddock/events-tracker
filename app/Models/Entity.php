@@ -230,7 +230,7 @@ class Entity extends Eloquent implements HasPhotos
     public static function getByType(string $type): Builder
     {
         // get a list of entities that have the passed role
-        $entities = self::whereHas('entity_type', function ($q) use ($type) {
+        $entities = self::whereHas('entityType', function ($q) use ($type) {
             $q->where('name', '=', ucfirst($type));
         })->orderBy('name', 'ASC');
 

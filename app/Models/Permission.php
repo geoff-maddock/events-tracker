@@ -30,7 +30,7 @@ class Permission extends Model
     public static function getByGroup(string $group): Builder
     {
         // get a list of blogs that have the passed tag
-        return self::whereHas('group', function ($q) use ($group) {
+        return self::whereHas('groups', function ($q) use ($group) {
             $q->where('name', '=', ucfirst($group));
         });
     }
