@@ -79,7 +79,8 @@ class DestroyAuthorizationTest extends TestCase
             ->delete(route('events.destroy', $event))
             ->assertRedirect('/events');
 
-        $this->assertDatabaseMissing('events', ['id' => $event->id]);
+        // events are soft-deleted (#2192)
+        $this->assertSoftDeleted('events', ['id' => $event->id]);
     }
 
     public function test_admin_can_destroy_an_event_they_do_not_own(): void
@@ -90,7 +91,8 @@ class DestroyAuthorizationTest extends TestCase
             ->delete(route('events.destroy', $event))
             ->assertRedirect('/events');
 
-        $this->assertDatabaseMissing('events', ['id' => $event->id]);
+        // events are soft-deleted (#2192)
+        $this->assertSoftDeleted('events', ['id' => $event->id]);
     }
 
     // Series

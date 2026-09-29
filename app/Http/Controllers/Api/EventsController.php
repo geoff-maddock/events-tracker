@@ -16,6 +16,7 @@ use App\Http\Resources\EventResource;
 use App\Http\Resources\MinimalResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
+use App\Models\Action;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
@@ -705,6 +706,26 @@ class EventsController extends Controller
             'is_benefit',
             'do_not_repost',
         ];
+    }
+
+    /**
+     * Restore a soft-deleted event, with its RSVPs, reviews and links (#2192). Admin only.
+     */
+    public function restore(int $id, Request $request): JsonResponse
+    {
+        $this->user = $request->user();
+
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
+        $event = Event::onlyTrashed()->findOrFail($id);
+        $event->restore();
+
+        // logged as an update, with a message saying it was a restore
+        Activity::log($event, $this->user, Action::UPDATE, 'Restored a deleted event');
+
+        return response()->json(new EventResource($event));
     }
 
     /**

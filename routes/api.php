@@ -80,6 +80,7 @@ Route::middleware('auth.either')->name('api.')->group(function () {
     Route::post('events/{id}/photos', [\App\Http\Controllers\Api\EventsController::class, 'addPhoto']);
     Route::post('events/{id}/photos/from-url', [\App\Http\Controllers\Api\EventsController::class, 'addPhotoFromUrl'])->middleware('throttle:photo-from-url');
     Route::post('events/{id}/instagram-post', [\App\Http\Controllers\Api\EventInstagramController::class, 'postCarouselToInstagramApi']);
+    Route::post('events/{id}/restore', [\App\Http\Controllers\Api\EventsController::class, 'restore'])->name('events.restore');
     Route::get('events/{event}/embeds', ['as' => 'events.embeds', 'uses' => '\App\Http\Controllers\Api\EventsController@embeds']);
     Route::get('events/{event}/minimal-embeds', ['as' => 'events.minimalEmbeds', 'uses' => '\App\Http\Controllers\Api\EventsController@minimalEmbeds']);
 

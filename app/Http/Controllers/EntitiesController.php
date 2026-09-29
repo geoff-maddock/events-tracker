@@ -1837,6 +1837,7 @@ class EntitiesController extends Controller
 
         $eventsSubquery = DB::table('entity_event')
             ->join('events', 'events.id', '=', 'entity_event.event_id')
+            ->whereNull('events.deleted_at')
             ->selectRaw('entity_event.entity_id, COUNT(*) as events_total')
             ->when($fromDate, function ($subQuery) use ($fromDate) {
                 $subQuery->where('events.start_at', '>=', $fromDate);

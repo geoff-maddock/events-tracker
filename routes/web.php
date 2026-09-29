@@ -395,6 +395,9 @@ Route::post('events/analyze-flyer', [\App\Http\Controllers\ImageAnalysisControll
     ->middleware('throttle:20,1')->name('events.analyzeFlyer');
 
 //Default resource for events
+// admin: soft-deleted events and restore (#2192); before the resource so events/{event} doesn't catch it
+Route::get('events/deleted', [\App\Http\Controllers\DeletedEventsController::class, 'index'])->name('events.deleted');
+Route::post('events/{id}/restore', [\App\Http\Controllers\DeletedEventsController::class, 'restore'])->name('events.restore');
 Route::resource('events', \App\Http\Controllers\EventsController::class);
 
 // FORUMS

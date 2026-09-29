@@ -3323,7 +3323,7 @@ paths:
       tags:
         - events
       summary: Delete Event
-      description: Deletes an event by its slug.
+      description: "Deletes an event by its slug. The delete is soft; the event is hidden everywhere but kept, with its RSVPs, reviews and links, and an admin can restore it (POST /api/events/{id}/restore)."
       operationId: deleteEventById
       responses:
         "201":
@@ -3490,6 +3490,36 @@ paths:
                 $ref: "#/components/schemas/MessageResponse"
         "429":
           description: Rate limit exceeded
+  /api/events/{id}/restore:
+    parameters:
+      - name: id
+        description: The numeric id of the deleted event
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+    post:
+      tags:
+        - events
+      summary: Restore a deleted event
+      description: Restores a soft-deleted event, with its RSVPs, reviews and links. Admin only.
+      operationId: restoreEvent
+      responses:
+        "200":
+          description: The restored event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          description: No deleted event with that id
   /api/events/{slug}/all-photos:
     get:
       parameters:

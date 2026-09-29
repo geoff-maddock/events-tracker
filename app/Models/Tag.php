@@ -141,6 +141,7 @@ class Tag extends Eloquent
                  JOIN event_tag et ON e.id = et.event_id
                  WHERE et.tag_id = tags.id
                    AND p.is_primary = 1
+                   AND e.deleted_at IS NULL
                    AND e.visibility_id = ' . Visibility::VISIBILITY_PUBLIC . '
                  ORDER BY (e.start_at >= CURDATE()) DESC,
                           CASE WHEN e.start_at >= CURDATE() THEN e.start_at END ASC,
@@ -235,6 +236,7 @@ class Tag extends Eloquent
         // tags sharing a name are merged and this tag's name is never listed.
         return DB::table('event_tag as mine')
             ->join('events', 'events.id', '=', 'mine.event_id')
+            ->whereNull('events.deleted_at')
             ->join('event_tag as other', function ($join) {
                 $join->on('other.event_id', '=', 'mine.event_id')
                     ->on('other.tag_id', '<>', 'mine.tag_id');

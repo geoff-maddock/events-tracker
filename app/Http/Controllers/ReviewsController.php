@@ -84,7 +84,8 @@ class ReviewsController extends Controller
         $listParamSessionStore->setIndexTab(action([ReviewsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = EventReview::query()->select('event_reviews.*');
+        // only reviews of events that still exist: a deleted (trashed) event's reviews are kept but hidden (#2192)
+        $baseQuery = EventReview::query()->whereHas('event')->select('event_reviews.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -138,7 +139,8 @@ class ReviewsController extends Controller
         $listParamSessionStore->setIndexTab(action([ReviewsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = EventReview::query()->select('event_reviews.*');
+        // only reviews of events that still exist: a deleted (trashed) event's reviews are kept but hidden (#2192)
+        $baseQuery = EventReview::query()->whereHas('event')->select('event_reviews.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)

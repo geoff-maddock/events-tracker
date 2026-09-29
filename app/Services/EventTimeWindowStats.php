@@ -49,6 +49,7 @@ class EventTimeWindowStats
             $tagLinks = DB::table('event_tag')
                 ->join('events', 'events.id', '=', 'event_tag.event_id')
                 ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
+                ->whereNull('events.deleted_at')
                 ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
                 ->whereBetween('events.start_at', [$range['start'], $range['end']])
                 ->select('tags.name', 'tags.slug')

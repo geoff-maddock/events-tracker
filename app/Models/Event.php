@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -132,6 +133,10 @@ class Event extends Model implements HasPhotos
 {
     use Notifiable;
     use HasFactory;
+
+    // deleting an event hides it and keeps its RSVPs, reviews and links; an admin
+    // can restore it from the deleted-events page (#2192)
+    use SoftDeletes;
 
     const DEFAULT_LENGTH = 4;
 

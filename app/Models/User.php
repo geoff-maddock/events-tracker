@@ -306,7 +306,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getAttendingCountAttribute(): int
     {
-        return $this->eventResponses()->where('response_type_id', ResponseType::ATTENDING)->count();
+        // deleted (trashed) events' RSVPs are kept but don't count (#2192)
+        return $this->eventResponses()->where('response_type_id', ResponseType::ATTENDING)->whereHas('event')->count();
     }
 
     /**

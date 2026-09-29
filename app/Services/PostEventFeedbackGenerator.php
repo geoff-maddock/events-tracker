@@ -127,6 +127,8 @@ class PostEventFeedbackGenerator
 
         $query = DB::table('event_responses')
             ->join('events', 'events.id', '=', 'event_responses.event_id')
+            // no feedback requests about a deleted event (#2192)
+            ->whereNull('events.deleted_at')
             ->join('users', 'users.id', '=', 'event_responses.user_id')
             ->join('user_statuses', 'user_statuses.id', '=', 'users.user_status_id')
             // Inner-value check on this left join deliberately excludes users
@@ -234,13 +236,14 @@ class PostEventFeedbackGenerator
     /**
      * Delete invitations pointing at events that no longer exist.
      *
-     * Nothing in this app soft-deletes and there is no FK on the polymorphic
-     * subject columns, so a hard-deleted event leaves invitations dangling.
+     * There is no FK on the polymorphic subject columns, so a deleted event
+     * leaves invitations dangling. Events are soft-deleted (#2192): a trashed
+     * event counts as gone here, since its survey page can't show it.
      */
     public function cleanupDanglingEventSubjects(): int
     {
         return SurveyInvitation::where('subject_type', 'event')
-            ->whereNotIn('subject_id', DB::table('events')->select('id'))
+            ->whereNotIn('subject_id', DB::table('events')->whereNull('deleted_at')->select('id'))
             ->delete();
     }
 }

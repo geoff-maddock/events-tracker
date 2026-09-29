@@ -163,6 +163,7 @@ class SeriesController extends Controller
         $query = Series::query()->filter($this->filter)
             ->leftJoin('events', function ($join) use ($from) {
                 $join->on('series.id', '=', 'events.series_id')
+                    ->whereNull('events.deleted_at')
                     ->where('events.start_at', '>=', $from);
             })
             ->leftJoin('event_responses', function ($join) {
