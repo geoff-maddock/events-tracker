@@ -68,4 +68,17 @@ class ActivityLogAccessTest extends TestCase
         $this->assertNotContains('/activity', array_column(config('modules.public'), 'url'));
         $this->assertContains('/activity', array_column(config('modules.admin'), 'url'));
     }
+
+    public function test_the_user_api_reports_when_a_user_was_last_active_not_the_activity_itself(): void
+    {
+        $activity = Activity::factory()->create([
+            'user_id' => $this->admin->id, 'ip_address' => '203.0.113.9', 'object_name' => 'zz-private@example.com',
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')->getJson("/api/users/{$this->admin->id}")->assertOk();
+
+        $this->assertIsString($response->json('last_active'));
+        $this->assertSame($activity->created_at->toJSON(), $response->json('last_active'));
+        $response->assertDontSee('203.0.113.9')->assertDontSee('zz-private@example.com');
+    }
 }
