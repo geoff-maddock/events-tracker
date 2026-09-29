@@ -130,6 +130,15 @@ class Series extends Eloquent implements HasPhotos
         'hold_date' => false,
     ];
 
+    /**
+     * hold_date is NOT NULL: store a missing value as false, so an API PUT that
+     * omits it (and resets optional fields to null) can't fail the update.
+     */
+    public function setHoldDateAttribute(mixed $value): void
+    {
+        $this->attributes['hold_date'] = (bool) $value;
+    }
+
     public const FORM_OPTIONS_CACHE_KEY = 'form-opts-series';
 
     /**
@@ -184,10 +193,8 @@ class Series extends Eloquent implements HasPhotos
         'occurrence_type_id',
         'occurrence_week_id',
         'occurrence_day_id',
-        'benefit_id',
         'promoter_id',
         'venue_id',
-        'location_id',
         'presale_price',
         'door_price',
         'soundcheck_at',

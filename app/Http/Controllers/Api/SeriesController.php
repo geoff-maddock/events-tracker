@@ -230,7 +230,7 @@ class SeriesController extends Controller
         $this->user = $request->user();
 
         $msg = '';
-        $input = $request->all();
+        $input = $request->validated();
         
         // Set the user fields explicitly
         $input['created_by'] = $this->user->id;
@@ -277,7 +277,13 @@ class SeriesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
+
+        // ownership only changes through an admin, as on the web (#2165); an empty
+        // owner is ignored
+        if (!$this->user->isAdmin() || empty($input['created_by'])) {
+            unset($input['created_by']);
+        }
         $input['updated_by'] = $this->user->id;
 
         foreach ($this->optionalSeriesFields() as $field) {
@@ -306,7 +312,13 @@ class SeriesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
+        $input = $request->validated();
+
+        // ownership only changes through an admin, as on the web (#2165); an empty
+        // owner is ignored
+        if (!$this->user->isAdmin() || empty($input['created_by'])) {
+            unset($input['created_by']);
+        }
 
         $scalarInput = array_intersect_key($input, array_flip($series->getFillable()));
         if (!empty($scalarInput)) {
@@ -329,8 +341,9 @@ class SeriesController extends Controller
 
     /**
      * Fillable scalar fields that aren't required by SeriesRequest. PUT resets
-     * any omitted from the body to null. `created_by` is excluded because it
-     * tracks ownership and shouldn't be cleared on update.
+     * any omitted from the body to null (hold_date, NOT NULL, becomes false via
+     * Series::setHoldDateAttribute). `created_by` is excluded because it tracks
+     * ownership and shouldn't be cleared on update.
      */
     private function optionalSeriesFields(): array
     {
@@ -338,10 +351,8 @@ class SeriesController extends Controller
             'description',
             'occurrence_week_id',
             'occurrence_day_id',
-            'benefit_id',
             'promoter_id',
             'venue_id',
-            'location_id',
             'presale_price',
             'door_price',
             'soundcheck_at',

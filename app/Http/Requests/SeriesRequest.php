@@ -52,6 +52,25 @@ class SeriesRequest extends Request
             'ticket_link' => ['nullable','url:http,https','max:255'],
             'occurrence_week_id' => 'nullable',
             'occurrence_day_id' => 'nullable',
+            // the rest of the form's fields, so controllers can save validated() alone (#2180);
+            // created_by is only honoured for admins (#2165)
+            'description' => 'nullable|string',
+            'venue_id' => 'nullable|integer|exists:entities,id',
+            'promoter_id' => 'nullable|integer|exists:entities,id',
+            'founded_at' => 'nullable|date',
+            'cancelled_at' => 'nullable|date',
+            'soundcheck_at' => 'nullable|date',
+            'door_at' => 'nullable|date',
+            'start_at' => 'nullable|date',
+            'end_at' => 'nullable|date',
+            'min_age' => 'nullable|integer|min:0|max:99',
+            'hold_date' => 'nullable|boolean',
+            'facebook_username' => 'nullable|string|max:64',
+            'instagram_username' => 'nullable|string|max:64',
+            'twitter_username' => 'nullable|string|max:64',
+            'created_by' => 'nullable|integer|exists:users,id',
+            'entity_list' => 'nullable|array',
+            'entity_list.*' => 'integer|exists:entities,id',
         ];
         
         // Add conditional validation rules for monthly occurrence type

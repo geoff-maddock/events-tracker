@@ -153,6 +153,8 @@
             label="Hold Date"
             :error="$errors->first('hold_date')">
             <div class="flex items-center h-9">
+                {{-- an unchecked box sends nothing, so without this the flag could never be cleared --}}
+                <input type="hidden" name="hold_date" value="0">
                 <input type="checkbox"
                     name="hold_date"
                     id="hold_date"
