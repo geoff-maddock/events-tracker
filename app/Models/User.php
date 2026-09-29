@@ -126,6 +126,28 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         // Any create, rename or delete changes the cached user option lists.
         static::saved(fn () => self::forgetOptionsCache());
         static::deleted(fn () => self::forgetOptionsCache());
+
+        // A deleted user's events pass to the site admin rather than pointing at a
+        // user that no longer exists. Every delete path (users destroy/delete/purge
+        // and the API) goes through Model::delete(), so this covers them all.
+        static::deleting(function (self $user): void {
+            $adminId = self::adminOwnerId();
+
+            if (null !== $adminId && $adminId !== $user->id) {
+                Event::where('created_by', $user->id)->toBase()->update(['created_by' => $adminId]);
+            }
+        });
+    }
+
+    /**
+     * The user that takes over content whose owner is deleted: the configured
+     * superuser (APP_SUPERUSER), or null when none is set.
+     */
+    public static function adminOwnerId(): ?int
+    {
+        $id = (int) config('app.superuser');
+
+        return $id > 0 ? $id : null;
     }
 
     /**
