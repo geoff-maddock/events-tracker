@@ -29,7 +29,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Str;
@@ -742,10 +741,9 @@ class SeriesController extends Controller
     public function store(SeriesRequest $request, Series $series, TempImageStore $tempImages): RedirectResponse
     {
         $msg = '';
-        $input = $request->all();
-
-        // Carried by the create form for photo attachment only, never a model attribute.
-        Arr::forget($input, TempImageStore::TOKEN_FIELDS);
+        // validated() leaves out the photo-attachment tokens and anything else
+        // the form carries that isn't a series attribute
+        $input = $request->validated();
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -887,9 +885,9 @@ class SeriesController extends Controller
             return $this->unauthorized($request);
         }
 
-        // ownership only changes through an admin (#2165)
-        $input = $request->input();
-        if (!$this->user->isAdmin()) {
+        // ownership only changes through an admin (#2165); an empty owner is ignored
+        $input = $request->validated();
+        if (!$this->user->isAdmin() || empty($input['created_by'])) {
             unset($input['created_by']);
         }
 

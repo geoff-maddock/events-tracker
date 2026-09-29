@@ -45,6 +45,23 @@ class SeriesPatchRequest extends Request
             'ticket_link' => ['sometimes', 'nullable', 'url:http,https', 'max:255'],
             'occurrence_week_id' => ['sometimes', 'nullable'],
             'occurrence_day_id' => ['sometimes', 'nullable'],
+            'description' => 'sometimes|nullable|string',
+            'venue_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'promoter_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'founded_at' => 'sometimes|nullable|date',
+            'cancelled_at' => 'sometimes|nullable|date',
+            'soundcheck_at' => 'sometimes|nullable|date',
+            'door_at' => 'sometimes|nullable|date',
+            'start_at' => 'sometimes|nullable|date',
+            'end_at' => 'sometimes|nullable|date',
+            'min_age' => 'sometimes|nullable|integer|min:0|max:99',
+            'hold_date' => 'sometimes|nullable|boolean',
+            'facebook_username' => 'sometimes|nullable|string|max:64',
+            'instagram_username' => 'sometimes|nullable|string|max:64',
+            'twitter_username' => 'sometimes|nullable|string|max:64',
+            'created_by' => 'sometimes|nullable|integer|exists:users,id',
+            'entity_list' => 'sometimes|nullable|array',
+            'entity_list.*' => 'integer|exists:entities,id',
         ];
     }
 }

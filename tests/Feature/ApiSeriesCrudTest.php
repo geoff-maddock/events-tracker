@@ -58,12 +58,10 @@ class ApiSeriesCrudTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_update_references_nonexistent_benefit_id_column(): void
+    public function test_update_replaces_series_fields(): void
     {
-        // Api\SeriesController::update nullifies `benefit_id` as one of the
-        // optionalSeriesFields, but the `series` table has no benefit_id
-        // column. PUT /series therefore always fails in production. Captured
-        // here so a fix can't regress unnoticed.
+        // PUT used to null `benefit_id` and `location_id`, fillable fields with no
+        // column behind them, so it failed on every call (#2180 removed them).
         $series = Series::factory()->create([
             'created_by' => $this->user->id,
             'slug' => 'zz-update-series-'.uniqid(),
@@ -74,10 +72,11 @@ class ApiSeriesCrudTest extends TestCase
             'slug' => $series->slug,
         ]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->putJson('/api/series/'.$series->slug, $payload)->assertOk();
 
-        $this->withoutExceptionHandling();
-        $this->putJson('/api/series/'.$series->slug, $payload);
+        $this->assertSame('ZZ-Updated-Series', $series->fresh()->name);
+        // omitted optional fields are reset; the NOT NULL hold_date becomes false
+        $this->assertFalse((bool) $series->fresh()->hold_date);
     }
 
     public function test_update_refuses_when_not_creator(): void
