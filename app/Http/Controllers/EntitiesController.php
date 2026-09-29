@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -724,10 +723,9 @@ class EntitiesController extends Controller
     {
         $msg = '';
 
-        $input = $request->all();
-
-        // Carried by the create form for photo attachment only, never a model attribute.
-        Arr::forget($input, TempImageStore::TOKEN_FIELDS);
+        // validated() leaves out the photo-attachment tokens and anything else
+        // the form carries that isn't an entity attribute
+        $input = $request->validated();
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
         
@@ -1167,10 +1165,9 @@ class EntitiesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
-
-        // created_by records who added the entity; ownership changes go through owner_list
-        unset($input['created_by']);
+        // created_by records who added the entity and has no rule, so validated() never
+        // carries it; ownership changes go through owner_list
+        $input = $request->validated();
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
         $input['updated_by'] = $this->user->id;

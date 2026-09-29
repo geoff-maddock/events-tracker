@@ -24,7 +24,8 @@ class LocationPatchRequest extends Request
             'address_two' => 'sometimes|nullable|string|max:255',
             'neighborhood' => 'sometimes|nullable|string|max:255',
             'state' => 'sometimes|nullable|string|max:255',
-            'postcode' => 'sometimes|nullable|string|max:255',
+            // no 'string': an API client may send a postcode as a JSON number (max then checks length)
+            'postcode' => 'sometimes|nullable|max:255',
             'country' => 'sometimes|nullable|string|max:255',
             'latitude' => 'sometimes|nullable|numeric',
             'longitude' => 'sometimes|nullable|numeric',

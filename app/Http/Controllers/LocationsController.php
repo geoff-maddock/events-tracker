@@ -39,7 +39,7 @@ class LocationsController extends Controller
         'address_two' => ['nullable', 'string', 'max:255'],
         'neighborhood' => ['nullable', 'string', 'max:255'],
         'state' => ['nullable', 'string', 'max:255'],
-        'postcode' => ['nullable', 'string', 'max:255'],
+        'postcode' => ['nullable', 'max:255'],
         'country' => ['nullable', 'string', 'max:255'],
         'latitude' => ['nullable', 'numeric'],
         'longitude' => ['nullable', 'numeric'],

@@ -38,6 +38,12 @@ class EntityRequest extends Request
             // owners panel, only applied for users who can grant entity ownership
             'owner_list' => 'nullable|array',
             'owner_list.*' => 'integer|exists:users,id',
+            // the rest of the form's fields, so controllers can save validated() alone (#2180)
+            'facebook_username' => 'nullable|string|max:64',
+            'instagram_username' => 'nullable|string|max:64',
+            'twitter_username' => 'nullable|string|max:64',
+            'role_list' => 'nullable|array',
+            'role_list.*' => 'integer|exists:roles,id',
         ];
     }
 }

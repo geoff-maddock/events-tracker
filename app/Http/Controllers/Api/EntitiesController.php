@@ -261,7 +261,7 @@ class EntitiesController extends Controller
     {
         $msg = '';
 
-        $input = $request->all();
+        $input = $request->validated();
 
         $input['slug'] = Str::slug($request->input('slug', '-'));
 
@@ -332,10 +332,9 @@ class EntitiesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
-
-        // created_by records who added the entity and is never reassigned; ownership lives in entity_owners
-        unset($input['created_by']);
+        // created_by records who added the entity and is never reassigned (it has no rule,
+        // so validated() never carries it); ownership lives in entity_owners
+        $input = $request->validated();
         $input['slug'] = Str::slug($request->input('slug', '-'));
 
         // Reset optional fillable scalars not present in the body to null so
@@ -373,10 +372,9 @@ class EntitiesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $input = $request->all();
-
-        // created_by records who added the entity and is never reassigned; ownership lives in entity_owners
-        unset($input['created_by']);
+        // created_by records who added the entity and is never reassigned (it has no rule,
+        // so validated() never carries it); ownership lives in entity_owners
+        $input = $request->validated();
 
         if (array_key_exists('slug', $input)) {
             $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -638,24 +636,51 @@ class EntitiesController extends Controller
     }
 
     /**
+     * Rules for an entity's location. They cover every field saved, so the actions
+     * save the validated array alone; entity_id is never taken from the body (the
+     * location belongs to the entity in the URL), which also stops a PATCH moving a
+     * location onto another entity (#2180).
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    private function locationRules(bool $partial): array
+    {
+        $required = $partial ? ['sometimes', 'required'] : ['required'];
+        $optional = $partial ? ['sometimes', 'nullable'] : ['nullable'];
+
+        return [
+            'name' => [...$required, 'min:3'],
+            'slug' => [...$required, 'min:3', 'regex:/^[a-z0-9-]+$/'],
+            'city' => [...$required, 'min:3'],
+            'visibility_id' => $required,
+            'location_type_id' => $required,
+            'attn' => [...$optional, 'string', 'max:255'],
+            'address_one' => [...$optional, 'string', 'max:255'],
+            'address_two' => [...$optional, 'string', 'max:255'],
+            'neighborhood' => [...$optional, 'string', 'max:255'],
+            'state' => [...$optional, 'string', 'max:255'],
+            // no 'string': an API client may send a postcode as a JSON number (max then checks length)
+            'postcode' => [...$optional, 'max:255'],
+            'country' => [...$optional, 'string', 'max:255'],
+            'latitude' => [...$optional, 'numeric'],
+            'longitude' => [...$optional, 'numeric'],
+            'capacity' => [...$optional, 'integer', 'min:0'],
+            'map_url' => [...$optional, 'string', 'max:255'],
+        ];
+    }
+
+    /**
      * Add a location to an entity.
      */
     public function addLocation(int $id, Request $request): JsonResponse
     {
-        $this->validate($request, [
-            'name' => ['required', 'min:3'],
-            'slug' => ['required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
-            'city' => ['required', 'min:3'],
-            'visibility_id' => ['required'],
-            'location_type_id' => ['required'],
-        ]);
+        $input = $this->validate($request, $this->locationRules(false));
 
         if ($entity = Entity::find($id)) {
             if ($request->user()->cannot('update', $entity)) {
                 return response()->json([], 403);
             }
 
-            $input = $request->all();
             $input['entity_id'] = $id;
             $location = new Location($input);
             $location->created_by = $request->user()->id;
@@ -677,13 +702,7 @@ class EntitiesController extends Controller
      */
     public function updateLocation(int $id, int $locationId, Request $request): JsonResponse
     {
-        $this->validate($request, [
-            'name' => ['required', 'min:3'],
-            'slug' => ['required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
-            'city' => ['required', 'min:3'],
-            'visibility_id' => ['required'],
-            'location_type_id' => ['required'],
-        ]);
+        $input = $this->validate($request, $this->locationRules(false));
 
         if ($entity = Entity::find($id)) {
             $location = $entity->locations()->find($locationId);
@@ -691,8 +710,6 @@ class EntitiesController extends Controller
                 if ($request->user()->cannot('update', $entity)) {
                     return response()->json([], 403);
                 }
-
-                $input = $request->all();
 
                 $optionalFields = [
                     'attn',
@@ -732,13 +749,7 @@ class EntitiesController extends Controller
      */
     public function patchLocation(int $id, int $locationId, Request $request): JsonResponse
     {
-        $this->validate($request, [
-            'name' => ['sometimes', 'required', 'min:3'],
-            'slug' => ['sometimes', 'required', 'min:3', 'regex:/^[a-z0-9-]+$/'],
-            'city' => ['sometimes', 'required', 'min:3'],
-            'visibility_id' => ['sometimes', 'required'],
-            'location_type_id' => ['sometimes', 'required'],
-        ]);
+        $input = $this->validate($request, $this->locationRules(true));
 
         if ($entity = Entity::find($id)) {
             $location = $entity->locations()->find($locationId);
@@ -747,7 +758,6 @@ class EntitiesController extends Controller
                     return response()->json([], 403);
                 }
 
-                $input = $request->all();
                 $scalarInput = array_intersect_key($input, array_flip($location->getFillable()));
                 if (!empty($scalarInput)) {
                     $location->update($scalarInput);

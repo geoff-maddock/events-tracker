@@ -32,6 +32,12 @@ class EntityPatchRequest extends Request
             'description' => ['sometimes', 'required'],
             'entity_type_id' => ['sometimes', 'required'],
             'entity_status_id' => ['sometimes', 'required'],
+            'started_at' => ['sometimes', 'nullable', 'date', 'after_or_equal:1971-01-01', 'before_or_equal:2037-12-31'],
+            'facebook_username' => ['sometimes', 'nullable', 'string', 'max:64'],
+            'instagram_username' => ['sometimes', 'nullable', 'string', 'max:64'],
+            'twitter_username' => ['sometimes', 'nullable', 'string', 'max:64'],
+            'role_list' => ['sometimes', 'nullable', 'array'],
+            'role_list.*' => ['integer', 'exists:roles,id'],
         ];
     }
 }
