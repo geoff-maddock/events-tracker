@@ -361,12 +361,13 @@ class UsersController extends Controller
         return redirect('users/'.$this->user->id);
     }
 
-    public function store(UserRequest $request, User $user): void
+    public function store(UserRequest $request): RedirectResponse
     {
-        $input = $request->all();
-
-        $user->create($input);
-        $user->user_status_id = 1;
+        // only the account fields; like api/users, a new account starts pending, and
+        // user_status_id (fillable) is never taken from the request (#2180)
+        $user = User::create($request->validated());
+        $user->user_status_id = UserStatus::PENDING;
+        $user->save();
 
         // if there is no profile, create one
         $profile = new Profile();
@@ -377,6 +378,8 @@ class UsersController extends Controller
         Activity::log($user, $this->user, 1);
 
         flash('Success', 'Your user has been created!');
+
+        return redirect()->route('users.show', ['user' => $user]);
     }
 
     /**
@@ -402,7 +405,7 @@ class UsersController extends Controller
     {
         $this->authorizeUserChange($user);
 
-        $input = $request->all();
+        $input = $request->validated();
 
         // status and group membership are admin-only fields; strip them for
         // everyone else so a self-edit POST cannot escalate privileges
