@@ -241,12 +241,14 @@ class PagesController extends Controller
 
         // Get recommended events based on followed entities, tags, and series
         $recommendedEvents = $user->getRecommendedEvents()
+            ->visible($user)
             ->with(['venue', 'tags', 'entities', 'eventType'])
             ->take(12)
             ->get();
 
         // Get recently added events
         $recentEvents = Event::where('start_at', '>=', Carbon::now())
+            ->visible($user)
             ->with(['venue', 'tags', 'entities', 'eventType'])
             ->orderBy('created_at', 'desc')
             ->take(8)
@@ -276,6 +278,7 @@ class PagesController extends Controller
 
         // Get popular events - upcoming events with most attendees
         $popularEvents = Event::where('start_at', '>=', Carbon::now())
+            ->visible($user)
             ->withCount('attendees')
             ->with(['venue', 'tags', 'entities', 'eventType'])
             ->orderBy('attendees_count', 'desc')

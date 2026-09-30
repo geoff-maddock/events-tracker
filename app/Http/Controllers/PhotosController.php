@@ -6,6 +6,7 @@ use App\Events\EventPhotoAdded;
 use App\Filters\PhotoFilters;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
+use App\Models\Event;
 use App\Models\Photo;
 use App\Models\Tag;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -95,6 +96,8 @@ class PhotosController extends Controller
         $baseQuery = Photo::query()
         ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
         ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+        // photos of events the viewer can't see are left out
+        ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
         ->select('photos.*');
 
         $listEntityResultBuilder
@@ -114,7 +117,7 @@ class PhotosController extends Controller
         // reads $photo->events->first()->venue per row, which otherwise fires an N+1
         // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
         $photos = $query
-            ->with('events.venue')
+            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -163,6 +166,8 @@ class PhotosController extends Controller
         $baseQuery = Photo::query()->select('photos.*')
             ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
             ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+            // photos of events the viewer can't see are left out
+            ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
             ->whereHas('events.tags', function ($q) use ($tag) {
                 $q->where('slug', '=', $tag->slug);
             });
@@ -184,7 +189,7 @@ class PhotosController extends Controller
         // reads $photo->events->first()->venue per row, which otherwise fires an N+1
         // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
         $photos = $query
-            ->with('events.venue')
+            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -230,6 +235,8 @@ class PhotosController extends Controller
         $baseQuery = Photo::query()
         ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
         ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+        // photos of events the viewer can't see are left out
+        ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
         ->select('photos.*');
 
         $listEntityResultBuilder
@@ -248,7 +255,7 @@ class PhotosController extends Controller
         // reads $photo->events->first()->venue per row, which otherwise fires an N+1
         // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
         $photos = $query
-            ->with('events.venue')
+            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -274,6 +281,9 @@ class PhotosController extends Controller
 
     public function show(Photo $photo): View
     {
+        // list only the photo's events the viewer may see
+        $photo->load(['events' => fn ($q) => $q->visible($this->user)]);
+
         return view('photos.show-tw', compact('photo'));
     }
 

@@ -709,6 +709,7 @@ class Series extends Eloquent implements HasPhotos
         if (null == $this->cancelled_at) {
             $event = Event::where('series_id', '=', $this->id)
                     ->where('start_at', '>=', Carbon::now())
+                    ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
                     ->orderBy('start_at', 'asc')
                     ->first();
         }
@@ -722,10 +723,12 @@ class Series extends Eloquent implements HasPhotos
     public function upcomingEvent(): HasOne
     {
         // ofMany, so eager loading a page of series fetches one event per series
-        // instead of every future event of every series (#2173)
+        // instead of every future event of every series (#2173). Series cards show
+        // it to anyone and it is loaded without a viewer, so public events only.
         return $this->hasOne(Event::class)->ofMany(
             ['start_at' => 'min', 'id' => 'min'],
             fn ($query) => $query->where('start_at', '>=', Carbon::now())
+                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
         );
     }
 
@@ -739,6 +742,7 @@ class Series extends Eloquent implements HasPhotos
         return $this->hasOne(Event::class)->ofMany(
             ['start_at' => 'max', 'id' => 'max'],
             fn ($query) => $query->where('start_at', '<', Carbon::now())
+                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
         );
     }
 

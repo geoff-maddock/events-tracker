@@ -13,6 +13,7 @@ use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\Event;
 use App\Models\Group;
 use App\Models\Profile;
 use App\Models\User;
@@ -343,9 +344,10 @@ class UsersController extends Controller
 
         // only the active events tab is rendered; load just that list, capped, with what the cards read
         $eagerLoad = EventsController::cardEventEagerLoad($this->user);
+        // someone else's profile shows only the events the viewer may see
         $profileEvents = ($tabs['events'] ?? 'created') === 'attending'
-            ? $user->getAttending()->with($eagerLoad)->orderBy('events.start_at', 'desc')->limit(20)->get()
-            : $user->events()->with($eagerLoad)->limit(10)->get();
+            ? $user->getAttending()->visible($this->user)->with($eagerLoad)->orderBy('events.start_at', 'desc')->limit(20)->get()
+            : $user->events()->visible($this->user)->with($eagerLoad)->limit(10)->get();
 
         return view('users.show-tw', compact('user', 'tabs', 'canViewFullProfile', 'profileEvents'));
     }
@@ -705,7 +707,9 @@ class UsersController extends Controller
         }
 
         // get the next x events they are attending
-        $events = $user->getAttendingFuture()->take(self::DEFAULT_SHOW_COUNT);
+        $events = $user->getAttendingFuture()
+            ->filter(fn (Event $event) => $event->isVisibleTo($this->user))
+            ->take(self::DEFAULT_SHOW_COUNT);
 
         // create a calendar object
         $calendar = $iCalBuilder->buildCalendar($this->user->getFullNameAttribute().' Calendar', $events);
