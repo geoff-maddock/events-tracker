@@ -312,7 +312,8 @@ class PostsController extends Controller
         return response()->json([], 204);
     }
 
-    protected function unauthorized(PostRequest $request): JsonResponse
+    // any request: update() passes a PostRequest, patch() a PostPatchRequest
+    protected function unauthorized(Request $request): JsonResponse
     {
         return response()->json(['message' => 'Not authorized'], 403);
     }

@@ -87,7 +87,10 @@ class CommentsController extends Controller
     /**
      * Show the form for editing the specified comment.
      */
-    public function edit(Entity $entity, Comment $comment): View
+    // Entity and Event both appear, as in store(): the entities.comments and
+    // events.comments routes bind one or the other by name, and the absent one
+    // arrives empty. With only Entity, event comments couldn't be edited or deleted.
+    public function edit(Entity $entity, Event $event, Comment $comment): View
     {
         if ((int) $comment->created_by !== $this->user->id && $this->user->cannot('edit_entity')) {
             abort(403);
@@ -114,7 +117,7 @@ class CommentsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Entity $entity, Comment $comment): RedirectResponse
+    public function update(Request $request, Entity $entity, Event $event, Comment $comment): RedirectResponse
     {
         // the author, or anyone who may moderate entity content (same rule as destroy)
         if ((int) $comment->created_by !== $this->user->id && $this->user->cannot('edit_entity')) {
@@ -139,7 +142,7 @@ class CommentsController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Entity $entity, Comment $comment): RedirectResponse
+    public function destroy(Entity $entity, Event $event, Comment $comment): RedirectResponse
     {
         // the author, or anyone who may moderate entity content
         if ((int) $comment->created_by !== $this->user->id && $this->user->cannot('edit_entity')) {
