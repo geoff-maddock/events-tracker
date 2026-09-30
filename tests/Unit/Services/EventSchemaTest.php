@@ -410,6 +410,7 @@ class EventSchemaTest extends TestCase
         $series = new Series(['name' => 'Gloom Nights']);
         $series->setRelation('promoter', $promoter);
         $series->setRelation('venue', null);
+        $series->setRelation('photos', new Collection());
 
         $event = $this->event();
         $event->setRelation('series', $series);

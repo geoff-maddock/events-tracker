@@ -42,7 +42,8 @@
 		"barryvdh/laravel-ide-helper": "^3.0",
 		"larastan/larastan": "^3.0",
 		"phpunit/phpunit": "^11.0",
-		"barryvdh/laravel-debugbar": "^4.0"
+		"barryvdh/laravel-debugbar": "^4.0",
+		"brianium/paratest": "^7.8"
 	},
 	"autoload": {
 		"psr-4": {

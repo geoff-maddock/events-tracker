@@ -15,8 +15,11 @@ Default branch for PRs is `main`
 composer phpstan
 ./vendor/bin/phpstan analyse
 
-# Full test pipeline (fresh migrate + seed on the testing DB, then phpunit); CI runs the equivalent steps
+# Full test pipeline (fresh migrate + seed on the testing DB, then phpunit)
 composer tests
+
+# Parallel (what CI runs; each process gets its own <db>_test_N database, so the DB user needs CREATE/DROP on those)
+php artisan test --parallel --processes=4
 
 # PHPUnit directly
 ./vendor/bin/phpunit tests
@@ -38,7 +41,7 @@ php artisan serve
 
 `composer.json` scripts call `php-latest` (a system alias). Plain `php artisan ...` works fine in dev.
 
-PHPUnit env (`phpunit.xml`) forces `APP_ENV=testing`, `CACHE_DRIVER=array`, `SESSION_DRIVER=array`, `QUEUE_DRIVER=sync`. Tests run against a real MySQL database (`.env.testing`, the stage DB) — `composer tests` clears any cached config and runs `migrate:fresh --seed --env=testing` first, so a working DB connection is required.
+PHPUnit env (`phpunit.xml`) forces `APP_ENV=testing`, `CACHE_DRIVER=array`, `SESSION_DRIVER=array`, `QUEUE_DRIVER=sync`, `BCRYPT_ROUNDS=4`. CI runs the suite in parallel and collects coverage only for pushes to `main`. Tests run against a real MySQL database (`.env.testing`, the stage DB) — `composer tests` clears any cached config and runs `migrate:fresh --seed --env=testing` first, so a working DB connection is required.
 
 A cached config (`bootstrap/cache/config.php`) makes Laravel ignore `phpunit.xml` and `.env.testing`, which would point `RefreshDatabase` at the dev DB. `tests/CreatesApplication.php` refuses to run in that case (or when `APP_ENV` isn't `testing`, or the DB is a live one); run `php artisan config:clear` and retry.
 
