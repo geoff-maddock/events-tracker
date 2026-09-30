@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesOnlyWhenUnused;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Eloquent
 {
-    use HasFactory;
+    use HasFactory, DeletesOnlyWhenUnused;
 
     protected $fillable = [
         'name', 'slug', 'short',
@@ -51,5 +52,13 @@ class Role extends Eloquent
     public function getNameAttribute(string $value): string
     {
         return ucfirst(strtolower($value));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function usedBy(): array
+    {
+        return ['entity_role' => 'role_id'];
     }
 }

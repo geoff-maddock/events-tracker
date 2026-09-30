@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesOnlyWhenUnused;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,10 +13,11 @@ use Str;
  */
 class EventType extends Eloquent
 {
-    use HasFactory;
+    use HasFactory, DeletesOnlyWhenUnused;
 
     protected $fillable = [
         'name',
+        'slug',
     ];
 
     /**
@@ -50,5 +52,13 @@ class EventType extends Eloquent
                 // BLUE
                 return '#0a57ad';
         }
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function usedBy(): array
+    {
+        return ['events' => 'event_type_id', 'series' => 'event_type_id'];
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\EventType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class EventTypeFactory extends Factory
 {
@@ -24,6 +25,8 @@ class EventTypeFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
+            // the column is NOT NULL but the model derives slug from name
+            'slug' => fn (array $attributes) => Str::slug($attributes['name']),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ];

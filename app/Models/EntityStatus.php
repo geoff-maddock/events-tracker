@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesOnlyWhenUnused;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class EntityStatus extends Eloquent
 {
+    use DeletesOnlyWhenUnused;
+
     CONST DRAFT = 1;
     CONST ACTIVE = 2;
     CONST INACTIVE = 3;
@@ -63,5 +66,13 @@ class EntityStatus extends Eloquent
         }
 
         return $class;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function usedBy(): array
+    {
+        return ['entities' => 'entity_status_id'];
     }
 }

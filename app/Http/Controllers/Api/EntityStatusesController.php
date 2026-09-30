@@ -12,10 +12,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\EntityStatus;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\JsonResponse as HttpFoundationJsonResponse;
 
 class EntityStatusesController extends Controller
@@ -170,13 +168,9 @@ class EntityStatusesController extends Controller
             return $denied;
         }
 
-        $name = $entityStatus->name;
-
-        try {
-            $entityStatus->delete();
-        } catch (Exception $e) {
-            Log::error(sprintf('Could not delete the entity type %s', $name));
-        };
+        if (!$entityStatus->deleteIfUnused()) {
+            return response()->json(['message' => 'This entity status is still in use and can\'t be deleted.'], 409);
+        }
 
         // add to activity log
         Activity::log($entityStatus, $this->user, 3);

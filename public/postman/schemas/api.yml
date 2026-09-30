@@ -4710,13 +4710,19 @@ paths:
       tags:
         - entity-statuses
       summary: Delete Entity Status
-      description: Deletes an entity status by its ID.
+      description: Deletes an entity status by its ID. One that entities use is not deleted. Admin only.
       operationId: deleteEntityStatusById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "409":
+          description: Still in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/entity-types:
     get:
       tags:
@@ -4849,13 +4855,19 @@ paths:
       tags:
         - entity-types
       summary: Delete Entity Type
-      description: Deletes an entity type by its ID.
+      description: Deletes an entity type by its ID. One that entities use is not deleted. Admin only.
       operationId: deleteEntityTypeById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "409":
+          description: Still in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/event-types:
     get:
       tags:
@@ -4988,13 +5000,19 @@ paths:
       tags:
         - event-types
       summary: Delete Event Type
-      description: Deletes an event type by its ID.
+      description: Deletes an event type by its ID. One that events or series use is not deleted. Admin only.
       operationId: deleteEventTypeById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "409":
+          description: Still in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/event-statuses:
     get:
       tags:
@@ -5158,13 +5176,19 @@ paths:
       tags:
         - event-statuses
       summary: Delete Event Status
-      description: Deletes an event status by its ID.
+      description: Deletes an event status by its ID. One that events use is not deleted. Admin only.
       operationId: deleteEventStatusById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "409":
+          description: Still in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/forums:
     get:
       tags:
@@ -7260,13 +7284,19 @@ paths:
       tags:
         - roles
       summary: Delete Role
-      description: Deletes a role by its ID.
+      description: Deletes a role by its ID. One that entities have is not deleted. Admin only.
       operationId: deleteRoleById
       responses:
         "204":
           description: Successful response
           content:
             application/json: {}
+        "409":
+          description: Still in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/users:
     post:
       tags:

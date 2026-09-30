@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\EntityType;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Exception;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class EntityTypesController extends Controller
@@ -278,11 +276,11 @@ class EntityTypesController extends Controller
     {
         $name = $entityType->name;
 
-        try {
-            $entityType->delete();
-        } catch (Exception $e) {
-            Log::error(sprintf('Could not delete the entity type %s', $name));
-        };
+        if (!$entityType->deleteIfUnused()) {
+            flash()->error('Not deleted', sprintf('The entity type %s is still in use and can\'t be deleted.', $name));
+
+            return redirect('entity-types');
+        }
 
         // add to activity log
         Activity::log($entityType, $this->user, 3);

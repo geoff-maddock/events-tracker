@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesOnlyWhenUnused;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EventStatus extends Eloquent
 {
+    use DeletesOnlyWhenUnused;
+
     /**
      * Seeded event status ids (see EventStatusesTableSeeder).
      */
@@ -36,5 +39,13 @@ class EventStatus extends Eloquent
     public function events(): HasMany
     {
         return $this->hasMany('App\Models\Event');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function usedBy(): array
+    {
+        return ['events' => 'event_status_id'];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesOnlyWhenUnused;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class EntityType extends Eloquent
 {
+    use DeletesOnlyWhenUnused;
+
     const SPACE = 1;
 
     const GROUP = 2;
@@ -24,4 +27,12 @@ class EntityType extends Eloquent
     protected $casts = [
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function usedBy(): array
+    {
+        return ['entities' => 'entity_type_id'];
+    }
 }
