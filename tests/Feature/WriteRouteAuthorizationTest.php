@@ -342,6 +342,21 @@ class WriteRouteAuthorizationTest extends TestCase
         ],
     ];
 
+    /**
+     * Owner/admin PUT, PATCH and DELETE routes where the stranger check can't
+     * show much, because the same payload has no effect even for the owner or
+     * an admin (checked when this matrix was written, #2186). Every other such
+     * route was confirmed to take effect for a privileged user, so "the
+     * stranger changed nothing" there means the authorization check held.
+     */
+    private const NOT_EXERCISED = [
+        'PATCH feedback/responses/{surveyResponse}' => 'survey responses have no text field for the marker',
+        'DELETE forums/{forum}' => 'deleting a forum with thread categories fails on a foreign key (500)',
+        'DELETE api/forums/{forum}' => 'same foreign-key failure as the web route',
+        'DELETE api/event-types/{event_type}' => 'destroy() swallows the foreign-key failure and still answers 204',
+        'DELETE api/event-statuses/{event_status}' => 'destroy() swallows the foreign-key failure and still answers 204',
+    ];
+
     /** The field a stranger's update would change, per bound model. */
     private const MARKER_FIELD = [
         'comment' => 'message', 'review' => 'review', 'link' => 'text', 'post' => 'body',
@@ -459,7 +474,10 @@ class WriteRouteAuthorizationTest extends TestCase
                 continue;
             }
             $field = self::MARKER_FIELD[$name] ?? 'name';
-            $payload = array_merge($record->attributesToArray(), [$field => 'ZZ HIJACKED '.$name]);
+            // short (tag names max out at 16) and compared case-insensitively
+            // (Role's name accessor ucfirst()s it)
+            $marker = 'ZZH'.substr(md5($key), 0, 10);
+            $payload = $this->updatePayload($record, $field, $marker);
 
             $this->actingAs($stranger, str_starts_with($route->uri(), 'api/') ? 'sanctum' : 'web');
             $this->send($key, $route, $payload);
@@ -468,7 +486,7 @@ class WriteRouteAuthorizationTest extends TestCase
             if ('DELETE' === $method && null === $after) {
                 $failures[] = "{$key}: a stranger deleted the {$name}";
                 $this->makeWriteRouteFixtures();
-            } elseif ($after && str_starts_with((string) $after->getAttribute($field), 'ZZ HIJACKED')) {
+            } elseif ($after && 0 === strcasecmp((string) $after->getAttribute($field), $marker)) {
                 $failures[] = "{$key}: a stranger changed the {$name}";
             }
             session()->flush();
@@ -497,6 +515,24 @@ class WriteRouteAuthorizationTest extends TestCase
         }
 
         $this->assertSame([], $failures);
+    }
+
+    /**
+     * A body that would update the record if the request were allowed: the
+     * record's own attributes (nulls dropped, since some PATCH rules reject
+     * them) with the marker field changed, so the payload passes validation
+     * and only authorization stands in the way.
+     *
+     * @return array<string, mixed>
+     */
+    private function updatePayload(\Illuminate\Database\Eloquent\Model $record, string $field, string $marker): array
+    {
+        $payload = array_filter($record->attributesToArray(), fn ($value) => null !== $value);
+        $payload[$field] = $marker;
+        // a Discord target must match something or opt into every event
+        $payload['match_all'] = 1;
+
+        return $payload;
     }
 
     /**

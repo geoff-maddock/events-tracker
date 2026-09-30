@@ -47,23 +47,30 @@ trait WriteRouteFixtures
     /** @var array<string, \Illuminate\Database\Eloquent\Model> */
     protected array $fixtures = [];
 
+    private int $fixtureRound = 0;
+
+    /**
+     * Safe to call again (e.g. after a route deleted a fixture): every unique
+     * name and slug carries this round's suffix.
+     */
     protected function makeWriteRouteFixtures(): void
     {
+        $n = ++$this->fixtureRound;
         $this->owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         // several models stamp created_by from the signed-in user
         $this->actingAs($this->owner);
         $owner = $this->owner->id;
 
-        $entity = Entity::factory()->create(['created_by' => $owner, 'slug' => 'zz-matrix-entity']);
-        $event = Event::factory()->create(['created_by' => $owner, 'slug' => 'zz-matrix-event', 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
-        $series = Series::factory()->create(['created_by' => $owner, 'slug' => 'zz-matrix-series']);
+        $entity = Entity::factory()->create(['created_by' => $owner, 'slug' => "zz-matrix-entity-{$n}"]);
+        $event = Event::factory()->create(['created_by' => $owner, 'slug' => "zz-matrix-event-{$n}", 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $series = Series::factory()->create(['created_by' => $owner, 'slug' => "zz-matrix-series-{$n}"]);
         $forum = Forum::factory()->create(['created_by' => $owner]);
         $thread = Thread::factory()->create(['forum_id' => $forum->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
         $post = Post::factory()->create(['thread_id' => $thread->id, 'created_by' => $owner]);
-        $blog = Blog::factory()->create(['created_by' => $owner, 'slug' => 'zz-matrix-blog']);
-        $tag = Tag::factory()->create(['name' => 'Zzmatrixtag', 'slug' => 'zzmatrixtag', 'created_by' => $owner]);
+        $blog = Blog::factory()->create(['created_by' => $owner, 'slug' => "zz-matrix-blog-{$n}", 'content_type_id' => \App\Models\ContentType::PLAIN_TEXT]);
+        $tag = Tag::factory()->create(['name' => "Zzmatrixtag{$n}", 'slug' => "zzmatrixtag{$n}", 'created_by' => $owner]);
 
-        $link = Link::factory()->create(['url' => 'https://example.com/zz-matrix']);
+        $link = Link::factory()->create(['url' => "https://example.com/zz-matrix-{$n}"]);
         $entity->links()->attach($link->id);
         $location = Location::factory()->create(['entity_id' => $entity->id, 'created_by' => $owner]);
         $contact = Contact::create(['name' => 'ZZ Matrix Contact', 'type' => 'Booking', 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
@@ -79,7 +86,7 @@ trait WriteRouteFixtures
         $photo = Photo::findOrFail($photoId);
         $event->photos()->attach($photo->id);
 
-        $claimTarget = Entity::factory()->create(['slug' => 'zz-matrix-claimed']);
+        $claimTarget = Entity::factory()->create(['slug' => "zz-matrix-claimed-{$n}"]);
         $claim = EntityClaim::create(['entity_id' => $claimTarget->id, 'user_id' => $owner, 'status' => 'pending', 'message' => 'Mine ZZ']);
 
         $this->fixtures = [
@@ -94,15 +101,17 @@ trait WriteRouteFixtures
             'event_type' => EventType::first(),
             'event_status' => EventStatus::first(),
             'category' => ThreadCategory::factory()->create(['forum_id' => $forum->id]),
-            'group' => Group::firstOrCreate(['name' => 'zzmatrix'], ['label' => 'ZZ Matrix', 'level' => 1, 'description' => '']),
-            'permission' => Permission::firstOrCreate(['name' => 'zz_matrix'], ['label' => 'ZZ Matrix', 'level' => 1, 'description' => '']),
+            'group' => Group::firstOrCreate(['name' => "zzmatrix{$n}"], ['label' => 'ZZ Matrix', 'level' => 1, 'description' => '']),
+            'permission' => Permission::firstOrCreate(['name' => "zz_matrix{$n}"], ['label' => 'ZZ Matrix', 'level' => 1, 'description' => '']),
             'discordTarget' => DiscordTarget::factory()->create(),
             'invitation' => SurveyInvitation::factory()->create(['user_id' => $owner]),
             'activity' => Activity::factory()->create(['user_id' => $owner]),
             'surveyResponse' => SurveyResponse::factory()->create(),
         ];
 
-        auth()->logout();
+        // back to a guest, whichever guard was last used (sanctum's has no logout())
+        auth()->guard('web')->logout();
+        auth()->forgetGuards();
     }
 
     /**
