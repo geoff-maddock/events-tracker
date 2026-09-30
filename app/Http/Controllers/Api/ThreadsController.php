@@ -256,7 +256,8 @@ class ThreadsController extends Controller
         return response()->json($thread);
     }
 
-    protected function unauthorized(ThreadRequest $request): JsonResponse
+    // any request: update() passes a ThreadRequest, patch() a ThreadPatchRequest
+    protected function unauthorized(Request $request): JsonResponse
     {
         return response()->json(['message' => 'Not authorized'], 403);
     }
