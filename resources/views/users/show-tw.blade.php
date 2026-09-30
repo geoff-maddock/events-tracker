@@ -264,16 +264,22 @@
                         </div>
                     @endif
 
-                    <!-- Groups -->
-                    @if ($canViewFullProfile)
+                    <!-- Groups: only admins and the user themselves see memberships (#2233) -->
+                    @if (Auth::id() === $user->id || Auth::user()?->can('admin'))
                         @unless ($user->groups->isEmpty())
                         <div class="pt-4 border-t border-border">
                             <span class="font-semibold text-foreground block mb-2">Groups:</span>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($user->groups as $group)
+                                    @can('admin')
                                     <a href="/groups/{{ $group->id }}" title="{{ $group->description }}" class="badge-tw badge-primary-tw">
                                         {{ $group->label }}
                                     </a>
+                                    @else
+                                    <span title="{{ $group->description }}" class="badge-tw badge-primary-tw">
+                                        {{ $group->label }}
+                                    </span>
+                                    @endcan
                                 @endforeach
                             </div>
                         </div>

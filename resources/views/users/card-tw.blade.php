@@ -57,7 +57,8 @@
         <!-- Attending Future Events -->
         @include('users.attending-events-tw', ['user' => $user])
 
-        <!-- User Groups/Roles -->
+        <!-- User Groups/Roles: admins only (#2233) -->
+        @can('admin')
         @unless ($user->groups->isEmpty())
         <div class="flex flex-wrap gap-1 justify-center">
             @foreach ($user->groups->take(3) as $group)
@@ -70,6 +71,7 @@
             @endif
         </div>
         @endunless
+        @endcan
     </div>
 
     <!-- Card Footer - Actions -->
