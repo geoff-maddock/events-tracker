@@ -983,15 +983,21 @@ class UsersController extends Controller
      */
     protected function cardEagerLoads(?User $viewer): array
     {
-        return [
+        $loads = [
             'status',
             'profile',
             'photos',
-            'groups',
             'attendingEvents' => function ($q) use ($viewer) {
                 $q->future()->visible($viewer)->with('photos');
             },
         ];
+
+        // group badges are only shown to admins (#2233)
+        if ($viewer?->can('admin')) {
+            $loads[] = 'groups';
+        }
+
+        return $loads;
     }
 
     protected function getFormOptions(): array

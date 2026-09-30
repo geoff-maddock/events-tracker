@@ -41,7 +41,8 @@ class PermissionsController extends Controller
     public function __construct(PermissionFilters $filter)
     {
         // group and permission changes grant privileges, so every write is admin-only
-        $this->middleware(['auth', 'can:admin'], ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        // listing them shows who the admins are, so reading is admin-only too (#2233)
+        $this->middleware(['auth', 'can:admin']);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -261,8 +262,6 @@ class PermissionsController extends Controller
      */
     public function edit(Permission $permission): View
     {
-        $this->middleware('auth');
-
         $groups = Group::orderBy('name')->pluck('name', 'id')->all();
 
         return view('permissions.edit-tw', compact('permission'))

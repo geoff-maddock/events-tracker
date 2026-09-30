@@ -41,7 +41,8 @@ class GroupsController extends Controller
     public function __construct(GroupFilters $filter)
     {
         // group and permission changes grant privileges, so every write is admin-only
-        $this->middleware(['auth', 'can:admin'], ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        // listing them shows who the admins are, so reading is admin-only too (#2233)
+        $this->middleware(['auth', 'can:admin']);
         $this->filter = $filter;
 
         // prefix for session storage
@@ -246,8 +247,6 @@ class GroupsController extends Controller
      */
     public function edit(Group $group): View
     {
-        $this->middleware('auth');
-
         return view('groups.edit-tw', compact('group'))
           ->with($this->getFormOptions());
     }
