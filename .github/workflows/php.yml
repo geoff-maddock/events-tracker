@@ -28,6 +28,11 @@ jobs:
         run: more phpstan.neon.dist
 
       - name: Run php stan static analysis
+        # Larastan boots the app, and AuthServiceProvider reads the permissions table;
+        # an empty in-memory SQLite database stands in for MySQL here
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
         run: composer run-script phpstan
 
   build:

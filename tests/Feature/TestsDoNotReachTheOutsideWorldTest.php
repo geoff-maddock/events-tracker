@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\DiscordPostFailure;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\StrayRequestException;
 use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Support\Facades\Http;
@@ -30,6 +31,9 @@ use Tests\TestCase;
  */
 class TestsDoNotReachTheOutsideWorldTest extends TestCase
 {
+    // sending mail checks the email_suppressions table
+    use RefreshDatabase;
+
     public function test_the_configured_mail_transport_cannot_deliver(): void
     {
         $this->assertSame('array', config('mail.default'));
