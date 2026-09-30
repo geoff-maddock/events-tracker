@@ -34,7 +34,8 @@ class DailyTweet extends Command
     public function handle()
     {
         // get all the events happening today
-        $events = Event::today()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*')->get();
+        // tweets are public: public events only
+        $events = Event::today()->visible(null)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*')->get();
 
         // cycle through all the events - just to log
         foreach ($events as $event) {

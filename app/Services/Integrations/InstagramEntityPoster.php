@@ -34,8 +34,10 @@ class InstagramEntityPoster extends InstagramPoster
 
         $igContainerIds = [$this->uploadCarouselItem($entityImageUrl)];
 
+        // other people's private events must not end up on Instagram
         $futureEvents = $entity->events()
             ->distinct()
+            ->visible(null)
             ->where('start_at', '>=', Carbon::now())
             ->orderBy('start_at', 'ASC')
             ->limit(self::MAX_EVENT_PHOTOS)

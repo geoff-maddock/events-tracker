@@ -486,7 +486,8 @@ class PagesController extends Controller
         $events = [];
         $interests = [];
 
-        $events = Event::future()->simplePaginate(10);
+        // mailed to an outside address, so public events only
+        $events = Event::future()->visible(null)->simplePaginate(10);
 
         // send an email inviting the user to join
         return (new BestEffortMailer())->attempt(function () use ($email, $events, $url, $site, $admin_email, $reply_email) {

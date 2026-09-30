@@ -92,6 +92,8 @@ class Tag extends Eloquent
 
     /**
      * Get the events that belong to the tag.
+     *
+     * @return BelongsToMany<Event, $this>
      */
     public function events(): BelongsToMany
     {
@@ -204,23 +206,23 @@ class Tag extends Eloquent
     }
 
     /**
-     * If there is a future event, return it.
+     * The tag's upcoming events that $viewer may see (public only with no viewer).
      */
-    public function futureEvents(): Collection
+    public function futureEvents(?User $viewer = null): Collection
     {
-        $events = $this->events()->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->get();
+        $events = $this->events()->visible($viewer)->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->get();
 
         return $events;
     }
 
     /**
-     * Return any events that match today for the start date.
-     * 
+     * The tag's events today that $viewer may see (public only with no viewer).
+     *
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event>
      */
-    public function todaysEvents(): Collection
+    public function todaysEvents(?User $viewer = null): Collection
     {
-        $events = $this->events()->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
+        $events = $this->events()->visible($viewer)->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
 
         return $events;
     }

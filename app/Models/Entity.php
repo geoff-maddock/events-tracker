@@ -461,22 +461,25 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * If there is a future event, return it.
+     * The entity's upcoming events that $viewer may see. With no viewer (captions,
+     * public posts, emails to outside contacts) that is public events only.
      */
-    public function futureEvents(?int $rpp = null): LengthAwarePaginator
+    public function futureEvents(?int $rpp = null, ?User $viewer = null): LengthAwarePaginator
     {
         return $this->events()->distinct()
+            ->visible($viewer)
             ->where('start_at', '>=', Carbon::now())
             ->orderBy('start_at', 'ASC')
             ->paginate($rpp);
     }
 
     /**
-     * If there is a past event, return it.
+     * The entity's past events that $viewer may see (public only with no viewer).
      */
-    public function pastEvents(?int $rpp = null): LengthAwarePaginator
+    public function pastEvents(?int $rpp = null, ?User $viewer = null): LengthAwarePaginator
     {
         return $this->events()->distinct()
+            ->visible($viewer)
             ->where('start_at', '<', Carbon::now())
             ->orderBy('start_at', 'DESC')
             ->paginate($rpp);
@@ -493,13 +496,13 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * Return any events that match today for the start date.
-     * 
+     * The entity's events today that $viewer may see (public only with no viewer).
+     *
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event>
      */
-    public function todaysEvents(): Collection
+    public function todaysEvents(?User $viewer = null): Collection
     {
-        return $this->events()->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
+        return $this->events()->visible($viewer)->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
     }
 
     /**

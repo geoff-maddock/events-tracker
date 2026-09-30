@@ -1504,8 +1504,9 @@ class EntitiesController extends Controller
         $site = config('app.app_name');
         $url = config('app.url');
 
-        // upcoming events
+        // upcoming events; this goes to the entity's outside contact, so public events only
         $upcomingEvents = $entity->events()
+            ->visible(null)
             ->with(['venue', 'eventType', 'visibility'])
             ->where('start_at', '>=', Carbon::now())
             ->orderBy('start_at', 'ASC')
@@ -1514,6 +1515,7 @@ class EntitiesController extends Controller
 
         // past events (most recent first, up to 10)
         $pastEvents = $entity->events()
+            ->visible(null)
             ->with(['venue'])
             ->where('start_at', '<', Carbon::now())
             ->orderBy('start_at', 'DESC')

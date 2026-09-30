@@ -69,8 +69,8 @@ class Notify extends Command
                 foreach ($entities as $entity) {
                     /** @var \App\Models\Entity $entity */
                     $entityEvents = [];
-                    if (count($entity->todaysEvents()) > 0) {
-                        foreach ($entity->todaysEvents() as $todaysEvent) {
+                    if (count($entity->todaysEvents($user)) > 0) {
+                        foreach ($entity->todaysEvents($user) as $todaysEvent) {
                             /** @var \App\Models\Event $todaysEvent */
                             if (!in_array($todaysEvent->id, $collectedIdList)) {
                                 $entityEvents[] = $todaysEvent;
@@ -89,8 +89,8 @@ class Notify extends Command
                 foreach ($tags as $tag) {
                     /** @var \App\Models\Tag $tag */
                     $tagEvents = [];
-                    if (count($tag->todaysEvents()) > 0) {
-                        foreach ($tag->todaysEvents() as $todaysEvent) {
+                    if (count($tag->todaysEvents($user)) > 0) {
+                        foreach ($tag->todaysEvents($user) as $todaysEvent) {
                             /** @var \App\Models\Event $todaysEvent */
                             if (!in_array($todaysEvent->id, $collectedIdList)) {
                                 $tagEvents[] = $todaysEvent;

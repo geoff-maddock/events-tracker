@@ -111,6 +111,10 @@ class InstagramEntityAndWeekPostingTest extends TestCase
         }
         // an upcoming event without a photo is left out of the carousel
         Event::factory()->create(['start_at' => Carbon::now()->addDays(3)])->entities()->attach($entity->id);
+        // so is someone else's private event, photo or not (#2244)
+        $private = Event::factory()->create(['start_at' => Carbon::now()->addDays(4), 'visibility_id' => Visibility::VISIBILITY_PRIVATE]);
+        $this->withPhoto($private);
+        $private->entities()->attach($entity->id);
 
         $instagram = $this->instagram();
         $instagram->shouldReceive('uploadCarouselPhoto')->times(3)->andReturn(11, 12, 13);
