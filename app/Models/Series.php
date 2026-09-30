@@ -753,6 +753,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * The next upcoming public event, eager-loadable (see nextPublicEvent()).
+     *
+     * @return HasOne<Event, $this>
      */
     public function upcomingPublicEvent(): HasOne
     {
