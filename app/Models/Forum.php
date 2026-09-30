@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Forum.
@@ -131,6 +132,32 @@ class Forum extends Eloquent
     public function threads(): HasMany
     {
         return $this->hasMany(Thread::class);
+    }
+
+    /**
+     * The thread categories defined for the forum.
+     */
+    public function threadCategories(): HasMany
+    {
+        return $this->hasMany(ThreadCategory::class);
+    }
+
+    /**
+     * Delete the forum and its thread categories, unless it still has threads.
+     * Returns false (and deletes nothing) when it has threads.
+     */
+    public function deleteIfEmpty(): bool
+    {
+        if ($this->threads()->exists()) {
+            return false;
+        }
+
+        DB::transaction(function () {
+            $this->threadCategories()->delete();
+            $this->delete();
+        });
+
+        return true;
     }
 
     // Post model
