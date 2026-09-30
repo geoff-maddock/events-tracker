@@ -12,10 +12,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\EventStatus;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 
 class EventStatusesController extends Controller
 {
@@ -132,12 +130,8 @@ class EventStatusesController extends Controller
             return $denied;
         }
 
-        $name = $eventStatus->name;
-
-        try {
-            $eventStatus->delete();
-        } catch (Exception $e) {
-            Log::error(sprintf('Could not delete the event status %s', $name));
+        if (!$eventStatus->deleteIfUnused()) {
+            return response()->json(['message' => 'This event status is still in use and can\'t be deleted.'], 409);
         }
 
         Activity::log($eventStatus, $this->user, 3);

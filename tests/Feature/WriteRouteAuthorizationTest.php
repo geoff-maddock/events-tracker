@@ -351,10 +351,8 @@ class WriteRouteAuthorizationTest extends TestCase
      */
     private const NOT_EXERCISED = [
         'PATCH feedback/responses/{surveyResponse}' => 'survey responses have no text field for the marker',
-        'DELETE forums/{forum}' => 'deleting a forum with thread categories fails on a foreign key (500)',
-        'DELETE api/forums/{forum}' => 'same foreign-key failure as the web route',
-        'DELETE api/event-types/{event_type}' => 'destroy() swallows the foreign-key failure and still answers 204',
-        'DELETE api/event-statuses/{event_status}' => 'destroy() swallows the foreign-key failure and still answers 204',
+        'DELETE forums/{forum}' => 'the fixture forum has a thread, and a forum with threads is not deleted (#2236)',
+        'DELETE api/forums/{forum}' => 'same as the web route (409)',
     ];
 
     /** The field a stranger's update would change, per bound model. */

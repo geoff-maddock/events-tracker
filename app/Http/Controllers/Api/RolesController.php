@@ -12,10 +12,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Role;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 
 class RolesController extends Controller
 {
@@ -132,12 +130,8 @@ class RolesController extends Controller
             return $denied;
         }
 
-        $name = $role->name;
-
-        try {
-            $role->delete();
-        } catch (Exception $e) {
-            Log::error(sprintf('Could not delete the role %s', $name));
+        if (!$role->deleteIfUnused()) {
+            return response()->json(['message' => 'This role is still in use and can\'t be deleted.'], 409);
         }
 
         Activity::log($role, $this->user, 3);

@@ -12,10 +12,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\EventType;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 
 class EventTypesController extends Controller
 {
@@ -172,13 +170,9 @@ class EventTypesController extends Controller
             return $denied;
         }
 
-        $name = $eventType->name;
-
-        try {
-            $eventType->delete();
-        } catch (Exception $e) {
-            Log::error(sprintf('Could not delete the event type %s', $name));
-        };
+        if (!$eventType->deleteIfUnused()) {
+            return response()->json(['message' => 'This event type is still in use and can\'t be deleted.'], 409);
+        }
 
         // add to activity log
         Activity::log($eventType, $this->user, 3);
