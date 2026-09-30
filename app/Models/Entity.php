@@ -484,6 +484,8 @@ class Entity extends Eloquent implements HasPhotos
 
     /**
      * The events that belong to the entity.
+     *
+     * @return BelongsToMany<Event, $this>
      */
     public function events(): BelongsToMany
     {
