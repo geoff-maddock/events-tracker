@@ -248,16 +248,18 @@ class InstagramEntityAndWeekPostingTest extends TestCase
     public function test_a_week_without_photos_is_not_posted(): void
     {
         Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC, 'start_at' => Carbon::now()->startOfWeek()->addDay()]);
-        $cover = $this->fakeCoverImage();
+        // nothing is generated, stored or uploaded
+        $this->app->instance(ImageHandler::class, Mockery::mock(ImageHandler::class, function ($m) {
+            $m->shouldNotReceive('generateCoverImage');
+        }));
+        Storage::shouldReceive('putFileAs')->never();
 
         $instagram = $this->instagram();
-        $instagram->shouldReceive('uploadCarouselPhoto')->once()->andReturn(10);
-        $instagram->shouldNotReceive('createCarousel');
+        $instagram->shouldNotReceive('uploadCarouselPhoto');
 
         $this->actingAs($this->superAdmin())->post('/events/instagram-post-week')
             ->assertSessionHas('flash_message.level', 'error')
             ->assertSessionHas('flash_message.message', "None of this week's events have a photo to post to Instagram.");
-        @unlink($cover);
     }
 
     private function superAdmin(): User

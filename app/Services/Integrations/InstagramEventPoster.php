@@ -143,6 +143,27 @@ class InstagramEventPoster extends InstagramPoster
             ->limit(self::MAX_CAROUSEL_ITEMS - 1)
             ->get();
 
+        // find the events with a usable photo before generating and uploading anything
+        $caption = "Events for the upcoming week...\n";
+        $included = [];
+        $imageUrls = [];
+
+        foreach ($events as $event) {
+            try {
+                $imageUrls[] = $this->photoUrl($event->getPrimaryPhoto());
+            } catch (RuntimeException $e) {
+                Log::info('Week post: skipping event '.$event->id.': '.$e->getMessage());
+                continue;
+            }
+
+            $caption .= $event->getInstagramFormat()."\n\n";
+            $included[] = $event;
+        }
+
+        if ($included === []) {
+            throw new RuntimeException('None of this week\'s events have a photo to post to Instagram.');
+        }
+
         $coverFileName = 'week-image.jpg';
         $coverImagePath = $imageHandler->generateCoverImage($coverFileName);
         if (!is_file($coverImagePath)) {
@@ -152,24 +173,8 @@ class InstagramEventPoster extends InstagramPoster
         $coverPath = Storage::disk('external')->putFileAs('photos', new HttpFile($coverImagePath), $coverFileName, 'public');
         $igContainerIds = [$this->uploadCarouselItem(Storage::disk('external')->url($coverPath))];
 
-        $caption = "Events for the upcoming week...\n";
-        $included = [];
-
-        foreach ($events as $event) {
-            try {
-                $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
-            } catch (RuntimeException $e) {
-                Log::info('Week post: skipping event '.$event->id.': '.$e->getMessage());
-                continue;
-            }
-
-            $caption .= $event->getInstagramFormat()."\n\n";
+        foreach ($imageUrls as $imageUrl) {
             $igContainerIds[] = $this->uploadCarouselItem($imageUrl);
-            $included[] = $event;
-        }
-
-        if ($included === []) {
-            throw new RuntimeException('None of this week\'s events have a photo to post to Instagram.');
         }
 
         $result = $this->publishCarousel($igContainerIds, $caption);
