@@ -42,10 +42,10 @@ class EventStatus extends Eloquent
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, \Illuminate\Database\Query\Builder>
      */
     protected function usedBy(): array
     {
-        return ['events' => 'event_status_id'];
+        return [$this->referencedIn('events', 'event_status_id')];
     }
 }

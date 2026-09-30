@@ -55,10 +55,15 @@ class EventType extends Eloquent
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, \Illuminate\Database\Query\Builder>
      */
     protected function usedBy(): array
     {
-        return ['events' => 'event_type_id', 'series' => 'event_type_id'];
+        return [
+            $this->referencedIn('events', 'event_type_id'),
+            $this->referencedIn('series', 'event_type_id'),
+            // a Discord target that filters on this type
+            $this->referencedIn('discord_target_criteria', 'criteria_id')->where('criteria_type', DiscordTargetCriterion::TYPE_EVENT_TYPE),
+        ];
     }
 }

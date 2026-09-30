@@ -55,10 +55,10 @@ class Role extends Eloquent
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, \Illuminate\Database\Query\Builder>
      */
     protected function usedBy(): array
     {
-        return ['entity_role' => 'role_id'];
+        return [$this->referencedIn('entity_role', 'role_id')];
     }
 }

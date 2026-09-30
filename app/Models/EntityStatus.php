@@ -69,10 +69,10 @@ class EntityStatus extends Eloquent
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, \Illuminate\Database\Query\Builder>
      */
     protected function usedBy(): array
     {
-        return ['entities' => 'entity_status_id'];
+        return [$this->referencedIn('entities', 'entity_status_id')];
     }
 }

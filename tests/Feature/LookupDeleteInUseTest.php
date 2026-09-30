@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Activity;
+use App\Models\DiscordTargetCriterion;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
@@ -77,6 +79,7 @@ class LookupDeleteInUseTest extends TestCase
             'entity type' => ['entity-types', fn ($t) => $t->entityType(), fn ($m) => Entity::factory()->create(['entity_type_id' => $m->id])],
             'entity status' => ['entity-statuses', fn ($t) => $t->entityStatus(), fn ($m) => Entity::factory()->create(['entity_status_id' => $m->id])],
             'role' => ['roles', fn ($t) => $t->role(), fn ($m) => Entity::factory()->create()->roles()->attach($m->id)],
+            'event type used only by a Discord target' => ['event-types', fn ($t) => $t->eventType(), fn ($m) => DiscordTargetCriterion::factory()->create(['criteria_type' => DiscordTargetCriterion::TYPE_EVENT_TYPE, 'criteria_id' => $m->id])],
         ];
     }
 
@@ -95,6 +98,8 @@ class LookupDeleteInUseTest extends TestCase
 
         $this->assertNotNull($record->fresh());
         $this->assertSame($usersBefore, $this->usageCount($record));
+        // nothing was deleted, so no delete is logged
+        $this->assertSame(0, $this->deleteLogCount($record));
     }
 
     #[DataProvider('apiLookups')]
@@ -107,6 +112,7 @@ class LookupDeleteInUseTest extends TestCase
             ->assertNoContent();
 
         $this->assertNull($record->fresh());
+        $this->assertSame(1, $this->deleteLogCount($record));
     }
 
     public function test_the_web_entity_type_delete_refuses_one_in_use(): void
@@ -151,10 +157,19 @@ class LookupDeleteInUseTest extends TestCase
         $this->assertSame(1, EventType::where('name', 'Zz New Type')->count());
     }
 
+    private function deleteLogCount(Model $record): int
+    {
+        return Activity::where('object_table', class_basename($record))
+            ->where('object_id', $record->getKey())
+            ->where('action_id', 3)
+            ->count();
+    }
+
     private function usageCount(Model $record): int
     {
         return match (true) {
-            $record instanceof EventType => Event::where('event_type_id', $record->id)->count() + Series::where('event_type_id', $record->id)->count(),
+            $record instanceof EventType => Event::where('event_type_id', $record->id)->count() + Series::where('event_type_id', $record->id)->count()
+                + DiscordTargetCriterion::where('criteria_type', DiscordTargetCriterion::TYPE_EVENT_TYPE)->where('criteria_id', $record->id)->count(),
             $record instanceof EventStatus => Event::where('event_status_id', $record->id)->count(),
             $record instanceof EntityType => Entity::where('entity_type_id', $record->id)->count(),
             $record instanceof EntityStatus => Entity::where('entity_status_id', $record->id)->count(),

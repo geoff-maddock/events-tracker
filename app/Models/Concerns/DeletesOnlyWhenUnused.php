@@ -2,6 +2,7 @@
 
 namespace App\Models\Concerns;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -12,16 +13,24 @@ use Illuminate\Support\Facades\DB;
 trait DeletesOnlyWhenUnused
 {
     /**
-     * The table => column pairs that refer to this record.
+     * Queries for the rows that refer to this record.
      *
-     * @return array<string, string>
+     * @return array<int, Builder>
      */
     abstract protected function usedBy(): array;
 
+    /**
+     * The rows in $table whose $column holds this record's key.
+     */
+    protected function referencedIn(string $table, string $column): Builder
+    {
+        return DB::table($table)->where($column, $this->getKey());
+    }
+
     public function isInUse(): bool
     {
-        foreach ($this->usedBy() as $table => $column) {
-            if (DB::table($table)->where($column, $this->getKey())->exists()) {
+        foreach ($this->usedBy() as $query) {
+            if ($query->exists()) {
                 return true;
             }
         }

@@ -29,10 +29,10 @@ class EntityType extends Eloquent
     ];
 
     /**
-     * @return array<string, string>
+     * @return array<int, \Illuminate\Database\Query\Builder>
      */
     protected function usedBy(): array
     {
-        return ['entities' => 'entity_type_id'];
+        return [$this->referencedIn('entities', 'entity_type_id')];
     }
 }
