@@ -13,6 +13,8 @@
     <env name="CACHE_DRIVER" value="array"/>
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_DRIVER" value="sync"/>
+    <!-- every User::factory() hashes a password; full-strength bcrypt was about a quarter of the suite's time -->
+    <env name="BCRYPT_ROUNDS" value="4"/>
     <!--
       Without this the suite inherits the real mail credentials from .env and
       every test that exercises a failure path emails the admin for real.

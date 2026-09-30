@@ -7,6 +7,29 @@ on:
     branches: [main]
 
 jobs:
+  # runs alongside the test job instead of before it
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: intl
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Output the phpstan config
+        run: more phpstan.neon.dist
+
+      - name: Run php stan static analysis
+        run: composer run-script phpstan
+
   build:
     runs-on: ubuntu-latest
 
@@ -22,7 +45,9 @@ jobs:
         ports:
           - 33306:3306
         # Set health checks to wait until mysql database has started (it takes some seconds to start)
+        # data dir in memory: the suite rebuilds and reseeds the database per test process
         options: >-
+          --tmpfs /var/lib/mysql
           --health-cmd="mysqladmin ping"
           --health-interval=10s
           --health-timeout=5s
@@ -37,7 +62,8 @@ jobs:
         with:
           php-version: 8.4
           extensions: intl #optional
-          coverage: pcov
+          # coverage is only reported for pushes to main; it slows the suite by about 30%
+          coverage: ${{ github.event_name == 'push' && 'pcov' || 'none' }}
           ini-values: "post_max_size=256M" #optional
 
       - name: Check PHP Version
@@ -88,12 +114,6 @@ jobs:
       - name: Create symlink
         run: php artisan storage:link
 
-      - name: Output the phpstan config
-        run: more phpstan.neon.dist
-
-      - name: Run php stan static analysis
-        run: composer run-script phpstan
-
       - name: Run test suite
         env:
           APP_URL: http://localhost
@@ -106,8 +126,12 @@ jobs:
           DB_PORT: 33306
           DB_USER: root
           DB_PASSWORD: db-password
-        # Equivalent to `composer run-script tests`, with coverage reporting added (pcov).
+        # RefreshDatabase builds and seeds each process's own test database
+        # (event-repo-db-name_test_N), so there is no separate migrate/seed step.
+        # Coverage (pcov) is only collected for pushes to main.
         run: |
-          php artisan migrate --verbose
-          php artisan db:seed
-          ./vendor/bin/phpunit tests --coverage-text --coverage-clover=coverage.xml
+          if [ "${{ github.event_name }}" = "push" ]; then
+            php artisan test --parallel --processes=4 --coverage-text --coverage-clover=coverage.xml
+          else
+            php artisan test --parallel --processes=4
+          fi
