@@ -68,7 +68,7 @@ class LookupDeleteInUseTest extends TestCase
     }
 
     /**
-     * @return array<string, array{0: string, 1: callable(): Model, 2: callable(Model): void}>
+     * @return array<string, array{0: string, 1: callable(self): Model, 2: callable(Model): mixed}>
      */
     public static function apiLookups(): array
     {
