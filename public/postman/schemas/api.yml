@@ -5000,7 +5000,7 @@ paths:
       tags:
         - event-types
       summary: Delete Event Type
-      description: Deletes an event type by its ID. One that events or series use is not deleted. Admin only.
+      description: Deletes an event type by its ID. One that events, series or a Discord target use is not deleted. Admin only.
       operationId: deleteEventTypeById
       responses:
         "204":
