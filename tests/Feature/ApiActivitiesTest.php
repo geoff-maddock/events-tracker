@@ -16,6 +16,8 @@ class ApiActivitiesTest extends TestCase
     public function testIndexEndpoint()
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        // the activity log is admin-only
+        $user->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
         $this->actingAs($user);
 
         Activity::factory()->count(3)->create();
@@ -42,6 +44,8 @@ class ApiActivitiesTest extends TestCase
     public function testShowEndpoint()
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        // the activity log is admin-only
+        $user->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
         $this->actingAs($user);
 
         $activity = Activity::factory()->create([
@@ -64,6 +68,8 @@ class ApiActivitiesTest extends TestCase
     public function testFilterByObjectTable()
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        // the activity log is admin-only
+        $user->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
         $this->actingAs($user);
 
         Activity::factory()->create(['object_table' => 'Event']);
@@ -80,6 +86,8 @@ class ApiActivitiesTest extends TestCase
     {
         $user1 = User::factory()->create(['user_status_id' => 1]);
         $user2 = User::factory()->create(['user_status_id' => 1]);
+        // the activity log is admin-only
+        $user1->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
         $this->actingAs($user1);
 
         Activity::factory()->create(['user_id' => $user1->id]);
@@ -95,6 +103,8 @@ class ApiActivitiesTest extends TestCase
     public function testSorting()
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        // the activity log is admin-only
+        $user->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
         $this->actingAs($user);
 
         $activity1 = Activity::factory()->create(['object_name' => 'Alpha']);
@@ -111,6 +121,8 @@ class ApiActivitiesTest extends TestCase
     public function testPagination()
     {
         $user = User::factory()->create(['user_status_id' => 1]);
+        // the activity log is admin-only
+        $user->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
         $this->actingAs($user);
 
         Activity::factory()->count(15)->create();

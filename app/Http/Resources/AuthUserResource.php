@@ -27,7 +27,8 @@ class AuthUserResource extends JsonResource
             'email' => $this->email,
             'status' => $this->status,
             'email_verified_at' => $this->email_verified_at,
-            'last_active' => $this->lastActivity,
+            // only when, as in UserResource: the activity row holds IP addresses
+            'last_active' => $this->lastActivity?->created_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'profile' => new ProfileResource($this->whenLoaded('profile', $this->profile)),

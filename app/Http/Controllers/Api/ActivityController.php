@@ -65,6 +65,12 @@ class ActivityController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): JsonResponse {
+        // admin-only, like the web activity pages: the log holds login and
+        // failed-login records, including the email addresses typed
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_activity');
         $listParamSessionStore->setKeyPrefix('internal_activity_index');
@@ -102,6 +108,12 @@ class ActivityController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): JsonResponse {
+        // admin-only, like the web activity pages: the log holds login and
+        // failed-login records, including the email addresses typed
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_activity');
         $listParamSessionStore->setKeyPrefix('internal_activity_index');
@@ -136,6 +148,12 @@ class ActivityController extends Controller
      */
     public function show(Activity $activity): JsonResponse
     {
+        // admin-only, like the web activity pages: the log holds login and
+        // failed-login records, including the email addresses typed
+        if ($denied = $this->requireAdmin()) {
+            return $denied;
+        }
+
         return response()->json(new ActivityResource($activity));
     }
 

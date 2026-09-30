@@ -19,8 +19,11 @@ class ActivityTest extends TestCase
     public function the_activity_index_loads()
     {
         // Exercises ListEntityResultBuilder::listResultSetFactory()/setSort(); must not
-        // 500 on a null sort field (EVENTREPO-TB).
-        $this->get('/activity')->assertOk();
+        // 500 on a null sort field (EVENTREPO-TB). The activity log is admin-only.
+        $admin = \App\Models\User::factory()->create(['user_status_id' => \App\Models\UserStatus::ACTIVE]);
+        $admin->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
+
+        $this->actingAs($admin)->get('/activity')->assertOk();
     }
 
     /** @test */

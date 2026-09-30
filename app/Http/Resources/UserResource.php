@@ -42,7 +42,9 @@ class UserResource extends JsonResource
             'email' => $this->when($private, fn () => $this->email),
             'status' => $this->status,
             'email_verified_at' => $this->when($private, fn () => $this->email_verified_at),
-            'last_active' => $this->lastActivity,
+            // only when, not the activity row itself: that holds IP addresses and
+            // login records, including the email typed on a failed login
+            'last_active' => $this->lastActivity?->created_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'profile' => new ProfileResource($this->whenLoaded('profile', $this->profile)),
