@@ -81,6 +81,11 @@ class GroupsAdminOnlyTest extends TestCase
         $this->get('/permissions')->assertOk()->assertSee('Zz Secret Permission');
         $this->get("/permissions/{$this->permission->id}")->assertOk();
         $this->get('/permissions/filter')->assertOk();
+
+        // the list resets send an admin back to the list, not to a refusal
+        foreach (['/groups/reset', '/groups/rpp-reset', '/permissions/reset', '/permissions/rpp-reset'] as $url) {
+            $this->get($url)->assertRedirect();
+        }
     }
 
     public function test_profile_group_badges_are_shown_only_to_admins_and_the_user(): void
