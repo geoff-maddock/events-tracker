@@ -6,20 +6,22 @@ use App\Models\Activity;
 use App\Models\Event;
 use App\Models\EventShare;
 use App\Models\Visibility;
+use App\Services\ImageHandler;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\File as HttpFile;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Storage;
 
 /**
- * Orchestrates publishing events to Instagram (feed, carousel, story).
+ * Orchestrates publishing events to Instagram (feed, carousel, story, week).
  *
  * Extracted from EventInstagramController so the same logic can run inside a
  * queued job. Each public method returns the published Instagram media id, or
  * throws RuntimeException with a user-facing message on failure.
  */
-class InstagramEventPoster
+class InstagramEventPoster extends InstagramPoster
 {
     /**
      * Instagram permits at most 10 items in a single carousel. Handing more
@@ -32,42 +34,6 @@ class InstagramEventPoster
     // Instagram caps how many stories are worth pushing in one run.
     private const PREVIEW_STORY_LIMIT = 10;
 
-    public function __construct(private Instagram $instagram)
-    {
-    }
-
-    private function failureMessage(string $stage): string
-    {
-        $detail = $this->instagram->getLastError();
-        $base = 'There was an error posting to Instagram during '.$stage.'.';
-        if ($detail) {
-            Log::error('Instagram '.$stage.' failed: '.$detail);
-            return $base.' '.$detail;
-        }
-        return $base.' Please try again.';
-    }
-
-    /**
-     * Wrap a thrown SDK/HTTP exception from an upload/create call.
-     *
-     * These call-sites previously threw a hardcoded "Please try again." message
-     * and logged the real cause only at info level, so every distinct Instagram
-     * failure (rate limit, rejected image, expired token, …) collapsed into one
-     * opaque Sentry issue (EVENTREPO-VB). Surfacing the underlying message and
-     * chaining the original exception lets Sentry group by actual cause and
-     * preserves the full stack trace for triage.
-     */
-    private function uploadFailure(string $stage, Exception $e): RuntimeException
-    {
-        Log::error('Instagram '.$stage.' failed: '.$e->getMessage());
-
-        return new RuntimeException(
-            'There was an error posting to Instagram during '.$stage.'. '.$e->getMessage(),
-            0,
-            $e
-        );
-    }
-
     /**
      * Post a single event photo to the Instagram feed.
      */
@@ -75,27 +41,12 @@ class InstagramEventPoster
     {
         $this->assertCredentials();
 
-        $imageUrl = $this->primaryImageUrl($event);
-        $caption = urlEncode($event->getInstagramFormat());
+        $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
+        $result = $this->publishSinglePhoto($imageUrl, urlEncode($event->getInstagramFormat()));
 
-        try {
-            $igContainerId = $this->instagram->uploadPhoto($imageUrl, $caption);
-        } catch (Exception $e) {
-            throw $this->uploadFailure('single photo upload', $e);
-        }
+        $this->recordShare($event, $result, $userId);
 
-        if ($this->instagram->checkStatus($igContainerId) === false) {
-            throw new RuntimeException($this->failureMessage('single photo status check'));
-        }
-
-        $result = $this->instagram->publishMedia($igContainerId);
-        if ($result === false) {
-            throw new RuntimeException($this->failureMessage('single photo publish'));
-        }
-
-        $this->recordShare($event, (int) $result, $userId);
-
-        return (int) $result;
+        return $result;
     }
 
     /**
@@ -105,16 +56,10 @@ class InstagramEventPoster
     {
         $this->assertCredentials();
 
-        $imageUrl = $this->primaryImageUrl($event);
+        $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
         $caption = $event->getInstagramFormat();
 
-        $igContainerIds = [];
-
-        try {
-            $igContainerIds[] = $this->instagram->uploadCarouselPhoto($imageUrl);
-        } catch (Exception $e) {
-            throw $this->uploadFailure('carousel photo upload', $e);
-        }
+        $igContainerIds = [$this->uploadCarouselItem($imageUrl)];
 
         // Additional photos directly attached to the event.
         foreach ($event->getOtherPhotos() as $otherPhoto) {
@@ -128,11 +73,7 @@ class InstagramEventPoster
                 continue;
             }
 
-            try {
-                $igContainerIds[] = $this->instagram->uploadCarouselPhoto($otherUrl);
-            } catch (Exception $e) {
-                throw $this->uploadFailure('carousel photo upload', $e);
-            }
+            $igContainerIds[] = $this->uploadCarouselItem($otherUrl);
         }
 
         // Primary photos of related entities — best effort, skip on failure.
@@ -160,28 +101,11 @@ class InstagramEventPoster
             }
         }
 
-        if ($this->instagram->checkBatchStatus($igContainerIds) === false) {
-            throw new RuntimeException($this->failureMessage('carousel batch status check'));
-        }
+        $result = $this->publishCarousel($igContainerIds, $caption);
 
-        try {
-            $igCarouselId = $this->instagram->createCarousel($igContainerIds, $caption);
-        } catch (Exception $e) {
-            throw $this->uploadFailure('carousel creation', $e);
-        }
+        $this->recordShare($event, $result, $userId);
 
-        if ($this->instagram->checkStatus($igCarouselId) === false) {
-            throw new RuntimeException($this->failureMessage('carousel status check'));
-        }
-
-        $result = $this->instagram->publishMedia($igCarouselId);
-        if ($result === false) {
-            throw new RuntimeException($this->failureMessage('carousel publish'));
-        }
-
-        $this->recordShare($event, (int) $result, $userId);
-
-        return (int) $result;
+        return $result;
     }
 
     /**
@@ -191,63 +115,86 @@ class InstagramEventPoster
     {
         $this->assertCredentials();
 
-        $imageUrl = $this->primaryImageUrl($event);
+        $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
         $caption = urlEncode($event->getInstagramFormat());
-        $eventUrl = route('events.show', $event->id);
+        $result = $this->publishStoryPhoto($imageUrl, $caption, route('events.show', $event->id));
 
-        try {
-            $igContainerId = $this->instagram->uploadStoryPhoto($imageUrl, $caption, $eventUrl);
-        } catch (Exception $e) {
-            throw $this->uploadFailure('story photo upload', $e);
-        }
+        $this->recordShare($event, $result, $userId);
 
-        if ($this->instagram->checkStatus($igContainerId) === false) {
-            throw new RuntimeException($this->failureMessage('story status check'));
-        }
-
-        $result = $this->instagram->publishStoryMedia($igContainerId);
-        if ($result === false) {
-            throw new RuntimeException($this->failureMessage('story publish'));
-        }
-
-        $this->recordShare($event, (int) $result, $userId);
-
-        return (int) $result;
+        return $result;
     }
 
     /**
-     * Verify the linked Instagram account is usable before any uploads happen.
+     * Post this week's events as one carousel: a generated cover image, then
+     * the primary photo of each of the first nine public, uncancelled events,
+     * with each event's details in the caption. Events without a photo are
+     * left out.
      */
-    private function assertCredentials(): void
+    public function postWeek(ImageHandler $imageHandler, ?int $userId): int
     {
-        if (!$this->instagram->getIgUserId()) {
-            throw new RuntimeException('You must have an Instagram user account linked to post to Instagram.');
+        $this->assertCredentials();
+
+        // the cover takes one of the carousel's slots
+        $events = Event::where('start_at', '>=', Carbon::now()->startOfWeek())
+            ->where('start_at', '<=', Carbon::now()->endOfWeek())
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
+            ->orderBy('start_at', 'ASC')
+            ->limit(self::MAX_CAROUSEL_ITEMS - 1)
+            ->get();
+
+        // find the events with a usable photo before generating and uploading anything
+        $caption = "Events for the upcoming week...\n";
+        $included = [];
+        $imageUrls = [];
+
+        foreach ($events as $event) {
+            try {
+                $imageUrls[] = $this->photoUrl($event->getPrimaryPhoto());
+            } catch (RuntimeException $e) {
+                Log::info('Week post: skipping event '.$event->id.': '.$e->getMessage());
+                continue;
+            }
+
+            $caption .= $event->getInstagramFormat()."\n\n";
+            $included[] = $event;
         }
 
-        if (!$this->instagram->getPageAccessToken()) {
-            throw new RuntimeException('You must have an Instagram page linked to post to Instagram.');
-        }
-    }
-
-    private function primaryImageUrl(Event $event): string
-    {
-        $photo = $event->getPrimaryPhoto();
-        if (!$photo) {
-            throw new RuntimeException('You must have a photo to extract the image to post to Instagram.');
+        if ($included === []) {
+            throw new RuntimeException('None of this week\'s events have a photo to post to Instagram.');
         }
 
-        $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
-        if (!$imageUrl) {
-            throw new RuntimeException('You must have an image url to post to Instagram.');
+        $coverFileName = 'week-image.jpg';
+        $coverImagePath = $imageHandler->generateCoverImage($coverFileName);
+        if (!is_file($coverImagePath)) {
+            throw new RuntimeException('You must have a base image to make a week post to Instagram.');
         }
 
-        return $imageUrl;
+        $coverPath = Storage::disk('external')->putFileAs('photos', new HttpFile($coverImagePath), $coverFileName, 'public');
+        $igContainerIds = [$this->uploadCarouselItem(Storage::disk('external')->url($coverPath))];
+
+        foreach ($imageUrls as $imageUrl) {
+            $igContainerIds[] = $this->uploadCarouselItem($imageUrl);
+        }
+
+        $result = $this->publishCarousel($igContainerIds, $caption);
+
+        foreach ($included as $event) {
+            $this->recordEventShare($event, $result, $userId);
+        }
+
+        return $result;
     }
 
     private function recordShare(Event $event, int $mediaId, ?int $userId): void
     {
         Activity::log($event, $userId ? \App\Models\User::find($userId) : null, 16);
 
+        $this->recordEventShare($event, $mediaId, $userId);
+    }
+
+    private function recordEventShare(Event $event, int $mediaId, ?int $userId): void
+    {
         EventShare::create([
             'event_id' => $event->id,
             'platform' => 'instagram',
