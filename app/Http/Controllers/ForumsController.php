@@ -351,10 +351,14 @@ class ForumsController extends Controller
      */
     public function destroy(Forum $forum): RedirectResponse
     {
+        if (!$forum->deleteIfEmpty()) {
+            flash()->error('Not deleted', 'This forum still has threads. Move or delete them first.');
+
+            return back();
+        }
+
         // add to activity log
         Activity::log($forum, $this->user, 3);
-
-        $forum->delete();
 
         flash()->success('Success', 'Your forum has been deleted!');
 

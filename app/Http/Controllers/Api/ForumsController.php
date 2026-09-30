@@ -243,10 +243,12 @@ class ForumsController extends Controller
             return $denied;
         }
 
+        if (!$forum->deleteIfEmpty()) {
+            return response()->json(['message' => 'This forum still has threads. Move or delete them first.'], 409);
+        }
+
         // add to activity log
         Activity::log($forum, $this->user, 3);
-
-        $forum->delete();
 
         return response()->json([], 204);
     }

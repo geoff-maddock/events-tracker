@@ -5328,7 +5328,7 @@ paths:
       tags:
         - forums
       summary: Delete Forum
-      description: Deletes a forum by its ID. Admin only.
+      description: Deletes a forum and its thread categories by its ID. A forum that still has threads is not deleted. Admin only.
       operationId: deleteForumById
       responses:
         "204":
@@ -5337,6 +5337,12 @@ paths:
             application/json: {}
         "403":
           description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "409":
+          description: The forum still has threads
           content:
             application/json:
               schema:
