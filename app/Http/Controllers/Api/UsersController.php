@@ -305,7 +305,9 @@ class UsersController extends Controller
         $listParamSessionStore->setKeyPrefix('api_user_event_index');
 
         // base query of events the user is attending
+        // only the events the requester may see
         $baseQuery = $user->getAttending()
+            ->visible($this->user)
             ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
             ->leftJoin('entities as venue', 'events.venue_id', '=', 'venue.id')
             ->leftJoin('entities as promoter', 'events.promoter_id', '=', 'promoter.id')

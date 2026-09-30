@@ -646,6 +646,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * A user can have many events.
+     *
+     * @return HasMany<Event, $this>
      */
     public function events(): HasMany
     {

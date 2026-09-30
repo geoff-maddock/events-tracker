@@ -40,6 +40,7 @@ class SeriesSchemaTest extends TestCase
         $series->setRelation('venue', null);
         $series->setRelation('promoter', null);
         $series->setRelation('upcomingEvent', null);
+        $series->setRelation('upcomingPublicEvent', null);
         $series->setRelation('latestEvent', null);
 
         return $series;
@@ -127,7 +128,8 @@ class SeriesSchemaTest extends TestCase
         // A series has no single date; the date a searcher would act on is
         // the next instantiated event's.
         $series = $this->series(['founded_at' => '2008-06-06 22:00:00']);
-        $series->setRelation('upcomingEvent', $this->event(['start_at' => '2099-08-01 22:00:00']));
+        // the public next instance: JSON-LD is shown to anyone (#2244)
+        $series->setRelation('upcomingPublicEvent', $this->event(['start_at' => '2099-08-01 22:00:00']));
 
         $node = SeriesSchema::forSeries($series);
 

@@ -44,7 +44,7 @@ class SeriesSchema
      * @var array<int, string>
      */
     public const EAGER_LOAD = [
-        'photos', 'visibility', 'occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'upcomingEvent', 'latestEvent',
+        'photos', 'visibility', 'occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'upcomingEvent', 'upcomingPublicEvent', 'latestEvent',
         // .links feeds EventSchema::entityUrl(), which every organizer and
         // performer node calls — without it each one is its own query.
         'promoter.links', 'venue.links', 'venue.locations', 'venue.photos', 'entities.roles', 'entities.links',
@@ -84,7 +84,7 @@ class SeriesSchema
         // A series with no upcoming instance still has a date worth stating,
         // and omitting startDate entirely makes the node unusable as an Event.
         // Only a series with no instance and no dates of its own drops the key.
-        $instance = $series->nextEvent() ?? $series->latestEvent;
+        $instance = $series->nextPublicEvent() ?? $series->latestEvent;
 
         if ($startDate = self::startDate($series, $instance)) {
             $node['startDate'] = $startDate->toAtomString();

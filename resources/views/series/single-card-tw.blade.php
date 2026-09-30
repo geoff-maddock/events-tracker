@@ -56,7 +56,7 @@
         </div>
 
         <!-- Next Edition Bar -->
-        @php $nextEvent = $series->nextEvent(); @endphp
+        @php $nextEvent = $series->nextPublicEvent(); @endphp
         @if ($nextEvent)
         <div class="rounded border border-primary/30 bg-primary/5 px-2 py-1.5 flex items-start gap-1.5 mb-2">
             <i class="bi bi-calendar-event text-primary text-xs mt-0.5 flex-shrink-0"></i>

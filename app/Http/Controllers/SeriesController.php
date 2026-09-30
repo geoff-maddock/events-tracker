@@ -681,9 +681,11 @@ class SeriesController extends Controller
         // Past Events & Archive grid: only events that have already started.
         // Uses the same now() boundary as $upcomingEvents below (not
         // Event::past()'s start-of-today) so no event falls between the two.
-        $events = $series->events()
+        $events = Event::where('series_id', $series->id)
             ->with($eventEager)
+            ->visible($this->user)
             ->where('start_at', '<', now())
+            ->orderBy('start_at', 'DESC')
             ->paginate($this->childLimit);
 
         // Upcoming events for the Schedule section: same eager loads as the
@@ -712,7 +714,7 @@ class SeriesController extends Controller
         // recent past event's year). Two queries at most beyond $upcomingEvents.
         $lineupEventIds = $upcomingEvents->pluck('id');
         if ($lineupEventIds->isEmpty() && $editionYear) {
-            $lineupEventIds = $series->events()->whereYear('start_at', $editionYear)->pluck('id');
+            $lineupEventIds = Event::where('series_id', $series->id)->visible($this->user)->whereYear('start_at', $editionYear)->pluck('id');
         }
 
         $lineupEntities = $lineupEventIds->isEmpty()

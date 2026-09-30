@@ -684,6 +684,7 @@ class EntitiesController extends Controller
 
         // get related events (up to 12, sorted by date descending)
         $relatedEvents = $entity->events()
+            ->visible($this->user)
             ->with([
                 'venue.locations',
                 'venue.links',
@@ -961,7 +962,7 @@ class EntitiesController extends Controller
                 ->where(fn ($q) => $q->visible($this->user))
                 ->distinct();
         } else {
-            $venueEventsBase = fn () => $entity->events();
+            $venueEventsBase = fn () => $entity->events()->visible($this->user);
         }
 
         // get related events (up to 16, sorted by date ascending from today)

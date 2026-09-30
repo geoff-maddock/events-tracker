@@ -386,7 +386,18 @@ class Event extends Model implements HasPhotos
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
-        return $query->where(function ($query) use ($user) {
+        return $query->where(self::visibleTo($user));
+    }
+
+    /**
+     * The where-group behind visible(), on the `events` table's columns, so a
+     * query joining events (e.g. photos) can apply the same rule.
+     *
+     * @return \Closure(\Illuminate\Database\Eloquent\Builder<*>|\Illuminate\Database\Query\Builder): void
+     */
+    public static function visibleTo(?User $user): \Closure
+    {
+        return function ($query) use ($user) {
             $query->whereIn('events.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
                 ->where('events.created_by', '=', $user ? $user->id : null);
             // if logged in, can see guarded
@@ -394,9 +405,7 @@ class Event extends Model implements HasPhotos
                 $query->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
             }
             $query->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
-
-            return $query;
-        });
+        };
     }
 
     /**

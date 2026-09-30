@@ -25,8 +25,9 @@ class RssFeed
      */
     public function getRSS(): string
     {
-        return Cache::remember('rss-feed', 7200, function () {
-            $events = Event::future()->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType', 'series')->get();
+        // shared by every reader, so public events only (the key changed when that filter was added)
+        return Cache::remember('rss-feed-public', 7200, function () {
+            $events = Event::future()->visible(null)->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType', 'series')->get();
 
             return $this->buildRssData($events);
         });
@@ -37,9 +38,10 @@ class RssFeed
      */
     public function getTagRSS(string $tag): string
     {
-        return Cache::remember('rss-feed-'.$tag, 7200, function () use ($tag) {
+        return Cache::remember('rss-feed-public-'.$tag, 7200, function () use ($tag) {
             $events = Event::getByTag(ucfirst($tag))
                 ->future()
+                ->visible(null)
                 ->orderBy('start_at', 'desc')
                 ->take(config('event.rss_size'))
                 ->get();

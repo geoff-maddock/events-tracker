@@ -1175,7 +1175,7 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = $this->user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
         // set the default filter to starting today, can override
         $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
@@ -1269,7 +1269,7 @@ class EventsController extends Controller
     public function feedTags(string $tag): View
     {
         // set number of results per page
-        $events = Event::getByTag(ucfirst($tag))->future()->with(self::FEED_EAGER_LOAD)->simplePaginate(10000);
+        $events = Event::getByTag(ucfirst($tag))->future()->visible($this->user)->with(self::FEED_EAGER_LOAD)->simplePaginate(10000);
 
         return view('events.feed-tw', compact('events'));
     }
@@ -2428,7 +2428,7 @@ class EventsController extends Controller
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->join('event_types', 'events.event_type_id', '=', 'event_types.id'))
+            ->setQueryBuilder(Event::query()->visible($this->user)->join('event_types', 'events.event_type_id', '=', 'event_types.id'))
             ->setDefaultSort(['events.start_at' => 'desc'])
             ->setParentFilter(['event_type' => $type]);
 
@@ -2794,7 +2794,7 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = $this->user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
         $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
 
@@ -2856,7 +2856,7 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = $user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
         $listEntityResultBuilder
             ->setFilter($this->filter)
@@ -2920,7 +2920,7 @@ class EventsController extends Controller
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
+        $baseQuery = $user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
 
         // set the default filter to starting today, can override
         $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
@@ -2965,7 +2965,8 @@ class EventsController extends Controller
         // find user or fail
         $user = User::findOrFail($id);
 
-        $events = $user->followedEvents();
+        // calendar apps fetch this anonymously, so a guest sees public events only
+        $events = $user->followedEvents()->filter(fn (Event $event) => $event->isVisibleTo($this->user));
 
         // Eager-load the relations the iCal builder reads per event (venue,
         // promoter + its contacts, and photos for getPrimaryPhoto()) to avoid

@@ -148,7 +148,7 @@ class Series extends Eloquent implements HasPhotos
      * @var array<int, string>
      */
     public const CARD_EAGER_LOAD = [
-        'visibility', 'occurrenceType', 'tags', 'entities', 'photos', 'upcomingEvent', 'venue.locations.visibility',
+        'visibility', 'occurrenceType', 'tags', 'entities', 'photos', 'upcomingEvent', 'upcomingPublicEvent', 'venue.locations.visibility',
     ];
 
     public static function boot()
@@ -730,6 +730,42 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
+     * The next upcoming event anyone may see, for display (series cards, the
+     * series page, the API, JSON-LD). nextEvent()/upcomingEvent count every
+     * instance, which is what scheduling and "already has an event" checks need.
+     */
+    public function nextPublicEvent(): ?Event
+    {
+        if ($this->cancelled_at) {
+            return null;
+        }
+
+        if ($this->relationLoaded('upcomingPublicEvent')) {
+            return $this->upcomingPublicEvent;
+        }
+
+        return Event::where('series_id', '=', $this->id)
+            ->where('start_at', '>=', Carbon::now())
+            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->orderBy('start_at', 'asc')
+            ->first();
+    }
+
+    /**
+     * The next upcoming public event, eager-loadable (see nextPublicEvent()).
+     *
+     * @return HasOne<Event, $this>
+     */
+    public function upcomingPublicEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)->ofMany(
+            ['start_at' => 'min', 'id' => 'min'],
+            fn ($query) => $query->where('start_at', '>=', Carbon::now())
+                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
+        );
+    }
+
+    /**
      * The most recent instance that has already happened. Read by
      * App\Services\SeriesSchema when a dormant series has no upcoming
      * instance to date its EventSeries node from.
@@ -739,6 +775,7 @@ class Series extends Eloquent implements HasPhotos
         return $this->hasOne(Event::class)->ofMany(
             ['start_at' => 'max', 'id' => 'max'],
             fn ($query) => $query->where('start_at', '<', Carbon::now())
+                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
         );
     }
 
@@ -784,8 +821,9 @@ class Series extends Eloquent implements HasPhotos
                     'entities',
                     'tags',
                     'photos',
-                    // the series card calls nextEvent(), which uses this when loaded
+                    // nextEvent() and the card's nextPublicEvent() use these when loaded
                     'upcomingEvent',
+                    'upcomingPublicEvent',
                 ])
                 ->get();
 

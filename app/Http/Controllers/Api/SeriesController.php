@@ -143,7 +143,7 @@ class SeriesController extends Controller
         $series = $query
             ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
                 $query->where('photos.is_primary', '=', 1);
-            }, 'upcomingEvent' => function ($query) {
+            }, 'upcomingEvent', 'upcomingPublicEvent' => function ($query) {
                 $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
             }])
             ->paginate($listResultSet->getLimit());
@@ -175,7 +175,7 @@ class SeriesController extends Controller
         $series = $query
             ->with(['occurrenceType', 'occurrenceWeek', 'occurrenceDay', 'visibility', 'eventStatus', 'eventType', 'promoter', 'venue', 'tags', 'entities', 'photos' => function ($query) {
                 $query->where('photos.is_primary', '=', 1);
-            }, 'upcomingEvent' => function ($query) {
+            }, 'upcomingEvent', 'upcomingPublicEvent' => function ($query) {
                 $query->with(['venue.links', 'promoter.links', 'entities', 'tags', 'photos', 'series', 'eventType', 'eventStatus', 'visibility']);
             }])
             ->orderByDesc('attendees_count')
