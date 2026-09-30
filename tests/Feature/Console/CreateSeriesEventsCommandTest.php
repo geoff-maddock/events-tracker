@@ -48,6 +48,26 @@ class CreateSeriesEventsCommandTest extends TestCase
         );
     }
 
+    public function test_a_private_next_instance_still_counts_as_the_series_next_event(): void
+    {
+        // nextEvent() must see every instance, not just the public ones shown on
+        // series cards, or the command would duplicate a private instance (#2244)
+        $series = Series::factory()->create([
+            'occurrence_type_id' => OccurrenceType::where('name', '!=', 'No Schedule')->first()->id,
+            'cancelled_at' => null,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+        Event::factory()->create([
+            'series_id' => $series->id,
+            'start_at' => Carbon::now()->addDays(7),
+            'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+        ]);
+
+        $this->artisan('series:create-events')->assertExitCode(0);
+
+        $this->assertSame(1, Event::where('series_id', $series->id)->count());
+    }
+
     public function test_command_ignores_series_with_no_schedule_occurrence_type(): void
     {
         $noSchedule = OccurrenceType::where('name', 'No Schedule')->first();

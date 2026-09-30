@@ -148,6 +148,12 @@ class EventListVisibilityTest extends TestCase
         $this->assertStringNotContainsString(self::PRIVATE_NAME, $json, 'the API attending list shows a private event');
         $this->assertStringContainsString(self::PUBLIC_NAME, $json);
 
+        // a series' next_event in the API
+        foreach (['/api/series', "/api/series/{$this->series->id}"] as $url) {
+            $json = $this->getJson($url)->assertOk()->getContent();
+            $this->assertStringNotContainsString(self::PRIVATE_NAME, $json, "{$url} shows a private next event");
+        }
+
         $this->get('/popular')->assertSee(self::PUBLIC_NAME);
     }
 

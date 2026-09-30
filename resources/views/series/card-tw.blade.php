@@ -84,7 +84,7 @@
         <div class="space-y-2 text-sm text-muted-foreground mb-4">
 
             <!-- Next Edition Bar -->
-            @php $nextEvent = $series->nextEvent(); @endphp
+            @php $nextEvent = $series->nextPublicEvent(); @endphp
             @if ($nextEvent)
             <div class="rounded border border-primary/30 bg-primary/5 px-3 py-2 flex items-start gap-2">
                 <i class="bi bi-calendar-event text-primary mt-0.5 flex-shrink-0"></i>

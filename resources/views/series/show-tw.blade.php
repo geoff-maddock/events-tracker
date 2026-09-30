@@ -196,7 +196,7 @@
 								Ends {{ $series->end_at ? $series->end_at->format('h:i A') : 'unknown' }}
 								({{ $series->length() }} hours)
 							</p>
-							@if ($nextEvent = $series->nextEvent())
+							@if ($nextEvent = $series->nextPublicEvent())
 								<p>
 									Next: <a href="{{ route('events.show', ['event' => $nextEvent->id]) }}"
 											 class="text-primary hover:underline">
