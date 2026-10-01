@@ -360,9 +360,10 @@ class EventsController extends Controller
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
             ],
-            $extra,
             $this->getFilterOptions(),
-            $this->getListControlOptions()
+            $this->getListControlOptions(),
+            // last, so a caller's value always wins
+            $extra
         );
     }
 
