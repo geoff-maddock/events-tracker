@@ -1002,9 +1002,9 @@ class EntitiesController extends Controller
         $frequentlyPerformsAt = null;
         $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
         if ($entity->events()->limit(3)->count() > 2) {
-            $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith();
+            $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith(10, $this->user);
             if (!$isVenueOrShop) {
-                $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt();
+                $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt(10, $this->user);
             }
         }
 

@@ -557,9 +557,10 @@ class Entity extends Eloquent implements HasPhotos
      * Get a ranked list of entities that frequently perform with this entity
      * (other entities related to the same events).
      */
-    public function getFrequentlyPerformsWith(int $limit = 10): Collection
+    public function getFrequentlyPerformsWith(int $limit = 10, ?User $viewer = null): Collection
     {
-        $eventIds = $this->events()->pluck('events.id');
+        // only events $viewer may see (public only with no viewer, e.g. emails to contacts)
+        $eventIds = $this->events()->visible($viewer)->pluck('events.id');
 
         if ($eventIds->isEmpty()) {
             return new Collection();
@@ -587,9 +588,10 @@ class Entity extends Eloquent implements HasPhotos
      * Get a ranked list of venues that this entity frequently performs at
      * (venues of events the entity is related to).
      */
-    public function getFrequentlyPerformsAt(int $limit = 10): Collection
+    public function getFrequentlyPerformsAt(int $limit = 10, ?User $viewer = null): Collection
     {
-        $eventIds = $this->events()->pluck('events.id');
+        // only events $viewer may see (public only with no viewer, e.g. emails to contacts)
+        $eventIds = $this->events()->visible($viewer)->pluck('events.id');
 
         if ($eventIds->isEmpty()) {
             return new Collection();

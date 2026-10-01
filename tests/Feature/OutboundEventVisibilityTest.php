@@ -9,6 +9,7 @@ use App\Mail\FollowingUpdate;
 use App\Mail\WeeklyUpdate;
 use App\Models\Contact;
 use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Follow;
 use App\Models\Group;
@@ -101,6 +102,8 @@ class OutboundEventVisibilityTest extends TestCase
     public function test_the_daily_and_weekly_digests_leave_out_private_events(): void
     {
         Mail::fake();
+        // "today" must not roll over to tomorrow between creating the events and the digest
+        $this->travelTo(Carbon::today()->setTime(12, 0));
         $this->events(Carbon::now()->addHour());
 
         $this->artisan('notify')->assertExitCode(0);
@@ -126,9 +129,27 @@ class OutboundEventVisibilityTest extends TestCase
         $this->assertStringNotContainsString(self::PRIVATE_NAME, $this->entity->getBriefFormat(), 'the tweet includes a private event');
     }
 
+    public function test_co_performers_and_venues_come_only_from_events_the_viewer_may_see(): void
+    {
+        [$private, $public] = $this->events(Carbon::now()->addDays(3));
+        $hidden = Entity::factory()->create(['name' => 'Zz Hidden Co-performer', 'entity_status_id' => EntityStatus::ACTIVE]);
+        $shown = Entity::factory()->create(['name' => 'Zz Shown Co-performer', 'entity_status_id' => EntityStatus::ACTIVE]);
+        $private->entities()->attach($hidden->id);
+        $public->entities()->attach($shown->id);
+
+        // no viewer (emails to the entity's contact): public events only
+        $names = $this->entity->getFrequentlyPerformsWith()->pluck('name');
+        $this->assertContains('Zz Shown Co-performer', $names);
+        $this->assertNotContains('Zz Hidden Co-performer', $names);
+
+        // the private event's creator still sees it
+        $this->assertContains('Zz Hidden Co-performer', $this->entity->getFrequentlyPerformsWith(10, $this->creator)->pluck('name'));
+    }
+
     public function test_the_daily_tweet_skips_private_events(): void
     {
         Notification::fake();
+        $this->travelTo(Carbon::today()->setTime(12, 0));
         [$private, $public] = $this->events(Carbon::now()->addHour());
 
         $this->artisan('dailyTweet')->assertExitCode(0);
