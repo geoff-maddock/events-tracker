@@ -8,6 +8,7 @@ use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
+use App\Http\Response\ResultSet\ListResultSet;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
@@ -32,6 +33,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use App\Services\TempImageStore;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -52,6 +54,9 @@ class EventsController extends Controller
      * Relations the text feeds (events/feed-tw) read on every row.
      */
     private const FEED_EAGER_LOAD = ['visibility', 'venue.locations.visibility', 'eventType', 'entities', 'tags', 'series'];
+
+    // what the grid cards (events/grid-tw) read
+    private const GRID_EAGER_LOAD = ['visibility', 'venue', 'eventType', 'tags', 'photos'];
 
     protected string $prefix;
 
@@ -120,38 +125,17 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        // starting today by default; the filter can override it
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+            defaultFilters: ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()
-            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
-            ->select('events.*')
-        ;
-
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort(['events.start_at' => 'asc'])
-        ;
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        // @phpstan-ignore-next-line
-        $events = $query->visible($this->user)
+        $events = $query
             ->with([
                 'visibility',
                 'venue.links',
@@ -179,27 +163,8 @@ class EventsController extends Controller
             ])
             ->paginate($listResultSet->getLimit());
 
-        // persist resolved sort values so subsequent requests (e.g. filter form) don't revert to a different default
-        $listParamSessionStore->setSortDirection($listResultSet->getSortDirection());
-        $listParamSessionStore->setSortFieldName($listResultSet->getSort());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('events.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, rememberSort: true))
             ->with(compact('events'))
             ->render();
     }
@@ -292,26 +257,15 @@ class EventsController extends Controller
             $slug = $dateFilterDescription;
         }
 
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
+        // the list builder only supplies the session state and list controls here;
+        // the events come from the date query below
+        [, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
         $events = Event::where('start_at', '>', $start_at_from)
             ->where('start_at', '<', $start_at_to)
@@ -324,27 +278,92 @@ class EventsController extends Controller
             ->with(self::cardEventEagerLoad($this->user))
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
+        return view('events.index-tw')
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
+                'slug' => $slug,
+                'dateFilterDescription' => $dateFilterDescription,
+            ]))
+            ->with(compact('events'))
+            ->render();
+    }
+
+    /**
+     * Start an event list page (#2182): point the session store at this list,
+     * configure the shared list builder, and return the filtered, sorted query
+     * (limited to the events the viewer may see) with its result set.
+     *
+     * @param array<string, string> $defaultSort
+     * @param array<string, mixed> $defaultFilters
+     * @param array<string, mixed> $parentFilter
+     *
+     * @return array{0: Builder, 1: ListResultSet}
+     */
+    private function startEventList(
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $keyPrefix,
+        Builder $baseQuery,
+        array $defaultSort,
+        array $defaultFilters = [],
+        array $parentFilter = [],
+        string $indexTab = 'index',
+        ?int $defaultLimit = null,
+    ): array {
+        $listParamSessionStore->setBaseIndex('internal_event');
+        $listParamSessionStore->setKeyPrefix($keyPrefix);
+        $listParamSessionStore->setIndexTab(action([EventsController::class, $indexTab]));
+
+        $listEntityResultBuilder
+            ->setFilter($this->filter)
+            ->setQueryBuilder($baseQuery)
+            ->setDefaultFilters($defaultFilters)
+            ->setParentFilter($parentFilter)
+            ->setDefaultSort($defaultSort);
+        if ($defaultLimit !== null) {
+            $listEntityResultBuilder->setDefaultLimit($defaultLimit);
+        }
+
+        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+
+        return [$listResultSet->getList()->where(Event::visibleTo($this->user)), $listResultSet];
+    }
+
+    /**
+     * Save the list's session state and return the view data every event list
+     * view reads, plus $extra.
+     *
+     * @param array<string, mixed> $extra
+     *
+     * @return array<string, mixed>
+     */
+    private function finishEventList(
+        ListParameterSessionStore $listParamSessionStore,
+        ListResultSet $listResultSet,
+        bool $rememberSort = false,
+        array $extra = [],
+    ): array {
+        if ($rememberSort) {
+            // persist resolved sort values so subsequent requests (e.g. the filter form) don't revert to a different default
+            $listParamSessionStore->setSortDirection($listResultSet->getSortDirection());
+            $listParamSessionStore->setSortFieldName($listResultSet->getSort());
+        }
+
         $listParamSessionStore->save();
 
         $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
-        return view('events.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'slug' => $slug,
-                    'dateFilterDescription' => $dateFilterDescription,
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('events'))
-            ->render();
+        return array_merge(
+            [
+                'limit' => $listResultSet->getLimit(),
+                'sort' => $listResultSet->getSort(),
+                'direction' => $listResultSet->getSortDirection(),
+                'hasFilter' => $this->hasFilter,
+                'filters' => $listResultSet->getFilters(),
+            ],
+            $extra,
+            $this->getFilterOptions(),
+            $this->getListControlOptions()
+        );
     }
 
     protected function getListControlOptions(): array
@@ -425,57 +444,18 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()
-            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
-            ->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'asc']);
-
-        // nothing really happens until here in cadence
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        // @phpstan-ignore-next-line
-        $events = $query->visible($this->user)
-            ->with(self::cardEventEagerLoad($this->user))
-            ->paginate($listResultSet->getLimit());
-
-        // persist resolved sort values so subsequent requests don't revert to a different default
-        $listParamSessionStore->setSortDirection($listResultSet->getSortDirection());
-        $listParamSessionStore->setSortFieldName($listResultSet->getSort());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::cardEventEagerLoad($this->user))->paginate($listResultSet->getLimit());
 
         return view('events.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, rememberSort: true))
             ->with(compact('events'))
             ->render();
     }
@@ -490,70 +470,24 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_grid');
+        // starting today by default; the filter can override it
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_grid',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+            defaultFilters: ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+            indexTab: 'indexGrid',
+            defaultLimit: $this->defaultGridLimit,
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexGrid']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
-        $listEntityResultBuilder
-        ->setFilter($this->filter)
-        ->setDefaultLimit($this->defaultGridLimit)
-        ->setDefaultFilters($defaultFilter)
-        ->setQueryBuilder($baseQuery)
-        ->setDefaultSort(['events.start_at' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        $query
-        // public or where created by
-        ->where(function ($query) {
-            $query->whereIn('visibility_id', [1, 2])
-                ->where('created_by', '=', $this->user ? $this->user->id : null);
-            // if logged in, can see guarded
-            if ($this->user) {
-                $query->orWhere('visibility_id', '=', 4);
-            }
-            $query->orWhere('visibility_id', '=', 3);
-
-            return $query;
-        });
-
-        // get the events
-        $events = $query
-            ->with('visibility', 'venue', 'eventType', 'tags', 'photos')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::GRID_EAGER_LOAD)->paginate($listResultSet->getLimit());
 
         return view('events.grid-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('events'))
-        ->render();
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
+            ->with(compact('events'))
+            ->render();
     }
 
     /**
@@ -679,58 +613,24 @@ class EventsController extends Controller
         array $defaultSort = ['events.start_at' => 'asc'],
         array $extraViewData = []
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexGrid']));
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            $keyPrefix,
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            $defaultSort,
+            parentFilter: $parentFilter,
+            indexTab: 'indexGrid',
+            defaultLimit: $this->defaultGridLimit,
+        );
 
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setDefaultLimit($this->defaultGridLimit)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($defaultSort)
-            ->setParentFilter($parentFilter);
-
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        $query = $listResultSet->getList();
-
-        $query
-            ->where(function ($query) {
-                $query->whereIn('visibility_id', [1, 2])
-                    ->where('created_by', '=', $this->user ? $this->user->id : null);
-
-                if ($this->user) {
-                    $query->orWhere('visibility_id', '=', 4);
-                }
-
-                $query->orWhere('visibility_id', '=', 3);
-
-                return $query;
-            });
-
-        $events = $query
-            ->with('visibility', 'venue', 'eventType', 'tags', 'photos')
-            ->paginate($listResultSet->getLimit());
-
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::GRID_EAGER_LOAD)->paginate($listResultSet->getLimit());
 
         return view('events.grid-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions(),
-                $this->getParentFilterViewData($listResultSet->getParentFilters()),
-                $extraViewData
+            ->with($this->finishEventList(
+                $listParamSessionStore,
+                $listResultSet,
+                extra: array_merge($this->getParentFilterViewData($listResultSet->getParentFilters()), $extraViewData)
             ))
             ->with(compact('events'))
             ->render();
@@ -811,65 +711,21 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_photo');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_photo',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+            indexTab: 'indexPhoto',
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexPhoto']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-        ->setFilter($this->filter)
-        ->setQueryBuilder($baseQuery)
-        ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        $query
-        // public or where created by
-        ->where(function ($query) {
-            $query->whereIn('visibility_id', [1, 2])
-                ->where('created_by', '=', $this->user ? $this->user->id : null);
-            // if logged in, can see guarded
-            if ($this->user) {
-                $query->orWhere('visibility_id', '=', 4);
-            }
-            $query->orWhere('visibility_id', '=', 3);
-
-            return $query;
-        });
-
-        // get the events
-        $events = $query
-            ->with('visibility', 'venue')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with('visibility', 'venue')->paginate($listResultSet->getLimit());
 
         return view('events.indexPhoto-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('events'))
-        ->render();
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
+            ->with(compact('events'))
+            ->render();
     }
 
     /**
@@ -882,54 +738,18 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_future');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_future',
+            Event::future()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // get the base query for today's events and add any necessary joins for sorting
-        $baseQuery = Event::future()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $events = $query
-            ->where(function ($query) {
-                /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
-            })
-            ->with(self::cardEventEagerLoad($this->user))
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::cardEventEagerLoad($this->user))->paginate($listResultSet->getLimit());
 
         return view('events.index-tw')
-            ->with(array_merge(
-                [
-                    'slug' => 'Future',
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: ['slug' => 'Future']))
             ->with(compact('events'));
     }
 
@@ -1102,56 +922,22 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_past');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_past',
+            Event::past()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // get the base query for today's events and add any necessary joins for sorting
-        $baseQuery = Event::past()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $events = $query
-            ->where(function ($query) {
-                /* @phpstan-ignore-next-line */
-                $query->visible($this->user);
-            })
-            ->with(self::cardEventEagerLoad($this->user))
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::cardEventEagerLoad($this->user))->paginate($listResultSet->getLimit());
 
         return view('events.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    // shares events.index-tw with /events, so give it its own title
-                    'pageTitle' => 'Past Events — Pittsburgh Concert & Show Archive',
-                    'pageDescription' => 'Browse past concerts, club nights, and events in Pittsburgh, newest first.',
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
+                // shares events.index-tw with /events, so give it its own title
+                'pageTitle' => 'Past Events — Pittsburgh Concert & Show Archive',
+                'pageDescription' => 'Browse past concerts, club nights, and events in Pittsburgh, newest first.',
+            ]))
             ->with(compact('events'));
     }
 
@@ -1165,59 +951,25 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        $this->middleware('auth');
+        // starting today by default; the filter can override it
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_attending',
+            $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+            defaultFilters: ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+        );
 
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_attending');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort(['events.start_at' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $events = $query
-            ->with(self::cardEventEagerLoad($this->user))
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::cardEventEagerLoad($this->user))->paginate($listResultSet->getLimit());
 
         return view('events.index-tw')
-        ->with(array_merge(
-            [
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
                 'slug' => 'Attending',
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
                 'filterRoute' => 'events.attending',
                 'key' => 'internal_event_attending',
                 'redirect' => 'events.attending',
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
+            ]))
             ->with(compact('events'))
             ->with(['type' => 'Attending']);
     }
@@ -2151,56 +1903,25 @@ class EventsController extends Controller
         string $slug,
         StringHelper $stringHelper
     ): View {
-        // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_tags');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_tags',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+            parentFilter: ['tag' => $slug],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
-            ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['tag' => $slug]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // @phpstan-ignore-next-line
         $events = $query
-            ->visible($this->user)
             ->with(self::cardEventEagerLoad($this->user))
             ->orderBy('events.start_at', 'DESC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('events.index-tw')
-            ->with(
-                array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                )
-            )
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
             ->with(compact('events'))
             ->with(compact('tag'));
     }
@@ -2216,54 +1937,25 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ) {
-        // get the entity by the slug name
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_related');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_related',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+            parentFilter: ['related' => $related->slug],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
-            ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['related' => $related->slug]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // @phpstan-ignore-next-line
         $events = $query
-            ->visible($this->user)
             ->with(self::cardEventEagerLoad($this->user))
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('events.index-tw')
-            ->with(
-                array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                )
-            )
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
             ->with(compact('events'))
             ->with(compact('related'));
     }
@@ -2279,23 +1971,15 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $date
     ) {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_starting');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
-            ->setDefaultSort(['evebts.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
+        // the list builder only supplies the session state and list controls here;
+        // the events come from the date query below
+        [, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_starting',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
         // $date is a user-supplied route param; crawlers hit this with non-date
         // junk, which makes Carbon::parse() throw. Treat it as a missing page.
@@ -2318,25 +2002,8 @@ class EventsController extends Controller
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('events.index-tw')
-            ->with(
-                array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                )
-            )
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
             ->with(compact('events'))
             ->with(compact('cdate'));
     }
@@ -2352,23 +2019,15 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $slug
     ) {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
+        // the list builder only supplies the session state and list controls here;
+        // the events come from the venue queries below
+        [, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
         $events = Event::getByVenue(strtolower($slug))
             ->with(self::cardEventEagerLoad($this->user))
@@ -2392,25 +2051,8 @@ class EventsController extends Controller
             ->orderBy('events.name', 'ASC')
             ->paginate($this->limit);
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('events.index-tw')
-            ->with(
-                array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                )
-            )
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
             ->with(compact('events'))
             ->with(compact('past_events'))
             ->with(compact('slug'));
@@ -2427,25 +2069,15 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $type
     ) {
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_types');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_types',
+            Event::query()->join('event_types', 'events.event_type_id', '=', 'event_types.id'),
+            ['events.start_at' => 'desc'],
+            parentFilter: ['event_type' => $type],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->visible($this->user)->join('event_types', 'events.event_type_id', '=', 'event_types.id'))
-            ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['event_type' => $type]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // @phpstan-ignore-next-line
         $events = $query
             ->select('events.*')
             ->with(self::cardEventEagerLoad($this->user))
@@ -2453,25 +2085,8 @@ class EventsController extends Controller
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('events.index-tw')
-            ->with(
-                array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                )
-            )
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
             ->with(compact('events'))
             ->with(compact('type'));
     }
@@ -2489,62 +2104,32 @@ class EventsController extends Controller
     ) {
         $slug = Str::title(str_replace('-', ' ', $slug));
 
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_series');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
-            ->setDefaultSort(['events.start_at' => 'desc'])
-            ->setParentFilter(['series' => $slug]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $pastQuery = $listResultSet->getList();
+        [$pastQuery, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_series',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+            parentFilter: ['series' => $slug],
+        );
         $futureQuery = clone $pastQuery;
 
-        // @phpstan-ignore-next-line
         $events = $futureQuery
-            ->visible($this->user)
             ->with(self::cardEventEagerLoad($this->user))
-            ->future()
+            ->scopes('future')
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
-        // @phpstan-ignore-next-line
         $past_events = $pastQuery
-            ->visible($this->user)
             ->with(self::cardEventEagerLoad($this->user))
-            ->past()
+            ->scopes('past')
             ->orderBy('events.start_at', 'ASC')
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('events.index-tw')
-            ->with(
-                array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                )
-            )
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
             ->with(compact('events'))
             ->with(compact('past_events'))
             ->with(compact('slug'));
@@ -2852,56 +2437,25 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        // find user or fail
         $user = User::findOrFail($id);
 
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_attending');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_attending',
+            $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $events = $query
-            ->with(self::cardEventEagerLoad($this->user))
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $events = $query->with(self::cardEventEagerLoad($this->user))->paginate($listResultSet->getLimit());
 
         return view('events.indexUserAttending-tw')
-        ->with(array_merge(
-            [
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
                 'slug' => 'Attending',
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
                 'filterRoute' => 'events.attending',
                 'key' => 'internal_event_attending',
                 'redirect' => 'events.attending',
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
+            ]))
             ->with(compact('events', 'user'));
     }
 

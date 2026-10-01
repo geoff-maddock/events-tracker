@@ -49,19 +49,6 @@ parameters:
 			path: app/Http/Controllers/EntitiesController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/EntitiesController.php
-
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visible\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: app/Http/Controllers/EventsController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$photos\.$#'
 			identifier: property.notFound
 			count: 1
@@ -98,12 +85,6 @@ parameters:
 			path: app/Models/Blog.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$photos\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Entity.php
-
-		-
 			message: '#^Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Location\> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany\: TRelatedModel, TDeclaringModel$#'
 			identifier: generics.lessTypes
 			count: 1
@@ -138,18 +119,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Models/Entity.php
-
-		-
-			message: '#^Method App\\Models\\Entity\:\:todaysEvents\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Event\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Entity.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$responseType\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Event.php
 
 		-
 			message: '#^Method App\\Models\\Event\:\:getFlyer\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
@@ -198,18 +167,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: app/Models/ShortUrl.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tags\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Tag.php
-
-		-
-			message: '#^Method App\\Models\\Tag\:\:todaysEvents\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Event\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Tag.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
@@ -294,4 +251,3 @@ parameters:
 			identifier: property.notFound
 			count: 3
 			path: app/Services/DataExportService.php
-
