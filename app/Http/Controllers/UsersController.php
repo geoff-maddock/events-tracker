@@ -754,8 +754,8 @@ class UsersController extends Controller
             foreach ($entities as $entity) {
                 $entityEvents = [];
                 /** @var \App\Models\Entity $entity */
-                if (count($entity->todaysEvents()) > 0) {
-                    foreach ($entity->todaysEvents() as $todaysEvent) {
+                if (count($entity->todaysEvents($user)) > 0) {
+                    foreach ($entity->todaysEvents($user) as $todaysEvent) {
                         /** @var \App\Models\Event $todaysEvent */
                         if (!in_array($todaysEvent->id, $collectedIdList)) {
                             $entityEvents[] = $todaysEvent;
@@ -774,8 +774,8 @@ class UsersController extends Controller
             foreach ($tags as $tag) {
                 $tagEvents = [];
                 /** @var \App\Models\Tag $tag */
-                if (count($tag->todaysEvents()) > 0) {
-                    foreach ($tag->todaysEvents() as $todaysEvent) {
+                if (count($tag->todaysEvents($user)) > 0) {
+                    foreach ($tag->todaysEvents($user) as $todaysEvent) {
                         if (!in_array($todaysEvent->id, $collectedIdList)) {
                             $tagEvents[] = $todaysEvent;
                             $collectedIdList[] = $todaysEvent->id;
@@ -844,8 +844,8 @@ class UsersController extends Controller
             foreach ($entities as $entity) {
                 $entityEvents = [];
                 /** @var \App\Models\Entity $entity */
-                if ($entity->futureEvents()->isNotEmpty()) {
-                    foreach ($entity->futureEvents()->items() as $futureEvent) {
+                if ($entity->futureEvents(null, $user)->isNotEmpty()) {
+                    foreach ($entity->futureEvents(null, $user)->items() as $futureEvent) {
                         if (!in_array($futureEvent->id, $attendingIdList)) {
                             $entityEvents[] = $futureEvent;
                         }
@@ -862,8 +862,8 @@ class UsersController extends Controller
             foreach ($tags as $tag) {
                 $tagEvents = [];
                 /** @var \App\Models\Tag $tag */
-                if ($tag->futureEvents()->isNotEmpty()) {
-                    foreach ($tag->futureEvents() as $futureEvent) {
+                if ($tag->futureEvents($user)->isNotEmpty()) {
+                    foreach ($tag->futureEvents($user) as $futureEvent) {
                         if (!in_array($futureEvent->id, $attendingIdList)) {
                             $tagEvents[] = $futureEvent;
                         }

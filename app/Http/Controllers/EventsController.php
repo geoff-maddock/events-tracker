@@ -2030,6 +2030,13 @@ class EventsController extends Controller
             return back();
         }
 
+        // a tweet is public, so only public events (as with Instagram)
+        if ((int) $event->visibility_id !== Visibility::VISIBILITY_PUBLIC) {
+            flash()->error('Error', 'Only public events can be tweeted.');
+
+            return back();
+        }
+
         // add a twitter notification
         $event->notify(new EventPublished());
 

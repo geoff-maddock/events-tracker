@@ -45,6 +45,10 @@ class FollowerNotifier
                 if ($user->profile && $user->profile->setting_instant_update !== 1) {
                     continue;
                 }
+                // never tell a follower about an event they can't see (private, proposal)
+                if (!$event->isVisibleTo($user)) {
+                    continue;
+                }
 
                 // if the user hasn't already been notified, then email them.
                 // key on $user->id — followers() selects users.*, so there is
@@ -72,6 +76,10 @@ class FollowerNotifier
             foreach ($entity->followers() as $user) {
                 // if the user does not have this setting, continue
                 if ($user->profile && $user->profile->setting_instant_update !== 1) {
+                    continue;
+                }
+                // never tell a follower about an event they can't see (private, proposal)
+                if (!$event->isVisibleTo($user)) {
                     continue;
                 }
                 // if the user hasn't already been notified, then email them

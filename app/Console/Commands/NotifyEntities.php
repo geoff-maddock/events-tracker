@@ -119,8 +119,10 @@ class NotifyEntities extends Command
                 }
             }
 
-            // Gather upcoming events for the entity (next 90 days, max 10)
+            // Gather upcoming events for the entity (next 90 days, max 10); the
+            // email goes to the entity's outside contact, so public events only
             $upcomingEvents = $entity->events()
+                ->visible(null)
                 ->where('start_at', '>=', Carbon::now())
                 ->where('start_at', '<=', Carbon::now()->addDays(90))
                 ->orderBy('start_at', 'ASC')
