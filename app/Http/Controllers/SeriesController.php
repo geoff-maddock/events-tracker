@@ -657,6 +657,56 @@ class SeriesController extends Controller
             ->with($this->getSeriesFormOptions());
     }
 
+    /**
+     * Relations events/card-tw reads per card (venue, type, visibility, tags,
+     * photos, entities, threads, and the viewer's response for the attend
+     * button), so a grid of cards is a fixed number of queries, not N per event.
+     *
+     * @return array<int|string, mixed>
+     */
+    private function eventCardEagerLoad(): array
+    {
+        $eager = ['venue.photos', 'venue.locations', 'eventType', 'visibility', 'tags', 'photos', 'entities.roles', 'series.photos', 'threads'];
+        if ($this->user) {
+            $eager['eventResponses'] = function ($query) {
+                $query->where('user_id', $this->user->id)->with('responseType');
+            };
+        }
+
+        return $eager;
+    }
+
+    /**
+     * The lineup: entities on the upcoming events or, when there aren't any,
+     * on the most recent edition's events (those in $editionYear), most
+     * frequent first. Two queries at most beyond $upcomingEvents.
+     *
+     * @param \Illuminate\Support\Collection<int, Event> $upcomingEvents
+     *
+     * @return \Illuminate\Support\Collection<int, Entity>
+     */
+    private function lineupEntities(Series $series, $upcomingEvents, ?int $editionYear)
+    {
+        $lineupEventIds = $upcomingEvents->pluck('id');
+        if ($lineupEventIds->isEmpty() && $editionYear) {
+            $lineupEventIds = Event::where('series_id', $series->id)->visible($this->user)->whereYear('start_at', $editionYear)->pluck('id');
+        }
+
+        if ($lineupEventIds->isEmpty()) {
+            return collect();
+        }
+
+        return Entity::select('entities.*')
+            ->selectRaw('COUNT(entity_event.event_id) as frequency')
+            ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
+            ->whereIn('entity_event.event_id', $lineupEventIds)
+            ->with('roles')
+            ->groupBy('entities.id')
+            ->orderByDesc('frequency')
+            ->limit(24)
+            ->get();
+    }
+
     public function show(Series $series, OembedExtractor $embedExtractor): View
     {
         // 404 rather than 403 so private and proposal series can't be probed
@@ -668,16 +718,7 @@ class SeriesController extends Controller
         // relation instead of re-querying.
         $series->loadMissing(array_merge(['photos', 'venue.locations', 'upcomingEvent'], \App\Services\SeriesSchema::EAGER_LOAD));
 
-        // Each event renders through events/card-tw, which touches venue, eventType,
-        // visibility, tags, photos (getPrimaryPhoto), entities and threads per card —
-        // eager-load them so the grid is a fixed number of queries, not N per event.
-        $eventEager = ['venue.photos', 'venue.locations', 'eventType', 'visibility', 'tags', 'photos', 'entities.roles', 'series.photos', 'threads'];
-        if ($this->user) {
-            // The attend/unattend button reads getEventResponse($user)->responseType per card.
-            $eventEager['eventResponses'] = function ($query) {
-                $query->where('user_id', $this->user->id)->with('responseType');
-            };
-        }
+        $eventEager = $this->eventCardEagerLoad();
         // Past Events & Archive grid: only events that have already started.
         // Uses the same now() boundary as $upcomingEvents below (not
         // Event::past()'s start-of-today) so no event falls between the two.
@@ -708,26 +749,7 @@ class SeriesController extends Controller
         $editionYear = $series->getFestivalYear();
         $festivalYear = $series->isFestival() ? $editionYear : null;
 
-        // Lineup: entities attached to the upcoming events above, or — when
-        // there aren't any — entities attached to the most recent edition's
-        // events (those sharing $editionYear, which falls back to the most
-        // recent past event's year). Two queries at most beyond $upcomingEvents.
-        $lineupEventIds = $upcomingEvents->pluck('id');
-        if ($lineupEventIds->isEmpty() && $editionYear) {
-            $lineupEventIds = Event::where('series_id', $series->id)->visible($this->user)->whereYear('start_at', $editionYear)->pluck('id');
-        }
-
-        $lineupEntities = $lineupEventIds->isEmpty()
-            ? collect()
-            : Entity::select('entities.*')
-                ->selectRaw('COUNT(entity_event.event_id) as frequency')
-                ->join('entity_event', 'entities.id', '=', 'entity_event.entity_id')
-                ->whereIn('entity_event.event_id', $lineupEventIds)
-                ->with('roles')
-                ->groupBy('entities.id')
-                ->orderByDesc('frequency')
-                ->limit(24)
-                ->get();
+        $lineupEntities = $this->lineupEntities($series, $upcomingEvents, $editionYear);
 
         // posts/briefList renders each thread's posts with their user/tags/entities.
         $threads = $series->threads()
