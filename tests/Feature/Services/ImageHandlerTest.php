@@ -112,6 +112,18 @@ class ImageHandlerTest extends TestCase
         $this->assertCount(3, $disk->allFiles('photos'));
     }
 
+    public function test_the_cover_image_can_be_generated_in_every_month(): void
+    {
+        // each month has its own fill colour; October's had a trailing space
+        // that the image library couldn't parse, so the cover failed all month
+        foreach (range(1, 12) as $month) {
+            $this->travelTo(\Carbon\Carbon::create(2026, $month, 15, 12));
+            $path = (new ImageHandler())->generateCoverImage('test-month-cover.jpg');
+            $this->assertSame('image/jpeg', getimagesize($path)['mime'], "month {$month}");
+            unlink($path);
+        }
+    }
+
     public function test_generate_cover_image_writes_local_jpeg(): void
     {
         $path = (new ImageHandler())->generateCoverImage('test-week-image.jpg');
