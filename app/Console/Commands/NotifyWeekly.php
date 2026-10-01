@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Mail\WeeklyUpdate;
 use App\Models\Activity;
 use App\Models\User;
+use App\Services\DigestBuilder;
 use App\Services\EntityStats;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -32,7 +32,7 @@ class NotifyWeekly extends Command
      *
      * @return mixed
      */
-    public function handle(EntityStats $stats)
+    public function handle(EntityStats $stats, DigestBuilder $digests)
     {
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
@@ -41,115 +41,31 @@ class NotifyWeekly extends Command
 
         // get each user
         $users = User::orderBy('name', 'ASC')->get();
-        $show_count = 21;
 
-        // cycle through all the users
         foreach ($users as $user) {
-            // if the user does not have a profile, continue
-            if ($user->profile == null) {
-                continue;
-            }
-
             // if the user does not have this setting, continue
-            if ($user->profile->setting_weekly_update !== 1) {
+            if ($user->profile == null || $user->profile->setting_weekly_update !== 1) {
                 continue;
             }
 
-            $interests = [];
-            $seriesList = [];
-            $entityEvents = [];
-            $tagEvents = [];
-            $attendingIdList = [];
+            $digest = $digests->weekly($user);
 
-            // get the events they are attending in the next two weeks
-            $attendingEvents = $user->getAttendingFuture()->where('start_at', '<=', Carbon::now()->addDays(14));
-            foreach ($attendingEvents as $event) {
-                /** @var \App\Models\Event $event */
-                $attendingIdList[] = $event->id;
-            }
-
-            // build an array of events that are upcoming based on what the user follows
-            $entities = $user->getEntitiesFollowing();
-            if (count($entities) > 0) {
-                foreach ($entities as $entity) {
-                    /** @var \App\Models\Entity $entity */
-                    $entityEvents = [];
-                    // get the future events for each followed entity
-                    /** @var \Illuminate\Pagination\LengthAwarePaginator $entityFutureEvents */
-                    $entityFutureEvents = $entity->futureEvents(null, $user);
-                    if ($entityFutureEvents->total() > 0) {
-                        foreach ($entityFutureEvents->items() as $futureEvent) {
-                            /** @var \App\Models\Event $futureEvent */
-                            if (!in_array($futureEvent->id, $attendingIdList)) {
-                                $entityEvents[] = $futureEvent;
-                                $attendingIdList[] = $futureEvent->id;
-                            }
-                        }
-                        if (count($entityEvents) > 0) {
-                            $interests[$entity->name] = $entityEvents;
-                        }
-                    }
-                }
-            }
-            // build an array of future events based on tags the user follows
-            $tags = $user->getTagsFollowing();
-            if (count($tags) > 0) {
-                foreach ($tags as $tag) {
-                    /** @var \App\Models\Tag $tag */
-                    $tagEvents = [];
-                    // get the future events for each followed tag
-                    /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event> $tagFutureEvents */
-                    $tagFutureEvents = $tag->futureEvents($user);
-                    if ($tagFutureEvents->isNotEmpty()) {
-                        foreach ($tagFutureEvents as $futureEvent) {
-                            /** @var \App\Models\Event $futureEvent */
-                            if (!in_array($futureEvent->id, $attendingIdList)) {
-                                $tagEvents[] = $futureEvent;
-                                $attendingIdList[] = $futureEvent->id;
-                            }
-                        }
-                        if (count($tagEvents) > 0) {
-                            $interests[$tag->name] = $tagEvents;
-                        }
-                    }
-                }
-            }
-
-            // build an array of series that the user is following
-            $series = $user->getSeriesFollowing();
-            if (count($series) > 0) {
-                foreach ($series as $s) {
-                    /** @var \App\Models\Series $s */
-                    // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
-                    if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
-                        // add matches to list
-                        $seriesList[] = $s;
-                    }
-                }
-            }
-
-            // if there are more than 0 events
-            if ((null !== $attendingEvents && $attendingEvents->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
-                // send an email containing that list
-                Mail::to($user->email)
-                    ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests));
-
-                                    
-                // count this recipient toward each event's digest reach for the owner dashboard
-                $stats->recordEventReach(
-                    collect($attendingEvents)->pluck('id')
-                        ->merge(collect($interests)->flatten(1)->pluck('id'))
-                );
-
-                // add login to log
-                Activity::log($user, $user, 15, "Sent weekly notification email");
-
-                // log that the weekly email was sent
-                Log::info('Weekly update email was sent to '.$user->name.' at '.$user->email.'.');
-            } else {
-                // log that no email was sent
+            if ($digest->isEmpty()) {
                 Log::info('No weekly update email was sent to '.$user->name.' at '.$user->email.'.');
+
+                continue;
             }
+
+            Mail::to($user->email)
+                ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $digest->attending, $digest->series, $digest->interests));
+
+            // count this recipient toward each event's digest reach for the owner dashboard
+            $stats->recordEventReach($digest->eventIds());
+
+            // add login to log
+            Activity::log($user, $user, 15, "Sent weekly notification email");
+
+            Log::info('Weekly update email was sent to '.$user->name.' at '.$user->email.'.');
         }
     }
 }
