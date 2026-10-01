@@ -498,6 +498,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a query builder for entities the user is following.
+     *
+     * @return Builder<Entity>
      */
     public function getFollowingEntities(): Builder
     {
@@ -511,6 +513,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a list of entities the user is following.
+     *
+     * @return Collection<int, Entity>
      */
     public function getEntitiesFollowing(): Collection
     {
@@ -535,6 +539,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a list of tags the user is following.
+     *
+     * @return Collection<int, Tag>
      */
     public function getTagsFollowing(): Collection
     {
@@ -566,6 +572,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a list of series the user is following.
+     *
+     * @return Collection<int, Series>
      */
     public function getSeriesFollowing(): Collection
     {

@@ -19,6 +19,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use App\Services\DigestBuilder;
 use App\Services\BestEffortMailer;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -574,7 +575,7 @@ class UsersController extends Controller
     /**
      * Send a site update reminder to the user.
      */
-    public function reminder(int $id, Request $request): RedirectResponse
+    public function reminder(int $id, Request $request, DigestBuilder $digests): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -589,25 +590,35 @@ class UsersController extends Controller
             return back();
         }
 
-        // email the user
-        $this->notifyUser($user);
+        if ($user->profile?->setting_daily_update !== 1) {
+            flash()->error('Error', 'User has daily updates disabled');
 
-        // add to activity log
+            return back();
+        }
+
+        // the daily digest, sent now even when it lists nothing
+        $digest = $digests->daily($user);
+        $mail = new UserUpdate(config('app.url'), config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
+
+        // sending the email is the whole point of this action, so report the outcome honestly
+        if (!(new BestEffortMailer())->send($user->email, $mail, ['user_id' => $user->id])) {
+            flash()->error('Email not sent', 'The daily-style notification email to '.$user->email.' could not be sent.');
+
+            return back();
+        }
+
         Activity::log($user, $this->user, 12);
-
         Log::info('User '.$user->name.' was sent a reminder');
-
         flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
     }
 
 
-
     /**
      * Send a weekly site update reminder to the user.
      */
-    public function weekly(int $id, Request $request): RedirectResponse
+    public function weekly(int $id, Request $request, DigestBuilder $digests): RedirectResponse
     {
         // check if there is a logged in user
         if (!$this->user) {
@@ -627,21 +638,29 @@ class UsersController extends Controller
             abort(403);
         }
 
-        // if the user does not have this setting, continue
-        if ($user->profile->setting_weekly_update !== 1) {
+        if ($user->profile?->setting_weekly_update !== 1) {
             flash()->error('Error', 'User has weekly updates disabled');
 
             return back();
         }
 
-        // email the user
-        $this->notifyUserWeekly($user);
+        // the same digest the scheduled notifyWeekly command sends
+        $digest = $digests->weekly($user);
+        if ($digest->isEmpty()) {
+            flash()->message('Nothing to send', 'There is nothing in the week ahead for '.$user->name.', so no weekly update was sent.');
 
-        // add to activity log
+            return back();
+        }
+
+        $mail = new WeeklyUpdate(config('app.url'), config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
+        if (!(new BestEffortMailer())->send($user->email, $mail, ['user_id' => $user->id])) {
+            flash()->error('Email not sent', 'The weekly notification email to '.$user->email.' could not be sent.');
+
+            return back();
+        }
+
         Activity::log($user, $this->user, 12);
-
         Log::info('User '.$user->name.' was sent a weekly reminder');
-
         flash()->success('Success', 'A weekly reminder email was sent to  '.$user->name.' at '.$user->email);
 
         return back();
@@ -715,188 +734,6 @@ class UsersController extends Controller
         $calendar = $iCalBuilder->buildCalendar($this->user->getFullNameAttribute().' Calendar', $events);
 
         return $calendar;
-    }
-
-    /**
-     * @return RedirectResponse|Response
-     */
-    protected function notifyUser(User $user)
-    {
-        // if the user does not have this setting, continue
-        if ($user->profile->setting_daily_update !== 1) {
-            flash()->error('Error', 'User has daily updates disabled');
-
-            return back();
-        }
-
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        $show_count = 12;
-        $interests = [];
-        $seriesList = [];
-        $entityEvents = [];
-        $tagEvents = [];
-        $collectedIdList = [];
-
-        // get the next x events they are attending
-        $attendingEvents = $user->getAttendingToday()->take($show_count);
-        foreach ($attendingEvents as $event) {
-            /** @var \App\Models\Event $event */
-            $collectedIdList[] = $event->id;
-        }
-
-        // build an array of events that are today based on what the user follows
-        $entities = $user->getEntitiesFollowing();
-        if (count($entities) > 0) {
-            foreach ($entities as $entity) {
-                $entityEvents = [];
-                /** @var \App\Models\Entity $entity */
-                if (count($entity->todaysEvents($user)) > 0) {
-                    foreach ($entity->todaysEvents($user) as $todaysEvent) {
-                        /** @var \App\Models\Event $todaysEvent */
-                        if (!in_array($todaysEvent->id, $collectedIdList)) {
-                            $entityEvents[] = $todaysEvent;
-                            $collectedIdList[] = $todaysEvent->id;
-                        }
-                    }
-                    if (count($entityEvents) > 0) {
-                        $interests[$entity->name] = $entityEvents;
-                    }
-                }
-            }
-        }
-        // build an array of future events based on tags the user follows
-        $tags = $user->getTagsFollowing();
-        if (count($tags) > 0) {
-            foreach ($tags as $tag) {
-                $tagEvents = [];
-                /** @var \App\Models\Tag $tag */
-                if (count($tag->todaysEvents($user)) > 0) {
-                    foreach ($tag->todaysEvents($user) as $todaysEvent) {
-                        if (!in_array($todaysEvent->id, $collectedIdList)) {
-                            $tagEvents[] = $todaysEvent;
-                            $collectedIdList[] = $todaysEvent->id;
-                        }
-                    }
-                    if (count($tagEvents) > 0) {
-                        $interests[$tag->name] = $tagEvents;
-                    }
-                }
-            }
-        }
-
-        // build an array of series that the user is following
-        $series = $user->getSeriesFollowing();
-        if (count($series) > 0) {
-            /** @var \App\Models\Series $s */
-            foreach ($series as $s) {
-                // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
-                if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
-                    // add matches to list
-                    $next_date = $s->nextOccurrenceDate()->format('Y-m-d');
-
-                    // today's date is the next series date
-                    if ($next_date === Carbon::now()->format('Y-m-d')) {
-                        $seriesList[] = $s;
-                    }
-                }
-            }
-        }
-
-        // Sending the email is the whole point of this action, so report the
-        // outcome honestly instead of claiming success unconditionally.
-        if ((new BestEffortMailer())->send($user->email, new UserUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests), ['user_id' => $user->id])) {
-            flash()->success('Success', 'A daily-style notification email was sent to  '.$user->name.' at '.$user->email);
-        } else {
-            flash()->error('Email not sent', 'The daily-style notification email to '.$user->email.' could not be sent.');
-        }
-
-        return back();
-    }
-
-    protected function notifyUserWeekly(User $user): RedirectResponse
-    {
-        $admin_email = config('app.admin');
-        $reply_email = config('app.noreplyemail');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        $interests = [];
-        $seriesList = [];
-        $entityEvents = [];
-        $tagEvents = [];
-        $attendingIdList = [];
-        $show_count = 36;
-
-        // get the next x events they are attending
-        $attendingEvents = $user->getAttendingFuture()->take($show_count);
-        foreach ($attendingEvents as $event) {
-            /** @var \App\Models\Event $event */
-            $attendingIdList[] = $event->id;
-        }
-
-        // build an array of events that are upcoming based on what the user follows
-        $entities = $user->getEntitiesFollowing();
-        if (count($entities) > 0) {
-            foreach ($entities as $entity) {
-                $entityEvents = [];
-                /** @var \App\Models\Entity $entity */
-                if ($entity->futureEvents(null, $user)->isNotEmpty()) {
-                    foreach ($entity->futureEvents(null, $user)->items() as $futureEvent) {
-                        if (!in_array($futureEvent->id, $attendingIdList)) {
-                            $entityEvents[] = $futureEvent;
-                        }
-                    }
-                    if (count($entityEvents) > 0) {
-                        $interests[$entity->name] = $entityEvents;
-                    }
-                }
-            }
-        }
-        // build an array of future events based on tags the user follows
-        $tags = $user->getTagsFollowing();
-        if (count($tags) > 0) {
-            foreach ($tags as $tag) {
-                $tagEvents = [];
-                /** @var \App\Models\Tag $tag */
-                if ($tag->futureEvents($user)->isNotEmpty()) {
-                    foreach ($tag->futureEvents($user) as $futureEvent) {
-                        if (!in_array($futureEvent->id, $attendingIdList)) {
-                            $tagEvents[] = $futureEvent;
-                        }
-                    }
-                    if (count($tagEvents) > 0) {
-                        $interests[$tag->name] = $tagEvents;
-                    }
-                }
-            }
-        }
-
-        // build an array of series that the user is following
-        $series = $user->getSeriesFollowing();
-        if (count($series) > 0) {
-            foreach ($series as $s) {
-                // if the series does not have NO SCHEDULE AND CANCELLED AT IS NULL
-                /** @var \App\Models\Series $s */
-                if ($s->occurrenceType->name !== 'No Schedule' && (null === $s->cancelled_at)) {
-                    // add matches to list
-                    $seriesList[] = $s;
-                }
-            }
-        }
-
-        // if there are more than 0 events
-        if ((null !== $attendingEvents && $attendingEvents->count() > 0) || (null !== $seriesList && count($seriesList) > 0) || (null !== $interests && count($interests) > 0)) {
-            // send an email containing that list
-            if (!(new BestEffortMailer())->send($user->email, new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $attendingEvents, $seriesList, $interests), ['user_id' => $user->id])) {
-                flash()->error('Email not sent', 'The weekly notification email to '.$user->email.' could not be sent.');
-            }
-        }
-
-        return back();
     }
 
     /**

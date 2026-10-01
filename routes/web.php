@@ -133,10 +133,6 @@ Route::match(['get', 'post'], 'auto-relate-series/{id}', [
     'uses' => '\App\Http\Controllers\PagesController@autoRelateSeries',
 ]);
 
-Route::get('users/{id}/notify', [
-    'as' => 'users.notify',
-    'uses' => '\App\Http\Controllers\UsersController@notifyUser',
-]);
 Route::match(['get', 'post'], 'activity/filter', ['as' => 'activities.filter', 'uses' => '\App\Http\Controllers\ActivityController@index']);
 Route::get('activity', [\App\Http\Controllers\ActivityController::class, 'index'])->name('activities.index');
 Route::get('activity/graph', [\App\Http\Controllers\ActivityController::class, 'graph'])->name('activities.graph')->middleware(['auth', 'can:admin']);
