@@ -556,6 +556,8 @@ class Entity extends Eloquent implements HasPhotos
     /**
      * Get a ranked list of entities that frequently perform with this entity
      * (other entities related to the same events).
+     *
+     * @return Collection<int, Entity>
      */
     public function getFrequentlyPerformsWith(int $limit = 10, ?User $viewer = null): Collection
     {
@@ -587,6 +589,8 @@ class Entity extends Eloquent implements HasPhotos
     /**
      * Get a ranked list of venues that this entity frequently performs at
      * (venues of events the entity is related to).
+     *
+     * @return Collection<int, Entity>
      */
     public function getFrequentlyPerformsAt(int $limit = 10, ?User $viewer = null): Collection
     {

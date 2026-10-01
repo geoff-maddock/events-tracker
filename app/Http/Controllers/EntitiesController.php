@@ -105,36 +105,17 @@ class EntitiesController extends Controller
         $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
         $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
+        // the base query with the joins sorting needs; select entities.* so only entity columns come back
         $baseQuery = Entity::query()
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
+            // guests never see unlisted entities
+            ->when(!isset($this->user), fn ($q) => $q->where('entity_status_id', '<>', EntityStatus::UNLISTED))
             ->with(Entity::CARD_EAGER_LOAD)
-            ->withCount('follows')
-        ;
+            ->withCount('follows');
 
         // set the default filter to active
         $defaultFilter = ['entity_status' => 'Active'];
-
-        // if the user is not logged in, only show active entities
-        // check if there is a logged in user
-        if (!isset($this->user)) {
-            $baseQuery = Entity::query()
-            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-            ->select('entities.*')
-            ->where('entity_status_id', '<>', EntityStatus::UNLISTED)
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->withCount('follows')
-            ;
-    
-        } else {
-            $baseQuery = Entity::query()
-            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-            ->select('entities.*')
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->withCount('follows')
-            ;    
-        }
 
         $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
 
@@ -921,6 +902,51 @@ class EntitiesController extends Controller
     }
 
     /**
+     * The entity's events the viewer may see. Venue pages need events linked
+     * either through the entity_event pivot (billed as a performer/promoter at
+     * their own room) OR via the event's direct venue_id: many events are only
+     * ever linked by venue_id, so a pivot-only query silently drops them from
+     * the venue's own page. Other entities use the pivot only.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Event>|\Illuminate\Database\Eloquent\Relations\BelongsToMany<Event, Entity>
+     */
+    private function entityEvents(Entity $entity)
+    {
+        if (!$entity->hasRole('Venue')) {
+            return $entity->events()->visible($this->user);
+        }
+
+        return Event::where(function ($query) use ($entity) {
+            $query->whereHas('entities', function ($q) use ($entity) {
+                $q->where('entities.id', $entity->id);
+            })->orWhere('venue_id', $entity->id);
+        })
+            ->where(fn ($q) => $q->visible($this->user))
+            ->distinct();
+    }
+
+    /**
+     * Who the entity frequently performs with, and where (not for venues and
+     * shops); only computed once it has more than two events.
+     *
+     * @return array{0: \Illuminate\Database\Eloquent\Collection<int, Entity>|null, 1: \Illuminate\Database\Eloquent\Collection<int, Entity>|null}
+     */
+    private function frequentCollaborators(Entity $entity): array
+    {
+        // a lightweight count, regardless of the upcoming-events window
+        if ($entity->events()->limit(3)->count() <= 2) {
+            return [null, null];
+        }
+
+        $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
+
+        return [
+            $entity->getFrequentlyPerformsWith(10, $this->user),
+            $isVenueOrShop ? null : $entity->getFrequentlyPerformsAt(10, $this->user),
+        ];
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Entity $entity, OembedExtractor $embedExtractor, Request $request, EntityStats $stats): View
@@ -944,29 +970,11 @@ class EntitiesController extends Controller
         // pass empty embeds here - this was moved to a deferred ajax load
         $embeds = [];
 
-        // get all the tracks as streamable URLs
-        // $tracks = $embedExtractor->getTracksFromUrl('https://0h85.bandcamp.com/');
+        // track streaming isn't wired up yet
         $tracks = [];
 
-        // Venue pages need events found either through the entity_event pivot
-        // (billed as a performer/promoter at their own room) OR via the event's
-        // direct venue_id — many events are only ever linked by venue_id, so a
-        // pivot-only query silently drops them from the venue's own page.
-        // Non-venue entities keep the original pivot-only relation.
-        if ($entity->hasRole('Venue')) {
-            $venueEventsBase = fn () => Event::where(function ($query) use ($entity) {
-                $query->whereHas('entities', function ($q) use ($entity) {
-                    $q->where('entities.id', $entity->id);
-                })->orWhere('venue_id', $entity->id);
-            })
-                ->where(fn ($q) => $q->visible($this->user))
-                ->distinct();
-        } else {
-            $venueEventsBase = fn () => $entity->events()->visible($this->user);
-        }
-
-        // get related events (up to 16, sorted by date ascending from today)
-        $relatedEventsQuery = $venueEventsBase()
+        // upcoming events (up to 16, soonest first)
+        $relatedEvents = $this->entityEvents($entity)
             ->with([
                 'venue.locations',
                 'venue.links',
@@ -982,31 +990,21 @@ class EntitiesController extends Controller
                 'tags',
             ])
             ->where('start_at', '>=', Carbon::today()->startOfDay())
-            ->orderBy('start_at', 'asc');
+            ->orderBy('start_at', 'asc')
+            ->limit(16)
+            ->get();
 
-        $relatedEvents = $relatedEventsQuery->limit(16)->get();
-
-        // get past events (prior to today, most recent first); fetch 21 to detect overflow past the 20 shown
+        // past events (prior to today, most recent first); fetch 21 to detect overflow past the 20 shown
         // Eager-load the relations the past-events grid card reads per event
         // (primary photo, venue, event type, tags) to avoid an N+1.
-        $pastEvents = $venueEventsBase()
+        $pastEvents = $this->entityEvents($entity)
             ->with(['eventType', 'tags', 'venue', 'photos'])
             ->where('start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'desc')
             ->limit(21)
             ->get();
 
-        // only compute co-performer and venue lists when the entity has more than 2 events total;
-        // use a lightweight count to check regardless of the upcoming-events window above
-        $frequentlyPerformsWith = null;
-        $frequentlyPerformsAt = null;
-        $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
-        if ($entity->events()->limit(3)->count() > 2) {
-            $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith(10, $this->user);
-            if (!$isVenueOrShop) {
-                $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt(10, $this->user);
-            }
-        }
+        [$frequentlyPerformsWith, $frequentlyPerformsAt] = $this->frequentCollaborators($entity);
 
         return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
     }
