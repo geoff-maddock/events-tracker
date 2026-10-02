@@ -13,6 +13,19 @@
 
         <!-- Body -->
         <div class="p-4 flex-grow overflow-y-auto custom-scrollbar">
+            {{--
+                PERF / N+1 (EVENTREPO-YN): this partial runs its own per-day events query.
+                The 4-day grids (events.4days-tw, events.4daysAjax-tw, events.addDays-tw)
+                @include this once per day, so one page render fires 4 copies of the query
+                below (Sentry parentSpan "view.render - events.4days-tw"). Proposed fix:
+                have the parent batch-load the whole window in a single query, group by
+                day, and pass each day's slice into this partial, falling back to this
+                query when none is passed. See the draft PR for EVENTREPO-YN; the batched
+                query must reproduce scopeStarting()'s per-day boundaries and visibility
+                clause exactly, and must not collide with any $events variable already in
+                the parent's @include scope, so it needs verification against the rendered
+                views before shipping.
+            --}}
             <?php $events = App\Models\Event::with([
                 'series.occurrenceType',
                 'series.occurrenceWeek', 
