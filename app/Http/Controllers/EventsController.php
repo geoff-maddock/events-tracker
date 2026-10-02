@@ -318,7 +318,12 @@ class EventsController extends Controller
             ->setQueryBuilder($baseQuery)
             ->setDefaultFilters($defaultFilters)
             ->setParentFilter($parentFilter)
-            ->setDefaultSort($defaultSort);
+            ->setDefaultSort($defaultSort)
+            // Restrict sorting to the columns the event lists actually expose, so a
+            // stale or injected sort value (e.g. a scanner's "namexh3probe9") falls
+            // back to the default instead of reaching orderBy() and raising an
+            // unknown-column SQL error (EVENTREPO-YP / EVENTREPO-YQ).
+            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']));
         if ($defaultLimit !== null) {
             $listEntityResultBuilder->setDefaultLimit($defaultLimit);
         }
