@@ -295,7 +295,7 @@ Route::get('events/week', [\App\Http\Controllers\EventsController::class, 'index
 Route::get('events/starting/{date}', [\App\Http\Controllers\EventsController::class, 'indexStarting'])
     ->where('date', '[0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2}');
 Route::get('events/{id}/load-embeds', [\App\Http\Controllers\EventsController::class, 'loadEmbeds']);
-Route::get('events/{id}/load-minimal-embeds', [\App\Http\Controllers\EventsController::class, 'loadMinimalEmbeds']);
+Route::get('events/{id}/load-minimal-embeds', [\App\Http\Controllers\EventsController::class, 'loadMinimalEmbeds'])->where('id', '[0-9]+');
 Route::get('events/{slug}/minimal-embeds', [\App\Http\Controllers\EventsController::class, 'loadMinimalEmbedsBySlug']);
 Route::get('events/{slug}/embeds', [\App\Http\Controllers\EventsController::class, 'loadEmbedsBySlug']);
 Route::get('events/by-date/{year}/{month?}/{day?}', [\App\Http\Controllers\EventsController::class, 'indexByDate'])
