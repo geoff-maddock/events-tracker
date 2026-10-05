@@ -110,20 +110,6 @@ class CalendarController extends Controller
     }
 
     /**
-     * Events anyone may see, plus the viewer's own (what the calendar pages show).
-     *
-     * @param Collection<int, Event> $events
-     *
-     * @return Collection<int, Event>
-     */
-    private function shownEvents(Collection $events): Collection
-    {
-        return $events->filter(
-            fn (Event $e) => 'Public' == $e->visibility->name || ($this->user && $e->created_by == $this->user->id)
-        );
-    }
-
-    /**
      * Series anyone may see, plus the viewer's own, that have a schedule.
      *
      * @param Collection<int, Series> $series
@@ -139,11 +125,11 @@ class CalendarController extends Controller
     }
 
     /**
-     * FullCalendar's item for an event; $color defaults to the event type's colour.
+     * FullCalendar's item for an event, coloured by its type.
      *
      * @return array<string, mixed>
      */
-    private function eventItem(Event $event, ?string $color = null): array
+    private function eventItem(Event $event): array
     {
         return [
             'id' => 'event-'.$event->id,
@@ -151,20 +137,20 @@ class CalendarController extends Controller
             'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
             'title' => $event->name,
             'url' => '/events/'.$event->slug,
-            'backgroundColor' => $color ?? $event->eventType->backgroundColor(),
+            'backgroundColor' => $event->eventType->backgroundColor(),
             'description' => $event->short,
         ];
     }
 
     /**
      * FullCalendar items for the next scheduled instance of each series that
-     * has no event for it yet, optionally only those starting in [$from, $to].
+     * has no event for it yet and starts in [$from, $to].
      *
      * @param iterable<Series> $series
      *
      * @return array<int, array<string, mixed>>
      */
-    private function seriesItems(iterable $series, ?Carbon $from = null, ?Carbon $to = null): array
+    private function seriesItems(iterable $series, Carbon $from, Carbon $to): array
     {
         $items = [];
         foreach ($series as $s) {
@@ -174,7 +160,7 @@ class CalendarController extends Controller
 
             // one walk through the occurrence cycle per series (nextOccurrenceEndDate() repeats it)
             $next = $s->nextOccurrenceDate();
-            if (null === $next || ($from && $to && !$next->between($from, $to))) {
+            if (null === $next || !$next->between($from, $to)) {
                 continue;
             }
 
@@ -193,28 +179,8 @@ class CalendarController extends Controller
     }
 
     /**
-     * The calendar page with its events and series inlined; $eventColor null
-     * colours events by type.
-     *
-     * @param iterable<Event> $events
-     * @param iterable<Series> $series
-     * @param array<string, mixed> $data
-     */
-    private function calendarPage(iterable $events, iterable $series, ?string $eventColor, array $data): View
-    {
-        $eventList = [];
-        foreach ($events as $event) {
-            $eventList[] = $this->eventItem($event, $eventColor);
-        }
-
-        return view('events.event-calendar-tw', array_merge([
-            'eventList' => json_encode(array_merge($eventList, $this->seriesItems($series))),
-            'initialDate' => Carbon::now()->format('Y-m-d'),
-        ], $data));
-    }
-
-    /**
-     * The feed filters events and series share: name, tag, venue and related entity.
+     * The feed filters events and series share: name, tag, venue, related
+     * entity (by name or slug), event type, free entry and minimum age.
      *
      * @param \Illuminate\Database\Eloquent\Builder<Event>|\Illuminate\Database\Eloquent\Builder<Series> $query
      * @param array<string, mixed> $filters
@@ -239,21 +205,36 @@ class CalendarController extends Controller
         if (!empty($filters['related'])) {
             $query->whereHas('entities', fn ($q) => $q->where('name', $filters['related']));
         }
+
+        // an entity by slug (names aren't unique), for /calendar/related-to/{slug}
+        if (!empty($filters['entity'])) {
+            $query->whereHas('entities', fn ($q) => $q->where('slug', $filters['entity']));
+        }
+
+        if (!empty($filters['event_type'])) {
+            $query->whereHas('eventType', fn ($q) => $q->where('name', $filters['event_type']));
+        }
+
+        // no cover charge, for /calendar/free
+        if (!empty($filters['free'])) {
+            $query->where($table.'.door_price', 0);
+        }
+
+        // open to someone this age, for /calendar/min-age/{age}
+        if (isset($filters['min_age']) && is_numeric($filters['min_age'])) {
+            $query->where($table.'.min_age', '<=', (int) $filters['min_age']);
+        }
     }
 
     /**
-     * The feed filters only events have: event type and (signed in) the viewer's
-     * relation to the event.
+     * The feed filter only events have: (signed in) the viewer's relation to
+     * the event.
      *
      * @param \Illuminate\Database\Eloquent\Builder<Event> $query
      * @param array<string, mixed> $filters
      */
     private function applyEventOnlyFeedFilters($query, array $filters): void
     {
-        if (!empty($filters['event_type'])) {
-            $query->whereHas('eventType', fn ($q) => $q->where('name', $filters['event_type']));
-        }
-
         if (empty($filters['display_type']) || $filters['display_type'] === 'all' || !$this->user) {
             return;
         }
@@ -277,20 +258,43 @@ class CalendarController extends Controller
     }
 
     /**
+     * Series for the "attending" display type are the ones the viewer follows.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Series> $query
+     * @param array<string, mixed> $filters
+     */
+    private function applySeriesOnlyFeedFilters($query, array $filters): void
+    {
+        if (($filters['display_type'] ?? null) === 'attending' && $this->user) {
+            $query->whereIn('series.id', $this->user->getSeriesFollowing()->modelKeys());
+        }
+    }
+
+    /**
+     * A calendar page whose events come from the ranged feed with $filters
+     * preset (the page's own scope, not shown in its filter form).
+     *
+     * @param array<string, mixed> $filters
+     * @param array<string, mixed> $data
+     */
+    private function feedPage(array $filters, array $data = []): View
+    {
+        $query = $filters ? '?'.http_build_query(['filters' => $filters]) : '';
+
+        return view('events.event-calendar-tw', array_merge([
+            'calendarFeedUrl' => url('/calendar').$query,
+            'initialDate' => Carbon::now()->format('Y-m-d'),
+        ], $data));
+    }
+
+    /**
      * Display a listing of events related to entity.
      */
     public function calendarRelatedTo(Request $request, string $slug): View
     {
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
-        $events = Event::getByEntity(strtolower($slug))
-            ->with('visibility')
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->get();
-        $series = Series::getByEntity(strtolower($slug))->active()->with('visibility', 'occurrenceType')->get();
-
-        return $this->calendarPage($this->shownEvents($events), $this->shownSeries($series), '#0a57ad', compact('related'));
+        return $this->feedPage(['entity' => $related->slug], compact('related'));
     }
 
     /**
@@ -300,14 +304,7 @@ class CalendarController extends Controller
     {
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
-        $events = Event::getByTag($tag->name)
-            ->with('visibility')
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->get();
-        $series = Series::getByTag($tag->name)->active()->with('visibility', 'occurrenceType')->get();
-
-        return $this->calendarPage($this->shownEvents($events), $this->shownSeries($series), '#0a57ad', compact('tag'));
+        return $this->feedPage(['tag' => $tag->slug], compact('tag'));
     }
 
     /**
@@ -340,6 +337,7 @@ class CalendarController extends Controller
         // instead of issuing a query per series (Sentry N+1 on /calendar)
         $seriesQuery = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent');
         $this->applyFeedFilters($seriesQuery, $filters, 'series');
+        $this->applySeriesOnlyFeedFilters($seriesQuery, $filters);
 
         return response()->json(array_merge(
             $events->map(fn (Event $event) => $this->eventItem($event))->all(),
@@ -382,15 +380,8 @@ class CalendarController extends Controller
         // set the initial date of the calendar that is displayed
         $year = isset($year) ? $year : Carbon::now()->year;
         $month = isset($month) ? $month : Carbon::now()->format('m');
-        $initialDate = $year.'-'.$month.'-01';
 
-        $events = Event::where(function ($query) {
-            /* @phpstan-ignore-next-line */
-            $query->visible($this->user);
-        })->with('eventType')->get();
-        $series = Series::active()->with('visibility', 'occurrenceType', 'upcomingEvent')->get();
-
-        return $this->calendarPage($events, $this->shownSeries($series), null, compact('initialDate'));
+        return $this->feedPage([], ['initialDate' => $year.'-'.$month.'-01']);
     }
 
     /**
@@ -411,15 +402,7 @@ class CalendarController extends Controller
      **/
     public function calendarAttending()
     {
-        $events = $this->user->getAttending()
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->get();
-
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Series> $series */
-        $series = $this->user->getSeriesFollowing();
-
-        return $this->calendarPage($this->shownEvents($events), $this->shownSeries($series), '#0a57ad', ['slug' => 'Attending']);
+        return $this->feedPage(['display_type' => 'attending'], ['slug' => 'Attending']);
     }
 
     /**
@@ -429,14 +412,7 @@ class CalendarController extends Controller
      **/
     public function calendarFree()
     {
-        $events = Event::where('door_price', 0)
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->with('visibility', 'eventType')
-            ->get();
-        $series = Series::where('door_price', 0)->active()->with('visibility', 'occurrenceType')->get();
-
-        return $this->calendarPage($this->shownEvents($events), $this->shownSeries($series), '#0a57ad', ['slug' => 'No Cover']);
+        return $this->feedPage(['free' => 1], ['slug' => 'No Cover']);
     }
 
     /**
@@ -446,14 +422,7 @@ class CalendarController extends Controller
      */
     public function calendarMinAge(int $age)
     {
-        $events = Event::where('min_age', '<=', $age)
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->with('visibility', 'eventType')
-            ->get();
-        $series = Series::where('min_age', '<=', $age)->active()->with('visibility', 'occurrenceType')->get();
-
-        return $this->calendarPage($this->shownEvents($events), $this->shownSeries($series), '#0a57ad', ['slug' => 'Min Age '.$age]);
+        return $this->feedPage(['min_age' => $age], ['slug' => 'Min Age '.$age]);
     }
 
     /**
@@ -463,14 +432,7 @@ class CalendarController extends Controller
     {
         $slug = Str::title(str_replace('-', ' ', $type));
 
-        $events = Event::getByType($slug)
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->with('visibility', 'eventType')
-            ->get();
-        $series = Series::getByType($slug)->active()->with('visibility', 'occurrenceType')->get();
-
-        return $this->calendarPage($this->shownEvents($events), $this->shownSeries($series), '#0a57ad', compact('slug'));
+        return $this->feedPage(['event_type' => $slug], compact('slug'));
     }
  
 }
