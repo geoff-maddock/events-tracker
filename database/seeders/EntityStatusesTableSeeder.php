@@ -34,6 +34,12 @@ class EntityStatusesTableSeeder extends Seeder
                 'created_at' => '2016-02-25 07:54:14',
                 'updated_at' => '2016-02-25 07:54:14',
             ],
+            3 => [
+                'id' => 4,
+                'name' => 'Unlisted',
+                'created_at' => '2024-05-22 21:04:32',
+                'updated_at' => '2024-05-22 21:04:32',
+            ],
         ]);
     }
 }

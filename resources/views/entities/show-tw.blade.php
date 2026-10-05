@@ -126,7 +126,7 @@
 				</div>
 			</div>
 
-			@if ($entity->entityStatus->name !== 'Active')
+			@if ($entity->entityStatus && $entity->entityStatus->name !== 'Active')
 			<div class="mb-4">
 				<span class="badge-tw badge-warning-tw inline-flex items-center px-3 py-1 rounded-lg text-sm">
 					<i class="bi bi-exclamation-triangle mr-2"></i>
