@@ -160,6 +160,8 @@ class SeriesController extends Controller
             ->orderBy('occurrence_type_id', 'ASC')
             ->orderBy('occurrence_week_id', 'ASC')
             ->orderBy('occurrence_day_id', 'ASC')
+            // only series the viewer may see; the default "public" filter can be overridden
+            ->visible($this->user)
             ->select('series.*');
     }
 
@@ -319,6 +321,8 @@ class SeriesController extends Controller
         $baseQuery = Series::join('follows', 'series.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'series')
             ->where('follows.user_id', '=', $this->user->id)
+            // a followed series may since have been made private
+            ->visible($this->user)
             ->orderBy('follows.created_at', 'desc')
             ->select('series.*');
 
@@ -869,7 +873,7 @@ class SeriesController extends Controller
 
         $series = Series::find($request->id);
 
-        $seriesOptions = ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $seriesOptions = ['' => ''] + Series::visible($this->user)->orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $userOptions = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         // calculate the next occurrence date based on template settings

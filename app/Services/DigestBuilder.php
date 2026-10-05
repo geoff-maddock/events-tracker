@@ -112,6 +112,11 @@ class DigestBuilder
     {
         $list = [];
         foreach ($user->getSeriesFollowing() as $series) {
+            // a followed series may since have been made private
+            if (!$series->isVisibleTo($user)) {
+                continue;
+            }
+
             if ($series->occurrenceType->name !== 'No Schedule' && null === $series->cancelled_at && (!$when || $when($series))) {
                 $list[] = $series;
             }

@@ -237,6 +237,8 @@ class Tag extends Eloquent
         // tags sharing a name are merged and this tag's name is never listed.
         return DB::table('event_tag as mine')
             ->join('events', 'events.id', '=', 'mine.event_id')
+            // shared by every viewer, so counted over public events only
+            ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
             ->join('event_tag as other', function ($join) {
                 $join->on('other.event_id', '=', 'mine.event_id')
                     ->on('other.tag_id', '<>', 'mine.tag_id');

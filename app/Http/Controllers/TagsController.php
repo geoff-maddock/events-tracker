@@ -11,6 +11,7 @@ use App\Models\Follow;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\TagType;
+use App\Models\Visibility;
 use App\Services\StringHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -94,7 +95,8 @@ class TagsController extends Controller
     {
         // count the most common tags in the recent past
         $latestTags = Tag::withCount(['events' => function (Builder $query) {
-            $query->where('events.start_at', '>', Carbon::now()->subMonths(3));
+            $query->where('events.start_at', '>', Carbon::now()->subMonths(3))
+                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC);
         }])
         ->orderBy('events_count', 'desc')
         ->paginate(6);
@@ -169,7 +171,7 @@ class TagsController extends Controller
         $tags = Tag::query()
             ->when(!empty($search), fn ($q) => $q->where('name', 'like', '%'.$search.'%'))
             ->withGridThumbnail()
-            ->when($sort === 'events_count', fn ($q) => $q->withCount('events'))
+            ->when($sort === 'events_count', fn ($q) => $q->withCount(['events' => fn ($e) => $e->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)]))
             ->orderBy($sort, $direction)
             ->paginate($limit)
             ->appends(['search' => $search, 'sort' => $sort, 'direction' => $direction, 'limit' => $limit]);
