@@ -18,8 +18,6 @@ $(function(){
         var event_id = spl[4];
 
         // get the content of the link
-        console.log(str);
-        console.log('event_id:'+event_id); // should be the position of the event
 
         if (str == undefined || str == '')
         {
@@ -36,14 +34,12 @@ $(function(){
         // check that there is a login first
         FB.getLoginStatus(function(response) {
             if (response.status === 'connected') {
-                console.log('Facebook-event.js. Already Logged in.');
                 const accessToken = response.authResponse.accessToken;
                 // set the token in the session
                 document.cookie = "fb-token="+accessToken+"; path=/";
             }
             else {
                // FB.login();
-                console.log('FB.login - trying to get all scopes')
                 FB.login(function(response) {
                     // handle the response
                     // set the token in the session
@@ -71,22 +67,18 @@ $(function(){
                 {
                     $('#name').val(response.name);
                     $('#slug').val(slugify(response.name));
-                    console.log('set name');
                 };
 
                 if (response.ticket_uri)
                 {
                     $('#ticket_link').val(response.ticket_uri);
-                    console.log('set ticket link');
                 };
 
                 if (response.description)
                 {
                     $('#description').val(response.description);
-                    console.log('set description');
 
                     $('#short').val(response.description.slice(0,100));
-                    console.log('set short description');
                 };
 
                 // scrape some more data from description
@@ -95,9 +87,7 @@ $(function(){
                 if (response.description.indexOf(adult) > 0)
                 {
                     $('#min_age option[value=21]').attr('selected', 'selected');
-                    console.log('set ages to 21+');
                 } else {
-                    console.log('adult '+response.description.indexOf(adult)+' '+adult);
                 }
 
                 let amount = response.description.match(/\$(\d+)/);
@@ -105,34 +95,28 @@ $(function(){
                 if (amount)
                 {
                     $('#door_price').val(amount[1]);
-                    console.log('set price '+amount[1]);
                 };
 
                 if (response.start_time)
                 {
                     start_trim = response.start_time.slice(0,-5);
                     $('#start_at').val(start_trim);
-                    console.log('set start at '+start_trim);
                 };
                 if (response.end_time)
                 {
                     end_trim = response.end_time.slice(0,-5);
                     $('#end_at').val(end_trim);
-                    console.log('set end at'+end_trim);
                 };
                 if (response.place)
                 {
                     venue = capitalizeNth(response.place.name,0);
                     venue_val = $('#venue_id').find("option:contains('"+venue+"')").val();
                     $('#venue_id option[value='+venue_val+']').attr('selected', 'selected');
-                    console.log('venue_val '+venue_val);
-                    console.log('set venue '+venue);
                 };
 
                 // default to public visibility
                 $('#visibility_id option[value=3]').attr('selected', 'selected');
             }
-            console.log(response);
 
             App.init();
 
@@ -146,9 +130,6 @@ $(function(){
     }
 
     function handleError(error) {
-        console.log('Error code:'+error.code);
-        console.log(error.message);
     }
 
-    console.log('facebook-event.js ready');
 });

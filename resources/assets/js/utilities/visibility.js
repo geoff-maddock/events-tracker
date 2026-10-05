@@ -4,7 +4,6 @@ const $ = jQuery;
 
 const Visibility = {
     init(target) {
-        console.log('Visibility.init');
 
         // find all the collapsible items
         const items = $(target).find('.collapsible');
@@ -37,7 +36,6 @@ const Visibility = {
                 localStorage.removeItem(target);
             }
 
-            console.log('set: ' + target + ' to ' + state);
         });
 
     },
