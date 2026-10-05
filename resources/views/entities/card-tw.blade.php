@@ -1,5 +1,5 @@
 <!-- Entity Card Component -->
-<article class="entity-card-tw group {{ $entity->entityStatus->name === 'Inactive' ? 'opacity-50' : '' }}" id="entity-card-{{ $entity->id }}">
+<article class="entity-card-tw group {{ $entity->entityStatus?->name === 'Inactive' ? 'opacity-50' : '' }}" id="entity-card-{{ $entity->id }}">
 	<!-- Entity Image -->
 	<div class="relative overflow-hidden">
 		@if ($primary = $entity->getPrimaryPhoto())
@@ -47,7 +47,7 @@
 		</div>
 
 		<!-- Inactive Badge -->
-		@if ($entity->entityStatus->name === 'Inactive')
+		@if ($entity->entityStatus?->name === 'Inactive')
 		<div class="absolute top-2 left-2">
 			<span class="badge-tw bg-gray-500/80 text-white">Inactive</span>
 		</div>

@@ -31,8 +31,10 @@ class EntityFactory extends Factory
             'entity_type_id' => function () {
                 return EntityType::all()->random()->id;
             },
+            // unlisted entities are hidden from everyone but admins, so a test that
+            // wants one sets entity_status_id itself
             'entity_status_id' => function () {
-                return EntityStatus::all()->random()->id;
+                return EntityStatus::where('id', '!=', EntityStatus::UNLISTED)->get()->random()->id;
             },
             'facebook_username' => $this->faker->name,
             'twitter_username' => $this->faker->name,
