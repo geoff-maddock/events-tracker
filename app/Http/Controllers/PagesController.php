@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\Visibility;
 use App\Services\BestEffortMailer;
 use App\Services\EventDateRange;
 use App\Services\SearchService;
@@ -308,7 +309,8 @@ class PagesController extends Controller
         // php-fpm's memory_limit.
         // Thumbnail event = soonest upcoming event with a primary photo,
         // falling back to the most recent past one (mirrors Tag::scopeWithGridThumbnail).
-        $popularTags = Tag::withCount('events')
+        // counted over public events only: the page is the same for everyone
+        $popularTags = Tag::withCount(['events' => fn ($q) => $q->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)])
             ->with(['events' => function ($query) use ($user) {
                 $query->visible($user)
                     ->whereHas('photos', function ($photo) {

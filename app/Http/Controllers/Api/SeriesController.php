@@ -107,6 +107,8 @@ class SeriesController extends Controller
             ->orderBy('occurrence_type_id', 'ASC')
             ->orderBy('occurrence_week_id', 'ASC')
             ->orderBy('occurrence_day_id', 'ASC')
+            // only series the caller may see; the default "public" filter can be overridden
+            ->visible($this->user)
             ->select('series.*');
     }
 
@@ -161,9 +163,12 @@ class SeriesController extends Controller
         $from = Carbon::now()->subDays($days);
 
         $query = Series::query()->filter($this->filter)
+            ->visible($this->user)
+            // attendance is counted on public events only
             ->leftJoin('events', function ($join) use ($from) {
                 $join->on('series.id', '=', 'events.series_id')
-                    ->where('events.start_at', '>=', $from);
+                    ->where('events.start_at', '>=', $from)
+                    ->where('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
             })
             ->leftJoin('event_responses', function ($join) {
                 $join->on('events.id', '=', 'event_responses.event_id')
@@ -192,7 +197,8 @@ class SeriesController extends Controller
 
     public function allPhotos(?Series $series): JsonResponse
     {
-        if (!$series) {
+        // 404 rather than 403 so private and proposal series can't be probed
+        if (!$series || !$series->isVisibleTo($this->user)) {
             abort(404);
         }
 
@@ -527,7 +533,8 @@ class SeriesController extends Controller
 
     public function photos(?Series $series): JsonResponse
     {
-        if (!$series) {
+        // 404 rather than 403 so private and proposal series can't be probed
+        if (!$series || !$series->isVisibleTo($this->user)) {
             abort(404);
         }
 

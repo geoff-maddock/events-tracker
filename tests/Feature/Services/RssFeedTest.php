@@ -3,8 +3,9 @@
 namespace Tests\Feature\Services;
 
 use App\Models\Event;
+use App\Models\Visibility;
 use App\Services\RssFeed;
-use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -21,14 +22,19 @@ class RssFeedTest extends TestCase
         Cache::flush();
     }
 
-    public function test_event_export_rss_contains_channel_metadata_and_item_per_event(): void
+    private function upcoming(string $name, int $visibility = Visibility::VISIBILITY_PUBLIC): Event
     {
-        $events = new Collection([
-            Event::factory()->create(['name' => 'Test Event ZZ-Alpha']),
-            Event::factory()->create(['name' => 'Test Event ZZ-Beta']),
-        ]);
+        return Event::factory()->create(['name' => $name, 'visibility_id' => $visibility, 'start_at' => Carbon::now()->addDays(3)]);
+    }
 
-        $xml = (new RssFeed())->getEventExportRSS($events);
+    public function test_the_feed_has_channel_metadata_and_an_item_per_public_upcoming_event(): void
+    {
+        $this->upcoming('Test Event ZZ-Alpha');
+        $this->upcoming('Test Event ZZ-Beta');
+        $this->upcoming('Test Event ZZ-Private', Visibility::VISIBILITY_PRIVATE);
+        Event::factory()->create(['name' => 'Test Event ZZ-Past', 'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'start_at' => Carbon::now()->subDays(3)]);
+
+        $xml = (new RssFeed())->getRSS();
 
         $this->assertStringContainsString('<rss', $xml);
         $this->assertStringContainsString('xmlns:atom="http://www.w3.org/2005/Atom"', $xml);
@@ -36,28 +42,28 @@ class RssFeedTest extends TestCase
         $this->assertStringContainsString('<atom:link', $xml);
         $this->assertStringContainsString('Test Event ZZ-Alpha', $xml);
         $this->assertStringContainsString('Test Event ZZ-Beta', $xml);
-        $this->assertSame(2, substr_count($xml, '<item>'));
+        $this->assertStringNotContainsString('ZZ-Private', $xml);
+        $this->assertStringNotContainsString('ZZ-Past', $xml);
     }
 
-    public function test_empty_collection_produces_channel_with_no_items(): void
+    public function test_no_upcoming_events_produces_a_channel_with_no_items(): void
     {
-        $xml = (new RssFeed())->getEventExportRSS(new Collection());
+        $xml = (new RssFeed())->getRSS();
 
         $this->assertStringContainsString('<channel>', $xml);
         $this->assertSame(0, substr_count($xml, '<item>'));
     }
 
-    public function test_result_is_cached(): void
+    public function test_the_feed_is_cached(): void
     {
-        $events = new Collection([Event::factory()->create(['name' => 'cache-marker-zz'])]);
+        $this->upcoming('cache-marker-zz');
+        $first = (new RssFeed())->getRSS();
 
-        $first = (new RssFeed())->getEventExportRSS($events);
-
-        // Force a different event set; cached value should be returned unchanged.
-        $different = new Collection([Event::factory()->create(['name' => 'different-zz'])]);
-        $second = (new RssFeed())->getEventExportRSS($different);
+        // a new event doesn't appear until the cached feed expires
+        $this->upcoming('different-zz');
+        $second = (new RssFeed())->getRSS();
 
         $this->assertSame($first, $second);
-        $this->assertStringContainsString('cache-marker-zz', $second);
+        $this->assertStringNotContainsString('different-zz', $second);
     }
 }

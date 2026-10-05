@@ -15,14 +15,6 @@ class RssFeed
     /**
      * Return the content of the RSS feed.
      */
-    public function getEventExportRSS(Collection $events): string
-    {
-        return Cache::remember('event-export-rss-feed', 7200, fn () => $this->buildRssData($events));
-    }
-
-    /**
-     * Return the content of the RSS feed.
-     */
     public function getRSS(): string
     {
         // shared by every reader, so public events only (the key changed when that filter was added)

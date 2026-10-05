@@ -8,7 +8,6 @@ use App\Http\Requests\ThreadRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
-use App\Models\Event;
 use App\Models\Follow;
 use App\Models\Forum;
 use App\Models\Like;
@@ -660,8 +659,6 @@ class ThreadsController extends Controller
             'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'eventOptions' => ['' => ''] + Event::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'seriesOptions' => Series::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'forumOptions' => ['' => ''] + Forum::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
@@ -981,7 +978,7 @@ class ThreadsController extends Controller
         return [
             'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-            'seriesOptions' => ['' => ''] + Series::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
+            'seriesOptions' => ['' => ''] + Series::visible($this->user)->orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
     }
 
