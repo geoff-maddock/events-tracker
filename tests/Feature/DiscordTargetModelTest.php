@@ -231,6 +231,6 @@ class DiscordTargetModelTest extends TestCase
         $orphan = DiscordTargetCriterion::factory()
             ->ofType(DiscordTargetCriterion::TYPE_TAG, 999999)
             ->create();
-        $this->assertSame('#999999', $orphan->label());
+        $this->assertSame('deleted #999999', $orphan->label());
     }
 }
