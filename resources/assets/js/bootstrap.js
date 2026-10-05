@@ -35,7 +35,6 @@ if (token) {
  */
 
 Visibility.init('body');
-console.log('assets js bootstrap.js visibility init')
 
 /**
  * Global confirm-modal handler.
@@ -100,8 +99,6 @@ if (pusherKey) {
                         });
                     }
                 });
-                console.log('Event updated.');
-                console.log(e);
             })
             // .listen('EventCreated', e => {
             //     const message = 'Event #' + e.event.id + ' "' + e.event.name + '" was created.';

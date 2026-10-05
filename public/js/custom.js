@@ -47,7 +47,6 @@ var App = (function () {
                         }
                     },
                     onError: function () {
-                        console.log('No embeds could be loaded for ' + resourceType + '/' + slug);
                     }
                 });
             } else if (url) {
@@ -61,7 +60,6 @@ var App = (function () {
                         $container.removeClass('playlist-id hidden');
                     }
                 }).fail(function () {
-                    console.log('No event embeds could be loaded')
                 });
             }
         });
@@ -78,7 +76,6 @@ var App = (function () {
         $('button.delete').on('click', function (e) {
             var form = $(this).parents('form');
             var type = $(this).data('type');
-            console.log('set up delete confirm');
             e.preventDefault();
             Swal.fire({
                 title: "Are you sure?",
@@ -102,7 +99,6 @@ var App = (function () {
                 } else {
                     // handle dismissals
                     // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                    console.log('cancelled confirm')
                 }
             });
         });
@@ -116,7 +112,6 @@ var App = (function () {
             e.preventDefault();
             var form = null;
             var type = $(this).data('type');
-            console.log('a.confirm: setupConfirm function called')
             Swal.fire({
                 title: "Are you sure?",
                 type: "warning",
@@ -133,7 +128,6 @@ var App = (function () {
             }).then(result => {
                 if (form !== null) {
                     // form is not null, so submit
-                    console.log('form is not null')
                     form.submit();
                 } else if (result.value) {
                     // handle Confirm button click; state-changing links are POSTed (#2166)
@@ -145,7 +139,6 @@ var App = (function () {
                 } else {
                     // handle dismissals
                     // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                    console.log('cancelled confirm')
                 }
             });
         });
@@ -155,7 +148,6 @@ var App = (function () {
             e.preventDefault();
             var form = $(this).parents('form');
             var type = $(this).data('type');
-            console.log('button.confirm setupConfirm function called')
             Swal.fire({
                 title: "Are you sure?",
                 type: "warning",
@@ -172,7 +164,6 @@ var App = (function () {
             }).then(result => {
                 if (form !== null) {
                     // form is not null, so submit
-                    console.log('form is not null')
                     form.submit();
                 } else if (result.value) {
                     // handle Confirm button click
@@ -180,7 +171,6 @@ var App = (function () {
                 } else {
                     // handle dismissals
                     // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                    console.log('cancelled confirm')
                 }
             });
         });
@@ -255,9 +245,7 @@ var App = (function () {
                     type: "success",
                     timer: 2000,
                 });
-                console.log('Updated target ' + target);
             }).fail(function () {
-                console.log('No events could be loaded')
             });
         });
     };
@@ -356,7 +344,6 @@ var Home = (function () {
         this.setupLoadScroll();
 
         window.addEventListener('popstate', function (event) {
-            console.log('popstate fired');
             // The popstate event is fired each time when the current history entry changes.
 
             var r = true;
@@ -392,14 +379,12 @@ var Home = (function () {
             var url = $(this).attr('href');
             getEvents(url);
             // window.history.pushState("", "", url);
-            console.log('url: ' + url)
             history.pushState(null, null, window.location.pathname);
         });
     };
 
     // when the add events link is clicked, append the events to the bottom
     var setupAddEvents = function () {
-        console.log('execute setup add events button');
         $('body').on('click', '#add-event', function (e) {
             e.preventDefault();
             var url = $(this).attr('href');
@@ -409,7 +394,6 @@ var Home = (function () {
             $('#add-event').html("Loading...");
             addEvents(url, target);
 
-            console.log('url: ' + url)
             history.pushState(null, null, window.location.pathname);
         });
     };
@@ -429,7 +413,6 @@ var Home = (function () {
                         var target = '.home';
 
                         // log this event
-                        console.log('Scrolling Load Fired:' + url)
 
                         // change the next events content
                         $('#add-event').attr("href", "");
@@ -457,7 +440,6 @@ var Home = (function () {
                 // TODO determine if we need to do this re-load, or ONLY after the days have been added?
                 App.loadEmbeds();
             }).fail(function () {
-                console.log('No events could be loaded')
             });
         }
     };
@@ -469,7 +451,6 @@ var Home = (function () {
         }).done(function (data) {
             $('#4days').html(data);
         }).fail(function () {
-            console.log('No events could be loaded.');
         });
     };
 
@@ -483,7 +464,6 @@ var Home = (function () {
                 $(target).last().after(data);
                 App.loadEmbeds();
             }).fail(function () {
-                console.log('No events could be loaded.');
             });
         }
     };
@@ -503,5 +483,4 @@ var Home = (function () {
 // init app module on document load
 $(function () {
     App.init();
-    console.log('app.init executed');
 });
