@@ -105,10 +105,10 @@
             </span>
             @endif
             
-            @if ($event->door_price)
+            @if ($price = $event->doorPriceLabel())
             <span class="flex items-center gap-1">
                 <i class="bi bi-currency-dollar"></i>
-                {{ $event->door_price }}
+                {{ $price }}
             </span>
             @endif
 

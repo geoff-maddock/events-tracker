@@ -36,8 +36,8 @@
                             <span class="badge-tw badge-secondary-tw">{{ $s->eventType->name }}</span>
                         @endif
 
-                        @if ($s->door_price)
-                            <span class="badge-tw badge-primary-tw">${{ number_format($s->door_price, 0) }}</span>
+                        @if ($price = \App\Services\PriceLabel::for($s->door_price))
+                            <span class="badge-tw badge-primary-tw">{{ $price }}</span>
                         @endif
 
                         @if ($s->occurrenceType)

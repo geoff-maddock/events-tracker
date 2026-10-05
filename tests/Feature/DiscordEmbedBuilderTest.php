@@ -98,10 +98,15 @@ class DiscordEmbedBuilderTest extends TestCase
         $unknown = Event::factory()->create(['presale_price' => null, 'door_price' => null]);
         $this->assertNotContains('Price', $this->fieldNames($this->embedFor($unknown)));
 
-        // Event's own mutators coerce a zero price to null, so a free show is
-        // indistinguishable from an unpriced one and neither claims "Free".
-        $zero = Event::factory()->create(['presale_price' => 0, 'door_price' => 0]);
-        $this->assertNotContains('Price', $this->fieldNames($this->embedFor($zero)));
+    }
+
+    public function test_a_free_event_says_so(): void
+    {
+        // a price of 0 is stored and shown as free, not as "no price" (#2261)
+        $free = Event::factory()->create(['presale_price' => 0, 'door_price' => 0]);
+        $embed = $this->embedFor($free);
+
+        $this->assertSame('Free', $embed['fields'][array_search('Price', $this->fieldNames($embed), true)]['value']);
     }
 
     public function test_both_prices_render_together(): void

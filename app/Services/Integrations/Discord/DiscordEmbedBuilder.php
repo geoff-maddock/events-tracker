@@ -208,32 +208,18 @@ class DiscordEmbedBuilder
     }
 
     /**
-     * Null omits the field.
-     *
-     * There is deliberately no "Free" case. Event::setDoorPriceAttribute() and
-     * setPresalePriceAttribute() both coerce a zero to null, so the schema
-     * cannot distinguish a free show from one whose price nobody entered —
-     * and announcing "Free" for an unpriced event would be worse than silence.
+     * Null omits the field (no price was entered); a price of 0 is "Free" (#2261).
      */
     private function price(Event $event): ?string
     {
-        $presale = $this->money($event->presale_price);
-        $door = $this->money($event->door_price);
+        $presale = $event->presalePriceLabel();
+        $door = $event->doorPriceLabel();
 
         if (null !== $presale && null !== $door) {
-            return $presale.' presale / '.$door.' door';
+            return 'Free' === $presale && 'Free' === $door ? 'Free' : $presale.' presale / '.$door.' door';
         }
 
         return $presale ?? $door;
-    }
-
-    private function money(mixed $value): ?string
-    {
-        if (null === $value || ! is_numeric($value) || 0.0 === (float) $value) {
-            return null;
-        }
-
-        return '$'.number_format((float) $value, 0);
     }
 
     private function footer(Event $event): ?string
