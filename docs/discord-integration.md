@@ -151,6 +151,14 @@ With `match_all` off, add **criteria** to filter by tag, entity, venue or series
 target with no criteria and `match_all` off matches nothing — that is deliberate, so a
 half-configured channel stays silent rather than firehosing.
 
+Deleting a tag, entity or series removes the criteria that pointed at it. Removing
+an exclude, or one of several includes of the same type, can only narrow the target,
+so it stays enabled. Removing the **last** include of a type would widen it (criteria
+types are AND'd, so "tag X at venue Y" would become "anything at venue Y"), so that
+target is **disabled** instead, with a warning in the log; review its criteria and
+re-enable it. Criteria left over from before this cleanup show as "deleted #id" on the
+target's page. An event type a target filters on can't be deleted at all.
+
 ### 5. Verify before going live
 
 ```bash

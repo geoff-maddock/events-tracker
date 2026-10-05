@@ -132,6 +132,9 @@ class Entity extends Eloquent implements HasPhotos
     {
         parent::boot();
 
+        // Discord targets filtering on it as an entity, venue or promoter (#2240)
+        static::deleted(fn (Entity $entity) => DiscordTargetCriterion::forgetSubject($entity));
+
         // whoever creates an entity owns it until ownership is changed (#2147)
         static::created(function (Entity $entity) {
             if ($entity->created_by && User::whereKey($entity->created_by)->exists()) {

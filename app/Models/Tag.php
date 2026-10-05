@@ -55,6 +55,8 @@ class Tag extends Eloquent
         // a new tag missing from a form's options would be dropped when it's saved
         static::saved(fn () => static::forgetOptionCaches());
         static::deleted(fn () => static::forgetOptionCaches());
+        // Discord targets filtering on it (#2240)
+        static::deleted(fn (Tag $tag) => DiscordTargetCriterion::forgetSubject($tag));
     }
 
     public static function forgetOptionCaches(): void

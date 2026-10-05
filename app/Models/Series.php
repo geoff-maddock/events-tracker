@@ -158,6 +158,8 @@ class Series extends Eloquent implements HasPhotos
         // keep the cached series dropdown options (event/thread forms) in sync
         static::saved(fn () => static::refreshFormOptionsCache());
         static::deleted(fn () => static::refreshFormOptionsCache());
+        // Discord targets filtering on it (#2240)
+        static::deleted(fn (Series $series) => DiscordTargetCriterion::forgetSubject($series));
     }
 
     /**

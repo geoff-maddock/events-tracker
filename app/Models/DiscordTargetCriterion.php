@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 /**
  * One include/exclude filter on a DiscordTarget (issue #2058).
@@ -112,7 +113,50 @@ class DiscordTargetCriterion extends Eloquent
 
         $record = $class::query()->find($this->criteria_id);
 
-        return $record->name ?? ('#'.$this->criteria_id);
+        return $record->name ?? ('deleted #'.$this->criteria_id);
+    }
+
+    /**
+     * Remove the criteria pointing at a tag, entity or series that is being
+     * deleted (#2240), so no target keeps filtering on a record that's gone.
+     *
+     * Removing an exclude, or one of several includes of the same type, can
+     * only narrow what was a dead reference. Removing the last include of its
+     * type would widen the target (types are AND'd, so dropping a whole type
+     * drops that constraint: "tag X at venue Y" would become "anything at
+     * venue Y"), so such a target is disabled instead of left to post more
+     * than it was set up for.
+     */
+    public static function forgetSubject(Eloquent $subject): void
+    {
+        $types = array_keys(array_filter(self::TYPE_MODELS, fn (string $class) => $subject instanceof $class));
+        if ($types === []) {
+            return;
+        }
+
+        $criteria = self::query()->whereIn('criteria_type', $types)->where('criteria_id', $subject->getKey())->with('target')->get();
+
+        foreach ($criteria as $criterion) {
+            $criterion->delete();
+
+            $target = $criterion->target;
+            if ($criterion->isExclude() || null === $target || !$target->is_enabled) {
+                continue;
+            }
+
+            $stillScoped = $target->criteria()
+                ->where('mode', self::MODE_INCLUDE)
+                ->where('criteria_type', $criterion->criteria_type)
+                ->exists();
+
+            if (!$stillScoped) {
+                $target->forceFill(['is_enabled' => false])->save();
+                Log::warning(sprintf(
+                    'Discord target %s (#%d) disabled: its only %s filter (#%d) was deleted.',
+                    $target->name, $target->id, $criterion->criteria_type, $criterion->criteria_id
+                ));
+            }
+        }
     }
 
     /**
