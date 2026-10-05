@@ -1561,6 +1561,57 @@ class EventsController extends Controller
     }
 
     /**
+     * Attach a new event's tags, its listed entities, and its venue and promoter.
+     *
+     * @param array<int, int> $tagIds
+     */
+    private function attachEntities(Event $event, EventRequest $request, array $tagIds): void
+    {
+        $event->tags()->attach($tagIds);
+        $event->entities()->attach($request->input('entity_list'));
+
+        // also attach the venue and promoter if set
+        if ($request->input('venue_id')) {
+            $event->entities()->syncWithoutDetaching($request->input('venue_id'));
+        }
+
+        if ($request->input('promoter_id')) {
+            $event->entities()->syncWithoutDetaching($request->input('promoter_id'));
+        }
+    }
+
+    /**
+     * Tell followers about a new upcoming event, and tweet it when an admin
+     * created it; both only once it has a photo.
+     */
+    private function announceNewEvent(Event $event): void
+    {
+        if ($event->getPrimaryPhoto() === null) {
+            return;
+        }
+
+        // notify everyone following any of its tags/entities, if it starts in the future
+        if ($event->start_at >= Carbon::now()) {
+            NotifyFollowers::dispatch($event);
+        }
+
+        if (!Auth::user()->hasGroup('super_admin') || config('app.twitter_consumer_key') === '999') {
+            return;
+        }
+
+        // the event is already saved, so a Twitter API failure must not fail the request either
+        try {
+            $event->notify(new EventPublished());
+        } catch (\Throwable $e) {
+            Log::warning('EventsController@store: failed to post event to Twitter', [
+                'event_id' => $event->id,
+                'error' => $e->getMessage(),
+            ]);
+            report($e);
+        }
+    }
+
+    /**
      * Load the minimal embeds by slug (no auth required)
      *
      * @throws \Throwable
@@ -1618,24 +1669,11 @@ class EventsController extends Controller
         }
 
         $event = $event->create($input);
-
-        $event->tags()->attach($syncArray);
-        $event->entities()->attach($request->input('entity_list'));
-
-        // also attach the venue and promoter if set
-        if ($request->input('venue_id')) {
-            $event->entities()->syncWithoutDetaching($request->input('venue_id'));
-        }
-
-        if ($request->input('promoter_id')) {
-            $event->entities()->syncWithoutDetaching($request->input('promoter_id'));
-        }
+        $this->attachEntities($event, $request, $syncArray);
 
         // Attach the image the user chose on the create form, whether or not
         // they ran it through analysis, as the primary photo.
-        $photo = $tempImages->attachFromRequest($request, $event);
-
-        if ($photo !== null) {
+        if ($tempImages->attachFromRequest($request, $event) !== null) {
             EventPhotoAdded::dispatch($event, true);
         }
 
@@ -1648,33 +1686,7 @@ class EventsController extends Controller
 
         flash()->success('Success', 'Your event has been created');
 
-        $photo = $event->getPrimaryPhoto();
-
-        // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
-        if ($event->start_at >= Carbon::now()) {
-            // only do the notification if there is a photo
-            if ($photo !== null) {
-                NotifyFollowers::dispatch($event);
-            }
-        }
-
-        // add a twitter notification if the user is admin
-        if (Auth::user()->hasGroup('super_admin') && config('app.twitter_consumer_key') !== '999') {
-            // only tweet if there is a primary photo
-            if ($photo !== null) {
-                // the event is already saved, so a Twitter API failure must not
-                // fail the request either
-                try {
-                    $event->notify(new EventPublished());
-                } catch (\Throwable $e) {
-                    Log::warning('EventsController@store: failed to post event to Twitter', [
-                        'event_id' => $event->id,
-                        'error' => $e->getMessage(),
-                    ]);
-                    report($e);
-                }
-            }
-        }
+        $this->announceNewEvent($event);
 
         return redirect()->route('events.show', compact('event'));
     }

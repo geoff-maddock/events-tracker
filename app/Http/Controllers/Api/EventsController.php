@@ -37,6 +37,30 @@ use Illuminate\Support\Str;
 
 class EventsController extends Controller
 {
+    /**
+     * Relations the by-date event list returns (plus attendees, which needs a
+     * constraint so it is added separately).
+     */
+    private const BY_DATE_EAGER_LOAD = [
+        'visibility',
+        'venue.links',
+        'venue.photos',
+        'venue.locations',
+        'venue.entityStatus',
+        'venue.entityType',
+        'eventStatus',
+        'eventType',
+        'promoter.links',
+        'promoter.photos',
+        'promoter.locations',
+        'promoter.entityStatus',
+        'promoter.entityType',
+        'series',
+        'tags',
+        'entities',
+        'photos',
+    ];
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -359,22 +383,7 @@ class EventsController extends Controller
         ?string $month = null,
         ?string $day = null
     ): JsonResponse {
-        // set the start_at from and to dates based on the passed params
-        // Cast the route params to integers so single-digit months/days (e.g. /api/events/by-date/2026/8)
-        // produce a valid date instead of an unparseable string like "2026801" (EVENTREPO-WG).
-        if ($year && !$month && !$day) {
-            $start_at_from = Carbon::create((int) $year, 1, 1)->startOfDay();
-            $start_at_to = Carbon::create((int) $year, 12, 31)->startOfDay();
-            $slug = $year;
-        } elseif (!$day) {
-            $start_at_from = Carbon::create((int) $year, (int) $month, 1)->startOfDay();
-            $start_at_to = $start_at_from->copy()->endOfMonth();
-            $slug = $year.' - '.$month;
-        } else {
-            $start_at_from = Carbon::create((int) $year, (int) $month, (int) $day)->startOfDay();
-            $start_at_to = $start_at_from->copy()->addDay();
-            $slug = $year.' - '.$month.' - '.$day;
-        }
+        [$start_at_from, $start_at_to] = $this->dateRange($year, $month, $day);
 
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_event');
@@ -383,19 +392,12 @@ class EventsController extends Controller
         // set the index tab in the session
         $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
+        // the list builder only supplies the page size here; the events come from the date query
+        $listResultSet = $listEntityResultBuilder
             ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
+            ->setQueryBuilder(Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'))
+            ->setDefaultSort(['events.start_at' => 'desc'])
+            ->listResultSetFactory();
 
         $events = Event::where('start_at', '>', $start_at_from)
             ->where('start_at', '<', $start_at_to)
@@ -405,32 +407,38 @@ class EventsController extends Controller
             })
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->with([
-                'visibility',
-                'venue.links',
-                'venue.photos',
-                'venue.locations',
-                'venue.entityStatus',
-                'venue.entityType',
-                'eventStatus',
-                'eventType',
-                'promoter.links',
-                'promoter.photos',
-                'promoter.locations',
-                'promoter.entityStatus',
-                'promoter.entityType',
-                'series',
-                'tags',
-                'entities',
-                'photos',
-                'attendees' => function ($q) {
-                    $q->where('response_type_id', 1);
-                },
-            ])
+            ->with(self::BY_DATE_EAGER_LOAD)
+            ->with(['attendees' => function ($q) {
+                $q->where('response_type_id', 1);
+            }])
             ->paginate($listResultSet->getLimit());
-        
 
         return response()->json(new EventCollection($events));
+    }
+
+    /**
+     * The [from, to) window a by-date request covers: a whole year, a month or
+     * a day. Route params are cast to integers so single-digit months/days
+     * (e.g. /api/events/by-date/2026/8) produce a valid date instead of an
+     * unparseable string like "2026801" (EVENTREPO-WG).
+     *
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    private function dateRange(string $year, ?string $month, ?string $day): array
+    {
+        if ($year && !$month && !$day) {
+            return [Carbon::create((int) $year, 1, 1)->startOfDay(), Carbon::create((int) $year, 12, 31)->startOfDay()];
+        }
+
+        if (!$day) {
+            $from = Carbon::create((int) $year, (int) $month, 1)->startOfDay();
+
+            return [$from, $from->copy()->endOfMonth()];
+        }
+
+        $from = Carbon::create((int) $year, (int) $month, (int) $day)->startOfDay();
+
+        return [$from, $from->copy()->addDay()];
     }
 
 

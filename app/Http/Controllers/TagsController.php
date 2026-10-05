@@ -102,81 +102,86 @@ class TagsController extends Controller
         // default to no tag
         $tag = null;
 
-        // get the tags the user is following
-        $userTags = null;
-        $tagNames = [];
+        // what the signed-in user's followed tags lead to
+        $userTags = $this->user?->getTagsFollowing();
+        [$series, $events, $entities] = $this->followedTagContent($userTags ? $userTags->pluck('name')->all() : []);
 
-        // get a list of all the user's followed tags
-        if (isset($this->user)) {
-            $userTags = $this->user->getTagsFollowing();
-            foreach ($userTags as $userTag) {
-                /** @var \App\Models\Tag $userTag */
-                $tagNames[] = $userTag->name;
-            }
-        }
+        return view('tags.index-tw')
+                ->with(array_merge(
+                    compact('series', 'entities', 'events', 'tag', 'userTags', 'latestTags'),
+                    $this->tagGrid($request),
+                    $this->getListControlOptions()
+                ));
+    }
 
-        // get all series linked to the tag
-        $series = Series::whereHas('tags', function ($q) use ($tagNames) {
-            $q->whereIn('name', $tagNames);
-        })->visible($this->user)
+    /**
+     * The series, events and entities carrying any of the named tags.
+     *
+     * @param array<int, string> $tagNames
+     *
+     * @return array{0: \Illuminate\Contracts\Pagination\LengthAwarePaginator, 1: \Illuminate\Contracts\Pagination\Paginator, 2: \Illuminate\Contracts\Pagination\Paginator}
+     */
+    private function followedTagContent(array $tagNames): array
+    {
+        $taggedWith = fn ($q) => $q->whereIn('name', $tagNames);
+
+        $series = Series::whereHas('tags', $taggedWith)->visible($this->user)
             ->orderBy('start_at', 'ASC')
             ->orderBy('name', 'ASC')
-            ->with('tags', 'entities', 'occurrenceType','occurrenceWeek','occurrenceDay')
+            ->with('tags', 'entities', 'occurrenceType', 'occurrenceWeek', 'occurrenceDay')
             ->paginate();
 
-        // get all the events linked to the tag
-        $events = Event::whereHas('tags', function ($q) use ($tagNames) {
-            $q->whereIn('name', $tagNames);
-        })->visible($this->user)
-                    ->orderBy('start_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->with('visibility', 'venue','tags', 'entities','series','eventType','threads')
-                    ->simplePaginate($this->limit);
+        $events = Event::whereHas('tags', $taggedWith)->visible($this->user)
+            ->orderBy('start_at', 'DESC')
+            ->orderBy('name', 'ASC')
+            ->with('visibility', 'venue', 'tags', 'entities', 'series', 'eventType', 'threads')
+            ->simplePaginate($this->limit);
 
-        // get all entities linked to the tag
-        $entities = Entity::whereHas('tags', function ($q) use ($tagNames) {
-            $q->whereIn('name', $tagNames);
-        }) ->active()
-                ->orderBy('entity_type_id', 'ASC')
-                    ->orderBy('name', 'ASC')
-                    ->with('tags', 'locations', 'roles')
-                    ->simplePaginate($this->limit);
+        $entities = Entity::whereHas('tags', $taggedWith)->active()
+            ->orderBy('entity_type_id', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->with('tags', 'locations', 'roles')
+            ->simplePaginate($this->limit);
 
-        // get sort/pagination parameters from request
+        return [$series, $events, $entities];
+    }
+
+    /**
+     * The searchable, sortable grid of every tag, and its list controls.
+     *
+     * @return array<string, mixed>
+     */
+    private function tagGrid(Request $request): array
+    {
         $sort = $request->input('sort', 'name');
         $direction = $request->input('direction', 'asc');
         $limit = (int) $request->input('limit', $this->defaultLimit);
 
-        $allowedSorts = array_keys($this->getListControlOptions()['sortOptions']);
-        if (!in_array($sort, $allowedSorts)) {
+        if (!in_array($sort, array_keys($this->getListControlOptions()['sortOptions']))) {
             $sort = 'name';
         }
         if (!in_array($direction, ['asc', 'desc'])) {
             $direction = 'asc';
         }
 
-        // get a list of all tags with optional search filter
-        $query = Tag::query();
-
         $search = $request->input('search', '');
-        if (!empty($search)) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
 
-        $tags = $query->withGridThumbnail()
+        $tags = Tag::query()
+            ->when(!empty($search), fn ($q) => $q->where('name', 'like', '%'.$search.'%'))
+            ->withGridThumbnail()
             ->when($sort === 'events_count', fn ($q) => $q->withCount('events'))
             ->orderBy($sort, $direction)
             ->paginate($limit)
             ->appends(['search' => $search, 'sort' => $sort, 'direction' => $direction, 'limit' => $limit]);
 
-        $hasFilter = !empty($search);
-
-        return view('tags.index-tw')
-                ->with(array_merge(
-                    compact('series', 'entities', 'events', 'tag', 'tags', 'userTags', 'latestTags', 'search', 'hasFilter'),
-                    ['sort' => $sort, 'direction' => $direction, 'limit' => $limit],
-                    $this->getListControlOptions()
-                ));
+        return [
+            'tags' => $tags,
+            'search' => $search,
+            'hasFilter' => !empty($search),
+            'sort' => $sort,
+            'direction' => $direction,
+            'limit' => $limit,
+        ];
     }
 
     protected function getListControlOptions(): array
