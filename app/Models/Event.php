@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\PriceLabel;
 use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
@@ -280,13 +281,10 @@ class Event extends Model implements HasPhotos
     /**
      * Set the door_price attribute.
      */
-    public function setDoorPriceAttribute(?string $price): void
+    public function setDoorPriceAttribute(mixed $price): void
     {
-        if (!empty($price)) {
-            $this->attributes['door_price'] = $price;
-        } else {
-            $this->attributes['door_price'] = null;
-        }
+        // 0 is a real price (free entry); only a blank field means none was entered (#2261)
+        $this->attributes['door_price'] = (null === $price || '' === $price) ? null : $price;
     }
 
     /**
@@ -330,13 +328,26 @@ class Event extends Model implements HasPhotos
     /**
      * Create the slug from the name if none was passed.
      */
-    public function setPresalePriceAttribute(?float $value): void
+    public function setPresalePriceAttribute(mixed $value): void
     {
-        if (!empty($value)) {
-            $this->attributes['presale_price'] = $value;
-        } else {
-            $this->attributes['presale_price'] = null;
-        }
+        // 0 is a real price; only a blank field means none was entered (#2261)
+        $this->attributes['presale_price'] = (null === $value || '' === $value) ? null : $value;
+    }
+
+    /**
+     * The door price as shown: null when none was entered, "Free" for 0.
+     */
+    public function doorPriceLabel(): ?string
+    {
+        return PriceLabel::for($this->door_price);
+    }
+
+    /**
+     * The presale price as shown: null when none was entered, "Free" for 0.
+     */
+    public function presalePriceLabel(): ?string
+    {
+        return PriceLabel::for($this->presale_price);
     }
 
     /**
@@ -1033,9 +1044,9 @@ class Event extends Model implements HasPhotos
             $format .= ' at '.$this->start_at->format('gA');
         }
 
-        // include the door price
-        if ($this->door_price) {
-            $format .= ' $'.number_format(floatval($this->door_price), 0);
+        // include the door price ("Free" for 0)
+        if ($price = $this->doorPriceLabel()) {
+            $format .= ' '.$price;
         }
 
         // include the related entities
@@ -1122,9 +1133,9 @@ class Event extends Model implements HasPhotos
            $format .= ' at '.$this->start_at->format('gA');
        }
 
-       // include the door price
-       if ($this->door_price) {
-           $format .= ' $'.number_format(floatval($this->door_price), 0);
+       // include the door price ("Free" for 0)
+       if ($price = $this->doorPriceLabel()) {
+           $format .= ' '.$price;
        }
 
 

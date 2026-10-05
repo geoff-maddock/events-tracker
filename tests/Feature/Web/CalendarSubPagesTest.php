@@ -46,16 +46,10 @@ class CalendarSubPagesTest extends TestCase
 
         $this->actingAs($creator);
         $make = function (string $name, array $attributes) {
-            $event = Event::factory()->create($attributes + [
+            return Event::factory()->create($attributes + [
                 'name' => $name, 'visibility_id' => Visibility::VISIBILITY_PUBLIC,
                 'start_at' => Carbon::now()->addDays(3), 'door_price' => 10, 'min_age' => 21, 'event_type_id' => EventType::where('name', 'Club Night')->value('id'),
             ]);
-            // the door_price setter stores 0 as null (#2261), so write a free price directly
-            if (($attributes['door_price'] ?? null) === 0) {
-                Event::whereKey($event->id)->update(['door_price' => 0]);
-            }
-
-            return $event;
         };
         $make('Zz Tagged', [])->tags()->attach($tag->id);
         $make('Zz With Artist', [])->entities()->attach($artist->id);

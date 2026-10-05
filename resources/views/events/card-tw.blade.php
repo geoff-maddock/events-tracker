@@ -129,12 +129,12 @@
 								<i class="bi bi-cash h-4 w-4 text-muted-foreground"></i>
 									@if (isset($event->presale_price))
 									<span class="text-green-600 dark:text-green-500">
-										Presale: ${{ floor($event->presale_price) == $event->presale_price ? number_format($event->presale_price, 0) : number_format($event->presale_price, 2) }}
+										Presale: {{ $event->presalePriceLabel() }}
 									</span>
 									@endif
 									@if (isset($event->door_price))
 									<span class="text-muted-foreground">
-										Door: ${{ floor($event->door_price) == $event->door_price ? number_format($event->door_price, 0) : number_format($event->door_price, 2) }}
+										Door: {{ $event->doorPriceLabel() }}
 									</span>
 									@endif
 								@endif

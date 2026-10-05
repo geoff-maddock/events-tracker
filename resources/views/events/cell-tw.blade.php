@@ -16,9 +16,9 @@
         @endif
 
         <!-- Price Badge -->
-        @if ($event->door_price)
+        @if ($price = $event->doorPriceLabel())
             <div class="absolute bottom-2 left-2 badge-tw badge-success-tw text-xs shadow-sm">
-                ${{ $event->door_price }}
+                {{ $price }}
             </div>
         @endif
     </div>

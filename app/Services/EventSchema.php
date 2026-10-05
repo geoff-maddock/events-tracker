@@ -299,11 +299,9 @@ class EventSchema
      * price is still only emitted when one is on file. Google renders a price
      * of 0 as "Free", and most events with no recorded price are ticketed
      * shows whose price simply was not entered — advertising those as free is
-     * worse than the remaining warning. Note that door_price is nulled by
-     * Event::setDoorPriceAttribute() when the form posts an empty value, and
-     * '0' is empty() in PHP, so a free show entered through the form arrives
-     * here as null and is indistinguishable from an unpriced one; only the
-     * imported '0.00' rows can be published as free.
+     * worse than the remaining warning. A blank price is stored as null and
+     * a price of 0 as 0 (#2261; it used to be nulled too), so a free show is
+     * published with price 0, which Google shows as "Free".
      *
      * @return array<string, mixed>
      */

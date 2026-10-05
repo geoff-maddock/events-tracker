@@ -44,8 +44,8 @@
                             <span class="badge-tw badge-secondary-tw">{{ $event->eventType->name }}</span>
                         @endif
 
-                        @if ($event->door_price)
-                            <span class="badge-tw badge-primary-tw">${{ number_format($event->door_price, 0) }}</span>
+                        @if ($price = $event->doorPriceLabel())
+                            <span class="badge-tw badge-primary-tw">{{ $price }}</span>
                         @endif
                     </div>
 
