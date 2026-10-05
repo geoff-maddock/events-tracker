@@ -75,6 +75,9 @@ class FreeEventPriceTest extends TestCase
         $event = Event::factory()->create(['door_price' => 0, 'presale_price' => null, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
         $this->get("/events/{$event->slug}")->assertOk()->assertSee('Door: Free')->assertDontSee('Door: $0');
+
+        // and the plain-text list
+        $this->get('/events/brief-text')->assertOk()->assertSee('Free')->assertDontSee('$0');
     }
 
     public function test_the_tweet_caption_says_free(): void
