@@ -40,6 +40,14 @@ jobs:
             set -e
 
             cd /var/www/events-tracker
+
+            # Drop the bootstrap caches before anything else: before git (the
+            # package manifests used to be tracked, and the server's --no-dev
+            # copies would block the pull) and before any artisan command boots
+            # Laravel, so a cached config referencing a removed provider can't
+            # fatal (this is what threw "HtmlServiceProvider not found").
+            rm -f bootstrap/cache/*.php
+
             git checkout main
             git remote update
             git pull
@@ -49,11 +57,6 @@ jobs:
               echo "main is at $(git rev-parse HEAD), expected ${{ github.sha }}; aborting."
               exit 1
             fi
-
-            # Drop stale bootstrap caches before any artisan command boots Laravel,
-            # so a cached config referencing a removed provider can't fatal
-            # (this is what threw "HtmlServiceProvider not found" after a deploy).
-            rm -f bootstrap/cache/*.php
 
             # Keep PHP + JS deps in sync with the committed lockfiles. The missing
             # composer install here is what caused the link_to_route "cannot
