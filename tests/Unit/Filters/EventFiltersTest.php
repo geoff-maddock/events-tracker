@@ -152,7 +152,7 @@ class EventFiltersTest extends TestCase
     {
         $type = EventType::first();
         Event::factory()->create(['event_type_id' => $type->id]);
-        Event::factory()->create(['event_type_id' => EventType::where('id', '!=', $type->id)->first()?->id ?? $type->id]);
+        Event::factory()->create(['event_type_id' => EventType::where('id', '!=', $type->id)->first()->id ?? $type->id]);
 
         $results = $this->applyFilters(['event_type' => $type->slug])->get();
 

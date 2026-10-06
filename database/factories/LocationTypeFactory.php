@@ -6,6 +6,9 @@ use App\Models\LocationType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<LocationType>
+ */
 class LocationTypeFactory extends Factory
 {
     /**

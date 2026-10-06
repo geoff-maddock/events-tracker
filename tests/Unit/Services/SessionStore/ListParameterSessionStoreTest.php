@@ -21,18 +21,21 @@ class ListParameterSessionStoreTest extends TestCase
     private function makeStore(string $base = 'events', string $prefix = 'events.upcoming'): ListParameterSessionStore
     {
         $store = new ListParameterSessionStore($this->session);
+        $store->setBaseIndex($base);
+        $store->setKeyPrefix($prefix);
 
-        return $store->setBaseIndex($base)->setKeyPrefix($prefix);
+        return $store;
     }
 
     public function test_save_then_load_roundtrips_all_parameters(): void
     {
         $store = $this->makeStore();
+        // setIndexTab() is on the session store, not the ListParameterStore interface the setters return
+        $store->setIndexTab('upcoming');
         $store->setFilters(['name' => 'foo'])
             ->setSortDirection('asc')
             ->setSortFieldName('start_at')
             ->setLimit(25)
-            ->setIndexTab('upcoming')
             ->setIsEmptyFilter(false)
             ->save();
 

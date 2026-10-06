@@ -79,7 +79,6 @@ class OembedExtractorTest extends TestCase
         $extractor = new OembedExtractor($provider);
         $results = $extractor->extractEmbedsFromUrls([], "medium");
 
-        $this->assertIsArray($results);
         $this->assertEmpty($results);
     }
 
@@ -93,8 +92,9 @@ class OembedExtractorTest extends TestCase
             'https://example.com/other'
         ];
 
-        $results = $extractor->extractEmbedsFromUrls($urls, "medium");
-        $this->assertIsArray($results);
+        $extractor->extractEmbedsFromUrls($urls, "medium");
+        // the result is typed array; what matters here is that it returns without throwing
+        $this->addToAssertionCount(1);
     }
 
     /** @test */
@@ -148,7 +148,8 @@ class OembedExtractorTest extends TestCase
             'https://example.com/other'
         ];
 
-        $results = $extractor->extractEmbedsFromUrls($urls, "medium");
-        $this->assertIsArray($results);
+        $extractor->extractEmbedsFromUrls($urls, "medium");
+        // the result is typed array; what matters here is that it returns without throwing
+        $this->addToAssertionCount(1);
     }
 }

@@ -8,6 +8,9 @@ use App\Models\ResponseType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<EventResponse>
+ */
 class EventResponseFactory extends Factory
 {
     /**

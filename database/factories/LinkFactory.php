@@ -6,6 +6,9 @@ use App\Models\Link;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Link>
+ */
 class LinkFactory extends Factory
 {
     /**

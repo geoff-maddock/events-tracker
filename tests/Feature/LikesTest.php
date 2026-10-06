@@ -30,13 +30,14 @@ class LikesTest extends TestCase
         $this->signIn();
 
         $post = Post::factory()->create();
-        $likes = $post->likes;
+        // the likes column, not the likes() relation it shares a name with
+        $likes = (int) $post->getAttribute('likes');
 
         $this->post('/posts/' . $post->id . '/like');
 
         $post->refresh();
 
-        $this->assertEquals($likes + 1, $post->likes);
+        $this->assertEquals($likes + 1, $post->getAttribute('likes'));
     }
 
     /** @test */
@@ -45,12 +46,12 @@ class LikesTest extends TestCase
         $this->signIn();
 
         $thread = Thread::factory()->create();
-        $likes = $thread->likes;
+        $likes = (int) $thread->getAttribute('likes');
 
         $this->post('/threads/' . $thread->id . '/like');
 
         $thread->refresh();
 
-        $this->assertEquals($likes + 1, $thread->likes);
+        $this->assertEquals($likes + 1, $thread->getAttribute('likes'));
     }
 }

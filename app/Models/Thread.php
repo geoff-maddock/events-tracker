@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -22,8 +21,8 @@ use Illuminate\Support\Str;
  *
  * @property string                                                        $name
  * @property int                                                           $created_by
- * @property datetime                                                      $created_at
- * @property datetime                                                      $updated_at
+ * @property \Illuminate\Support\Carbon|null                               $created_at
+ * @property \Illuminate\Support\Carbon|null                               $updated_at
  * @property int                                                           $id
  * @property int                                                           $forum_id
  * @property int|null                                                      $thread_category_id
@@ -52,8 +51,8 @@ use Illuminate\Support\Str;
  * @property \App\Models\Forum                                             $forum
  * @property mixed                                                         $entity_list
  * @property mixed                                                         $is_locked
- * @property mixed                                                         $last_post_at
- * @property mixed                                                         $last_activity_at
+ * @property \Carbon\Carbon                                                $last_post_at
+ * @property \Carbon\Carbon                                                $last_activity_at
  * @property \App\Models\Post|null                                         $lastPost
  * @property mixed                                                         $post_count
  * @property mixed                                                         $tag_list
@@ -198,7 +197,7 @@ class Thread extends Eloquent
     /**
      * Get the date of the last post.
      */
-    public function getLastPostAtAttribute(): DateTime
+    public function getLastPostAtAttribute(): Carbon
     {
         if ($this->relationLoaded('lastPost') && $this->lastPost) {
             return $this->lastPost->created_at;
@@ -221,7 +220,7 @@ class Thread extends Eloquent
      * Prefers the eager-loaded lastPost (listings load `lastPost.user`) so
      * rendering a page of threads stays a single query.
      */
-    public function getLastActivityAtAttribute(): DateTime
+    public function getLastActivityAtAttribute(): Carbon
     {
         /** @var Post|null $lastPost */
         $lastPost = $this->relationLoaded('lastPost')

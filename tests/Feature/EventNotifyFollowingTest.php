@@ -234,7 +234,7 @@ class EventNotifyFollowingTest extends TestCase
         $this->notify($event);
 
         // Reaching here at all is the assertion: pre-fix this threw.
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     /** @test */

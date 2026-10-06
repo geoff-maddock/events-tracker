@@ -48,6 +48,7 @@ class TestsDoNotReachTheOutsideWorldTest extends TestCase
     public function test_a_mailable_is_collected_in_memory_rather_than_sent(): void
     {
         $transport = Mail::mailer()->getSymfonyTransport();
+        $this->assertInstanceOf(\Illuminate\Mail\Transport\ArrayTransport::class, $transport);
         $transport->flush();
 
         // The exact mailable from the incident.

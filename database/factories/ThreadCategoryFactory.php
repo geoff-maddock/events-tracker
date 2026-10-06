@@ -5,6 +5,9 @@ namespace Database\Factories;
 use App\Models\ThreadCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<ThreadCategory>
+ */
 class ThreadCategoryFactory extends Factory
 {
     /**

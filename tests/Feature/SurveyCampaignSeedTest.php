@@ -76,7 +76,7 @@ class SurveyCampaignSeedTest extends TestCase
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
 
-        $gate = $campaign->activeQuestions()->get()->first();
+        $gate = $campaign->activeQuestions()->first();
 
         $this->assertSame('attended', $gate->key);
         $this->assertSame(SurveyQuestion::TYPE_SINGLE_CHOICE, $gate->type);

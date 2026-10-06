@@ -165,7 +165,7 @@ class EntityOwnershipTest extends TestCase
         $entity = $entity->fresh();
         $this->assertFalse($entity->isOwnedBy($creator));
         $this->assertTrue($entity->isOwnedBy($newOwner));
-        $this->assertSame($admin->id, (int) $entity->owners()->first()->pivot->granted_by);
+        $this->assertSame($admin->id, (int) $entity->owners()->first()->pivot->getAttribute('granted_by'));
         $this->assertSame($creator->id, (int) $entity->created_by);
     }
 

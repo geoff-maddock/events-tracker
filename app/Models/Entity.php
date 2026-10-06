@@ -247,6 +247,8 @@ class Entity extends Eloquent implements HasPhotos
 
     /**
      * Get all of the entities comments.
+     *
+     * @return MorphMany<Comment, $this>
      */
     public function comments(): MorphMany
     {
@@ -648,6 +650,8 @@ class Entity extends Eloquent implements HasPhotos
 
     /**
      * Get all of the entities photos.
+     *
+     * @return BelongsToMany<Photo, $this>
      */
     public function photos(): BelongsToMany
     {
@@ -755,6 +759,8 @@ class Entity extends Eloquent implements HasPhotos
      * The locations that belong to the entity.
      *
      * @phpstan-return HasMany<Location>
+     *
+     * @return HasMany<Location, $this>
      */
     public function locations(): HasMany
     {

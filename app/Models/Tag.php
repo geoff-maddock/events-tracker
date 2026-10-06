@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,7 +27,7 @@ use App\Filters\TagFilters;
  * @property string|null $description
  * @property TagType  $tagType
  * @property int|null $tag_type_id
- * @property DateTime $created_at
+ * @property \Illuminate\Support\Carbon|null $created_at
  * @property int|null $popularity_score
  */
 class Tag extends Eloquent

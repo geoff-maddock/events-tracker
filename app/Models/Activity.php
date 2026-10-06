@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -16,7 +15,7 @@ use Illuminate\Support\Str;
  *
  * @property int                                                           $object_id
  * @property string                                                        $object_table
- * @property datetime                                                      $created_at
+ * @property \Illuminate\Support\Carbon|null $created_at
  * @property int                                                           $id
  * @property int|null                                                      $user_id
  * @property string|null                                                   $object_name

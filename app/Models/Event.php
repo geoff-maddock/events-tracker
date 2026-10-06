@@ -445,6 +445,8 @@ class Event extends Model implements HasPhotos
 
     /**
      * Get all of the events comments.
+     *
+     * @return MorphMany<Comment, $this>
      */
     public function comments(): MorphMany
     {
@@ -869,6 +871,8 @@ class Event extends Model implements HasPhotos
 
     /**
      * Get all of the events photos.
+     *
+     * @return BelongsToMany<Photo, $this>
      */
     public function photos(): BelongsToMany
     {

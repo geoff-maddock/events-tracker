@@ -28,7 +28,7 @@ class NumericRouteParameterTest extends TestCase
         $unconstrained = [];
 
         /** @var Route $route */
-        foreach (app('router')->getRoutes() as $route) {
+        foreach (app('router')->getRoutes()->getRoutes() as $route) {
             $action = $route->getAction('uses');
             if (! is_string($action) || ! str_contains($action, '@')) {
                 continue;

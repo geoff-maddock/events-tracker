@@ -3,6 +3,7 @@ parameters:
   level: 5
   paths:
       - app
+      - tests
 
   ignoreErrors:
       - '#Unsafe usage of new static#'
@@ -11,4 +12,5 @@ parameters:
 
 includes:
   - ./vendor/larastan/larastan/extension.neon
+  - ./vendor/phpstan/phpstan-mockery/extension.neon
   - phpstan-baseline.neon

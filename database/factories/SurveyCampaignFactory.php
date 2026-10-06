@@ -6,6 +6,9 @@ use App\Models\SurveyCampaign;
 use App\Models\Visibility;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<SurveyCampaign>
+ */
 class SurveyCampaignFactory extends Factory
 {
     /**

@@ -7,6 +7,9 @@ use App\Models\SurveyQuestion;
 use App\Models\SurveyResponse;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<SurveyAnswer>
+ */
 class SurveyAnswerFactory extends Factory
 {
     /**

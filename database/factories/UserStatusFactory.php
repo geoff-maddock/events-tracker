@@ -6,6 +6,9 @@ use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<UserStatus>
+ */
 class UserStatusFactory extends Factory
 {
     /**

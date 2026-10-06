@@ -9,6 +9,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends Factory<SurveyInvitation>
+ */
 class SurveyInvitationFactory extends Factory
 {
     /**

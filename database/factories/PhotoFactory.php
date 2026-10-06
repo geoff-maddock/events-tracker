@@ -7,6 +7,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Photo>
+ */
 class PhotoFactory extends Factory
 {
     /**

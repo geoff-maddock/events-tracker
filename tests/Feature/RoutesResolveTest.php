@@ -30,7 +30,7 @@ class RoutesResolveTest extends TestCase
     {
         $missing = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             $uses = $route->getAction('uses');
 
             if (!is_string($uses)) {

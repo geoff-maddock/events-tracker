@@ -6,6 +6,9 @@ use App\Models\ReviewType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<ReviewType>
+ */
 class ReviewTypeFactory extends Factory
 {
     /**
