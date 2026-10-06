@@ -2,13 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Forum;
-use App\Models\Menu;
-use App\Models\Role;
 use App\Services\FeedbackPromptService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class ViewComposerServiceProvider extends ServiceProvider
 {
@@ -19,7 +15,6 @@ class ViewComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->composeNavigation();
         $this->composeFeedbackPrompt();
     }
 
@@ -51,24 +46,6 @@ class ViewComposerServiceProvider extends ServiceProvider
                 : null;
 
             $view->with('feedbackPrompt', $invitation ? $service->payload($invitation) : null);
-        });
-    }
-
-    /**
-     * Compose navigation bar.
-     */
-    private function composeNavigation(): void
-    {
-        view()->composer('partials.nav', function ($view) {
-            $view->with('roles', Cache::remember('roles', 3600, function () {
-                return Role::orderBy('name', 'ASC')->get();
-            }));
-            $view->with('hasForum', Cache::remember('hasForum', 3600, function () {
-                return Forum::latest()->count();
-            }));
-            $view->with('menus', Cache::remember('menus', 3600, function () {
-                return Menu::orderBy('name', 'ASC')->visible()->get();
-            }));
         });
     }
 }
