@@ -79,7 +79,6 @@ const postTo = function (url) {
 document.addEventListener('submit', function (e) {
     const form = e.target;
     if (!(form instanceof HTMLFormElement)) return;
-    if (form.dataset.confirmed === 'true') return;
     const submitter = e.submitter;
     const source = submitter && submitter.hasAttribute('data-confirm') ? submitter : form;
     if (!source.hasAttribute('data-confirm')) return;
@@ -95,7 +94,6 @@ document.addEventListener('submit', function (e) {
             input.value = submitter.value;
             form.appendChild(input);
         }
-        form.dataset.confirmed = 'true';
         form.submit();
     });
 }, true);

@@ -558,31 +558,6 @@ $(document).ready(function() {
 
         myDropzone.options.addPhotosForm.init();
     });
-
-    // Delete confirmation
-    $('input.delete').on('click', function(e) {
-        e.preventDefault();
-        var form = $(this).parents('form');
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You will not be able to recover this user!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Yes, delete it!",
-            preConfirm: function() {
-                return new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve()
-                    }, 2000)
-                })
-            }
-        }).then(result => {
-            if (result.value) {
-                form.submit();
-            }
-        });
-    });
 });
 </script>
 @stop

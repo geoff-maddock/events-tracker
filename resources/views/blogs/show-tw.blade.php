@@ -188,36 +188,4 @@ $(document).ready(function(){
 </script>
 	@endif
 @endauth
-<script type="text/javascript">
-document.addEventListener('DOMContentLoaded', function() {
-	const deleteButton = document.querySelector('input.delete');
-	if (deleteButton) {
-		deleteButton.addEventListener('click', function(e) {
-			e.preventDefault();
-			const form = this.closest('form');
-			Swal.fire({
-				title: "Are you sure?",
-				text: "You will not be able to recover this blog!",
-				icon: "warning",
-				showCancelButton: true,
-				confirmButtonColor: "#DD6B55",
-				confirmButtonText: "Yes, delete it!",
-				preConfirm: function() {
-					return new Promise(function(resolve) {
-						setTimeout(function() {
-							resolve()
-						}, 2000)
-					})
-				}
-			}).then(result => {
-				if (result.value) {
-					form.submit();
-				} else {
-					console.log('cancelled confirm')
-				}
-			});
-		});
-	}
-});
-</script>
 @stop

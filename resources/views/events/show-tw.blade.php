@@ -514,23 +514,6 @@ $(document).ready(function(){
 		return Promise.resolve({ value: true, isConfirmed: true });
 	};
 
-    $('button.delete').on('click', function(e){
-        e.preventDefault();
-        const form = $(this).parents('form');
-		fireAlert({
-            title: "Are you sure?",
-            text: "You will not be able to recover this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Yes, delete it!",
-        }).then(result => {
-			if (result.value || result.isConfirmed) {
-                form.submit();
-            }
-        });
-    });
-
     // Event actions dropdown toggle
     document.addEventListener('DOMContentLoaded', function() {
         const menuButton = document.getElementById('event-menu-button');
