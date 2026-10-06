@@ -320,13 +320,15 @@ class Series extends Eloquent implements HasPhotos
     {
         return $query->where(function ($query) use ($user) {
             // qualified: series lists join tables (events, event_types…) that have these columns too
-            $query->whereIn('series.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
-                ->where('series.created_by', '=', $user ? $user->id : null);
-            // if logged in, can see guarded
+            $query->where('series.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+            // signed in: their own proposals and private series, and guarded ones
+            // (never created_by = null: that compiles to IS NULL)
             if ($user) {
-                $query->orWhere('series.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
+                $query->orWhere(function ($own) use ($user) {
+                    $own->whereIn('series.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
+                        ->where('series.created_by', '=', $user->id);
+                })->orWhere('series.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
             }
-            $query->orWhere('series.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
 
             return $query;
         });

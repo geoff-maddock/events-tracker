@@ -2169,7 +2169,7 @@ class EventsController extends Controller
             ->where('start_at', '>=', $today)
             ->where('start_at', '<', $today->copy()->addDays(6))
             // same rules as the Event::starting() scope the view used, plus visible()
-            ->where(fn ($q) => $q->where('visibility_id', '=', 3)->orWhere('created_by', '=', $userId))
+            ->where(fn ($q) => $q->where('visibility_id', '=', 3)->when($userId !== null, fn ($q) => $q->orWhere('created_by', '=', $userId)))
             ->visible($this->user)
             ->with('venue')
             ->orderBy('start_at', 'ASC')

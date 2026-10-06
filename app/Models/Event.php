@@ -409,13 +409,16 @@ class Event extends Model implements HasPhotos
     public static function visibleTo(?User $user): \Closure
     {
         return function ($query) use ($user) {
-            $query->whereIn('events.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
-                ->where('events.created_by', '=', $user ? $user->id : null);
-            // if logged in, can see guarded
+            $query->where('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+            // signed in: their own proposals and private events, and guarded ones.
+            // Never compare created_by to null: `= null` compiles to IS NULL, which
+            // showed guests every private event whose creator had been deleted.
             if ($user) {
-                $query->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
+                $query->orWhere(function ($own) use ($user) {
+                    $own->whereIn('events.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
+                        ->where('events.created_by', '=', $user->id);
+                })->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
             }
-            $query->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
         };
     }
 
@@ -430,8 +433,11 @@ class Event extends Model implements HasPhotos
         return $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
             ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00')
             ->where(function ($query) {
-                return $query->where('visibility_id', '=', 3)
-                    ->orWhere('created_by', '=', Auth::user() ? Auth::user()->id : null);
+                $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+                // a guest has no id: comparing created_by to null would compile to IS NULL
+                if (Auth::id() !== null) {
+                    $query->orWhere('created_by', '=', Auth::id());
+                }
             })
             ->orderBy('start_at', 'ASC')
             ->with('visibility');

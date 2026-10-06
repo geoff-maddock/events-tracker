@@ -158,13 +158,14 @@ class Thread extends Eloquent
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
         return $query->where(function ($query) use ($user) {
-            $query->whereIn('visibility_id', [1, 2])
-                ->where('created_by', '=', $user ? $user->id : null);
-            // if logged in, can see guarded
+            $query->where('visibility_id', '=', 3);
+            // signed in: their own proposals and private threads, and guarded ones
+            // (never created_by = null: that compiles to IS NULL)
             if ($user) {
-                $query->orWhere('visibility_id', '=', 4);
+                $query->orWhere(function ($own) use ($user) {
+                    $own->whereIn('visibility_id', [1, 2])->where('created_by', '=', $user->id);
+                })->orWhere('visibility_id', '=', 4);
             }
-            $query->orWhere('visibility_id', '=', 3);
 
             return $query;
         });
