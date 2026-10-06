@@ -96,58 +96,49 @@ class LocationFilters extends QueryFilter
         }
     }
 
-    public function latitude(?float $value = null): Builder
+    // Numeric filters take the raw query-string value and ignore anything that
+    // isn't a number: a typed ?int/?float parameter threw a TypeError (a 500)
+    // on input like filters[capacity]=abc or a repeated filters[capacity][].
+    public function latitude(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('locations.latitude', '=', $value);
-        } else {
-            return $this->builder;
-        }
+        $number = filter_var($value, FILTER_VALIDATE_FLOAT);
+
+        return $number === false ? $this->builder : $this->builder->where('locations.latitude', '=', $number);
     }
 
-    public function longitude(?float $value = null): Builder
+    public function longitude(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('locations.longitude', '=', $value);
-        } else {
-            return $this->builder;
-        }
+        $number = filter_var($value, FILTER_VALIDATE_FLOAT);
+
+        return $number === false ? $this->builder : $this->builder->where('locations.longitude', '=', $number);
     }
 
-    public function locationTypeId(?int $value = null): Builder
+    public function locationTypeId(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('locations.location_type_id', '=', $value);
-        } else {
-            return $this->builder;
-        }
+        $number = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $number === false ? $this->builder : $this->builder->where('locations.location_type_id', '=', $number);
     }
 
-    public function visibilityId(?int $value = null): Builder
+    public function visibilityId(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('locations.visibility_id', '=', $value);
-        } else {
-            return $this->builder;
-        }
+        $number = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $number === false ? $this->builder : $this->builder->where('locations.visibility_id', '=', $number);
     }
 
-    public function entityId(?int $value = null): Builder
+    public function entityId(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('locations.entity_id', '=', $value);
-        } else {
-            return $this->builder;
-        }
+        $number = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $number === false ? $this->builder : $this->builder->where('locations.entity_id', '=', $number);
     }
 
-    public function capacity(?int $value = null): Builder
+    public function capacity(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('locations.capacity', '=', $value);
-        } else {
-            return $this->builder;
-        }
+        $number = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $number === false ? $this->builder : $this->builder->where('locations.capacity', '=', $number);
     }
 
     public function mapUrl(?string $value = null): Builder
