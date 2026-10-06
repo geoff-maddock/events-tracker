@@ -195,4 +195,25 @@ class LocationFiltersTest extends TestCase
 
         $this->assertGreaterThanOrEqual(1, $results->count());
     }
+
+    public function test_numeric_filters_match_numbers(): void
+    {
+        $small = $this->makeLocation(['capacity' => 50, 'latitude' => 40.44]);
+        $this->makeLocation(['capacity' => 500, 'latitude' => 41.5]);
+
+        $this->assertSame([$small->id], $this->applyFilters(['capacity' => '50'])->pluck('id')->all());
+        $this->assertSame([$small->id], $this->applyFilters(['latitude' => '40.44'])->pluck('id')->all());
+    }
+
+    public function test_numeric_filters_ignore_input_that_is_not_a_number(): void
+    {
+        $this->makeLocation(['capacity' => 50]);
+        $this->makeLocation(['capacity' => 500]);
+
+        // these used to throw a TypeError into a 500
+        foreach ([['capacity' => 'abc'], ['capacity' => ['50', '500']], ['capacity' => '1.5'], ['latitude' => 'north'],
+            ['entityId' => 'x'], ['visibilityId' => ['1', '2']]] as $filters) {
+            $this->assertCount(2, $this->applyFilters($filters)->get(), json_encode($filters));
+        }
+    }
 }
