@@ -7,6 +7,9 @@ use App\Models\EntityStatus;
 use App\Models\EntityType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Entity>
+ */
 class EntityFactory extends Factory
 {
     /**

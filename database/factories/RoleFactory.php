@@ -6,6 +6,9 @@ use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Role>
+ */
 class RoleFactory extends Factory
 {
     /**

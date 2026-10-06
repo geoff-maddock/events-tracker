@@ -55,6 +55,7 @@ class MailableBuildTest extends TestCase
      */
     private function assertBuilt(Mailable $mailable, string $view): void
     {
+        $this->assertTrue(method_exists($mailable, 'build'), $mailable::class.' has no build()');
         $mailable->build();
 
         $this->assertSame($view, $mailable->markdown, "Mailable should use the {$view} markdown view");

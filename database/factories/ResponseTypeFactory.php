@@ -6,6 +6,9 @@ use App\Models\ResponseType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<ResponseType>
+ */
 class ResponseTypeFactory extends Factory
 {
     /**

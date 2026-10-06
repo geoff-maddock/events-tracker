@@ -109,7 +109,7 @@ class ImageHandlerTest extends TestCase
 
         (new ImageHandler())->makePhoto(UploadedFile::fake()->image('flyer.jpg', 800, 600));
 
-        $this->assertCount(3, $disk->allFiles('photos'));
+        $this->assertCount(3, Storage::disk('external')->allFiles('photos'));
     }
 
     public function test_the_cover_image_can_be_generated_in_every_month(): void

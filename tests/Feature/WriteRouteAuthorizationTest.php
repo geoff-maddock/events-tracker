@@ -342,18 +342,14 @@ class WriteRouteAuthorizationTest extends TestCase
         ],
     ];
 
-    /**
-     * Owner/admin PUT, PATCH and DELETE routes where the stranger check can't
-     * show much, because the same payload has no effect even for the owner or
-     * an admin (checked when this matrix was written, #2186). Every other such
-     * route was confirmed to take effect for a privileged user, so "the
-     * stranger changed nothing" there means the authorization check held.
-     */
-    private const NOT_EXERCISED = [
-        'PATCH feedback/responses/{surveyResponse}' => 'survey responses have no text field for the marker',
-        'DELETE forums/{forum}' => 'the fixture forum has a thread, and a forum with threads is not deleted (#2236)',
-        'DELETE api/forums/{forum}' => 'same as the web route (409)',
-    ];
+    // Owner/admin PUT, PATCH and DELETE routes where the stranger check can't
+    // show much, because the same payload has no effect even for the owner or
+    // an admin (checked when this matrix was written, #2186). Every other such
+    // route was confirmed to take effect for a privileged user, so "the
+    // stranger changed nothing" there means the authorization check held.
+    //  - PATCH feedback/responses/{surveyResponse}: survey responses have no text field for the marker
+    //  - DELETE forums/{forum}: the fixture forum has a thread, and a forum with threads is not deleted (#2236)
+    //  - DELETE api/forums/{forum}: same as the web route (409)
 
     /** The field a stranger's update would change, per bound model. */
     private const MARKER_FIELD = [
@@ -429,7 +425,10 @@ class WriteRouteAuthorizationTest extends TestCase
     public function test_every_write_route_is_classified(): void
     {
         $routes = array_keys($this->writeRoutes());
-        $classified = array_merge(...array_values(self::WRITE_ROUTES));
+        $classified = [];
+        foreach (self::WRITE_ROUTES as $group) {
+            $classified = [...$classified, ...$group];
+        }
 
         $this->assertSame([], array_values(array_diff($routes, $classified)), 'Write routes missing from WRITE_ROUTES');
         $this->assertSame([], array_values(array_diff($classified, $routes)), 'WRITE_ROUTES lists routes that no longer exist');
@@ -561,8 +560,8 @@ class WriteRouteAuthorizationTest extends TestCase
     private function validPayload(string $key): array
     {
         Storage::fake('external');
-        $entityId = $this->fixtures['entity']->id;
-        $location = ['name' => 'ZZ Room', 'slug' => 'zz-room', 'city' => 'Pittsburgh', 'visibility_id' => 1, 'location_type_id' => $this->fixtures['location']->location_type_id];
+        $entityId = $this->fixtures['entity']->getKey();
+        $location = ['name' => 'ZZ Room', 'slug' => 'zz-room', 'city' => 'Pittsburgh', 'visibility_id' => 1, 'location_type_id' => $this->fixtures['location']->getAttribute('location_type_id')];
 
         return match (true) {
             str_ends_with($key, '/photos') => ['file' => UploadedFile::fake()->image('zz.jpg')],

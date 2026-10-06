@@ -6,6 +6,9 @@ use App\Models\Group;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Group>
+ */
 class GroupFactory extends Factory
 {
     /**

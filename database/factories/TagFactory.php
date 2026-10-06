@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
+/**
+ * @extends Factory<Tag>
+ */
 class TagFactory extends Factory
 {
     /**

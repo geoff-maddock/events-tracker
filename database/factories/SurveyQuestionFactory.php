@@ -6,6 +6,9 @@ use App\Models\SurveyCampaign;
 use App\Models\SurveyQuestion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<SurveyQuestion>
+ */
 class SurveyQuestionFactory extends Factory
 {
     /**

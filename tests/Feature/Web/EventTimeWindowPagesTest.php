@@ -190,7 +190,7 @@ class EventTimeWindowPagesTest extends TestCase
             $response->assertDontSee('"@type": "ItemList"', false);
             $response->assertSee('No events found for this window yet.', false);
         } else {
-            $this->assertTrue(true); // seeded data already populates this window; nothing to assert
+            $this->addToAssertionCount(1); // seeded data already populates this window; nothing to assert
         }
     }
 

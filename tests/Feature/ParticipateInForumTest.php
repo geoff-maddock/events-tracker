@@ -28,7 +28,7 @@ class ParticipateInForumTest extends TestCase
      */
     public function testExample()
     {
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     /** @test  */

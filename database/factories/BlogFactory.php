@@ -7,6 +7,9 @@ use App\Models\ContentType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Blog>
+ */
 class BlogFactory extends Factory
 {
     /**

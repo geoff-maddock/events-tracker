@@ -19,15 +19,6 @@ class PostsTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    private $post;
-
-    public function setUp():void
-    {
-        parent::setUp();
-
-        $this->post = Post::factory()->create();
-    }
-
     /** @test */
     public function it_has_an_owner()
     {
@@ -41,7 +32,7 @@ class PostsTest extends TestCase
     {
         $post = Post::factory()->create();
         $this->assertTrue($post->wasJustPublished());
-        $post->created_at = Carbon::now()->subMonth();
+        $post->created_at = \Illuminate\Support\Carbon::now()->subMonth();
         $this->assertFalse($post->wasJustPublished());
     }
 

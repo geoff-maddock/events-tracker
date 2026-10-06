@@ -7,6 +7,9 @@ use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Menu>
+ */
 class MenuFactory extends Factory
 {
     /**

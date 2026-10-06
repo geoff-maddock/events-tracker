@@ -45,7 +45,7 @@ class CspReportOnlyTest extends TestCase
 
     public function test_reports_are_logged_with_trimmed_fields(): void
     {
-        Log::spy();
+        $log = Log::spy();
 
         $this->call('POST', '/csp-report', [], [], [], ['CONTENT_TYPE' => 'application/csp-report'], json_encode([
             'csp-report' => [
@@ -55,7 +55,7 @@ class CspReportOnlyTest extends TestCase
             ],
         ]))->assertNoContent();
 
-        Log::shouldHaveReceived('warning')->once()->withArgs(function (string $message, array $context) {
+        $log->shouldHaveReceived('warning')->once()->withArgs(function (string $message, array $context) {
             return $message === 'CSP violation'
                 && $context['directive'] === 'script-src'
                 && strlen($context['blocked']) <= 303;
@@ -64,11 +64,11 @@ class CspReportOnlyTest extends TestCase
 
     public function test_junk_reports_are_accepted_but_not_logged(): void
     {
-        Log::spy();
+        $log = Log::spy();
 
         $this->call('POST', '/csp-report', [], [], [], ['CONTENT_TYPE' => 'application/json'], 'not json')->assertNoContent();
 
-        Log::shouldNotHaveReceived('warning');
+        $log->shouldNotHaveReceived('warning');
     }
 
     public function test_only_the_report_endpoint_skips_csrf(): void

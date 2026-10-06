@@ -6,6 +6,9 @@ use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Visibility>
+ */
 class VisibilityFactory extends Factory
 {
     /**

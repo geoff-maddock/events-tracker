@@ -10,6 +10,9 @@ use App\Models\Visibility;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends Factory<SurveyResponse>
+ */
 class SurveyResponseFactory extends Factory
 {
     /**

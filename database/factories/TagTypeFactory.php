@@ -7,6 +7,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @extends Factory<TagType>
+ */
 class TagTypeFactory extends Factory
 {
     use HasFactory;

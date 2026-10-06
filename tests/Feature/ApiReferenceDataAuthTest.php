@@ -57,7 +57,7 @@ class ApiReferenceDataAuthTest extends TestCase
      */
     public function test_non_admin_cannot_delete_reference_record(string $endpoint, string $modelClass): void
     {
-        /** @var \Illuminate\Database\Eloquent\Model $record */
+        /** @var \Illuminate\Database\Eloquent\Model|null $record */
         $record = $modelClass::query()->first();
         $this->assertNotNull($record, "Expected a seeded {$endpoint} record.");
 

@@ -57,7 +57,7 @@ class ListSortHardeningTest extends TestCase
         $this->assertSame('photos.created_at', $result->getSort());
         // ...and the built query executes without a bad-column SQLSTATE error.
         $result->getList()->get();
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_malformed_sort_direction_falls_back_and_query_runs(): void
@@ -69,7 +69,7 @@ class ListSortHardeningTest extends TestCase
 
         $this->assertSame('desc', $result->getSortDirection());
         $result->getList()->get();
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_null_sort_field_does_not_break_set_sort(): void
@@ -80,7 +80,7 @@ class ListSortHardeningTest extends TestCase
 
         $this->assertIsString($result->getSort());
         $result->getList()->get();
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_valid_sort_field_is_preserved(): void
@@ -89,7 +89,7 @@ class ListSortHardeningTest extends TestCase
 
         $this->assertSame('photos.name', $result->getSort());
         $result->getList()->get();
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_unknown_but_syntactically_valid_sort_field_falls_back_when_allowlisted(): void
@@ -102,7 +102,7 @@ class ListSortHardeningTest extends TestCase
 
         $this->assertSame('photos.created_at', $result->getSort());
         $result->getList()->get();
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_allowlisted_sort_field_is_preserved(): void
@@ -111,6 +111,6 @@ class ListSortHardeningTest extends TestCase
 
         $this->assertSame('photos.name', $result->getSort());
         $result->getList()->get();
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }

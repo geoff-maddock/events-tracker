@@ -8,6 +8,9 @@ use App\Models\Visibility;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Post>
+ */
 class PostFactory extends Factory
 {
     /**

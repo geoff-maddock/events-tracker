@@ -40,7 +40,8 @@
 		"brianium/paratest": "^7.8",
 		"nunomaduro/collision": "^8.0",
 		"spatie/laravel-ignition": "^2.0",
-		"fakerphp/faker": "^1.18"
+		"fakerphp/faker": "^1.18",
+		"phpstan/phpstan-mockery": "^2.0"
 	},
 	"autoload": {
 		"psr-4": {

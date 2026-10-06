@@ -47,6 +47,9 @@ use App\Filters\SeriesFilters;
  * @property string|null                                                   $ticket_link
  * @property \Illuminate\Support\Carbon|null                               $founded_at
  * @property \Illuminate\Support\Carbon|null                               $cancelled_at
+ * @property string|null                                                 $facebook_username
+ * @property string|null                                                 $instagram_username
+ * @property string|null                                                 $twitter_username
  * @property \Illuminate\Support\Carbon|null                               $soundcheck_at
  * @property \Illuminate\Support\Carbon|null                               $door_at
  * @property \Illuminate\Support\Carbon|null                               $start_at
@@ -599,6 +602,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * Get all of the series photos.
+     *
+     * @return BelongsToMany<Photo, $this>
      */
     public function photos(): BelongsToMany
     {
@@ -721,6 +726,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * The next upcoming event.
+     *
+     * @return HasOne<Event, $this>
      */
     public function upcomingEvent(): HasOne
     {

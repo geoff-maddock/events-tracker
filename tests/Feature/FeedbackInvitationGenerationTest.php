@@ -52,7 +52,7 @@ class FeedbackInvitationGenerationTest extends TestCase
      * EventFactory randomizes visibility_id and pins start_at to now(), so every
      * event used here has to set its own window and visibility explicitly.
      */
-    private function makeEvent(string $start, string $end = null, array $overrides = []): Event
+    private function makeEvent(string $start, ?string $end = null, array $overrides = []): Event
     {
         return Event::factory()->create(array_merge([
             'start_at' => $start,

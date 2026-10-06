@@ -68,6 +68,8 @@ class SurveyCampaign extends Eloquent
 
     /**
      * The questions asked by this campaign, in display order.
+     *
+     * @return HasMany<SurveyQuestion, $this>
      */
     public function questions(): HasMany
     {
@@ -76,6 +78,8 @@ class SurveyCampaign extends Eloquent
 
     /**
      * Only the questions currently being asked.
+     *
+     * @return HasMany<SurveyQuestion, $this>
      */
     public function activeQuestions(): HasMany
     {

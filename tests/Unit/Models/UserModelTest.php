@@ -80,30 +80,28 @@ class UserModelTest extends TestCase
     public function test_event_count_attribute_counts_user_events(): void
     {
         $user = User::factory()->create();
-        $count = $user->event_count;
-
-        $this->assertIsInt($count);
+        $this->assertSame(0, $user->event_count);
     }
 
     public function test_attending_count_attribute_returns_integer(): void
     {
         $user = User::factory()->create();
 
-        $this->assertIsInt($user->attending_count);
+        $this->assertSame(0, $user->attending_count);
     }
 
     public function test_count_entities_following_returns_integer(): void
     {
         $user = User::factory()->create();
 
-        $this->assertIsInt($user->countEntitiesFollowing());
+        $this->assertSame(0, $user->countEntitiesFollowing());
     }
 
     public function test_count_tags_following_returns_integer(): void
     {
         $user = User::factory()->create();
 
-        $this->assertIsInt($user->countTagsFollowing());
+        $this->assertSame(0, $user->countTagsFollowing());
     }
 
     public function test_is_active_true_when_status_is_active(): void

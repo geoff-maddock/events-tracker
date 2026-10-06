@@ -45,6 +45,7 @@ class EventCommentsAndApiPatchTest extends TestCase
         // events/{event}/comments/{comment} the arguments landed in the wrong
         // slots and every call was a 500
         $comment = $this->eventComment();
+        /** @var Event $event */
         $event = $comment->commentable;
 
         $this->put("/events/{$event->slug}/comments/{$comment->id}", ['message' => 'Edited event comment ZZ'])
@@ -60,6 +61,7 @@ class EventCommentsAndApiPatchTest extends TestCase
     public function test_another_user_cannot_edit_an_event_comment(): void
     {
         $comment = $this->eventComment();
+        /** @var Event $event */
         $event = $comment->commentable;
 
         $this->actingAs(User::factory()->create(['user_status_id' => UserStatus::ACTIVE]))
