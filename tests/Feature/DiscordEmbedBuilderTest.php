@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\DiscordTarget;
 use App\Models\Event;
+use App\Models\Entity;
 use App\Models\Tag;
 use App\Services\Calendar\ICalBuilder;
 use App\Services\EventTime;
@@ -342,35 +343,65 @@ class DiscordEmbedBuilderTest extends TestCase
         $this->assertStringNotContainsString('-# ', $this->digestDescription($event));
     }
 
+    /**
+     * A max_events roundup, built from fixed-length data so its size is the same
+     * every run (#2194: random faker names made this flaky).
+     *
+     * @return \Illuminate\Support\Collection<int, Event>
+     */
+    private function roundupEvents(int $nameLength): \Illuminate\Support\Collection
+    {
+        $venue = Entity::factory()->create(['name' => 'The Rex Theater Ballroom']);
+        $tags = Tag::factory()->count(4)->sequence(fn ($s) => ['name' => 'Roundup Tag '.$s->index])->create();
+        $events = collect();
+
+        foreach (range(1, (int) config('discord.digest.max_events', 25)) as $i) {
+            $name = substr(sprintf('Zz Roundup %02d ', $i).str_repeat('w/ Lineup Name ', 20), 0, $nameLength);
+            $event = Event::factory()->create([
+                'name' => $name, 'slug' => Str::slug($name), 'venue_id' => $venue->id,
+                'door_price' => 20, 'presale_price' => 15, 'start_at' => now()->addDays($i % 7 + 1),
+            ]);
+            $event->tags()->attach($tags->pluck('id')->all());
+            $events->push(tap($event->fresh(), fn (Event $fresh) => $fresh->short = str_repeat('Summary text ', 11)));
+        }
+
+        return $events;
+    }
+
+    private function roundupDescription(\Illuminate\Support\Collection $events): string
+    {
+        return $this->builder()->forDigest(DiscordTarget::factory()->create(), $events, now(), now()->addWeek())['embeds'][0]['description'];
+    }
+
     public function test_a_full_roundup_shortens_entries_rather_than_dropping_events(): void
     {
         // max_events worth of detail-heavy entries overruns 4096 characters.
         // Every event must still be listed — a roundup missing the back half
         // of the week is worse than one with clipped summaries.
-        $events = Event::factory()->count((int) config('discord.digest.max_events', 25))->create();
-        $tags = Tag::factory()->count(4)->create();
+        $events = $this->roundupEvents(14);
 
-        foreach ($events as $event) {
-            $event->tags()->attach($tags->pluck('id')->all());
-            $event->short = Str::random(140);
-        }
-
-        $payload = $this->builder()->forDigest(
-            DiscordTarget::factory()->create(),
-            $events->map(fn (Event $event): Event => tap($event->fresh(), function (Event $fresh) use ($event): void {
-                $fresh->short = $event->short;
-            })),
-            now(),
-            now()->addWeek(),
-        );
-
-        $description = $payload['embeds'][0]['description'];
+        $description = $this->roundupDescription($events);
 
         $this->assertLessThanOrEqual(4096, mb_strlen($description));
-
         foreach ($events as $event) {
-            $this->assertStringContainsString('/events/'.$event->slug, $description);
+            $this->assertStringContainsString('/events/'.$event->slug.')', $description);
         }
+    }
+
+    public function test_a_roundup_of_long_event_names_still_lists_every_event(): void
+    {
+        // Long lineup names repeat in the slug URL, so even bare headlines used
+        // to overrun the limit and drop the end of the week. The compact
+        // headlines shorten the name and link by id instead.
+        $events = $this->roundupEvents(120);
+
+        $description = $this->roundupDescription($events);
+
+        $this->assertLessThanOrEqual(4096, mb_strlen($description));
+        foreach ($events as $event) {
+            $this->assertStringContainsString(route('events.show', $event->id).')', $description);
+        }
+        $this->assertStringContainsString('…', $description);
     }
 
     private function digestDescription(Event $event): string

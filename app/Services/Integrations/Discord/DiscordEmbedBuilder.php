@@ -39,6 +39,13 @@ class DiscordEmbedBuilder
      */
     private const DIGEST_SUMMARY_FALLBACK = 60;
 
+    // digest headlines, longest first
+    private const HEADLINE_FULL = 0;
+
+    private const HEADLINE_COMPACT = 1;
+
+    private const HEADLINE_MINIMAL = 2;
+
     /**
      * A single-event announcement, reminder, or manual post.
      *
@@ -246,20 +253,24 @@ class DiscordEmbedBuilder
         $tags = (int) config('discord.digest.tag_limit', 4);
         $entries = [];
 
-        // [summary length, tag count], richest first; 0 drops that part of the
-        // subtext. The last level is the bare headline the digest used before
-        // the subtext existed, which comfortably fits max_events.
+        // [summary length, tag count, headline], richest first; 0 drops that part
+        // of the subtext. Then the bare headline the digest used before the
+        // subtext existed, and then compact headlines: long event names (which
+        // repeat in the slug URL) made even bare headlines overrun the limit and
+        // drop the end of the week, so shorten the name and link by id first.
         $levels = [
-            [$summary, $tags],
-            [min(self::DIGEST_SUMMARY_FALLBACK, $summary), $tags],
-            [0, $tags],
-            [0, (int) min(2, $tags)],
-            [0, 0],
+            [$summary, $tags, self::HEADLINE_FULL],
+            [min(self::DIGEST_SUMMARY_FALLBACK, $summary), $tags, self::HEADLINE_FULL],
+            [0, $tags, self::HEADLINE_FULL],
+            [0, (int) min(2, $tags), self::HEADLINE_FULL],
+            [0, 0, self::HEADLINE_FULL],
+            [0, 0, self::HEADLINE_COMPACT],
+            [0, 0, self::HEADLINE_MINIMAL],
         ];
 
-        foreach ($levels as [$summaryLength, $tagLimit]) {
+        foreach ($levels as [$summaryLength, $tagLimit, $headline]) {
             $entries = $events->map(
-                fn (Event $event): string => $this->digestEntry($event, $summaryLength, $tagLimit)
+                fn (Event $event): string => $this->digestEntry($event, $summaryLength, $tagLimit, $headline)
             )->all();
 
             $joined = implode("\n\n", $entries);
@@ -282,19 +293,22 @@ class DiscordEmbedBuilder
      * That keeps a 25-event roundup scannable: the headlines still read as a
      * list, with the detail underneath rather than competing with them.
      */
-    private function digestEntry(Event $event, int $summaryLength, int $tagLimit): string
+    private function digestEntry(Event $event, int $summaryLength, int $tagLimit, int $headline = self::HEADLINE_FULL): string
     {
-        $line = '**['.$this->escapeMarkdown($event->name).']('.route('events.show', $event).')**';
+        $line = $headline === self::HEADLINE_FULL
+            ? '**['.$this->escapeMarkdown($event->name).']('.route('events.show', $event).')**'
+            // shorter link text, and the id URL (/events/123) instead of the name-length slug
+            : '**['.$this->escapeMarkdown(Str::limit((string) $event->name, $headline === self::HEADLINE_COMPACT ? 60 : 40, '…')).']('.route('events.show', $event->id).')**';
 
         if (null !== ($startsAt = EventTime::startsAt($event))) {
             $line .= ' — <t:'.$startsAt->timestamp.':D>';
         }
 
-        if (null !== $event->venue) {
+        if ($headline !== self::HEADLINE_MINIMAL && null !== $event->venue) {
             $line .= ' · '.$this->escapeMarkdown($event->venue->name);
         }
 
-        if (null !== ($price = $this->price($event))) {
+        if ($headline === self::HEADLINE_FULL && null !== ($price = $this->price($event))) {
             $line .= ' · '.$price;
         }
 
