@@ -21,32 +21,32 @@
 
 		@can('grant_access')
 			@if (!$user->isActive)
-			<a data-method="post" href="{!! route('users.activate', ['id' => $user->id]) !!}" class="confirm">
+			<a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{!! route('users.activate', ['id' => $user->id]) !!}">
 				<i class="bi bi-check-circle card-actions" title='Activate the user'></i>
 			</a>
 			@endif
 		@endcan
 		@can('grant_access')
 			@if ($user->isActive)
-				<a data-method="post" href="{!! route('users.reminder', ['id' => $user->id]) !!}"  class="confirm">
+				<a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{!! route('users.reminder', ['id' => $user->id]) !!}">
 					<i class="bi bi-pin-fill card-actions"  title='Send reminder'></i>
 				</a>
 			@endif
 		@endcan
 		@can('impersonate_user')
-			<a data-method="post" href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate User"  class="confirm">
+			<a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{!! route('user.impersonate', ['user' => $user->id]) !!}" title="Impersonate User">
 				<i class="bi bi-person-fill card-actions"></i>
 			</a>
 		@endif
 		@can('grant_access')
 			@if ($user->isActive)
-				<a data-method="post" href="{!! route('users.weekly', ['id' => $user->id]) !!}"  class="confirm">
+				<a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{!! route('users.weekly', ['id' => $user->id]) !!}">
 					<i class="bi bi-envelope-fill card-actions" title='Send weekly update'></i>
 				</a>
 			@endif
 		@endcan
 		@can('grant_access')
-			<a href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}" class="confirm">
+			<a data-confirm="" data-confirm-button="Confirm" href="{!! route('users.showResetPassword', ['id' => $user->id]) !!}">
 				<i class="bi bi-key-fill card-actions" title='Reset user password'></i>
 			</a>
 		@endcan

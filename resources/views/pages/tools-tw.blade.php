@@ -56,12 +56,12 @@
             <h2 class="text-xl font-semibold text-destructive mb-4">
                 <i class="bi bi-exclamation-triangle mr-2"></i>Danger Zone
             </h2>
-            <form action="{{ route('users.purge') }}" method="POST">
+            <form action="{{ route('users.purge') }}" method="POST" data-confirm="Unverified users will be permanently removed. This action cannot be undone." data-confirm-button="Purge Users">
                 @csrf
                 <p class="text-muted-foreground mb-4">
                     This will permanently remove unverified users from the system.
                 </p>
-                <x-ui.button type="submit" variant="destructive" class="confirm">
+                <x-ui.button type="submit" variant="destructive">
                     <i class="bi bi-trash mr-2"></i>Purge Users
                 </x-ui.button>
             </form>
@@ -69,16 +69,3 @@
     </div>
 </div>
 @stop
-
-@section('footer')
-<script src="{{ asset('/js/facebook-event.js') }}"></script>
-<script>
-    document.querySelectorAll('.confirm').forEach(function(el) {
-        el.addEventListener('click', function(e) {
-            if (!confirm('Are you sure you want to do this? This action cannot be undone.')) {
-                e.preventDefault();
-            }
-        });
-    });
-</script>
-@endsection

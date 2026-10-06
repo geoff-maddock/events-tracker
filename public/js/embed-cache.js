@@ -52,12 +52,10 @@ var EmbedCache = (function () {
             var cachedItem = JSON.parse(cached);
 
             if (isValid(cachedItem)) {
-                console.log('EmbedCache: Loaded from cache:', resourceType + '/' + slug, '(' + endpoint + ')');
                 return cachedItem.data;
             }
 
             // Cache expired, remove it
-            console.log('EmbedCache: Cache expired, removing:', resourceType + '/' + slug, '(' + endpoint + ')');
             localStorage.removeItem(key);
             return null;
         } catch (error) {
@@ -87,7 +85,6 @@ var EmbedCache = (function () {
             };
 
             localStorage.setItem(key, JSON.stringify(cachedItem));
-            console.log('EmbedCache: Saved to cache:', resourceType + '/' + slug, '(' + endpoint + ')', 'TTL:', Math.round(ttlMs / 1000 / 60 / 60) + 'h');
         } catch (error) {
             console.warn('EmbedCache: Error setting cache:', error);
         }
@@ -166,6 +163,7 @@ var EmbedCache = (function () {
  * Loads embeds for events, series, and entities with caching support.
  * Checks cache before making API calls, and stores results in cache.
  */
+/* exported EmbedLoader */
 var EmbedLoader = (function () {
 
     /**
@@ -191,7 +189,6 @@ var EmbedLoader = (function () {
             if (!forceRefresh) {
                 var cachedEmbeds = EmbedCache.get(resourceType, slug, endpoint);
                 if (cachedEmbeds !== null) {
-                    console.log('EmbedLoader: Using cached embeds for ' + resourceType + '/' + slug);
                     onSuccess(cachedEmbeds);
                     resolve(cachedEmbeds);
                     return;
@@ -200,8 +197,6 @@ var EmbedLoader = (function () {
 
             // Build URL (use web route instead of API to avoid auth)
             var apiUrl = '/' + resourceType + '/' + slug + '/' + endpoint;
-
-            console.log('EmbedLoader: Fetching embeds from ' + apiUrl);
 
             // Fetch from API
             $.ajax({
@@ -214,9 +209,6 @@ var EmbedLoader = (function () {
                 // Only cache if there is data to cache
                 if (embedsData.length > 0) {
                     EmbedCache.set(resourceType, slug, embedsData, endpoint);
-                    console.log('EmbedLoader: Loaded and cached ' + embedsData.length + ' embeds for ' + resourceType + '/' + slug);
-                } else {
-                    console.log('EmbedLoader: Loaded 0 embeds for ' + resourceType + '/' + slug + ' (not cached)');
                 }
 
                 onSuccess(embedsData);
@@ -267,7 +259,7 @@ var EmbedLoader = (function () {
      */
     function preloadEmbeds(resources, options) {
         var promises = resources.map(function (resource) {
-            return load(resource.type, resource.slug, options).catch(function (error) {
+            return load(resource.type, resource.slug, options).catch(function () {
                 // Don't fail the entire preload if one fails
                 console.warn('EmbedLoader: Failed to preload embeds for ' + resource.type + '/' + resource.slug);
                 return [];
@@ -284,7 +276,6 @@ var EmbedLoader = (function () {
      * @param {string} slug - The slug of the resource
      */
     function invalidateCache(resourceType, slug) {
-        console.log('EmbedLoader: Invalidating cache for ' + resourceType + '/' + slug);
         EmbedCache.clearAll(resourceType, slug);
     }
 

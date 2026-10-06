@@ -6,15 +6,25 @@ function delete_form(array $routeParams, string $label = 'Delete'): string
 {
     $name = array_shift($routeParams);
     $action = route($name, $routeParams);
+    $object = Illuminate\Support\Str::singular(explode('.', $name)[0]);
 
     // Native equivalent of the old Form::open(DELETE) helper: keeps the
-    // id="deleteForm" and the submit's "delete confirm" class that the
-    // SweetAlert confirmation JS hooks onto, plus method spoofing + CSRF.
-    return '<form method="POST" action="' . e($action) . '" accept-charset="UTF-8" id="deleteForm" style="display: inline;">'
+    // id="deleteForm", plus method spoofing + CSRF. data-confirm brings up the
+    // confirmation modal (resources/assets/js/bootstrap.js).
+    return '<form method="POST" action="' . e($action) . '" accept-charset="UTF-8" id="deleteForm" style="display: inline;"'
+        . ' data-confirm="' . e(confirm_delete_message($object)) . '">'
         . '<input name="_method" type="hidden" value="DELETE">'
         . '<input name="_token" type="hidden" value="' . e(csrf_token()) . '">'
-        . '<input class="btn btn-danger delete confirm" type="submit" value="' . e($label) . '">'
+        . '<input class="btn btn-danger" type="submit" value="' . e($label) . '">'
         . '</form>';
+}
+
+/**
+ * The confirmation shown before something is deleted.
+ */
+function confirm_delete_message(string $object): string
+{
+    return 'You will not be able to recover this ' . strtolower($object) . '!';
 }
 
 /**
@@ -90,39 +100,6 @@ function link_form(string $body, mixed $path, string $type): string
 EOT;
 }
 
-function link_form_icon(
-    string $icon,
-    mixed $path,
-    string $type,
-    ?string $title = '',
-    ?string $label = '',
-    ?string $class = '',
-    ?string $confirm = 'confirm'
-): string {
-    $csrf = csrf_token();
-    $object = 'object';
-
-    if (is_object($path)) {
-        $object = get_class_name(get_class($path));
-
-        $action = '/'.str_replace('_', '-', $path->getTable());
-
-        if (in_array($type, ['PUT', 'PATCH', 'DELETE'])) {
-            $action .= '/'.$path->getKey();
-        }
-    } else {
-        $action = $path;
-    }
-
-    return <<< EOT
-    <form method="POST" action="{$action}" style="display: inline;">
-        <input type='hidden' name='_method' value='{$type}'>
-        <input type="hidden" name="_token" value="{$csrf}">
-        <button type="submit" class="{$confirm} no-button {$class}" data-type="{$object}">{$label} <span class="glyphicon {$icon}" title="{$title}"></span></button>
-    </form>
-EOT;
-}
-
 function link_form_bootstrap_icon(string $icon, mixed $path, string $type, ?string $title = '', ?string $label = '', ?string $class = '', ?string $confirm = 'confirm'): string
 {
     $csrf = csrf_token();
@@ -140,11 +117,19 @@ function link_form_bootstrap_icon(string $icon, mixed $path, string $type, ?stri
         $action = $path;
     }
 
+    // a non-empty $confirm, or a "delete" class, asks for confirmation first
+    $confirmAttributes = '';
+    if (($confirm ?? '') !== '' || preg_match('/(^|\s)delete(\s|$)/', $class ?? '') === 1) {
+        $confirmAttributes = $type === 'DELETE'
+            ? ' data-confirm="'.e(confirm_delete_message($object)).'"'
+            : ' data-confirm="" data-confirm-button="Confirm"';
+    }
+
     return <<< EOT
-    <form method="POST" action="{$action}" style="display: inline;">
+    <form method="POST" action="{$action}" style="display: inline;"{$confirmAttributes}>
         <input type='hidden' name='_method' value='{$type}'>
         <input type="hidden" name="_token" value="{$csrf}">
-        <button type="submit" class="{$confirm} no-button {$class}" data-type="{$object}">{$label} <i class="{$icon}" title="{$title}"></i></button>
+        <button type="submit" class="no-button {$class}">{$label} <i class="{$icon}" title="{$title}"></i></button>
     </form>
 EOT;
 }

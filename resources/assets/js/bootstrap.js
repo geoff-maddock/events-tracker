@@ -37,32 +37,80 @@ if (token) {
 Visibility.init('body');
 
 /**
- * Global confirm-modal handler.
+ * Global confirm-modal handler: the one place a SweetAlert2 confirmation is
+ * attached to a destructive or state-changing action (#2269).
  *
- * Any <form data-confirm="message"> or <button data-confirm="message"> will
- * show a SweetAlert2 modal in place of the native window.confirm() dialog.
- * Optional attributes: data-confirm-title, data-confirm-button.
+ * - <form data-confirm="message">: confirms before the form submits.
+ * - <button type="submit" data-confirm="message">: the same, for that button only.
+ * - <a href data-confirm="message">: confirms, then follows the link, or POSTs to
+ *   it when the link also has data-method (the state-changing links, #2166).
+ *
+ * The message may be empty for a plain "Are you sure?". Optional attributes:
+ * data-confirm-title, data-confirm-button.
  */
+const confirmAction = function (source) {
+    const message = source.getAttribute('data-confirm');
+    return Swal.fire({
+        title: source.dataset.confirmTitle || 'Are you sure?',
+        text: message || undefined,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DD6B55',
+        confirmButtonText: source.dataset.confirmButton || 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+    }).then((result) => result.isConfirmed === true);
+};
+
+const postTo = function (url) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.style.display = 'none';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = '_token';
+    const meta = document.head.querySelector('meta[name="csrf-token"]');
+    input.value = meta ? meta.content : '';
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+};
+
 document.addEventListener('submit', function (e) {
     const form = e.target;
     if (!(form instanceof HTMLFormElement)) return;
     if (form.dataset.confirmed === 'true') return;
-    const message = form.dataset.confirm;
-    if (!message) return;
+    const submitter = e.submitter;
+    const source = submitter && submitter.hasAttribute('data-confirm') ? submitter : form;
+    if (!source.hasAttribute('data-confirm')) return;
 
     e.preventDefault();
-    Swal.fire({
-        title: form.dataset.confirmTitle || 'Are you sure?',
-        text: message,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DD6B55',
-        confirmButtonText: form.dataset.confirmButton || 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-    }).then((result) => {
-        if (result.value) {
-            form.dataset.confirmed = 'true';
-            form.submit();
+    confirmAction(source).then((confirmed) => {
+        if (!confirmed) return;
+        // form.submit() drops the clicked button's name/value, so carry it over
+        if (submitter && submitter.name) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = submitter.name;
+            input.value = submitter.value;
+            form.appendChild(input);
+        }
+        form.dataset.confirmed = 'true';
+        form.submit();
+    });
+}, true);
+
+document.addEventListener('click', function (e) {
+    const link = e.target instanceof Element ? e.target.closest('a[data-confirm]') : null;
+    if (!link) return;
+
+    e.preventDefault();
+    confirmAction(link).then((confirmed) => {
+        if (!confirmed) return;
+        if (link.dataset.method) {
+            postTo(link.href);
+        } else {
+            window.location.href = link.href;
         }
     });
 }, true);

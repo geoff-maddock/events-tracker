@@ -1,11 +1,10 @@
+/* global EmbedLoader */
+/* exported App, Home */
 // App - some basic app functions for interactions
 var App = (function () {
     var init = function () {
         this.initTooltip();
-        this.setupConfirm();
-        this.setupDeleteConfirm();
         this.setupControls();
-        this.setupLoadingModal();
         this.setupAjaxAction('body');
         this.setupPostLinks();
         $('.auto-submit').autoSubmit();
@@ -16,7 +15,7 @@ var App = (function () {
 
     // load embeded audio code with caching support
     var loadEmbeds = function () {
-        $('body div.playlist-id').each(function (e) {
+        $('body div.playlist-id').each(function () {
             // Hold onto the element itself rather than looking it back up by id:
             // a page can carry more than one placeholder with the same id (e.g. an
             // entity page whose event card and Audio section both key off the same
@@ -72,110 +71,6 @@ var App = (function () {
         }
     };
 
-    var setupDeleteConfirm = function () {
-        $('button.delete').on('click', function (e) {
-            var form = $(this).parents('form');
-            var type = $(this).data('type');
-            e.preventDefault();
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You will not be able to recover this " + type + "!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                preConfirm: function () {
-                    return new Promise(function (resolve) {
-                        setTimeout(function () {
-                            resolve()
-                        }, 2000)
-                    })
-                }
-            }).then(result => {
-                if (result.value) {
-                    // handle Confirm button click
-                    // result.value will contain `true` or the input value
-                    form.submit();
-                } else {
-                    // handle dismissals
-                    // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                }
-            });
-        });
-    };
-
-    var setupConfirm = function () {
-        // confirm clicking on links
-        $('a.confirm').on('click', function (e) {
-            var link = $(this).attr('href');
-            var method = $(this).data('method');
-            e.preventDefault();
-            var form = null;
-            var type = $(this).data('type');
-            Swal.fire({
-                title: "Are you sure?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Confirm",
-                preConfirm: function () {
-                    return new Promise(function (resolve) {
-                        setTimeout(function () {
-                            resolve()
-                        }, 1000)
-                    })
-                }
-            }).then(result => {
-                if (form !== null) {
-                    // form is not null, so submit
-                    form.submit();
-                } else if (result.value) {
-                    // handle Confirm button click; state-changing links are POSTed (#2166)
-                    if (method) {
-                        postTo(link);
-                    } else {
-                        window.location.href = link;
-                    }
-                } else {
-                    // handle dismissals
-                    // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                }
-            });
-        });
-        // confirm clicking on buttons
-        $('button.confirm').on('click', function (e) {
-            var link = $(this).attr('href');
-            e.preventDefault();
-            var form = $(this).parents('form');
-            var type = $(this).data('type');
-            Swal.fire({
-                title: "Are you sure?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Confirm",
-                preConfirm: function () {
-                    return new Promise(function (resolve) {
-                        setTimeout(function () {
-                            resolve()
-                        }, 1000)
-                    })
-                }
-            }).then(result => {
-                if (form !== null) {
-                    // form is not null, so submit
-                    form.submit();
-                } else if (result.value) {
-                    // handle Confirm button click
-                    window.location.href = link;
-                } else {
-                    // handle dismissals
-                    // result.dismiss can be 'cancel', 'overlay', 'esc' or 'timer'
-                }
-            });
-        });
-    };
-
     var select2Loading = null;
 
     var loadSelect2 = function () {
@@ -202,7 +97,7 @@ var App = (function () {
 
     var setupControls = function (target) {
         if (typeof target === 'undefined' || !target) {
-            var target = 'body';
+            target = 'body';
         }
 
         // select2; the layout only includes it on pages that declare select2.include,
@@ -272,32 +167,14 @@ var App = (function () {
 
     // <a href="..." data-method="post"> links (follow, attend, like, lock, admin user
     // actions) keep their markup but submit as POST, since those routes change state (#2166).
-    // .confirm and .ajax-action links have their own handlers above.
+    // [data-confirm] links are handled by the confirm modal in bootstrap.js, .ajax-action links above.
     var setupPostLinks = function () {
         $(document).on('click', 'a[data-method]', function (e) {
-            if ($(this).is('.confirm, .ajax-action')) {
+            if ($(this).is('[data-confirm], .ajax-action')) {
                 return;
             }
             e.preventDefault();
             postTo($(this).attr('href'));
-        });
-    };
-
-    let setupLoadingModal = function () {
-        $('#content').on('click', '.loading-modal', function (e) {
-            e.preventDefault();
-            var href = $(this).attr('href');
-            var msg = $(this).data('loading-modal');
-            Framework.showLoadingModal(msg);
-            window.location.href = href;
-        });
-    };
-
-    let showLoadingModal = function (message) {
-        $('#loading-modal .modal-body p').html('<div class="modal-loading"><div class="modal-loading-spinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div><div class="modal-loading-message">' + message + '</div></div>');
-        $('#loading-modal').modal({
-            backdrop: 'static',
-            keyboard: 'false'
         });
     };
 
@@ -322,14 +199,10 @@ var App = (function () {
     return {
         init: init,
         initTooltip: initTooltip,
-        setupConfirm: setupConfirm,
-        setupDeleteConfirm: setupDeleteConfirm,
         setupControls: setupControls,
         setupAjaxAction: setupAjaxAction,
         setupPostLinks: setupPostLinks,
         postTo: postTo,
-        setupLoadingModal: setupLoadingModal,
-        showLoadingModal: showLoadingModal,
         setupNameToSlug: setupNameToSlug,
         loadEmbeds: loadEmbeds,
     };
@@ -343,7 +216,7 @@ var Home = (function () {
         this.setupAddEvents();
         this.setupLoadScroll();
 
-        window.addEventListener('popstate', function (event) {
+        window.addEventListener('popstate', function () {
             // The popstate event is fired each time when the current history entry changes.
 
             var r = true;
@@ -365,7 +238,7 @@ var Home = (function () {
 
     // check the day sections and load via ajax
     var loadDays = function () {
-        $('body section.day').each(function (e) {
+        $('body section.day').each(function () {
             var url = $(this).attr('href');
             var num = $(this).attr('data-num');
             getDayEvents(url, num);
@@ -403,7 +276,7 @@ var Home = (function () {
         var scrollTimeout;
         var throttle = 300;
 
-        $(window).on('scroll', function (e) {
+        $(window).on('scroll', function () {
             if (!scrollTimeout) {
                 if ($(window).scrollTop() == $(document).height() - $(window).height()) {
 
