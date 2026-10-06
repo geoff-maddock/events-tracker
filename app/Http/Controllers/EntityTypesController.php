@@ -245,7 +245,7 @@ class EntityTypesController extends Controller
      */
     public function show(EntityType $entityType): View
     {
-        return view('entityTypes.show', compact('entityType'));
+        return view('entityTypes.show-tw', compact('entityType'));
     }
 
     /**

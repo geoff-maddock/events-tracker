@@ -2,7 +2,7 @@
 . @include('photos.slug', ['photo' => $photo])
 @endif 
 @if (isset($tag))
-. {!! link_to_route('tags.show', ucfirst($tag->name), [$tag->slug], ['class' => 'item-title']) !!}
+. <a href="{{ route('tags.show', [$tag->slug]) }}" class="item-title">{{ ucfirst($tag->name) }}</a>
     @auth
         @if ($follow = $tag->followedBy($user))
         <a data-method="post" href="{!! route('tags.unfollow', ['id' => $tag->id]) !!}" title="You are following this tag.  Click to unfollow">
@@ -14,7 +14,7 @@
     @endauth
 @endif
 @if (isset($related))
-. {!! link_to_route('entities.show', ucfirst($related->name), [$related->name], ['class' => 'item-title']) !!}
+. <a href="{{ route('entities.show', [$related->name]) }}" class="item-title">{{ ucfirst($related->name) }}</a>
     @if ($signedIn)
     @if ($follow = $related->followedBy($user))
     <a data-method="post" href="{!! route('entities.unfollow', ['id' => $related->id]) !!}"  title="Click to unfollow">

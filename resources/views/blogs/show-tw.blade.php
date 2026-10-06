@@ -107,7 +107,11 @@
 			<!-- Delete Form -->
 			@can('edit_blog')
 				<div class="mt-6 pt-6 border-t border-border">
-					{!! delete_form(['blogs.destroy', $blog->slug]) !!}
+					<form method="POST" action="{{ route('blogs.destroy', $blog->slug) }}" id="deleteForm" style="display: inline;" data-confirm="You will not be able to recover this blog!">
+						@csrf
+						@method('DELETE')
+						<input class="btn btn-danger" type="submit" value="Delete">
+					</form>
 				</div>
 			@endcan
 		</div>

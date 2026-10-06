@@ -4,20 +4,20 @@
         <!-- Past Controls -->
         <div class="flex gap-2">
             @if ($hasPrevWindow ?? true)
-            {!! link_to_route('events.upcoming', '< Past Week', ['date' => $prev_day_window->format('Ymd')], ['class' => 'px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap']) !!}
+            <a href="{{ route('events.upcoming', ['date' => $prev_day_window->format('Ymd')]) }}" class="px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap">&lt; Past Week</a>
             @endif
             @if ($hasPrev ?? true)
-            {!! link_to_route('events.upcoming', '< Past Day', ['date' => $prev_day->format('Ymd')], ['class' => 'px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap']) !!}
+            <a href="{{ route('events.upcoming', ['date' => $prev_day->format('Ymd')]) }}" class="px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap">&lt; Past Day</a>
             @endif
         </div>
 
         <!-- Future Controls -->
         <div class="flex gap-2">
             @if ($hasNext ?? true)
-            {!! link_to_route('events.upcoming', 'Future Day >', ['date' => $next_day->format('Ymd')], ['class' => 'px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap']) !!}
+            <a href="{{ route('events.upcoming', ['date' => $next_day->format('Ymd')]) }}" class="px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap">Future Day &gt;</a>
             @endif
             @if ($hasNextWindow ?? true)
-            {!! link_to_route('events.upcoming', 'Future Week >', ['date' => $next_day_window->format('Ymd')], ['class' => 'px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap']) !!}
+            <a href="{{ route('events.upcoming', ['date' => $next_day_window->format('Ymd')]) }}" class="px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap">Future Week &gt;</a>
             @endif
         </div>
     </div>
@@ -35,7 +35,7 @@
     <!-- Next Events Button -->
     @if ($hasNextWindow ?? true)
     <div class="flex justify-center" id="next-events">
-        {!! link_to_route('events.add', 'Load Next Events', ['date' => $next_day_window->format('Ymd')], ['id' => 'add-event', 'class' => 'px-6 py-3 bg-accent text-foreground border-2 border-primary font-semibold rounded-lg hover:bg-accent/80 transition-colors shadow-lg next-events whitespace-nowrap']) !!}
+        <a href="{{ route('events.add', ['date' => $next_day_window->format('Ymd')]) }}" id="add-event" class="px-6 py-3 bg-accent text-foreground border-2 border-primary font-semibold rounded-lg hover:bg-accent/80 transition-colors shadow-lg next-events whitespace-nowrap">Load Next Events</a>
     </div>
     @endif
 
