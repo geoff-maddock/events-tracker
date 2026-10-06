@@ -26,6 +26,20 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
+        // These route parameters are always numeric ids, and the actions type
+        // them int. Without a pattern a non-numeric value (a scanner's
+        // "8715 AND ...") reached the int parameter and threw a TypeError, a
+        // 500; now it doesn't match the route, a 404 (EVENTREPO-YR). Set here,
+        // before the route files load, so every route using these names gets it.
+        Route::patterns([
+            'id' => '[0-9]+',
+            'contactId' => '[0-9]+',
+            'linkId' => '[0-9]+',
+            'locationId' => '[0-9]+',
+            'threadId' => '[0-9]+',
+            'age' => '[0-9]+',
+        ]);
+
         parent::boot();
     }
 
