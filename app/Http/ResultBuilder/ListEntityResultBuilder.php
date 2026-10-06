@@ -6,6 +6,13 @@ use App\Filters\QueryFilter;
 use App\Http\Requests\ListQueryParameters;
 use App\Http\Response\ResultSet\ListResultSet;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Schema;
+use ReflectionMethod;
+use ReflectionNamedType;
 
 /**
  * Class ListEntityResultBuilder.
@@ -31,6 +38,12 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     private array $multiSort;
 
     private array $allowedSortFields = [];
+
+    /** @var array<string, string> friendly sort names => the field they sort by */
+    private array $sortAliases = [];
+
+    /** @var array<string, array<int, string>> column listings, cached per table for the request */
+    private static array $tableColumns = [];
 
     private ?string $appliedSortField;
 
@@ -99,6 +112,19 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     public function setAllowedSortFields(array $allowedSortFields): ListEntityResultBuilder
     {
         $this->allowedSortFields = $allowedSortFields;
+
+        return $this;
+    }
+
+    /**
+     * Friendly sort names a list accepts, mapped to the field they sort by,
+     * e.g. ['popularity' => 'popularity_score'].
+     *
+     * @param array<string, string> $sortAliases
+     */
+    public function setSortAliases(array $sortAliases): ListEntityResultBuilder
+    {
+        $this->sortAliases = $sortAliases;
 
         return $this;
     }
@@ -176,6 +202,10 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $this->appliedSortField = $this->listQueryParameters->getSortFieldName();
         $this->appliedSortDirection = $this->listQueryParameters->getSortDirection();
 
+        if (is_string($this->appliedSortField) && isset($this->sortAliases[$this->appliedSortField])) {
+            $this->appliedSortField = $this->sortAliases[$this->appliedSortField];
+        }
+
         // Set the default sort if no sort is provided from listQueryParameters
         if (is_null($this->appliedSortDirection) && is_null($this->appliedSortField) && 1 === count($this->defaultSort)) {
             $this->appliedSortField = array_keys($this->defaultSort)[0];
@@ -197,9 +227,17 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         }
 
         // If sorting by a relationship count column (e.g. follows_count), add withCount
-        if (str_ends_with($this->appliedSortField, '_count')) {
-            $relationship = str_replace('_count', '', $this->appliedSortField);
-            $this->queryBuilder->withCount($relationship);
+        // A relation count sort (e.g. follows_count) needs its withCount, unless
+        // the query already selects that count. Only a declared relation gets
+        // one: withCount() calls the named method.
+        if (str_ends_with($this->appliedSortField, '_count')
+            && !str_contains($this->appliedSortField, '.')
+            && !in_array($this->appliedSortField, $this->selectedAliases(), true)) {
+            $relationship = substr($this->appliedSortField, 0, -strlen('_count'));
+
+            if ($this->isRelation($this->queryBuilder->getModel(), $relationship)) {
+                $this->queryBuilder->withCount($relationship);
+            }
         }
 
         $this->queryBuilder->orderBy($this->appliedSortField, $this->appliedSortDirection);
@@ -217,13 +255,120 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         }
 
         // When an allowlist is configured, the field must be one of the columns
-        // the caller actually exposes for sorting; otherwise a valid-looking but
-        // non-existent column (e.g. a stale session sort) would reach orderBy().
+        // the caller actually exposes for sorting.
         if (!empty($this->allowedSortFields)) {
             return in_array($field, $this->allowedSortFields, true);
         }
 
-        return true;
+        // Otherwise it must be something this query can actually order by, or a
+        // valid-looking but unknown name (a scanner probe, a stale session sort,
+        // "popularity" for "popularity_score") reaches orderBy() and 500s.
+        return $this->isKnownSortField($field);
+    }
+
+    /**
+     * A non-hidden column of the model's table or of a table the query joins, a
+     * computed column the query selects, or "<relation>_count" for a relation
+     * the model declares (addSort() adds the withCount).
+     */
+    private function isKnownSortField(string $field): bool
+    {
+        $model = $this->queryBuilder->getModel();
+
+        if (!str_contains($field, '.')) {
+            if (in_array($field, $this->selectedAliases(), true)) {
+                return true;
+            }
+
+            if (str_ends_with($field, '_count') && $this->isRelation($model, substr($field, 0, -strlen('_count')))) {
+                return true;
+            }
+
+            return $this->isVisibleColumn($model, $model->getTable(), $field);
+        }
+
+        [$table, $column] = explode('.', $field, 2);
+
+        if ($table === $model->getTable()) {
+            return $this->isVisibleColumn($model, $table, $column);
+        }
+
+        return in_array($table, $this->joinedTables(), true) && $this->hasColumn($table, $column);
+    }
+
+    private function isVisibleColumn(Model $model, string $table, string $column): bool
+    {
+        // never order by what the model hides (password, tokens, ...): the order leaks it
+        return !in_array($column, $model->getHidden(), true) && $this->hasColumn($table, $column);
+    }
+
+    private function hasColumn(string $table, string $column): bool
+    {
+        $connection = $this->queryBuilder->getModel()->getConnectionName();
+        $key = ($connection ?? 'default').':'.$table;
+
+        if (!isset(self::$tableColumns[$key])) {
+            self::$tableColumns[$key] = Schema::connection($connection)->getColumnListing($table);
+        }
+
+        return in_array($column, self::$tableColumns[$key], true);
+    }
+
+    /**
+     * Whether the model declares $name as a relation, judged by the method's
+     * declared return type: the method is never called, since the name comes
+     * from the request.
+     */
+    private function isRelation(Model $model, string $name): bool
+    {
+        if ($name === '' || !method_exists($model, $name)) {
+            return false;
+        }
+
+        $type = (new ReflectionMethod($model, $name))->getReturnType();
+
+        return $type instanceof ReflectionNamedType
+            && !$type->isBuiltin()
+            && is_a($type->getName(), Relation::class, true);
+    }
+
+    /**
+     * Plain tables the query joins (not subqueries, which have no schema to check).
+     *
+     * @return array<int, string>
+     */
+    private function joinedTables(): array
+    {
+        $tables = [];
+
+        foreach ($this->queryBuilder->getQuery()->joins ?? [] as $join) {
+            if ($join instanceof JoinClause && is_string($join->table) && preg_match('/^\w+$/', $join->table) === 1) {
+                $tables[] = $join->table;
+            }
+        }
+
+        return $tables;
+    }
+
+    /**
+     * Names the query selects "as" something, e.g. popularity_score or follows_count.
+     *
+     * @return array<int, string>
+     */
+    private function selectedAliases(): array
+    {
+        $aliases = [];
+        $grammar = $this->queryBuilder->getQuery()->getGrammar();
+
+        foreach ($this->queryBuilder->getQuery()->columns ?? [] as $column) {
+            $sql = $column instanceof Expression ? (string) $column->getValue($grammar) : (is_string($column) ? $column : '');
+
+            if (preg_match('/\bas\s+`?(\w+)`?\s*$/i', $sql, $match) === 1) {
+                $aliases[] = $match[1];
+            }
+        }
+
+        return $aliases;
     }
 
     public function setMultiSort(array $multiSort): void
