@@ -8,7 +8,7 @@ class TagFilters extends QueryFilter
 {
     public function id(?string $value = null): Builder
     {
-        $values = is_array($value) ? $value : array_filter(explode(',', (string) $value));
+        $values = array_filter(explode(',', (string) $value));
 
         if (count($values) > 1) {
             return $this->builder->whereIn('tags.id', $values);

@@ -34,8 +34,8 @@ use App\Filters\SeriesFilters;
  * @property int|null                                                      $occurrence_week_id
  * @property int|null                                                      $occurrence_day_id
  * @property int                                                           $hold_date
- * @property \Illuminate\Support\Carbon                                    $created_at
- * @property \Illuminate\Support\Carbon                                    $updated_at
+ * @property \Illuminate\Support\Carbon|null                               $created_at
+ * @property \Illuminate\Support\Carbon|null                               $updated_at
  * @property int                                                           $is_benefit
  * @property int|null                                                      $promoter_id
  * @property int|null                                                      $venue_id
@@ -605,6 +605,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * An event has one promoter.
+     *
+     * @return HasOne<Entity, $this>
      */
     public function promoter(): HasOne
     {
@@ -613,6 +615,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * An event has one venue.
+     *
+     * @return HasOne<Entity, $this>
      */
     public function venue(): HasOne
     {
@@ -707,16 +711,10 @@ class Series extends Eloquent implements HasPhotos
             return $this->upcomingEvent;
         }
 
-        $event = null;
-
-        if (null == $this->cancelled_at) {
-            $event = Event::where('series_id', '=', $this->id)
-                    ->where('start_at', '>=', Carbon::now())
-                    ->orderBy('start_at', 'asc')
-                    ->first();
-        }
-
-        return $event;
+        return Event::where('series_id', '=', $this->id)
+                ->where('start_at', '>=', Carbon::now())
+                ->orderBy('start_at', 'asc')
+                ->first();
     }
 
     /**
@@ -772,6 +770,8 @@ class Series extends Eloquent implements HasPhotos
      * The most recent instance that has already happened. Read by
      * App\Services\SeriesSchema when a dormant series has no upcoming
      * instance to date its EventSeries node from.
+     *
+     * @return HasOne<Event, $this>
      */
     public function latestEvent(): HasOne
     {
@@ -1034,6 +1034,8 @@ class Series extends Eloquent implements HasPhotos
     /**
      * Returns the users that follow the series.
      *
+     *
+     * @return Collection<int, User>
      **/
     public function followers(): Collection
     {

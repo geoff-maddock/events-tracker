@@ -13,7 +13,7 @@ class RolePatchRequest extends Request
 
     public function rules(): array
     {
-        $roleId = $this->route('role')?->id ?? null;
+        $roleId = $this->route('role')->id ?? null;
 
         return [
             'name' => ['sometimes', 'required', 'min:3', 'max:255'],

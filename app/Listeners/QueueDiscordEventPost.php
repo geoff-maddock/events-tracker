@@ -7,7 +7,6 @@ use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
 use App\Jobs\Discord\PostEventToDiscord;
 use App\Models\DiscordPost;
-use App\Models\Event;
 
 /**
  * Queues the Discord announcement for a new event (issue #2058).
@@ -31,7 +30,7 @@ class QueueDiscordEventPost
 
         $event = $domainEvent->event;
 
-        if (! $event instanceof Event || null === $event->getKey()) {
+        if (null === $event->getKey()) {
             return;
         }
 

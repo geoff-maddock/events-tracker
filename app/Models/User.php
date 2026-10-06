@@ -311,6 +311,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * A user can have many event responses.
+     *
+     * @return HasMany<EventResponse, $this>
      */
     public function eventResponses(): HasMany
     {
@@ -336,6 +338,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Feedback survey responses this user has submitted.
+     *
+     * @return HasMany<SurveyResponse, $this>
      */
     public function surveyResponses(): HasMany
     {
@@ -448,6 +452,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a list of events the user is attending in the future.
+     *
+     * @return Collection<int, Event>
      */
     public function getAttendingFuture(): Collection
     {
@@ -465,6 +471,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return a list of events the user is attending in the future.
+     *
+     * @return Collection<int, Event>
      */
     public function getAttendingToday(): Collection
     {
@@ -634,6 +642,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return the tags the user is following.
+     *
+     * @return BelongsToMany<Tag, $this>
      */
     public function followedTags(): BelongsToMany
     {
@@ -771,6 +781,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return the entities the user is following.
+     *
+     * @return BelongsToMany<Entity, $this>
      */
     public function followedEntities(): BelongsToMany
     {
@@ -781,6 +793,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return the series the user is following.
+     *
+     * @return BelongsToMany<Series, $this>
      */
     public function followedSeries(): BelongsToMany
     {
@@ -791,6 +805,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
 
     /**
      * Return the threads the user is following.
+     *
+     * @return BelongsToMany<Thread, $this>
      */
     public function followedThreads(): BelongsToMany
     {
@@ -802,7 +818,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     /**
      * Get the events related to entities or tags that the user is following.
      *
-     * @return Collection 
+     * @return Collection<int, Event>
      */
     public function followedEvents(): Collection
     {

@@ -78,7 +78,7 @@ class SurveyAnswer extends Eloquent
         }
 
         if ($this->value_option !== null) {
-            return $this->question?->labelForOption($this->value_option) ?? $this->value_option;
+            return $this->question->labelForOption($this->value_option);
         }
 
         return (string) ($this->value_text ?? '');

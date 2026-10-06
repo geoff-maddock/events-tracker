@@ -103,7 +103,7 @@ class FeedbackController extends Controller
 
         // Defense in depth: opting out already dismisses pending invitations,
         // so this should be unreachable — but the submit path must enforce it.
-        abort_if((int) ($user->profile?->setting_feedback_requests ?? 0) !== 1, 403);
+        abort_if((int) ($user->profile->setting_feedback_requests ?? 0) !== 1, 403);
 
         $invitation->loadMissing('campaign.questions');
         $campaign = $invitation->campaign;

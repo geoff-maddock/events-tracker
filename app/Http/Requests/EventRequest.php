@@ -37,7 +37,7 @@ class EventRequest extends Request
      */
     public function rules()
     {
-        $eventSlug = $this->route('event')?->id ?? null;
+        $eventSlug = $this->route('event')->id ?? null;
 
         return [
             'name' => 'required|min:3|max:255',

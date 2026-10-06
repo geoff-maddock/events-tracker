@@ -189,6 +189,8 @@ class Tag extends Eloquent
     /**
      * Returns the users that follow the tag.
      *
+     *
+     * @return Collection<int, User>
      **/
     public function followers(): Collection
     {

@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string                                                           $type
  * @property string                                                           $prompt
  * @property string|null                                                      $help
- * @property array<int, array{value: string, label: string}>|null             $options
+ * @property array<int, mixed>|null                                            $options (decoded JSON, entries normally array{value: string, label: string})
  * @property int|null                                                         $min_value
  * @property int|null                                                         $max_value
  * @property bool                                                             $is_required

@@ -30,7 +30,7 @@ class EventPatchRequest extends Request
      */
     public function rules(): array
     {
-        $eventId = $this->route('event')?->id ?? null;
+        $eventId = $this->route('event')->id ?? null;
 
         return [
             'name' => ['sometimes', 'required', 'min:3', 'max:255'],

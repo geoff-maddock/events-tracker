@@ -28,6 +28,8 @@ class EventResponse extends Eloquent
 
     /**
      * Get the event that the response belongs to.
+     *
+     * @return BelongsTo<Event, $this>
      */
     public function event(): BelongsTo
     {
@@ -44,6 +46,8 @@ class EventResponse extends Eloquent
 
     /**
      * Get the response type that the response belongs to.
+     *
+     * @return BelongsTo<ResponseType, $this>
      */
     public function responseType(): BelongsTo
     {

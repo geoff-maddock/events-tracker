@@ -67,7 +67,7 @@ class RssFeed
         ->contentEncoded('<div>'.$event->start_at->format('l F jS Y').'<br>'.$event->description.'</div>')
         ->url(route('events.show', $event->id))
         ->pubDate($event->created_at->timestamp)
-        ->guid($event->id, true)
+        ->guid((string) $event->id, true)
         ->category('')
         ->appendTo($channel);
         }

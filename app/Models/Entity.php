@@ -34,8 +34,8 @@ use Storage;
  * @property int                                                             $created_by
  * @property int|null                                                        $updated_by
  * @property \Illuminate\Support\Carbon                                      $started_at
- * @property \Illuminate\Support\Carbon                                      $created_at
- * @property \Illuminate\Support\Carbon                                      $updated_at
+ * @property \Illuminate\Support\Carbon|null                                 $created_at
+ * @property \Illuminate\Support\Carbon|null                                 $updated_at
  * @property string|null                                                     $facebook_username
  * @property string|null                                                     $twitter_username
  * @property string|null                                                     $instagram_username
@@ -330,6 +330,8 @@ class Entity extends Eloquent implements HasPhotos
     /**
      * The users who control this entity. Kept separate from created_by so
      * ownership can be transferred (#2147).
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function owners(): BelongsToMany
     {

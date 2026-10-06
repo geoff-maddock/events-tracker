@@ -23,7 +23,7 @@ class SeriesPatchRequest extends Request
      */
     public function rules(): array
     {
-        $seriesId = $this->route('series')?->id ?? null;
+        $seriesId = $this->route('series')->id ?? null;
 
         return [
             'name' => ['sometimes', 'required', 'min:3', 'max:255'],

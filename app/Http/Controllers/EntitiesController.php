@@ -647,7 +647,7 @@ class EntitiesController extends Controller
     public function showByRoleAndSlug(string $slug, string $role, Request $request, EntityStats $stats)
     {
         // Get entity by slug and verify it has the specified role
-        /** @var Entity $entity */
+        /** @var Entity|null $entity */
         $entity = Entity::getBySlug(strtolower($slug))
             ->whereHas('roles', function ($q) use ($role) {
                 $q->where('slug', '=', strtolower($role));
