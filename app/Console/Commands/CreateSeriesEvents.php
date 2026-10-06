@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Activity;
 use App\Models\Event;
 use App\Models\Series;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,8 @@ class CreateSeriesEvents extends Command
      *
      * @var string
      */
-    protected $signature = 'series:create-events';
+    protected $signature = 'series:create-events
+                            {--dry-run : List the events that would be created without creating them}';
 
     /**
      * The console command description.
@@ -29,10 +31,13 @@ class CreateSeriesEvents extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * Not scheduled: generation is off by choice and run by hand (#2112).
+     * Start with --dry-run.
      */
-    public function handle()
+    public function handle(): int
     {
+        $dryRun = (bool) $this->option('dry-run');
+
         $this->info('Starting series event creation...');
 
         // Get all active series (not cancelled)
@@ -48,6 +53,7 @@ class CreateSeriesEvents extends Command
 
         $created = 0;
         $skipped = 0;
+        $failed = 0;
 
         foreach ($series as $s) {
             try {
@@ -67,12 +73,39 @@ class CreateSeriesEvents extends Command
                     continue;
                 }
 
+                $slug = $s->slug . '-' . $nextDate->format('Y-m-d');
+
+                // events.slug isn't unique, and URLs resolve to the first match: an
+                // event already using this slug is almost certainly this night,
+                // entered by hand without the series link, so don't add a twin
+                if (Event::where('slug', $slug)->exists()) {
+                    $this->warn("Series '{$s->name}' (ID: {$s->id}): an event with slug '{$slug}' already exists");
+                    $skipped++;
+                    continue;
+                }
+
+                // a deleted creator leaves series.created_by null, but events need an
+                // owner: the admin, as when a deleted user's events are reassigned
+                $ownerId = $s->created_by ?? User::adminOwnerId();
+
+                if (null === $ownerId) {
+                    $this->warn("Series '{$s->name}' (ID: {$s->id}) has no creator and no admin is configured (app.superuser)");
+                    $skipped++;
+                    continue;
+                }
+
+                if ($dryRun) {
+                    $this->line("Would create '{$s->name}' on {$nextDate->format('Y-m-d H:i')} (slug {$slug}) for series ID {$s->id}");
+                    $created++;
+                    continue;
+                }
+
                 // Create the event from the series template
                 $endDate = $nextDate->copy()->addHours($s->length ?? 0);
 
                 $event = Event::create([
                     'name' => $s->name,
-                    'slug' => $s->slug . '-' . $nextDate->format('Y-m-d'),
+                    'slug' => $slug,
                     'short' => $s->short,
                     'description' => $s->description,
                     'venue_id' => $s->venue_id,
@@ -90,8 +123,8 @@ class CreateSeriesEvents extends Command
                     'primary_link' => $s->primary_link,
                     'ticket_link' => $s->ticket_link,
                     'is_benefit' => $s->is_benefit,
-                    'created_by' => $s->created_by,
-                    'updated_by' => $s->created_by,
+                    'created_by' => $ownerId,
+                    'updated_by' => $ownerId,
                 ]);
 
                 // Sync entities
@@ -124,13 +157,20 @@ class CreateSeriesEvents extends Command
             } catch (\Exception $e) {
                 $this->error("Failed to create event for series '{$s->name}' (ID: {$s->id}): " . $e->getMessage());
                 Log::error("Failed to create event for series '{$s->name}' (ID: {$s->id}): " . $e->getMessage());
-                $skipped++;
+                $failed++;
             }
         }
 
-        $this->info("Series event creation complete. Created: {$created}, Skipped: {$skipped}");
-        Log::info("Series event creation complete. Created: {$created}, Skipped: {$skipped}");
+        if ($dryRun) {
+            $this->info("Dry run: would create {$created}, skip {$skipped}. Nothing was written.");
 
-        return 0;
+            return self::SUCCESS;
+        }
+
+        $this->info("Series event creation complete. Created: {$created}, Skipped: {$skipped}, Failed: {$failed}");
+        Log::info("Series event creation complete. Created: {$created}, Skipped: {$skipped}, Failed: {$failed}");
+
+        // a failed series is worth noticing in cron output or a manual run
+        return $failed > 0 ? self::FAILURE : self::SUCCESS;
     }
 }
