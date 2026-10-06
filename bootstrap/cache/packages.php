@@ -28,13 +28,6 @@
       0 => 'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider',
     ),
   ),
-  'bepsvpt/secure-headers' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Bepsvpt\\SecureHeaders\\SecureHeadersServiceProvider',
-    ),
-  ),
   'laravel-notification-channels/twitter' => 
   array (
     'providers' => 

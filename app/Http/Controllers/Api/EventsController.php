@@ -27,7 +27,6 @@ use App\Services\ImageHandler;
 use App\Services\RemoteImageFetcher;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
-use FacebookAds\Api as Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -90,8 +89,6 @@ class EventsController extends Controller
     protected bool $hasFilter;
 
     protected int $defaultWindow;
-
-    protected Api $facebook;
 
     public function __construct(EventFilters $filter)
     {
