@@ -123,7 +123,8 @@ class EntitiesController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort($this->defaultSortCriteria);
+            ->setDefaultSort($this->defaultSortCriteria)
+            ->setSortAliases(['popularity' => 'popularity_score']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -190,7 +191,8 @@ class EntitiesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria);
+            ->setDefaultSort($this->defaultSortCriteria)
+            ->setSortAliases(['popularity' => 'popularity_score']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -257,6 +259,7 @@ class EntitiesController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['entities.name' => 'asc'])
+            ->setSortAliases(['popularity' => 'popularity_score'])
             ->setParentFilter(['entity_type' => $type]);
 
         // get the result set from the builder
@@ -318,6 +321,7 @@ class EntitiesController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['popularity_score' => 'desc'])
+            ->setSortAliases(['popularity' => 'popularity_score'])
             ->setParentFilter(['role' => $role]);
 
         // get the result set from the builder
@@ -380,7 +384,8 @@ class EntitiesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc']);
+            ->setDefaultSort(['entities.name' => 'asc'])
+            ->setSortAliases(['popularity' => 'popularity_score']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
@@ -526,6 +531,7 @@ class EntitiesController extends Controller
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
             ->setDefaultSort(['entities.name' => 'asc'])
+            ->setSortAliases(['popularity' => 'popularity_score'])
             ->setParentFilter(['tag' => $slug]);
 
         // Get the result set from the builder
@@ -587,7 +593,8 @@ class EntitiesController extends Controller
         $listEntityResultBuilder
             ->setFilter($this->filter)
             ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc']);
+            ->setDefaultSort(['entities.name' => 'asc'])
+            ->setSortAliases(['popularity' => 'popularity_score']);
 
         // get the result set from the builder
         $listResultSet = $listEntityResultBuilder->listResultSetFactory();
