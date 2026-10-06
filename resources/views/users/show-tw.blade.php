@@ -76,8 +76,8 @@
                         <form action="{{ route('users.exportData', ['id' => $user->id]) }}" method="POST">
                             @csrf
                             <button type="submit"
-                                class="w-full flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm"
-                                data-confirm-message="This will generate a ZIP file with all your data and email you a download link. Continue?">
+                                class="w-full flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                                data-confirm="This will generate a ZIP file with all your data and email you a download link." data-confirm-button="Continue">
                                 <i class="bi bi-download mr-3 w-4 text-center"></i>
                                 Export My Data
                             </button>
@@ -85,13 +85,13 @@
 
                         @can('grant_access')
                             @if (!$user->isActive)
-                                <a data-method="post" href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors confirm">
+                                <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors">
                                     <i class="bi bi-check-circle mr-3 w-4 text-center"></i>
                                     Activate
                                 </a>
                             @endif
                             @if ($user->isActive)
-                                <a data-method="post" href="{{ route('users.reminder', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                                <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('users.reminder', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                                     <i class="bi bi-bell mr-3 w-4 text-center"></i>
                                     Send Reminder
                                 </a>
@@ -99,7 +99,7 @@
                         @endcan
 
                         @if ($user->isActive)
-                            <a data-method="post" href="{{ route('users.weekly', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors confirm">
+                            <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('users.weekly', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                                 <i class="bi bi-envelope mr-3 w-4 text-center"></i>
                                 Send Weekly Update
                             </a>
@@ -121,7 +121,7 @@
 
                         @can('impersonate_user')
                             <div class="border-t border-border my-1"></div>
-                            <a data-method="post" href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors confirm">
+                            <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors">
                                 <i class="bi bi-person-badge mr-3 w-4 text-center"></i>
                                 Impersonate
                             </a>
@@ -557,31 +557,6 @@ $(document).ready(function() {
         };
 
         myDropzone.options.addPhotosForm.init();
-    });
-
-    // Delete confirmation
-    $('input.delete').on('click', function(e) {
-        e.preventDefault();
-        var form = $(this).parents('form');
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You will not be able to recover this user!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Yes, delete it!",
-            preConfirm: function() {
-                return new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve()
-                    }, 2000)
-                })
-            }
-        }).then(result => {
-            if (result.value) {
-                form.submit();
-            }
-        });
     });
 });
 </script>

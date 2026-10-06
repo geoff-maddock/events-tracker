@@ -99,10 +99,10 @@
                                     </a>
                                     @endif
                                     <div class="border-t border-border my-1"></div>
-                                    <form action="{!! route('entities.destroy', ['entity' => $entity->slug]) !!}" method="POST" class="block">
+                                    <form action="{!! route('entities.destroy', ['entity' => $entity->slug]) !!}" method="POST" class="block" data-confirm="You will not be able to recover this entity!">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="delete w-full text-left px-4 py-2 text-sm text-destructive hover:bg-accent hover:text-destructive transition-colors" role="menuitem" data-type="entity">
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-accent hover:text-destructive transition-colors" role="menuitem">
                                             <i class="bi bi-trash mr-2"></i>Delete Entity
                                         </button>
                                     </form>

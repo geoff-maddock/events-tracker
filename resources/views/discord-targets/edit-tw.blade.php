@@ -32,7 +32,7 @@
 			<form action="{{ route('discord-targets.destroy', ['discordTarget' => $target->id]) }}" method="POST">
 				@csrf
 				@method('DELETE')
-				<button type="submit" class="delete px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
+				<button type="submit" class="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
 					data-confirm="Delete the Discord target &quot;{{ $target->name }}&quot;?">
 					<i class="bi bi-trash mr-2"></i>Delete Target
 				</button>

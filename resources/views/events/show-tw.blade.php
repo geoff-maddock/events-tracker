@@ -92,10 +92,10 @@
 												@endif
 
 												<div class="border-t border-border my-1"></div>
-												<form action="{!! route('events.destroy', ['event' => $event->id]) !!}" method="POST" class="block">
+												<form action="{!! route('events.destroy', ['event' => $event->id]) !!}" method="POST" class="block" data-confirm="You will not be able to recover this event!">
 													@csrf
 													@method('DELETE')
-													<button type="submit" class="delete w-full text-left px-4 py-2 text-sm text-destructive hover:bg-accent hover:text-destructive transition-colors" role="menuitem">
+													<button type="submit" class="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-accent hover:text-destructive transition-colors" role="menuitem">
 														<i class="bi bi-trash mr-2"></i>Delete Event
 													</button>
 												</form>
@@ -513,23 +513,6 @@ $(document).ready(function(){
 		window.alert(message);
 		return Promise.resolve({ value: true, isConfirmed: true });
 	};
-
-    $('button.delete').on('click', function(e){
-        e.preventDefault();
-        const form = $(this).parents('form');
-		fireAlert({
-            title: "Are you sure?",
-            text: "You will not be able to recover this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Yes, delete it!",
-        }).then(result => {
-			if (result.value || result.isConfirmed) {
-                form.submit();
-            }
-        });
-    });
 
     // Event actions dropdown toggle
     document.addEventListener('DOMContentLoaded', function() {

@@ -82,7 +82,6 @@
 	height="0" width="0" class="hidden" title="Google Tag Manager"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
 	@endif
-	<script src="{{ asset('/js/global-config.js') }}"></script>
 
 	<div id="loading" class="loading">
 		<div class="spinner"></div>
