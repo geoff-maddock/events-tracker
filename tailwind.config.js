@@ -3,10 +3,7 @@ module.exports = {
   darkMode: 'class',
   content: [
     './resources/views/**/*.blade.php',
-    './resources/js/**/*.js',
-    './resources/js/**/*.vue',
     './resources/assets/js/**/*.js',
-    './resources/assets/js/**/*.vue',
   ],
   theme: {
     container: {

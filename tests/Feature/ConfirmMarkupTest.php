@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Blog;
 use App\Models\DiscordTarget;
 use App\Models\Event;
+use App\Models\Post;
 use App\Models\Profile;
+use App\Models\Thread;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
@@ -53,30 +56,24 @@ class ConfirmMarkupTest extends TestCase
         $this->assertSame([], $offenders, 'Use data-confirm instead of the "delete" / "confirm" classes');
     }
 
-    public function test_the_delete_form_helper_asks_for_confirmation(): void
+    public function test_thread_post_and_blog_deletes_confirm(): void
     {
-        $html = delete_form(['blogs.destroy', 'some-blog']);
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        // thread and post deletes show to a recent owner or a super admin
+        $admin->assignGroup('super_admin');
+        $admin = $admin->fresh();
+        $thread = Thread::factory()->create(['created_by' => $admin->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        Post::factory()->create(['thread_id' => $thread->id, 'created_by' => $admin->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $blog = Blog::factory()->create(['created_by' => $admin->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
-        $this->assertStringContainsString('data-confirm="You will not be able to recover this blog!"', $html);
-        $this->assertStringNotContainsString('delete confirm', $html);
-    }
-
-    public function test_the_icon_form_helper_asks_for_confirmation_only_when_told_to(): void
-    {
-        $event = Event::factory()->create();
-
-        $delete = link_form_bootstrap_icon('bi bi-trash', $event, 'DELETE', 'Delete the event');
-        $this->assertStringContainsString('data-confirm="You will not be able to recover this event!"', $delete);
-
-        // a "delete" class without the confirm argument still confirms
-        $byClass = link_form_bootstrap_icon('bi bi-trash', $event, 'DELETE', 'Delete', null, 'delete', '');
-        $this->assertStringContainsString('data-confirm="You will not be able to recover this event!"', $byClass);
-
-        $post = link_form_bootstrap_icon('bi bi-star', '/photos/1/set-primary', 'POST', 'Set as primary photo');
-        $this->assertStringContainsString('data-confirm="" data-confirm-button="Confirm"', $post);
-
-        $plain = link_form_bootstrap_icon('bi bi-star', '/photos/1/set-primary', 'POST', 'Set as primary photo', '', '', '');
-        $this->assertStringNotContainsString('data-confirm', $plain);
+        $this->actingAs($admin)->get("/threads/{$thread->id}")->assertOk()
+            ->assertSee('data-confirm="You will not be able to recover this thread!"', false)
+            ->assertSee('data-confirm="You will not be able to recover this post!"', false);
+        $this->actingAs($admin)->get('/posts')->assertOk()
+            ->assertSee('data-confirm="You will not be able to recover this post!"', false);
+        $this->actingAs($admin)->get("/blogs/{$blog->slug}")->assertOk()
+            ->assertSee('data-confirm="You will not be able to recover this blog!"', false);
     }
 
     public function test_the_event_delete_form_confirms(): void

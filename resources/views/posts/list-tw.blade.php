@@ -81,7 +81,11 @@
                        title="Edit">
                         Edit <i class="bi bi-pencil-fill"></i>
                     </a>
-                    {!! link_form_bootstrap_icon('bi bi-trash-fill text-destructive', $post, 'DELETE', 'Delete', NULL, 'py-0 my-0', 'confirm') !!}
+                    <form method="POST" action="{{ route('posts.destroy', $post->id) }}" style="display: inline;" data-confirm="You will not be able to recover this post!">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="no-button py-0 my-0"><i class="bi bi-trash-fill text-destructive" title="Delete"></i></button>
+                    </form>
                     @endif
                     @if ($like = (isset($likedPostIds) ? array_key_exists($post->id, $likedPostIds) : $post->likedBy($user)))
                     <a data-method="post" href="{!! route('posts.unlike', ['id' => $post->id]) !!}"

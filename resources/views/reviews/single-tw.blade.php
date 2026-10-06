@@ -28,7 +28,7 @@
 			</div>
 
 			<h3 class="text-lg font-semibold mb-2">
-				{!! link_to_route('events.show', $review->event->name, [$review->event->id], ['class' => 'text-primary hover:underline']) !!}
+				<a href="{{ route('events.show', [$review->event->id]) }}" class="text-primary hover:underline">{{ $review->event->name }}</a>
 				@if ($signedIn && $review->ownedBy(Auth::user()))
 					<a href="/reviews/{{ $review->id }}/edit"
 					   title="Edit this review"

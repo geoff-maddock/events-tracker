@@ -166,13 +166,13 @@
 								<td class="px-4 py-3">
 									@if (isset($post->user))
 										@include('users.avatar', ['user' => $post->user])
-										{!! link_to_route('users.show', $post->user->name, [$post->user], ['class' => 'text-primary hover:underline']) !!}
+										<a href="{{ route('users.show', [$post->user]) }}" class="text-primary hover:underline">{{ $post->user->name }}</a>
 									@else
 										<span class="text-muted-foreground italic">User deleted</span>
 									@endif
 								</td>
 								<td class="px-4 py-3 hidden md:table-cell">
-									{!! link_to_route('threads.show', $post->thread->name, [$post->thread ? $post->thread->id : 0], ['class' => 'text-primary hover:underline']) !!}
+									<a href="{{ route('threads.show', [$post->thread ? $post->thread->id : 0]) }}" class="text-primary hover:underline">{{ $post->thread->name }}</a>
 								</td>
 								<td class="px-4 py-3 hidden md:table-cell">
 									{{ $post->thread->threadCategory ? $post->thread->threadCategory->name : 'General' }}
@@ -197,7 +197,11 @@
 											   title="Edit this post">
 												<i class="bi bi-pencil-fill mr-1"></i>Edit
 											</a>
-											{!! link_form_bootstrap_icon('bi bi-trash-fill text-destructive', $post, 'DELETE', 'Delete the post', NULL, 'delete') !!}
+											<form method="POST" action="{{ route('posts.destroy', $post->id) }}" style="display: inline;" data-confirm="You will not be able to recover this post!">
+											    @csrf
+											    @method('DELETE')
+											    <button type="submit" class="no-button"><i class="bi bi-trash-fill text-destructive" title="Delete the post"></i></button>
+											</form>
 										@endif
 										@if ($signedIn)
 											@if ($like = $post->likedBy($user))
