@@ -17,7 +17,7 @@ class EntityPatchRequest extends Request
      */
     public function rules(): array
     {
-        $entityId = $this->route('entity')?->id ?? null;
+        $entityId = $this->route('entity')->id ?? null;
 
         return [
             'name' => ['sometimes', 'required', 'min:3', 'max:255'],

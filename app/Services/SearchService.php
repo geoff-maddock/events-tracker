@@ -373,8 +373,8 @@ class SearchService
                 'query'         => mb_substr($keyword, 0, 191),
                 'results_count' => $resultsCount,
                 'source'        => $source,
-                'ip_address'    => $request?->ip(),
-                'user_agent'    => $request ? mb_substr((string) $request->userAgent(), 0, 512) : null,
+                'ip_address'    => $request->ip(),
+                'user_agent'    => mb_substr((string) $request->userAgent(), 0, 512),
             ]);
         } catch (Throwable $e) {
             Log::warning('search log write failed', ['err' => $e->getMessage()]);
@@ -382,7 +382,7 @@ class SearchService
     }
 
     /**
-     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @param  Builder<*>  $query
      * @param  array<int, string>  $columns
      */
     private function applyTextMatch(Builder $query, string $table, array $columns, string $keyword, bool $useFulltext): void
@@ -406,7 +406,7 @@ class SearchService
      * buckets, descending (most recent first). Date order outranks fulltext
      * relevance, which callers may append as a tiebreaker.
      *
-     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @param  Builder<*>  $query
      */
     private function applyRecencyOrder(Builder $query, string $table): void
     {
@@ -462,7 +462,7 @@ class SearchService
     /**
      * Total for simplePaginate'd sections so the search page can show counts.
      *
-     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $base
+     * @param  Builder<*>  $base
      * @param  array<int, string>  $columns
      */
     private function countLike(Builder $base, array $columns, string $keyword): int

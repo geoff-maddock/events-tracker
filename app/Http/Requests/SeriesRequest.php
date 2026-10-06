@@ -31,7 +31,7 @@ class SeriesRequest extends Request
      */
     public function rules()
     {
-        $seriesSlug = $this->route('series')?->id ?? null;
+        $seriesSlug = $this->route('series')->id ?? null;
 
         $rules = [
             'name' => 'required|min:3|max:255',

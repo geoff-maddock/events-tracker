@@ -228,8 +228,6 @@ class EventFilters extends QueryFilter
     {
         if (isset($value)) {
             return $this->builder->where('events.min_age', '<=', $value);
-        } else {
-            return $this->builder;
         }
 
         return $this->builder;

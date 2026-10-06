@@ -23,7 +23,7 @@ class EventTypeRequest extends Request
      */
     public function rules()
     {
-        $eventTypeId = $this->route('event_type')?->id ?? null;
+        $eventTypeId = $this->route('event_type')->id ?? null;
 
         return [
             'name' => 'required|min:3|max:255',

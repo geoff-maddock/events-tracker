@@ -23,15 +23,11 @@ class ListQueryParameters
 
     private ListParameterStore $listParamStore;
 
-    private ?string $defaultSortField = null;
-
     private array $defaultFilters = [];
 
-    private ?string $defaultSortDirection = null;
+    private int $defaultLimit = 25;
 
-    private ?int $defaultLimit = 25;
-
-    private ?int $defaultPage = 1;
+    private int $defaultPage = 1;
 
     /**
      * ListQueryParameters constructor.
@@ -44,7 +40,7 @@ class ListQueryParameters
 
     public function getSortFieldName(): ?string
     {
-        $sortFieldName = $this->defaultSortField;
+        $sortFieldName = null;
         if ($this->listRequest->getSortFieldName()) {
             $sortFieldName = $this->listRequest->getSortFieldName();
         } elseif ($this->listParamStore->getSortFieldName()) {
@@ -72,7 +68,7 @@ class ListQueryParameters
 
     public function getSortDirection(): ?string
     {
-        $sortDirection = $this->defaultSortDirection;
+        $sortDirection = null;
         if ($this->listRequest->getSortDirection()) {
             $sortDirection = $this->listRequest->getSortDirection();
         } elseif ($this->listParamStore->getSortDirection()) {

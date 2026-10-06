@@ -20,7 +20,7 @@ class PostResource extends JsonResource
         return [
             'id' => $this->id,
             'thread_id' => $this->thread_id,
-            'thread_name' => $this->thread ? $this->thread->name : null,
+            'thread_name' => $this->thread->name,
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,

@@ -24,7 +24,7 @@ class EntityTypeRequest extends Request
      */
     public function rules()
     {
-        $entityTypeId = $this->route('entity_type')?->id ?? null;
+        $entityTypeId = $this->route('entity_type')->id ?? null;
 
         return [
             'name' => 'required|min:3|max:255',

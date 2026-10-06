@@ -13,7 +13,7 @@ class EntityTypePatchRequest extends Request
 
     public function rules(): array
     {
-        $entityTypeId = $this->route('entity_type')?->id ?? null;
+        $entityTypeId = $this->route('entity_type')->id ?? null;
 
         return [
             'name' => ['sometimes', 'required', 'min:3', 'max:255'],

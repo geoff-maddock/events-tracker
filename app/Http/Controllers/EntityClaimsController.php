@@ -230,6 +230,8 @@ class EntityClaimsController extends Controller
      */
     protected function reviewerEmails(): array
     {
-        return array_values(array_filter([config('app.admin')]));
+        $admin = config('app.admin');
+
+        return $admin ? [(string) $admin] : [];
     }
 }

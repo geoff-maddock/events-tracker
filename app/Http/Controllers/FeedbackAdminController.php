@@ -160,7 +160,7 @@ class FeedbackAdminController extends Controller
         // Column set is the union of every question key present, so a mixed
         // campaign export still lines up.
         $questionKeys = $responses
-            ->flatMap(fn (SurveyResponse $r) => $r->campaign?->questions->pluck('key') ?? collect())
+            ->flatMap(fn (SurveyResponse $r) => $r->campaign->questions->pluck('key'))
             ->unique()
             ->values()
             ->all();
@@ -185,7 +185,7 @@ class FeedbackAdminController extends Controller
                 $byKey = [];
 
                 foreach ($response->answers as $answer) {
-                    $key = $answer->question?->key;
+                    $key = $answer->question->key;
 
                     if (! $key) {
                         continue;
@@ -199,7 +199,7 @@ class FeedbackAdminController extends Controller
 
                 fputcsv($output, array_merge([
                     $response->id,
-                    $response->campaign?->name,
+                    $response->campaign->name,
                     $response->user?->name,
                     $response->subject->name ?? null,
                     $response->isPublic() ? 'public' : 'private',

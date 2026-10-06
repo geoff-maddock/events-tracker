@@ -53,8 +53,8 @@ use App\Models\User;
  * @property string|null                                                                                               $primary_link
  * @property string|null                                                                                               $ticket_link
  * @property int|null                                                                                                  $updated_by
- * @property \Illuminate\Support\Carbon                                                                                $created_at
- * @property \Illuminate\Support\Carbon                                                                                $updated_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $created_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $updated_at
  * @property \Illuminate\Support\Carbon|null                                                                           $cancelled_at
  * @property bool                                                                                                       $do_not_repost
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]                                            $comments
@@ -479,6 +479,8 @@ class Event extends Model implements HasPhotos
 
     /**
      * An event has one promoter.
+     *
+     * @return BelongsTo<Entity, $this>
      */
     public function promoter(): BelongsTo
     {
@@ -487,6 +489,8 @@ class Event extends Model implements HasPhotos
 
     /**
      * An event has one venue.
+     *
+     * @return BelongsTo<Entity, $this>
      */
     public function venue(): BelongsTo
     {
@@ -527,6 +531,8 @@ class Event extends Model implements HasPhotos
 
     /**
      * An event has one series.
+     *
+     * @return BelongsTo<Series, $this>
      */
     public function series(): BelongsTo
     {

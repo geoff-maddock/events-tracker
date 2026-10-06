@@ -119,11 +119,11 @@ class FollowerNotifier
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user?->profile?->setting_forum_update !== 1) {
+                if ($user->profile?->setting_forum_update !== 1) {
                     continue;
                 }
                 // Indirect (follow-driven) thread notifications are opt-in per issue #1853.
-                if ($user?->profile?->setting_notify_threads_by_follow !== 1) {
+                if ($user->profile->setting_notify_threads_by_follow !== 1) {
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
@@ -147,10 +147,10 @@ class FollowerNotifier
         foreach ($series as $s) {
             foreach ($s->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user?->profile?->setting_forum_update !== 1) {
+                if ($user->profile?->setting_forum_update !== 1) {
                     continue;
                 }
-                if ($user?->profile?->setting_notify_threads_by_follow !== 1) {
+                if ($user->profile->setting_notify_threads_by_follow !== 1) {
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
@@ -188,7 +188,7 @@ class FollowerNotifier
         // notify users who are following this thread
         foreach ($thread->followers() as $user) {
             // if the user does not have this setting, continue
-            if ($user?->profile?->setting_forum_update !== 1) {
+            if ($user->profile?->setting_forum_update !== 1) {
                 continue;
             }
             // if the user hasn't already been notified, then email them
@@ -207,7 +207,7 @@ class FollowerNotifier
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user?->profile?->setting_forum_update !== 1) {
+                if ($user->profile?->setting_forum_update !== 1) {
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
@@ -230,7 +230,7 @@ class FollowerNotifier
         foreach ($seriess as $series) {
             foreach ($series->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user?->profile?->setting_forum_update !== 1) {
+                if ($user->profile?->setting_forum_update !== 1) {
                     continue;
                 }
 

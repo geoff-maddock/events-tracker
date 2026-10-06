@@ -5,7 +5,7 @@ namespace App\Mail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -24,6 +24,7 @@ class DailyReminder extends Mailable
 
     public ?User $user;
 
+    /** @var Collection<int, \App\Models\Event> */
     public Collection $events;
 
     public ?array $seriesList;

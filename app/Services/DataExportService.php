@@ -182,15 +182,15 @@ class DataExportService
             ->get()
             ->map(function (\App\Models\SurveyResponse $response) {
                 return [
-                    'campaign' => $response->campaign ? $response->campaign->name : null,
+                    'campaign' => $response->campaign->name,
                     'subject_type' => $response->subject_type ?: null,
                     'subject_name' => $response->subject->name ?? null,
                     'visibility' => $response->isPublic() ? 'public' : 'private',
                     'display_status' => $response->display_status,
                     'submitted_at' => $response->submitted_at,
                     'answers' => $response->answers->map(fn ($answer) => [
-                        'question' => $answer->question ? $answer->question->prompt : null,
-                        'question_key' => $answer->question ? $answer->question->key : null,
+                        'question' => $answer->question->prompt,
+                        'question_key' => $answer->question->key,
                         'value' => $answer->displayValue(),
                     ])->values()->all(),
                 ];

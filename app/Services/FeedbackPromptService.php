@@ -112,7 +112,7 @@ class FeedbackPromptService
 
         // A missing profile row counts as not opted in, matching the strict
         // `$user?->profile?->setting_x !== 1` guard used across the app.
-        if ((int) ($user->profile?->setting_feedback_requests ?? 0) !== 1) {
+        if ((int) ($user->profile->setting_feedback_requests ?? 0) !== 1) {
             return false;
         }
 

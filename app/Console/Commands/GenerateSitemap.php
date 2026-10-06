@@ -228,6 +228,7 @@ class GenerateSitemap extends Command
     {
         $files = [];
         $sitemap = Sitemap::create();
+        /** @var int $count incremented through the closures' by-reference captures */
         $count = 0;
         $chunk = 1;
         $lastmod = null;

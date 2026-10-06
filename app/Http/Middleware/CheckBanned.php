@@ -6,7 +6,6 @@ use App\Models\UserStatus;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class CheckBanned
 {
@@ -31,14 +30,7 @@ class CheckBanned
             }
 
             // Deletes all tokens for the user - this fixes an API issue
-            if ($user && method_exists($user, 'tokens')) {
-                // check that the user is a User model
-                if ($user instanceof User)
-                {
-                    // Delete all tokens associated with the user
-                    $user->tokens()->delete();
-                }
-            }
+            $user->tokens()->delete();
 
             // Only invalidate session if it exists (not for API requests)
             if ($request->hasSession()) {
