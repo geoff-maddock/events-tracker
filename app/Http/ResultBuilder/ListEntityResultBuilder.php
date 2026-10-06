@@ -118,7 +118,7 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         }
 
         // Apply user form filters
-        $this->userFilters = $this->listQueryParameters->getFilters();
+        $this->userFilters = $this->filter->normalizeFilters($this->listQueryParameters->getFilters());
         $this->isEmptyFilter = $this->listQueryParameters->getIsEmptyFilter();
 
         // Apply fixed filters - should display in filters and can be overridden
