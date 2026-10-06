@@ -135,11 +135,10 @@ class EntityOwnerDashboardTest extends TestCase
         Profile::factory()->create(['user_id' => $owner->id]);
         $entity = Entity::factory()->create(['created_by' => $owner->id]);
 
-        // the profile lists the pages the user manages, without their stats (#2156)
+        // the profile lists the entities the user created, without their stats (#2156)
         $this->actingAs($owner)->get('/users/'.$owner->id)
             ->assertOk()
-            ->assertSee('Pages you manage')
-            ->assertSee(route('entities.show', $entity), false)
+            ->assertDontSee('Pages you manage')
             ->assertDontSee(route('entities.stats', $entity), false);
 
         $this->actingAs($owner)->get(route('entities.show', $entity))

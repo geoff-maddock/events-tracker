@@ -24,6 +24,14 @@ class EntityFilters extends QueryFilter
         }
     }
 
+    public function created_by(?string $value = null): Builder
+    {
+        // the "View all entities" link on a user's profile (#2156)
+        $id = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $id === false ? $this->builder : $this->builder->where('entities.created_by', '=', $id);
+    }
+
     public function name(?string $value = null): Builder
     {
         if (!isset($value)) {

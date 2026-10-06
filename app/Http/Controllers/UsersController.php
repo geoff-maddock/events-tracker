@@ -13,6 +13,7 @@ use App\Mail\UserUpdate;
 use App\Mail\WeeklyUpdate;
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Profile;
@@ -350,7 +351,18 @@ class UsersController extends Controller
             ? $user->getAttending()->visible($this->user)->with($eagerLoad)->orderBy('events.start_at', 'desc')->limit(20)->get()
             : $user->events()->visible($this->user)->with($eagerLoad)->limit(10)->get();
 
-        return view('users.show-tw', compact('user', 'tabs', 'canViewFullProfile', 'profileEvents'));
+        // a short list of the entities this user created, shown like the entities
+        // they follow (#2156); others see only the active ones
+        $createdEntitiesQuery = Entity::query()->where('entities.created_by', '=', $user->id);
+        if (! $this->user || ($this->user->id !== $user->id && ! $this->user->hasGroup('admin'))) {
+            $createdEntitiesQuery->active();
+        }
+        $createdEntitiesCount = $canViewFullProfile ? (clone $createdEntitiesQuery)->count() : 0;
+        $createdEntities = $createdEntitiesCount > 0
+            ? $createdEntitiesQuery->with(Entity::CARD_EAGER_LOAD)->orderBy('entities.name')->limit(20)->get()
+            : collect();
+
+        return view('users.show-tw', compact('user', 'tabs', 'canViewFullProfile', 'profileEvents', 'createdEntities', 'createdEntitiesCount'));
     }
 
     public function profile(Request $request): RedirectResponse
