@@ -10,7 +10,7 @@
         "production": "npm run build",
         "preview": "vite preview",
         "lint": "eslint resources/assets/js public/js",
-        "format": "prettier --write 'resources/**/*.{js,vue,blade.php,css}'"
+        "format": "prettier --write 'resources/**/*.{js,css}'"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
