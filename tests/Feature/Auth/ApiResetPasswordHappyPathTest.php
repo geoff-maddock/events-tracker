@@ -54,7 +54,9 @@ class ApiResetPasswordHappyPathTest extends TestCase
 
         // Generate a real reset token via the broker — the controller's
         // call to Password::broker()->reset() validates against this token.
-        $token = Password::broker()->createToken($user);
+        /** @var \Illuminate\Auth\Passwords\PasswordBroker $broker */
+        $broker = Password::broker();
+        $token = $broker->createToken($user);
 
         $this->postJson('/api/user/reset-password', [
             'email' => 'zz-api-reset2@example.com',

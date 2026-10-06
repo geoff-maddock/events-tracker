@@ -55,7 +55,7 @@ class PostsTest extends TestCase
         $this->signIn();
 
         $user = User::find(1);
-        $post = Post::first();
+        $post = Post::factory()->create();
 
         // when we visit a thread page, we'll see the first 100 characters of the post (at minimum)
         $response = $this->followingRedirects()->actingAs($user)
