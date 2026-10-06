@@ -83,7 +83,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('feedback:generate')->daily()->timezone('America/New_York')->at('10:00');
 
         // schedule daily creation of next series events
-        // DISABLED - need to reconsider if we want this
+        // Off by choice (#2112): run `php artisan series:create-events --dry-run`, then without it, by hand
         // $schedule->command('series:create-events')->daily()->timezone('America/New_York')->at('04:00');
 
         // schedule daily email of events each user is attending today
