@@ -19,6 +19,7 @@
 
         <!-- Right side actions -->
         <div class="flex items-center gap-2 flex-shrink-0">
+            @include('partials.add-menu-tw', ['buttonClass' => 'p-1'])
             @auth
             <a href="{{ url('/users/'.Auth::user()->id) }}" class="text-muted-foreground hover:text-foreground transition-colors">
                 @if ($photo = Auth::user()->getPrimaryPhoto())
