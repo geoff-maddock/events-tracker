@@ -29,10 +29,10 @@ class AddContentEntryPointTest extends TestCase
     {
         $html = $this->get('/events')->assertOk()->getContent();
 
-        // desktop sidebar, mobile sidebar and mobile topbar
-        $this->assertSame(3, substr_count($html, 'aria-label="Add something"'));
+        // desktop sidebar and mobile topbar
+        $this->assertSame(2, substr_count($html, 'aria-label="Add something"'));
         foreach (['events.create', 'series.create', 'entities.create'] as $route) {
-            $this->assertGreaterThanOrEqual(3, substr_count($html, 'href="'.route($route).'"'), $route);
+            $this->assertGreaterThanOrEqual(2, substr_count($html, 'href="'.route($route).'"'), $route);
         }
     }
 

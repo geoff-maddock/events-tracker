@@ -189,11 +189,6 @@
         <span class="text-xs text-muted-foreground">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
     </div>
 
-    <!-- Add -->
-    <div class="px-4 pt-3 shrink-0">
-        @include('partials.add-menu-tw', ['align' => 'left'])
-    </div>
-
     <!-- Navigation -->
     <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
         <!-- Events Section -->
