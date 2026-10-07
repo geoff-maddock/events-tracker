@@ -51,9 +51,9 @@ class SeriesTest extends TestCase
      */
     public function testCreateWithNoUser()
     {
-        $response = $this->get('/series/create');
+        $response = $this->withExceptionHandling()->get('/series/create');
 
-        $response->assertStatus(302);
+        $response->assertRedirect(route('login'));
     }
 
     /**
@@ -79,9 +79,9 @@ class SeriesTest extends TestCase
     public function testShowSeries()
     {
         $user = User::factory()->create();
-        $response = $this->get('/series/create');
+        $response = $this->withExceptionHandling()->get('/series/create');
 
-        $response->assertStatus(302);
+        $response->assertRedirect(route('login'));
     }
 
     /**

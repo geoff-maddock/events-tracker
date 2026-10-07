@@ -90,7 +90,8 @@ class EventsController extends Controller
 
     public function __construct(EventFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
+        // auth first, so a guest is sent to sign in and back (#2108) rather than to the verify notice
+        $this->middleware(['auth', 'verified'], ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
         $this->middleware(['auth', 'verified'], ['only' => ['destroy']]);
         $this->filter = $filter;
 

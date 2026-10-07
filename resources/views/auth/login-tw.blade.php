@@ -36,6 +36,15 @@
                 </div>
             @endif
 
+            @if (session('sign_in_reason'))
+                <div class="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        <span class="text-foreground">{{ session('sign_in_reason') }}</span>
+                    </div>
+                </div>
+            @endif
+
             @if (session('status'))
                 <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                     <div class="flex items-center gap-3">

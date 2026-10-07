@@ -8,9 +8,12 @@
         <span class="text-xs text-muted-foreground block">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
     </div>
 
-    <!-- Search -->
-    <div class="p-4">
-        @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])
+    <!-- Search and add -->
+    <div class="p-4 flex items-center gap-2">
+        <div class="flex-1 min-w-0">
+            @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])
+        </div>
+        @include('partials.add-menu-tw')
     </div>
 
     <!-- Navigation -->
@@ -184,6 +187,11 @@
             <span class="text-xl font-bold text-foreground">{{ config('app.app_name') }}</span>
         </a>
         <span class="text-xs text-muted-foreground">{{ config('app.app_tagline', 'pittsburgh events guide') }}</span>
+    </div>
+
+    <!-- Add -->
+    <div class="px-4 pt-3 shrink-0">
+        @include('partials.add-menu-tw', ['align' => 'left'])
     </div>
 
     <!-- Navigation -->

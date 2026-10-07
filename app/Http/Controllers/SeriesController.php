@@ -64,7 +64,8 @@ class SeriesController extends Controller
 
     public function __construct(SeriesFilters $filter)
     {
-        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        // auth first, so a guest is sent to sign in and back (#2108) rather than to the verify notice
+        $this->middleware(['auth', 'verified'], ['only' => ['create', 'edit', 'store', 'update']]);
         $this->middleware(['auth', 'verified'], ['only' => ['destroy']]);
         $this->filter = $filter;
 
