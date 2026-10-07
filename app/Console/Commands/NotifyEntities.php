@@ -6,6 +6,7 @@ use App\Mail\EntityOutreachAdminSummary;
 use App\Mail\EntityReminder;
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\EmailOptOut;
 use App\Models\Entity;
 use App\Models\User;
 use Carbon\Carbon;
@@ -98,6 +99,16 @@ class NotifyEntities extends Command
             $contactEmails = $entity->contacts
                 ->filter(fn ($c) => !empty($c->email))
                 ->pluck('email');
+
+            // Contacts who used the unsubscribe link in an earlier reminder (#2103)
+            $contactEmails = $contactEmails->reject(function ($email) use ($entity) {
+                if (!EmailOptOut::isOptedOut($email, EmailOptOut::LIST_ENTITY_CONTACT)) {
+                    return false;
+                }
+                $this->line("  SKIP  {$entity->name} → {$email} — opted out.");
+
+                return true;
+            })->values();
 
             if ($contactEmails->isEmpty()) {
                 continue;

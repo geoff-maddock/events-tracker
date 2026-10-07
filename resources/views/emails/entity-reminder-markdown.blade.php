@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('mail::message', ['unsubscribeUrl' => $unsubscribeUrl ?? null])
 
 Hi there, {{ $entity->name }}!
 
