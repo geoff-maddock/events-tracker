@@ -94,22 +94,22 @@ class QueuedWeekendPreviewTest extends TestCase
         $poster = new InstagramEventPoster($this->mockStoryPostingInstagram());
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('No events found for the upcoming weekend.');
+        $this->expectExceptionMessage('No events with a photo found for the upcoming weekend.');
 
         $poster->postWeekendPreview(null);
     }
 
-    public function test_service_posts_stories_and_skips_events_without_photos(): void
+    public function test_service_posts_stories_and_leaves_out_events_without_photos(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
         $withPhoto = $this->weekendEvent($user, true, 20);
-        $this->weekendEvent($user, false, 22); // no photo -> skipped
+        $this->weekendEvent($user, false, 22); // no photo -> not selected
 
         $poster = new InstagramEventPoster($this->mockStoryPostingInstagram());
 
         $result = $poster->postWeekendPreview($user->id);
 
-        $this->assertSame(['posted' => 1, 'skipped' => 1, 'total' => 2], $result);
+        $this->assertSame(['posted' => 1, 'skipped' => 0, 'total' => 1], $result);
         $this->assertDatabaseHas('event_shares', [
             'event_id' => $withPhoto->id,
             'platform' => 'instagram',
@@ -117,12 +117,28 @@ class QueuedWeekendPreviewTest extends TestCase
         ]);
     }
 
-    public function test_service_throws_when_zero_stories_post(): void
+    public function test_service_throws_when_the_only_weekend_event_has_no_photo(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
         $this->weekendEvent($user, false, 20); // only event has no photo
 
         $poster = new InstagramEventPoster($this->mockStoryPostingInstagram());
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('No events with a photo found for the upcoming weekend.');
+
+        $poster->postWeekendPreview($user->id);
+    }
+
+    public function test_service_throws_when_zero_stories_post(): void
+    {
+        $user = User::factory()->create(['user_status_id' => 1]);
+        $this->weekendEvent($user, true, 20);
+
+        // Instagram rejects every publish (e.g. the daily limit is reached)
+        $instagram = $this->mockStoryPostingInstagram();
+        $instagram->shouldReceive('publishStoryMedia')->andThrow(new RuntimeException('limit reached'));
+        $poster = new InstagramEventPoster($instagram);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No stories could be posted. Ensure the selected events have photos.');
@@ -209,7 +225,8 @@ class QueuedWeekendPreviewTest extends TestCase
         $user = User::factory()->create(['user_status_id' => 1]);
         $late = $this->weekendEvent($user, true, 44);    // Saturday 20:00
         $early = $this->weekendEvent($user, true, 18);   // Friday 18:00
-        $sunday = $this->weekendEvent($user, false, 60); // Sunday 12:00, no photo: still selected
+        $sunday = $this->weekendEvent($user, true, 60);  // Sunday 12:00
+        $this->weekendEvent($user, false, 30);           // Saturday 06:00, no photo: left out
         $private = $this->weekendEvent($user, true, 20);
         $private->update(['visibility_id' => Visibility::VISIBILITY_PRIVATE]);
         $cancelled = $this->weekendEvent($user, true, 21);
@@ -288,6 +305,25 @@ class QueuedWeekendPreviewTest extends TestCase
             \App\Models\EventShare::where('platform', 'instagram')->pluck('event_id')->sort()->values()->all()
         );
         $this->assertSame(3, JobStatus::where('type', 'instagram_weekend_preview')->where('status', JobStatus::STATUS_SUCCEEDED)->count());
+    }
+
+    public function test_a_run_of_photo_less_events_does_not_stop_the_later_batches(): void
+    {
+        // ten photo-less events first used to make batch 1 post nothing, which
+        // failed it and stopped every later batch
+        $user = User::factory()->create(['user_status_id' => 1]);
+        foreach (range(1, 10) as $i) {
+            $this->weekendEvent($user, false, 12 + $i);
+        }
+        $later = collect(range(1, 3))->map(fn (int $i) => $this->weekendEvent($user, true, 30 + $i));
+        $this->app->instance(Instagram::class, $this->mockStoryPostingInstagram());
+
+        PostWeekendPreviewToInstagram::dispatch($user->id);
+
+        $this->assertSame(
+            $later->pluck('id')->sort()->values()->all(),
+            \App\Models\EventShare::where('platform', 'instagram')->pluck('event_id')->sort()->values()->all()
+        );
     }
 
     private function superAdmin(): User

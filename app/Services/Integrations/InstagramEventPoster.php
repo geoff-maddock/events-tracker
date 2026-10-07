@@ -212,9 +212,14 @@ class InstagramEventPoster extends InstagramPoster
 
     /**
      * Every public, uncancelled event of the upcoming weekend (Friday 00:00
-     * through Sunday 23:59), in start-time order, so the stories run from
-     * Friday to Sunday. PostWeekendPreviewToInstagram posts them in batches of
-     * WEEKEND_PREVIEW_BATCH_SIZE (#2159).
+     * through Sunday 23:59) that has a primary photo, in start-time order, so
+     * the stories run from Friday to Sunday. PostWeekendPreviewToInstagram
+     * posts them in batches of WEEKEND_PREVIEW_BATCH_SIZE (#2159).
+     *
+     * Events without a photo can't be a story, and leaving them out here keeps
+     * every batch postable: a batch that posts nothing then means Instagram is
+     * failing, which stops the remaining batches, rather than a run of
+     * photo-less events stopping them.
      *
      * @return array<int, int>
      */
@@ -237,6 +242,8 @@ class InstagramEventPoster extends InstagramPoster
             ->where('start_at', '<=', $sundayEnd)
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
+            // the photo getPrimaryPhoto() uses
+            ->whereHas('photos', fn ($query) => $query->where('photos.is_primary', '=', 1))
             ->orderBy('start_at', 'asc')
             ->orderBy('id', 'asc')
             ->pluck('id')
@@ -244,7 +251,7 @@ class InstagramEventPoster extends InstagramPoster
             ->all();
 
         if ($ids === []) {
-            throw new RuntimeException('No events found for the upcoming weekend.');
+            throw new RuntimeException('No events with a photo found for the upcoming weekend.');
         }
 
         return $ids;
