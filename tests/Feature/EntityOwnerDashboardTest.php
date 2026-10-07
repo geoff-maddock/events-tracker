@@ -129,16 +129,17 @@ class EntityOwnerDashboardTest extends TestCase
             ->assertSee('+200%');
     }
 
-    public function test_owner_sees_stats_links_on_their_profile_and_entity_page(): void
+    public function test_stats_are_reached_from_the_entity_page_not_the_profile(): void
     {
         $owner = $this->makeUser();
         Profile::factory()->create(['user_id' => $owner->id]);
         $entity = Entity::factory()->create(['created_by' => $owner->id]);
 
+        // the profile lists the entities the user created, without their stats (#2156)
         $this->actingAs($owner)->get('/users/'.$owner->id)
             ->assertOk()
-            ->assertSee('Pages you manage')
-            ->assertSee(route('entities.stats', $entity), false);
+            ->assertDontSee('Pages you manage')
+            ->assertDontSee(route('entities.stats', $entity), false);
 
         $this->actingAs($owner)->get(route('entities.show', $entity))
             ->assertSee('View Stats');

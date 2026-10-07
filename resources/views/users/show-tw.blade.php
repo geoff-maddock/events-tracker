@@ -297,23 +297,6 @@
                     </div>
                     @endif
 
-                    <!-- Pages this user manages (#2149) -->
-                    @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->can('grant_entity_ownership')) && $user->ownedEntities->isNotEmpty())
-                    <div class="pt-4 border-t border-border">
-                        <h2 class="text-lg font-semibold text-foreground mb-2">{{ Auth::user()->id == $user->id ? 'Pages you manage' : 'Pages managed' }}</h2>
-                        <ul class="divide-y divide-border">
-                            @foreach ($user->ownedEntities->sortBy('name') as $ownedEntity)
-                            <li class="flex items-center justify-between gap-4 py-2">
-                                <a href="{{ route('entities.show', $ownedEntity) }}" class="text-foreground hover:text-primary truncate">{{ $ownedEntity->name }}</a>
-                                <a href="{{ route('entities.stats', $ownedEntity) }}" class="shrink-0 inline-flex items-center text-sm text-primary hover:text-primary/90">
-                                    <i class="bi bi-graph-up mr-1"></i> Stats
-                                </a>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
                     <!-- Delete Button -->
                     @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
                         <div class="pt-4 border-t border-border">
@@ -513,6 +496,26 @@
                 </div>
             @endif
             </div>
+
+        <!-- Entities Card: entities this user created, listed like the ones they follow (#2156) -->
+        @if ($createdEntitiesCount > 0)
+            <div class="card-tw xl:col-span-1">
+                <div class="border-b border-border px-6 py-4">
+                    <h3 class="text-lg font-semibold text-foreground">
+                        Entities
+                        <span class="ml-1 px-2 py-0.5 bg-amber-500 text-black text-xs rounded-full font-semibold">{{ $createdEntitiesCount }}</span>
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @include('entities.list-tw', ['entities' => $createdEntities])
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <a href="{{ route('entities.index', ['filters' => ['created_by' => $user->id]]) }}" class="text-primary hover:underline text-sm">
+                            View all entities &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
         </div>
     @endif
 </div>
