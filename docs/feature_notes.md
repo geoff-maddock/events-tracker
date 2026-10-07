@@ -7,10 +7,14 @@ A more detailed description of new features and changes to the application.
 ### Fewer emails to dormant accounts (#2083)
 The daily and weekly digests now skip anyone with no activity in the last 90 days. Activity
 means logging in or doing something on the site (following, attending, creating or editing),
-using an API token, or a new account. The digests' own log entries, failed logins and
-password-reset requests don't count. The first time a dormant member would have received a
-digest, they get one "we've paused your email updates" notice with a signed link that turns
-them back on. Logging in also resumes them. `notify` and `notifyWeekly` take `--dry-run` to
+using an API token, clicking a link to the site in one of our emails, or a new account. The
+digests' own log entries, failed logins and password-reset requests don't count. Links to the
+site in member emails go through `/email/click`, which notes the click and redirects, so
+people who read the email but never log in aren't treated as dormant. The first time a
+dormant member would have received a digest, they get one "we've paused your email updates"
+notice with a signed link that turns them back on. That click, or saving the email
+preference page with a digest on, is a lasting "keep sending": they won't be paused for
+inactivity again. Logging in also resumes them. `notify` and `notifyWeekly` take `--dry-run` to
 report how many digests and notices would go out.
 
 The weekly digest only counts a followed series if it next occurs in the coming week, so

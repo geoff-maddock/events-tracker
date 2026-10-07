@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Mail\DigestsPaused;
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\Profile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,9 @@ use Illuminate\Support\Facades\Mail;
  *
  * Most digest volume went to accounts nobody had used in years. A user counts
  * as engaged if, in the last 90 days, they signed up, did something on the
- * site, used an API token, or clicked "resume" in the paused notice. A dormant
+ * site, used an API token, or clicked a site link in one of their emails; or
+ * if they have ever confirmed they want the digests (the resume link in the
+ * paused notice, or saving the preference page with a digest on). A dormant
  * user is told once that their digests are paused, then skipped until they
  * come back.
  *
@@ -77,8 +80,14 @@ class DigestEngagement
             return true;
         }
 
-        $resumed = $user->profile?->digests_resumed_at;
-        if ($resumed && $resumed->gte($cutoff)) {
+        // an explicit "keep sending" doesn't expire: a reader who never logs in
+        // is asked once, not every 90 days; bounces and unsubscribes still stop them
+        if ($user->profile?->digests_confirmed_at) {
+            return true;
+        }
+
+        $clicked = $user->profile?->email_clicked_at;
+        if ($clicked && $clicked->gte($cutoff)) {
             return true;
         }
 
@@ -120,19 +129,29 @@ class DigestEngagement
         }
     }
 
-    /** The resume link in the paused notice. */
-    public static function resume(User $user): void
+    /**
+     * The user said "keep sending": the resume link in the paused notice, or
+     * the preference page saved with a digest on. Saves the profile.
+     */
+    public static function confirm(Profile $profile): void
     {
-        $profile = $user->profile;
-        if (!$profile) {
-            return;
-        }
-
-        $profile->digests_resumed_at = now();
+        $profile->digests_confirmed_at = now();
         $profile->digests_paused_at = null;
         $profile->save();
 
-        Log::info('DigestEngagement: user resumed their digests', ['user_id' => $user->id]);
+        Log::info('DigestEngagement: user confirmed they want their digests', ['user_id' => $profile->user_id]);
+    }
+
+    /**
+     * A click on a site link in one of the user's emails. Written at most once
+     * a day, since a single digest can produce a burst of clicks.
+     */
+    public static function recordEmailClick(int $userId): void
+    {
+        Profile::query()
+            ->where('user_id', $userId)
+            ->where(fn ($q) => $q->whereNull('email_clicked_at')->orWhere('email_clicked_at', '<', now()->subDay()))
+            ->update(['email_clicked_at' => now()]);
     }
 
     private function cutoff(): Carbon

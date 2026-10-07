@@ -46,7 +46,13 @@ class EmailPreferencesController extends Controller
         foreach (EmailPreferences::LISTS as $list => $definition) {
             $profile->{$definition['setting']} = in_array($list, $keep, true) ? 1 : 0;
         }
-        $profile->save();
+
+        // choosing to keep a digest is as clear a "keep sending" as the resume link (#2083)
+        if (array_intersect($keep, [EmailPreferences::WEEKLY, EmailPreferences::DAILY]) !== []) {
+            DigestEngagement::confirm($profile);
+        } else {
+            $profile->save();
+        }
 
         flash()->success('Saved', 'Your email preferences were updated.');
 
@@ -84,13 +90,15 @@ class EmailPreferencesController extends Controller
 
     /**
      * The link in the paused notice (#2083): digests start again, and the
-     * click counts as activity for another 90 days.
+     * gate won't pause this user for inactivity again.
      */
     public function resumeDigests(int $id): View
     {
         $user = User::with('profile')->findOrFail($id);
 
-        DigestEngagement::resume($user);
+        if ($user->profile) {
+            DigestEngagement::confirm($user->profile);
+        }
 
         return view('email-preferences.resumed-tw', [
             'preferencesUrl' => EmailPreferences::preferencesUrl($user),

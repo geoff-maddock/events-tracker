@@ -126,7 +126,7 @@ class DigestEngagementTest extends TestCase
 
         $profile = $user->profile->fresh();
         $this->assertNull($profile->digests_paused_at);
-        $this->assertNotNull($profile->digests_resumed_at);
+        $this->assertNotNull($profile->digests_confirmed_at);
 
         Mail::fake();
         $this->artisan('notifyWeekly');
@@ -297,6 +297,135 @@ class DigestEngagementTest extends TestCase
         $this->get(URL::signedRoute('email.preferences', ['id' => $user->id]))
             ->assertOk()
             ->assertSee('Resume digests');
+    }
+
+    // --- confirmation and email clicks: readers who never log in ---
+
+    public function test_a_confirmed_reader_is_never_paused_for_inactivity(): void
+    {
+        Mail::fake();
+        $user = $this->subscriber();
+        $this->attendToday($user);
+        // resumed long ago and hasn't logged in since
+        $user->profile->forceFill(['digests_confirmed_at' => Carbon::now()->subDays(400)])->save();
+
+        $this->artisan('notifyWeekly');
+
+        Mail::assertSent(WeeklyUpdate::class, fn ($mail) => $mail->hasTo($user->email));
+        Mail::assertNotSent(DigestsPaused::class);
+    }
+
+    public function test_saving_the_preference_page_with_a_digest_on_confirms_it(): void
+    {
+        $user = $this->subscriber();
+
+        $this->post(URL::signedRoute('email.preferences', ['id' => $user->id]), ['lists' => ['weekly']]);
+
+        $this->assertNotNull($user->profile->fresh()->digests_confirmed_at);
+    }
+
+    public function test_unsubscribing_from_everything_does_not_confirm(): void
+    {
+        $user = $this->subscriber();
+
+        $this->post(URL::signedRoute('email.preferences', ['id' => $user->id]), ['unsubscribe_all' => '1']);
+
+        $this->assertNull($user->profile->fresh()->digests_confirmed_at);
+    }
+
+    public function test_a_recent_email_click_counts_as_activity(): void
+    {
+        Mail::fake();
+        $user = $this->subscriber();
+        $this->attendToday($user);
+        $user->profile->forceFill(['email_clicked_at' => Carbon::now()->subDays(20)])->save();
+
+        $this->artisan('notifyWeekly');
+
+        Mail::assertSent(WeeklyUpdate::class, fn ($mail) => $mail->hasTo($user->email));
+    }
+
+    public function test_an_email_click_older_than_90_days_does_not_count(): void
+    {
+        Mail::fake();
+        $user = $this->subscriber();
+        $this->attendToday($user);
+        $user->profile->forceFill(['email_clicked_at' => Carbon::now()->subDays(120)])->save();
+
+        $this->artisan('notifyWeekly');
+
+        Mail::assertNotSent(WeeklyUpdate::class);
+        Mail::assertSent(DigestsPaused::class);
+    }
+
+    private function sentWeekly(User $user): \Symfony\Component\Mime\Email
+    {
+        /** @var \Illuminate\Mail\Transport\ArrayTransport $transport */
+        $transport = Mail::getSymfonyTransport();
+        $transport->flush();
+
+        $url = rtrim((string) config('app.url'), '/').'/';
+        Mail::to($user->email)->send(new WeeklyUpdate($url, 'TestSite', 'admin@test.app', 'noreply@test.app', $user, $user->getAttendingFuture(), [], []));
+
+        /** @var \Symfony\Component\Mime\Email $email */
+        $email = $transport->messages()->last()->getOriginalMessage();
+
+        return $email;
+    }
+
+    public function test_site_links_in_a_digest_go_through_the_click_tracker(): void
+    {
+        $user = $this->subscriber();
+        $this->attendToday($user);
+        $event = $user->getAttendingFuture()->first();
+
+        $email = $this->sentWeekly($user);
+        $html = html_entity_decode((string) $email->getHtmlBody());
+        $text = (string) $email->getTextBody();
+
+        $this->assertStringContainsString("/email/click/{$user->id}?signature=", $html);
+        $this->assertStringContainsString('to=%2Fevents%2F'.rawurlencode($event->slug), $html);
+        $this->assertStringContainsString("/email/click/{$user->id}?signature=", $text);
+
+        // signed links are left alone so they keep working
+        $this->assertStringContainsString(URL::signedRoute('email.preferences', ['id' => $user->id]), $html);
+        // links elsewhere are left alone
+        $this->assertStringContainsString('mailto:admin@test.app', $html);
+    }
+
+    public function test_following_a_tracked_link_records_the_click_and_redirects(): void
+    {
+        $user = $this->subscriber();
+        $this->attendToday($user);
+        $event = $user->getAttendingFuture()->first();
+
+        preg_match('#href="([^"]*/email/click/[^"]*)"#', (string) $this->sentWeekly($user)->getHtmlBody(), $m);
+        $this->assertNotEmpty($m, 'expected a tracked link in the digest');
+        $link = html_entity_decode($m[1]);
+
+        $this->get($link)->assertRedirect(url('/events/'.$event->slug));
+
+        $this->assertNotNull($user->profile->fresh()->email_clicked_at);
+    }
+
+    public function test_a_tampered_click_link_still_redirects_but_credits_nobody(): void
+    {
+        $user = $this->subscriber();
+        $other = $this->subscriber();
+        $link = str_replace("/email/click/{$user->id}?", "/email/click/{$other->id}?", URL::signedRoute('email.click', ['id' => $user->id, 'to' => '/events']));
+
+        $this->get($link)->assertRedirect(url('/events'));
+
+        $this->assertNull($other->profile->fresh()->email_clicked_at);
+    }
+
+    public function test_the_click_tracker_only_redirects_within_the_site(): void
+    {
+        $user = $this->subscriber();
+
+        foreach (['https://evil.example/x', '//evil.example/x', '/\\evil.example', 'javascript:alert(1)'] as $to) {
+            $this->get('/email/click/'.$user->id.'?to='.urlencode($to))->assertRedirect(url('/'));
+        }
     }
 
     // --- weekly series date check ---

@@ -788,6 +788,10 @@ Route::middleware(['signed', 'throttle:30,1'])->controller(\App\Http\Controllers
     Route::post('email/unsubscribe/{id}/{list}', 'oneClick')->name('email.unsubscribe.one-click')->whereNumber('id');
 });
 
+// Site links in members' emails go through here so a click counts as activity for the
+// digest gate (#2083); checks its own signature, so a mangled link still redirects
+Route::get('email/click/{id}', \App\Http\Controllers\EmailClickController::class)->name('email.click')->whereNumber('id')->middleware('throttle:120,1');
+
 // SES bounce and complaint notifications, delivered by SNS (#2103); verified by SNS signature
 Route::post('webhooks/ses', \App\Http\Controllers\SesWebhookController::class)->name('webhooks.ses')->middleware('throttle:120,1');
 

@@ -34,7 +34,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Illuminate\Support\Carbon|null                             $onboarding_completed_at
  * @property \Illuminate\Support\Carbon|null                             $onboarding_dismissed_at
  * @property \Illuminate\Support\Carbon|null                             $digests_paused_at
- * @property \Illuminate\Support\Carbon|null                             $digests_resumed_at
+ * @property \Illuminate\Support\Carbon|null                             $digests_confirmed_at
+ * @property \Illuminate\Support\Carbon|null                             $email_clicked_at
  * @property mixed                                                       $full_name
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Link[] $links
  * @property int|null                                                    $links_count
@@ -84,7 +85,8 @@ class Profile extends Eloquent
         'onboarding_completed_at' => 'datetime',
         'onboarding_dismissed_at' => 'datetime',
         'digests_paused_at' => 'datetime',
-        'digests_resumed_at' => 'datetime',
+        'digests_confirmed_at' => 'datetime',
+        'email_clicked_at' => 'datetime',
     ];
 
     /**
