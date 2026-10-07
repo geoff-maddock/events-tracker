@@ -17,7 +17,7 @@
 				{{ number_format($counted) }} of {{ number_format($total) }} count in the stats.
 			</p>
 			<p class="text-xs text-muted-foreground mt-1">
-				Not counted: clicks with no user agent, from bots or AI agents, or made after the event ended. Bots that were recognised at the time were never recorded.
+				Not counted: clicks with no user agent, from bots or AI agents, or made after the event ended (its end time, or midnight after its start day if that is later). Bots that were recognised at the time were never recorded.
 			</p>
 		</div>
 

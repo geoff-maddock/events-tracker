@@ -104,6 +104,37 @@ class TicketClickRefinementTest extends TestCase
         $this->assertSame(0, $this->clicksOn($venue, Carbon::today()));
     }
 
+    public function test_an_end_time_equal_to_the_start_still_counts_clicks_that_night(): void
+    {
+        $day = Carbon::yesterday();
+        $venue = Entity::factory()->venue()->create();
+        $event = Event::factory()->create([
+            'venue_id' => $venue->id,
+            'start_at' => $day->copy()->setTime(20, 0),
+            'end_at' => $day->copy()->setTime(20, 0),
+        ]);
+
+        $this->click($event, $day->copy()->setTime(21, 30)); // door sales
+        $this->assertSame(1, $this->clicksOn($venue, $day));
+
+        $this->click($event, Carbon::today()->setTime(0, 30));
+        $this->assertSame(0, $this->clicksOn($venue, Carbon::today()));
+    }
+
+    public function test_a_multi_day_event_counts_clicks_until_its_end_time(): void
+    {
+        $day = Carbon::yesterday();
+        $venue = Entity::factory()->venue()->create();
+        $event = Event::factory()->create([
+            'venue_id' => $venue->id,
+            'start_at' => $day->copy()->subDays(2)->setTime(12, 0),
+            'end_at' => Carbon::today()->setTime(18, 0),
+        ]);
+
+        $this->click($event, $day->copy()->setTime(15, 0)); // day 3 of a festival
+        $this->assertSame(1, $this->clicksOn($venue, $day));
+    }
+
     public function test_older_bot_rows_are_left_out_when_stats_are_rebuilt(): void
     {
         $day = Carbon::yesterday();

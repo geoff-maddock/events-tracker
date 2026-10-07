@@ -76,13 +76,14 @@ class ClickTrack extends Model
 
     /**
      * Clicks on an event's ticket link count until the event ends: its end
-     * time, or the end of its start day when it has none.
+     * time or the end of its start day, whichever is later. An end time equal
+     * to the start (allowed by the form) doesn't cut off door sales that night.
      */
     public static function countableUntil(Event $event): Carbon
     {
-        return $event->end_at
-            ? Carbon::parse($event->end_at)
-            : Carbon::parse($event->start_at)->addDay()->startOfDay();
+        $endOfStartDay = Carbon::parse($event->start_at)->addDay()->startOfDay();
+
+        return $event->end_at ? Carbon::parse($event->end_at)->max($endOfStartDay) : $endOfStartDay;
     }
 
     /**
@@ -105,7 +106,7 @@ class ClickTrack extends Model
                 $query->selectRaw('1')
                     ->from('events as past_event')
                     ->whereColumn('past_event.id', "{$alias}.event_id")
-                    ->whereRaw("{$alias}.clicked_at >= COALESCE(past_event.end_at, DATE_ADD(DATE(past_event.start_at), INTERVAL 1 DAY))");
+                    ->whereRaw("{$alias}.clicked_at >= GREATEST(COALESCE(past_event.end_at, past_event.start_at), DATE_ADD(DATE(past_event.start_at), INTERVAL 1 DAY))");
             });
     }
 
