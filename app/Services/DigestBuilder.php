@@ -24,6 +24,8 @@ class DigestBuilder
 
     private const WEEKLY_ATTENDING_DAYS = 14;
 
+    private const WEEKLY_SERIES_DAYS = 7;
+
     /**
      * Today: events the user is going to, today's events from what they follow,
      * and followed series whose next date is today.
@@ -47,15 +49,19 @@ class DigestBuilder
 
     /**
      * The week ahead: events the user is going to in the next two weeks,
-     * upcoming events from what they follow, and their scheduled series.
+     * upcoming events from what they follow, and followed series that next
+     * occur in the coming week. Without that date check any followed active
+     * series made the weekly email go out every week (#2083).
      */
     public function weekly(User $user): Digest
     {
         $attending = $user->getAttendingFuture()->where('start_at', '<=', Carbon::now()->addDays(self::WEEKLY_ATTENDING_DAYS));
+        // nextOccurrenceDate() is never before today in New York, so this is today through day 7
+        $weekEnd = Carbon::now('America/New_York')->startOfDay()->addDays(self::WEEKLY_SERIES_DAYS);
 
         return new Digest(
             $attending,
-            $this->scheduledSeries($user),
+            $this->scheduledSeries($user, fn (Series $series) => $series->nextOccurrenceDate()?->lt($weekEnd) ?? false),
             $this->interests(
                 $user,
                 $attending,

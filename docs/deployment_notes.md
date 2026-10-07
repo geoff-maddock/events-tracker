@@ -411,3 +411,18 @@ acts on topics listed in `SES_SNS_TOPIC_ARNS`; with that unset it rejects everyt
    both formats are handled).
 5. Check it with the SES mailbox simulator: send to `bounce@simulator.amazonses.com` and
    `complaint@simulator.amazonses.com`, then look for the two rows in `email_suppressions`.
+
+## Digest engagement gate (#2083)
+
+The first gated run of each digest sends a one-time wave of "paused" notices to every
+dormant subscriber who would have received that digest. Check the numbers first:
+
+```bash
+php artisan notifyWeekly --dry-run
+php artisan notify --dry-run
+```
+
+Each prints e.g. `DRY RUN: would send 120 weekly digest(s), 85 paused notice(s); skipped 0
+paused and 448 with nothing this week.` After the first run, dormant users are skipped
+quietly (the "paused" count). Run the first gated digests while still on Mailgun, which
+already suppresses its known bounces; the notice wave then never reaches SES (#2087).

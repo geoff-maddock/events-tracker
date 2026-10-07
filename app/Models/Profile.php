@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int|null                                                    $setting_feedback_requests
  * @property \Illuminate\Support\Carbon|null                             $onboarding_completed_at
  * @property \Illuminate\Support\Carbon|null                             $onboarding_dismissed_at
+ * @property \Illuminate\Support\Carbon|null                             $digests_paused_at
+ * @property \Illuminate\Support\Carbon|null                             $digests_resumed_at
  * @property mixed                                                       $full_name
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Link[] $links
  * @property int|null                                                    $links_count
@@ -81,6 +83,8 @@ class Profile extends Eloquent
         'updated_at' => 'datetime',
         'onboarding_completed_at' => 'datetime',
         'onboarding_dismissed_at' => 'datetime',
+        'digests_paused_at' => 'datetime',
+        'digests_resumed_at' => 'datetime',
     ];
 
     /**

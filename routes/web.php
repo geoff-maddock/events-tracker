@@ -780,6 +780,8 @@ Route::post('csp-report', \App\Http\Controllers\CspReportController::class)->nam
 Route::middleware(['signed', 'throttle:30,1'])->controller(\App\Http\Controllers\EmailPreferencesController::class)->group(function () {
     Route::get('email/preferences/{id}', 'edit')->name('email.preferences')->whereNumber('id');
     Route::post('email/preferences/{id}', 'update')->name('email.preferences.update')->whereNumber('id');
+    // the resume link in the "digests paused" notice (#2083)
+    Route::get('email/digests/resume/{id}', 'resumeDigests')->name('email.digests.resume')->whereNumber('id');
     Route::get('email/unsubscribe/contact', 'unsubscribeContact')->name('email.unsubscribe.contact');
     Route::post('email/unsubscribe/contact', 'oneClickContact')->name('email.unsubscribe.contact.one-click');
     Route::get('email/unsubscribe/{id}/{list}', 'unsubscribe')->name('email.unsubscribe')->whereNumber('id');

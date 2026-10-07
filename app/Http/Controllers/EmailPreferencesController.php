@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\DigestEngagement;
 use App\Services\EmailPreferences;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -32,6 +33,7 @@ class EmailPreferencesController extends Controller
             'profile' => EmailPreferences::profileFor($user),
             'lists' => EmailPreferences::LISTS,
             'updateUrl' => EmailPreferences::preferencesUrl($user),
+            'resumeUrl' => $user->profile?->digests_paused_at ? URL::signedRoute('email.digests.resume', ['id' => $user->id]) : null,
         ]);
     }
 
@@ -78,6 +80,21 @@ class EmailPreferencesController extends Controller
         EmailPreferences::unsubscribe($user, $list);
 
         return response()->noContent();
+    }
+
+    /**
+     * The link in the paused notice (#2083): digests start again, and the
+     * click counts as activity for another 90 days.
+     */
+    public function resumeDigests(int $id): View
+    {
+        $user = User::with('profile')->findOrFail($id);
+
+        DigestEngagement::resume($user);
+
+        return view('email-preferences.resumed-tw', [
+            'preferencesUrl' => EmailPreferences::preferencesUrl($user),
+        ]);
     }
 
     /** An entity contact address (not a user) opting out of entity mail. */
