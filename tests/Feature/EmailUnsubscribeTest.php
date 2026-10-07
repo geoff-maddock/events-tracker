@@ -4,14 +4,23 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Mail\AdminMailer;
+use App\Mail\DailyReminder;
+use App\Mail\FollowingPostUpdate;
+use App\Mail\FollowingThreadUpdate;
+use App\Mail\FollowingUpdate;
+use App\Mail\UserUpdate;
 use App\Mail\EntityReminder;
 use App\Mail\EntityUpdateSummary;
 use App\Mail\WeeklyUpdate;
 use App\Models\Contact;
 use App\Models\EmailOptOut;
 use App\Models\Entity;
+use App\Models\Event;
 use App\Models\Group;
+use App\Models\Post;
 use App\Models\Profile;
+use App\Models\Tag;
+use App\Models\Thread;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Services\EmailPreferences;
@@ -20,7 +29,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Mime\Email;
 use Tests\TestCase;
 
@@ -231,6 +242,77 @@ class EmailUnsubscribeTest extends TestCase
         // not the old login-walled /profile footer
         $this->assertStringNotContainsString('on your profile', strip_tags($html));
         $this->assertStringContainsString(EmailPreferences::preferencesUrl($user), (string) $email->getTextBody());
+    }
+
+    /** @return array<string, array{0: string, 1: string}> mailable => [kind, list] */
+    public static function bulkMailables(): array
+    {
+        return [
+            'weekly update' => ['weekly', EmailPreferences::WEEKLY],
+            'daily reminder' => ['daily', EmailPreferences::DAILY],
+            'user update (admin-sent daily)' => ['user-update', EmailPreferences::DAILY],
+            'new event alert' => ['following', EmailPreferences::INSTANT],
+            'forum thread alert' => ['thread', EmailPreferences::FORUM],
+            'forum post alert' => ['post', EmailPreferences::FORUM],
+        ];
+    }
+
+    private function bulkMailable(string $kind, User $user): Mailable
+    {
+        $args = ['https://test.app/', 'TestSite', 'admin@test.app', 'noreply@test.app', $user];
+        $thread = fn () => Thread::factory()->create();
+
+        return match ($kind) {
+            'weekly' => $this->weeklyUpdate($user),
+            'daily' => new DailyReminder(...[...$args, new Collection(), [], []]),
+            'user-update' => new UserUpdate(...[...$args, new Collection(), [], []]),
+            'following' => new FollowingUpdate(...[...$args, Event::factory()->create(), Tag::factory()->create()]),
+            'thread' => new FollowingThreadUpdate(...[...$args, $thread(), Tag::factory()->create()]),
+            'post' => new FollowingPostUpdate(...[...$args, $t = $thread(), Post::factory()->create(['thread_id' => $t->id])]),
+            default => throw new \InvalidArgumentException("unknown mailable kind {$kind}"),
+        };
+    }
+
+    #[DataProvider('bulkMailables')]
+    public function test_every_user_bulk_mailable_carries_its_own_list_unsubscribe(string $kind, string $list): void
+    {
+        $user = $this->subscribedUser();
+
+        Mail::to($user->email)->send($this->bulkMailable($kind, $user));
+        $email = $this->lastSent();
+
+        $this->assertSame('List-Unsubscribe=One-Click', $this->headerValue($email, 'List-Unsubscribe-Post'));
+        $this->assertStringContainsString("/email/unsubscribe/{$user->id}/{$list}?signature=", $this->headerUrl($email));
+        $this->assertStringContainsString(EmailPreferences::preferencesUrl($user), html_entity_decode((string) $email->getHtmlBody()));
+    }
+
+    public function test_the_entity_update_summary_carries_the_contact_opt_out(): void
+    {
+        $entity = $this->entityWithContact('booker@example.com');
+        $empty = new Collection();
+
+        Mail::to('booker@example.com')->send(new EntityUpdateSummary('https://test.app/', 'TestSite', 'admin@test.app', 'noreply@test.app', $entity, $empty, $empty, $empty, $empty));
+
+        $this->assertStringContainsString('/email/unsubscribe/contact?email=booker%40example.com', $this->headerUrl($this->lastSent()));
+    }
+
+    public function test_a_user_without_a_profile_can_stop_new_event_alerts(): void
+    {
+        // FollowerNotifier still sends new-event alerts to users with no profile
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $this->assertNull($user->profile);
+
+        $this->get(EmailPreferences::preferencesUrl($user))->assertOk()->assertSee('New event alerts');
+
+        $this->post(EmailPreferences::unsubscribeUrl($user, EmailPreferences::INSTANT))->assertNoContent();
+
+        // a profile now exists, with every list off; the columns default to 1, so this
+        // must not have subscribed them to the digests along the way
+        $profile = $user->fresh('profile')->profile;
+        $this->assertNotNull($profile);
+        foreach (EmailPreferences::LISTS as $definition) {
+            $this->assertSame(0, (int) $profile->{$definition['setting']});
+        }
     }
 
     public function test_the_header_link_from_a_real_digest_works_as_one_click(): void

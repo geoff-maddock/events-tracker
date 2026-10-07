@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\EmailOptOut;
 use App\Models\EmailSuppression;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -77,16 +78,35 @@ class EmailPreferences
     }
 
     /**
-     * Turn one list off. A user without a profile is already not on any list:
-     * both digests and FollowerNotifier skip them.
+     * The user's profile, or an unsaved one describing what a user without a
+     * profile actually receives. Both digests and forum mail skip them, but
+     * FollowerNotifier still sends new-event alerts, so that list starts on.
+     * The flags are set explicitly because the columns default to 1.
      */
+    public static function profileFor(User $user): Profile
+    {
+        if ($user->profile) {
+            return $user->profile;
+        }
+
+        $profile = new Profile();
+        $profile->user_id = $user->id;
+        $profile->setting_weekly_update = 0;
+        $profile->setting_daily_update = 0;
+        $profile->setting_instant_update = 1;
+        $profile->setting_forum_update = 0;
+
+        return $profile;
+    }
+
+    /** Turn one list off. */
     public static function unsubscribe(User $user, string $list): void
     {
-        $profile = $user->profile;
-        if (!$profile || !self::isList($list)) {
+        if (!self::isList($list)) {
             return;
         }
 
+        $profile = self::profileFor($user);
         $profile->{self::LISTS[$list]['setting']} = 0;
         $profile->save();
 

@@ -29,6 +29,7 @@ class EmailPreferencesController extends Controller
 
         return view('email-preferences.edit-tw', [
             'recipient' => $user,
+            'profile' => EmailPreferences::profileFor($user),
             'lists' => EmailPreferences::LISTS,
             'updateUrl' => EmailPreferences::preferencesUrl($user),
         ]);
@@ -37,16 +38,13 @@ class EmailPreferencesController extends Controller
     public function update(Request $request, int $id): RedirectResponse
     {
         $user = User::with('profile')->findOrFail($id);
-        $profile = $user->profile;
+        $profile = EmailPreferences::profileFor($user);
 
-        if ($profile) {
-            $keep = $request->boolean('unsubscribe_all') ? [] : (array) $request->input('lists', []);
-
-            foreach (EmailPreferences::LISTS as $list => $definition) {
-                $profile->{$definition['setting']} = in_array($list, $keep, true) ? 1 : 0;
-            }
-            $profile->save();
+        $keep = $request->boolean('unsubscribe_all') ? [] : (array) $request->input('lists', []);
+        foreach (EmailPreferences::LISTS as $list => $definition) {
+            $profile->{$definition['setting']} = in_array($list, $keep, true) ? 1 : 0;
         }
+        $profile->save();
 
         flash()->success('Saved', 'Your email preferences were updated.');
 

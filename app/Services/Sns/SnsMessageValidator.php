@@ -92,8 +92,8 @@ class SnsMessageValidator
 
         $string = '';
         foreach ($keys as $key) {
-            if (!array_key_exists($key, $message)) {
-                // Subject is the only optional signed field
+            if (!isset($message[$key])) {
+                // Subject is the only optional signed field; absent or null, it isn't signed
                 if ($key === 'Subject') {
                     continue;
                 }
