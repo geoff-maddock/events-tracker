@@ -208,6 +208,27 @@ class DigestEngagementTest extends TestCase
         Mail::assertSent(WeeklyUpdate::class, fn ($mail) => $mail->hasTo($user->email));
     }
 
+    public function test_a_paused_subscriber_who_comes_back_in_an_empty_week_is_unpaused(): void
+    {
+        // nothing in their digest this week, so nothing is sent, but the pause must still clear
+        $user = $this->subscriber();
+        $user->profile->forceFill(['digests_paused_at' => Carbon::now()->subDays(30)])->save();
+        $this->logActivity($user, Action::LOGIN, 1);
+
+        $this->artisan('notifyWeekly');
+
+        $this->assertNull($user->profile->fresh()->digests_paused_at);
+    }
+
+    public function test_the_footer_links_work_without_a_trailing_slash_on_app_url(): void
+    {
+        config()->set('app.url', 'http://localhost');
+        $html = (new \App\Mail\AdminMailer('http://localhost', 'TestSite', 'admin@test.app', 'noreply@test.app'))->render();
+
+        $this->assertStringContainsString('localhost/privacy', $html);
+        $this->assertStringNotContainsString('localhostprivacy', $html);
+    }
+
     public function test_a_paused_subscriber_who_comes_back_gets_digests_and_a_fresh_notice_next_time(): void
     {
         Mail::fake();
@@ -383,9 +404,9 @@ class DigestEngagementTest extends TestCase
         $html = html_entity_decode((string) $email->getHtmlBody());
         $text = (string) $email->getTextBody();
 
-        $this->assertStringContainsString("/email/click/{$user->id}?signature=", $html);
+        $this->assertStringContainsString("/email/click/{$user->id}?to=", $html);
         $this->assertStringContainsString('to=%2Fevents%2F'.rawurlencode($event->slug), $html);
-        $this->assertStringContainsString("/email/click/{$user->id}?signature=", $text);
+        $this->assertStringContainsString("/email/click/{$user->id}?to=", $text);
 
         // signed links are left alone so they keep working
         $this->assertStringContainsString(URL::signedRoute('email.preferences', ['id' => $user->id]), $html);
@@ -399,8 +420,10 @@ class DigestEngagementTest extends TestCase
         $this->attendToday($user);
         $event = $user->getAttendingFuture()->first();
 
-        preg_match('#href="([^"]*/email/click/[^"]*)"#', (string) $this->sentWeekly($user)->getHtmlBody(), $m);
-        $this->assertNotEmpty($m, 'expected a tracked link in the digest');
+        // the event's own link, not the first tracked one (the header logo goes to /)
+        $pattern = '#href="([^"]*/email/click/[^"]*to=%2Fevents%2F'.preg_quote(rawurlencode($event->slug), '#').'&[^"]*)"#';
+        preg_match($pattern, (string) $this->sentWeekly($user)->getHtmlBody(), $m);
+        $this->assertNotEmpty($m, 'expected a tracked link to the event in the digest');
         $link = html_entity_decode($m[1]);
 
         $this->get($link)->assertRedirect(url('/events/'.$event->slug));

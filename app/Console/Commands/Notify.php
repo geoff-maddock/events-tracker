@@ -58,6 +58,12 @@ class Notify extends Command
                 continue;
             }
 
+            // engaged again after a pause: clear it now, not only when a digest goes
+            // out, so that if they lapse again they get a fresh notice
+            if ($decision === DigestEngagement::SEND && !$dryRun) {
+                $engagement->clearPause($user);
+            }
+
             $digest = $digests->daily($user);
 
             if ($digest->isEmpty()) {
@@ -81,8 +87,6 @@ class Notify extends Command
             if ($dryRun) {
                 continue;
             }
-
-            $engagement->clearPause($user);
 
             Mail::to($user->email)
                 ->send(new DailyReminder($url, $site, $admin_email, $reply_email, $user, $digest->attending, $digest->series, $digest->interests));

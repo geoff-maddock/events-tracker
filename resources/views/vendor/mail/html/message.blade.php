@@ -23,9 +23,9 @@
 @component('mail::footer')
 {{-- $unsubscribeUrl is set by bulk mail (App\Mail\Concerns\HasUnsubscribeLink) and is a signed, no-login link --}}
 @isset($unsubscribeUrl)
-You received this email from {{ config('app.name') }}. You can [unsubscribe or choose which emails you get]({{ $unsubscribeUrl }}) without logging in, or view our [Privacy Policy]({{ config('app.url') }}privacy).
+You received this email from {{ config('app.name') }}. You can [unsubscribe or choose which emails you get]({{ $unsubscribeUrl }}) without logging in, or view our [Privacy Policy]({{ url('privacy') }}).
 @else
-You received this email from {{ config('app.name') }}. You can change which emails you get on your [profile]({{ config('app.url') }}profile), or view our [Privacy Policy]({{ config('app.url') }}privacy).
+You received this email from {{ config('app.name') }}. You can change which emails you get on your [profile]({{ url('profile') }}), or view our [Privacy Policy]({{ url('privacy') }}).
 @endisset
 © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
 @endcomponent
