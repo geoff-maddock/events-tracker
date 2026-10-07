@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Mail\Concerns\HasUnsubscribeLink;
+use App\Mail\Concerns\TracksEmailClicks;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
@@ -17,6 +18,7 @@ class FollowingThreadUpdate extends Mailable
     use HasUnsubscribeLink;
     use Queueable;
     use SerializesModels;
+    use TracksEmailClicks;
 
     public string $url;
 
@@ -67,5 +69,10 @@ class FollowingThreadUpdate extends Mailable
     protected function unsubscribeUrls(): ?array
     {
         return $this->userUnsubscribeUrls($this->user, EmailPreferences::FORUM);
+    }
+
+    protected function clickTrackedUser(): ?User
+    {
+        return $this->user;
     }
 }

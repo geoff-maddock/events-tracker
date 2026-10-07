@@ -89,8 +89,8 @@ class Kernel extends ConsoleKernel
         // schedule daily email of events each user is attending today
         $schedule->command('notify')->daily()->timezone('America/New_York')->at('09:00');
 
-        // send a test email every day at noon
-        $schedule->command('adminTest')->daily()->timezone('America/New_York')->at('12:00');
+        // a weekly test email to the admin; it ran daily, one of the volume levers in #2083
+        $schedule->command('adminTest')->weekly()->mondays()->timezone('America/New_York')->at('12:00');
 
         // send event tweets every day at 8AM
         if (config('app.twitter_consumer_key') !== '999') {

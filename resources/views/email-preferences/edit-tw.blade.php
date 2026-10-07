@@ -7,6 +7,13 @@
     <h1 class="text-3xl font-bold text-foreground mb-2">Email preferences</h1>
     <p class="text-muted-foreground mb-6">Choose which emails {{ config('app.app_name') }} sends to {{ $recipient->email }}.</p>
 
+    @if ($resumeUrl)
+        <div class="card-tw p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
+            <p class="text-foreground">Your digests are paused because you haven't visited in a while.</p>
+            <x-ui.button :href="$resumeUrl">Resume digests</x-ui.button>
+        </div>
+    @endif
+
     <div class="card-tw p-6">
         <form method="POST" action="{{ $updateUrl }}" class="space-y-6">
             @csrf

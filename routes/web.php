@@ -780,11 +780,17 @@ Route::post('csp-report', \App\Http\Controllers\CspReportController::class)->nam
 Route::middleware(['signed', 'throttle:30,1'])->controller(\App\Http\Controllers\EmailPreferencesController::class)->group(function () {
     Route::get('email/preferences/{id}', 'edit')->name('email.preferences')->whereNumber('id');
     Route::post('email/preferences/{id}', 'update')->name('email.preferences.update')->whereNumber('id');
+    // the resume link in the "digests paused" notice (#2083)
+    Route::get('email/digests/resume/{id}', 'resumeDigests')->name('email.digests.resume')->whereNumber('id');
     Route::get('email/unsubscribe/contact', 'unsubscribeContact')->name('email.unsubscribe.contact');
     Route::post('email/unsubscribe/contact', 'oneClickContact')->name('email.unsubscribe.contact.one-click');
     Route::get('email/unsubscribe/{id}/{list}', 'unsubscribe')->name('email.unsubscribe')->whereNumber('id');
     Route::post('email/unsubscribe/{id}/{list}', 'oneClick')->name('email.unsubscribe.one-click')->whereNumber('id');
 });
+
+// Site links in members' emails go through here so a click counts as activity for the
+// digest gate (#2083); checks its own signature, so a mangled link still redirects
+Route::get('email/click/{id}', \App\Http\Controllers\EmailClickController::class)->name('email.click')->whereNumber('id')->middleware('throttle:120,1');
 
 // SES bounce and complaint notifications, delivered by SNS (#2103); verified by SNS signature
 Route::post('webhooks/ses', \App\Http\Controllers\SesWebhookController::class)->name('webhooks.ses')->middleware('throttle:120,1');

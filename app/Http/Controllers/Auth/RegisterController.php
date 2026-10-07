@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -76,11 +77,20 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        // As api/register does. Without a profile a new member got no weekly digest
+        // but did get every new-event alert; the column defaults decide what an
+        // empty profile is subscribed to: the weekly digest only (#2083).
+        $profile = new Profile();
+        $profile->user_id = $user->id;
+        $profile->save();
+
+        return $user;
     }
 
     /**

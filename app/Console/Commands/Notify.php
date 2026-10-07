@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\DailyReminder;
 use App\Models\User;
 use App\Services\DigestBuilder;
+use App\Services\DigestEngagement;
 use Illuminate\Console\Command;
 use Log;
 use Mail;
@@ -16,7 +17,8 @@ class Notify extends Command
      *
      * @var string
      */
-    protected $name = 'notify';
+    protected $signature = 'notify
+                            {--dry-run : Report how many digests and paused notices would go out, without sending or changing anything}';
 
     /**
      * The console command description.
@@ -30,15 +32,17 @@ class Notify extends Command
      *
      * @return mixed
      */
-    public function handle(DigestBuilder $digests)
+    public function handle(DigestBuilder $digests, DigestEngagement $engagement)
     {
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
         $site = config('app.app_name');
         $url = config('app.url');
+        $dryRun = (bool) $this->option('dry-run');
+        $counts = ['sent' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
 
         // get each user
-        $users = User::orderBy('name', 'ASC')->get();
+        $users = User::with('profile')->orderBy('name', 'ASC')->get();
 
         foreach ($users as $user) {
             // if the user does not have this setting, continue
@@ -46,11 +50,41 @@ class Notify extends Command
                 continue;
             }
 
+            // dormant and already told: skip before building anything (#2083)
+            $decision = $engagement->decide($user);
+            if ($decision === DigestEngagement::PAUSED) {
+                $counts['paused']++;
+
+                continue;
+            }
+
+            // engaged again after a pause: clear it now, not only when a digest goes
+            // out, so that if they lapse again they get a fresh notice
+            if ($decision === DigestEngagement::SEND && !$dryRun) {
+                $engagement->clearPause($user);
+            }
+
             $digest = $digests->daily($user);
 
             if ($digest->isEmpty()) {
+                $counts['empty']++;
                 Log::info('No daily events email was sent to '.$user->name.' at '.$user->email.'.');
 
+                continue;
+            }
+
+            // dormant: this would have been a digest, so it is the one paused notice instead
+            if ($decision === DigestEngagement::NOTICE) {
+                $counts['notices']++;
+                if (!$dryRun) {
+                    $engagement->pause($user);
+                }
+
+                continue;
+            }
+
+            $counts['sent']++;
+            if ($dryRun) {
                 continue;
             }
 
@@ -59,5 +93,7 @@ class Notify extends Command
 
             Log::info('Daily events email was sent to '.$user->name.' at '.$user->email.'.');
         }
+
+        $this->info(($dryRun ? 'DRY RUN: would send ' : 'Sent ')."{$counts['sent']} daily digest(s), {$counts['notices']} paused notice(s); skipped {$counts['paused']} paused and {$counts['empty']} with nothing today.");
     }
 }
