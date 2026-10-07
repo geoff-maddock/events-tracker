@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Concerns\ChecksInstagramPosting;
 use App\Jobs\Instagram\PostEventStoryToInstagram;
 use App\Jobs\Instagram\PostEventToInstagram;
+use App\Jobs\Instagram\PostTagStoriesToInstagram;
+use App\Jobs\Instagram\PostTagToInstagram;
 use App\Jobs\Instagram\PostTodaysPreviewToInstagram;
 use App\Jobs\Instagram\PostWeekendPreviewToInstagram;
 use App\Models\Event;
+use App\Models\Tag;
 use App\Services\Integrations\Instagram;
 use App\Services\Integrations\InstagramEventPoster;
 use App\Services\ImageHandler;
@@ -205,5 +208,47 @@ class EventInstagramController extends Controller
         PostTodaysPreviewToInstagram::dispatch($this->user->id);
 
         return $this->instagramActionResponse(true, 'Queued', "Today's preview is being posted to Instagram in the background. You will be notified when it finishes.");
+    }
+
+    /**
+     * Queue a tag's next upcoming events (up to ten, with photos) to be posted
+     * to the Instagram feed as one carousel. Admin only (#2287).
+     */
+    public function postTagToInstagram(string $tag, Instagram $instagram): RedirectResponse|JsonResponse
+    {
+        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+            return $this->instagramActionResponse(false, 'Error', 'You must be an admin to post a tag to Instagram.');
+        }
+
+        if ($error = $this->instagramCredentialError($instagram)) {
+            return $this->instagramActionResponse(false, 'Error', $error);
+        }
+
+        $tagObject = Tag::where('slug', '=', $tag)->firstOrFail();
+
+        PostTagToInstagram::dispatch($tagObject, $this->user->id);
+
+        return $this->instagramActionResponse(true, 'Queued', 'Upcoming '.$tagObject->name.' events are being posted to Instagram in the background. You will be notified when it finishes.');
+    }
+
+    /**
+     * Queue every upcoming event with the tag (that has a photo) to be posted
+     * to Instagram Stories, in batches. Admin only (#2287).
+     */
+    public function postTagStoriesToInstagram(string $tag, Instagram $instagram): RedirectResponse|JsonResponse
+    {
+        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+            return $this->instagramActionResponse(false, 'Error', 'You must be an admin to post tag stories to Instagram.');
+        }
+
+        if ($error = $this->instagramCredentialError($instagram)) {
+            return $this->instagramActionResponse(false, 'Error', $error);
+        }
+
+        $tagObject = Tag::where('slug', '=', $tag)->firstOrFail();
+
+        PostTagStoriesToInstagram::dispatch($tagObject, $this->user->id);
+
+        return $this->instagramActionResponse(true, 'Queued', 'Upcoming '.$tagObject->name.' events are being posted to Instagram Stories in the background. You will be notified when it finishes.');
     }
 }

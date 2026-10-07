@@ -735,6 +735,9 @@ Route::post('tags/{id}/unfollow', [
     'uses' => '\App\Http\Controllers\TagsController@unfollow',
 ]);
 
+// POST a tag's upcoming events to Instagram (#2287); admin only, checked in the controller
+Route::post('tags/{tag}/instagram-post', [\App\Http\Controllers\EventInstagramController::class, 'postTagToInstagram'])->name('tags.instagramPost')->middleware('auth');
+Route::post('tags/{tag}/instagram-stories', [\App\Http\Controllers\EventInstagramController::class, 'postTagStoriesToInstagram'])->name('tags.instagramStories')->middleware('auth');
 Route::resource('tags', \App\Http\Controllers\TagsController::class);
 
 // Add the route for rss
