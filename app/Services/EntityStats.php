@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\BotDetector;
+use App\Models\ClickTrack;
 use App\Models\Entity;
 use App\Models\EntityStatDaily;
 use App\Models\EventReachDaily;
@@ -298,24 +299,44 @@ class EntityStats
      */
     protected function clickCounts(CarbonInterface $start, CarbonInterface $end): Collection
     {
+        return $this->countPerEntity($this->creditedClicks($start, $end, countableOnly: true));
+    }
+
+    /**
+     * (click id, entity id) pairs: each ticket-link click credited to every
+     * entity on the event (venue, promoter and billed entities). With
+     * $countableOnly, bot clicks and clicks after the event ended are left
+     * out (#2293).
+     */
+    public function creditedClicks(CarbonInterface $start, CarbonInterface $end, bool $countableOnly, ?int $entityId = null): \Illuminate\Database\Query\Builder
+    {
         $window = [$start, $end];
 
         $billed = DB::table('click_tracks as c')
             ->join('entity_event as ee', 'ee.event_id', '=', 'c.event_id')
             ->whereBetween('c.clicked_at', $window)
+            ->when($entityId, fn ($query) => $query->where('ee.entity_id', $entityId))
             ->select('c.id as source_id', 'ee.entity_id');
 
         $venue = DB::table('click_tracks as c')
             ->whereNotNull('c.venue_id')
             ->whereBetween('c.clicked_at', $window)
+            ->when($entityId, fn ($query) => $query->where('c.venue_id', $entityId))
             ->select('c.id as source_id', 'c.venue_id as entity_id');
 
         $promoter = DB::table('click_tracks as c')
             ->whereNotNull('c.promoter_id')
             ->whereBetween('c.clicked_at', $window)
+            ->when($entityId, fn ($query) => $query->where('c.promoter_id', $entityId))
             ->select('c.id as source_id', 'c.promoter_id as entity_id');
 
-        return $this->countPerEntity($billed->union($venue)->union($promoter));
+        if ($countableOnly) {
+            foreach ([$billed, $venue, $promoter] as $query) {
+                ClickTrack::applyCountable($query, 'c');
+            }
+        }
+
+        return $billed->union($venue)->union($promoter);
     }
 
     /**

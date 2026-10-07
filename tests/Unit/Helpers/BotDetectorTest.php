@@ -45,4 +45,19 @@ class BotDetectorTest extends TestCase
     {
         $this->assertTrue(BotDetector::isBot('facebookexternalhit/1.1'));
     }
+
+    public function test_ai_agents_that_do_not_say_bot_are_detected(): void
+    {
+        $this->assertTrue(BotDetector::isBot('Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot'));
+        $this->assertTrue(BotDetector::isBot('Mozilla/5.0 (compatible; Perplexity-User/1.0)'));
+        $this->assertTrue(BotDetector::isBot('Claude-User/1.0'));
+    }
+
+    public function test_an_empty_user_agent_is_not_human(): void
+    {
+        $this->assertFalse(BotDetector::isHuman(null));
+        $this->assertFalse(BotDetector::isHuman(''));
+        $this->assertFalse(BotDetector::isHuman('curl/8.4.0'));
+        $this->assertTrue(BotDetector::isHuman('Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15'));
+    }
 }

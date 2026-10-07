@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Helpers\BotDetector;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\ClickTrack
@@ -47,6 +50,65 @@ class ClickTrack extends Model
     protected $casts = [
         'clicked_at' => 'datetime',
     ];
+
+    /**
+     * Why a stored click is left out of entity stats, or null when it counts
+     * (#2293). Bots are mostly not recorded at all, but older rows predate the
+     * current bot list, so it's applied again here. Keep in step with
+     * applyCountable(), which is the same rules in SQL.
+     */
+    public function exclusionReason(): ?string
+    {
+        if (empty($this->user_agent)) {
+            return 'No user agent';
+        }
+
+        if (BotDetector::isBot($this->user_agent)) {
+            return 'Bot or AI agent';
+        }
+
+        if ($this->event && $this->clicked_at && $this->clicked_at->gte(self::countableUntil($this->event))) {
+            return 'Event was over';
+        }
+
+        return null;
+    }
+
+    /**
+     * Clicks on an event's ticket link count until the event ends: its end
+     * time or the end of its start day, whichever is later. An end time equal
+     * to the start (allowed by the form) doesn't cut off door sales that night.
+     */
+    public static function countableUntil(Event $event): Carbon
+    {
+        $endOfStartDay = Carbon::parse($event->start_at)->addDay()->startOfDay();
+
+        return $event->end_at ? Carbon::parse($event->end_at)->max($endOfStartDay) : $endOfStartDay;
+    }
+
+    /**
+     * Limit a click_tracks query (aliased $alias) to the clicks that count in
+     * entity stats: a user agent that isn't a bot, and not after the event ended.
+     */
+    public static function applyCountable(Builder $query, string $alias = 'click_tracks'): Builder
+    {
+        $userAgent = "LOWER({$alias}.user_agent)";
+
+        return $query
+            ->whereNotNull("{$alias}.user_agent")
+            ->where("{$alias}.user_agent", '!=', '')
+            ->where(function (Builder $query) use ($userAgent) {
+                foreach (BotDetector::patterns() as $pattern) {
+                    $query->whereRaw("{$userAgent} NOT LIKE ?", ['%'.$pattern.'%']);
+                }
+            })
+            ->whereNotExists(function (Builder $query) use ($alias) {
+                $query->selectRaw('1')
+                    ->from('events as past_event')
+                    ->whereColumn('past_event.id', "{$alias}.event_id")
+                    ->whereRaw("{$alias}.clicked_at >= GREATEST(COALESCE(past_event.end_at, past_event.start_at), DATE_ADD(DATE(past_event.start_at), INTERVAL 1 DAY))");
+            });
+    }
 
     /**
      * Get the event that owns this click track.
