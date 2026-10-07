@@ -118,8 +118,8 @@ class EntityStatsTest extends TestCase
         $this->follow($this->makeUser(), $artist, $day);
         $this->follow($this->makeUser(), $artist, Carbon::today()->setTime(9, 0)); // outside the day
 
-        ClickTrack::create(['event_id' => $event->id, 'venue_id' => $venue->id, 'clicked_at' => $day]);
-        ClickTrack::create(['event_id' => $event->id, 'venue_id' => $venue->id, 'clicked_at' => $day]);
+        ClickTrack::create(['event_id' => $event->id, 'venue_id' => $venue->id, 'user_agent' => self::BROWSER, 'clicked_at' => $day]);
+        ClickTrack::create(['event_id' => $event->id, 'venue_id' => $venue->id, 'user_agent' => self::BROWSER, 'clicked_at' => $day]);
 
         $response = new EventResponse();
         $response->forceFill([

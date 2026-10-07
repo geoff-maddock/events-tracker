@@ -16,8 +16,31 @@ class BotDetector
         'SeekportBot', 'BLEXBot', 'DataForSeoBot', 'Applebot', 'Twitterbot',
         'facebookexternalhit', 'LinkedInBot', 'Slackbot', 'WhatsApp',
         'TelegramBot', 'Discordbot', 'SkypeUriPreview', 'Embedly',
-        'Pinterest', 'Tumblr', 'HeadlessChrome', 'PhantomJS', 'Selenium'
+        'Pinterest', 'Tumblr', 'HeadlessChrome', 'PhantomJS', 'Selenium',
+        // AI agents and fetchers whose user agent doesn't say "bot" (#2293)
+        'ChatGPT-User', 'Claude-User', 'Claude-Web', 'anthropic-ai', 'Perplexity-User',
+        'cohere-ai', 'meta-externalagent', 'meta-externalfetcher', 'GoogleOther',
+        'Google-Extended', 'MistralAI-User', 'DuckAssist',
     ];
+
+    /**
+     * The patterns, lowercased, for matching stored user agents in SQL.
+     *
+     * @return array<int, string>
+     */
+    public static function patterns(): array
+    {
+        return array_values(array_unique(array_map('strtolower', self::$botPatterns)));
+    }
+
+    /**
+     * Whether a request looks like a person in a browser: real browsers
+     * always send a user agent, so an empty one is a script.
+     */
+    public static function isHuman(?string $userAgent): bool
+    {
+        return !empty($userAgent) && !self::isBot($userAgent);
+    }
 
     /**
      * Check if the given user agent is from a bot/crawler

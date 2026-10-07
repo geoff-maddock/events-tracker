@@ -19,7 +19,7 @@
 	$cards = [
 		['label' => 'Page views', 'icon' => 'bi-eye', 'pair' => $current['views'], 'hint' => 'Visits to this page, not counting bots, owners or admins.'],
 		['label' => 'New followers', 'icon' => 'bi-star', 'pair' => $current['follows'], 'hint' => $stats['followers'].' '.Str::plural('follower', $stats['followers']).' in total.'],
-		['label' => 'Ticket link clicks', 'icon' => 'bi-ticket-perforated', 'pair' => $current['clicks'], 'hint' => 'Clicks on ticket links for events you are part of. Updated nightly.'],
+		['label' => 'Ticket link clicks', 'icon' => 'bi-ticket-perforated', 'pair' => $current['clicks'], 'hint' => 'Clicks on ticket links for events you are part of, before each event ended. Bots are not counted. Updated nightly.'],
 		['label' => 'RSVPs', 'icon' => 'bi-person-check', 'pair' => $current['responses'], 'hint' => 'Attending or interested responses on your events. Updated nightly.'],
 	];
 @endphp
@@ -79,6 +79,13 @@
 					@endif
 				</p>
 				<p class="mt-2 text-xs text-muted-foreground">{{ $card['hint'] }}</p>
+				@if ($card['label'] === 'Ticket link clicks')
+				@can('show_admin')
+				<a href="{{ route('entities.stats.clicks', ['entity' => $entity, 'period' => $period]) }}" class="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline">
+					<i class="bi bi-list-ul"></i> See each click
+				</a>
+				@endcan
+				@endif
 			</div>
 		</div>
 		@endforeach

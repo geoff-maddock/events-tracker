@@ -34,8 +34,8 @@ class ClickTrackController extends Controller
             abort(404);
         }
 
-        // Check if the request is from a bot/crawler
-        if (BotDetector::isBot($request->userAgent())) {
+        // Bots, AI agents and scripts with no user agent aren't tracked (#2293)
+        if (!BotDetector::isHuman($request->userAgent())) {
             // Redirect without tracking if it's a bot
             return redirect()->away($this->attachReferralParams($event->ticket_link));
         }
@@ -81,8 +81,8 @@ class ClickTrackController extends Controller
             abort(404);
         }
 
-        // Check if the request is from a bot/crawler
-        if (BotDetector::isBot($request->userAgent())) {
+        // Bots, AI agents and scripts with no user agent aren't tracked (#2293)
+        if (!BotDetector::isHuman($request->userAgent())) {
             // Redirect without tracking if it's a bot
             return redirect()->away($this->attachReferralParams($series->ticket_link));
         }
