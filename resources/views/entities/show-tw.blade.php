@@ -142,17 +142,20 @@
 
 		<!-- Entity Image -->
 		@if ($photo = $entity->getPrimaryPhoto())
-		{{-- Fixed aspect-ratio container reserves height before the image loads, preventing CLS.
-		     `object-contain` keeps the photo's true ratio visible inside the stable 2:1 box. --}}
-		<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow aspect-[2/1] flex items-center justify-center">
+		{{-- Full width at the photo's own shape, capped to 70% of the screen height on phones and
+		     600px on larger screens, like the event page (#2158). The old fixed 2:1 box shrank the
+		     square and portrait images most entities have to half the width on a phone.
+		     width/height are a 1:1 hint (the commonest entity image shape) so the browser
+		     reserves about the right space before the image loads. --}}
+		<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow flex items-center justify-center">
 			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 				data-lightbox="entity-main"
-				class="block w-full h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+				class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
 				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 					 alt="{{ $entity->name }}"
-					 class="object-contain w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+					 class="block object-contain w-full h-auto max-h-[70svh] lg:max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
 					 width="1200"
-					 height="600"
+					 height="1200"
 					 fetchpriority="high">
 			</a>
 		</div>
