@@ -166,8 +166,8 @@ class EventInstagramController extends Controller
 
     /**
      * Queue the weekend preview to be posted to Instagram Stories.
-     * Event selection (top weekend events by attending count) happens inside
-     * the queued job. Only accessible by admins.
+     * The queued job picks every public event of the upcoming weekend and posts
+     * them in batches of ten (#2159). Only accessible by admins.
      */
     public function postWeekendPreviewToInstagram(Instagram $instagram): RedirectResponse|JsonResponse
     {
