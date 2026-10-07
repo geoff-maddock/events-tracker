@@ -173,6 +173,9 @@ class EntityStatsTest extends TestCase
     public function test_weekly_digest_records_one_reach_per_recipient_per_event(): void
     {
         Mail::fake();
+        // only the two followers below subscribe: a seeded subscriber with nothing
+        // personal would get the Essential Events fallback, which counts reach too (#2102)
+        Profile::query()->update(['setting_weekly_update' => 0]);
 
         $artist = Entity::factory()->create();
         $event = Event::factory()->create(['start_at' => Carbon::now()->addDays(3)]);

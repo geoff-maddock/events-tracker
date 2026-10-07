@@ -26,6 +26,17 @@ class DigestBuilder
 
     private const WEEKLY_SERIES_DAYS = 7;
 
+    private const ESSENTIAL_EVENTS = 10;
+
+    private const SUGGESTIONS = 5;
+
+    /** @var array{tags: \Illuminate\Database\Eloquent\Collection<int, Tag>, entities: \Illuminate\Database\Eloquent\Collection<int, Entity>}|null */
+    private ?array $popular = null;
+
+    public function __construct(private readonly PopularContent $popularContent = new PopularContent())
+    {
+    }
+
     /**
      * Today: events the user is going to, today's events from what they follow,
      * and followed series whose next date is today.
@@ -68,6 +79,33 @@ class DigestBuilder
                 fn (Entity $entity) => $entity->futureEvents(null, $user)->items(),
                 fn (Tag $tag) => $tag->futureEvents($user),
             ),
+        );
+    }
+
+    /**
+     * The fallback for an empty weekly digest (#2102): the most popular events
+     * in the coming week the user can see, and popular tags and entities they
+     * don't follow yet. Only notifyWeekly and the weekly "send now" use it;
+     * the daily digest stays personal.
+     */
+    public function essentials(User $user): Essentials
+    {
+        $weekEnd = Carbon::now('America/New_York')->startOfDay()->addDays(self::WEEKLY_SERIES_DAYS);
+        $events = $this->popularContent->events($user, self::ESSENTIAL_EVENTS, $weekEnd);
+
+        // the same top lists for every recipient in a run; load them once
+        $this->popular ??= [
+            'tags' => $this->popularContent->tags(self::SUGGESTIONS * 4),
+            'entities' => $this->popularContent->entities(self::SUGGESTIONS * 4),
+        ];
+
+        $followedTags = $user->getTagsFollowing()->pluck('id')->all();
+        $followedEntities = $user->getEntitiesFollowing()->pluck('id')->all();
+
+        return new Essentials(
+            $events,
+            $this->popular['tags']->reject(fn (Tag $tag) => in_array($tag->id, $followedTags))->take(self::SUGGESTIONS)->values(),
+            $this->popular['entities']->reject(fn (Entity $entity) => in_array($entity->id, $followedEntities))->take(self::SUGGESTIONS)->values(),
         );
     }
 

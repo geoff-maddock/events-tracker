@@ -37,7 +37,8 @@ class Notify extends Command
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
         $site = config('app.app_name');
-        $url = config('app.url');
+        // templates append paths straight onto this ("{{ $url }}events/..."), so it must end in a slash
+        $url = url('/').'/';
         $dryRun = (bool) $this->option('dry-run');
         $counts = ['sent' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
 

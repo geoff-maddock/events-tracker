@@ -104,7 +104,8 @@ class DigestEngagementTest extends TestCase
         Mail::fake();
         $this->artisan('notifyWeekly')->assertExitCode(0);
 
-        Mail::assertNothingSent();
+        // nothing to them; a seeded subscriber may get the Essential Events fallback
+        $this->assertTrue(Mail::sent(fn (\Illuminate\Mail\Mailable $mail) => $mail->hasTo($user->email))->isEmpty());
     }
 
     public function test_the_resume_link_turns_digests_back_on(): void
@@ -291,7 +292,8 @@ class DigestEngagementTest extends TestCase
         $this->logActivity($active, Action::LOGIN, 2);
 
         $this->artisan('notifyWeekly', ['--dry-run' => true])
-            ->expectsOutputToContain('DRY RUN: would send 1 weekly digest(s), 1 paused notice(s)')
+            ->expectsOutputToContain('DRY RUN: would send 1 weekly digest(s)')
+            ->expectsOutputToContain('1 paused notice(s)')
             ->assertExitCode(0);
         $this->artisan('notify', ['--dry-run' => true])->assertExitCode(0);
 

@@ -76,6 +76,8 @@ Route::middleware('auth')->group(function () {
     Route::get('onboarding/data', [\App\Http\Controllers\OnboardingController::class, 'data'])->name('onboarding.data');
     Route::post('onboarding/follow', [\App\Http\Controllers\OnboardingController::class, 'store'])->name('onboarding.store');
     Route::post('onboarding/dismiss', [\App\Http\Controllers\OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
+    // "Pick what to follow" in the Essential Events email (#2102): open the picker, even if dismissed before
+    Route::get('onboarding', fn () => redirect('/')->with('show_onboarding', true))->name('onboarding.open');
 });
 
 // Admin reporting over collected feedback (issue #1998).
