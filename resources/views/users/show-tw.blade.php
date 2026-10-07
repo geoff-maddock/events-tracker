@@ -24,39 +24,41 @@
                     Attending
                 </a>
 
-                <!-- iCal Dropdown -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" type="button" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                        <i class="bi bi-calendar-plus mr-2"></i>
-                        iCal
-                        <i class="bi bi-chevron-down ml-2 text-xs"></i>
-                    </button>
-                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
-                        <a href="{{ route('users.attendingIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-t-lg">
-                            Attending iCal
-                        </a>
-                        <a href="{{ route('users.interestedIcal', ['id' => $user->id]) }}" class="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors rounded-b-lg">
-                            Interested iCal
-                        </a>
-                    </div>
-                </div>
             @endif
         </div>
 
-        <!-- Secondary actions (right, three-dots menu) -->
-        <div class="flex items-center gap-2">
+        <!-- Secondary actions (right, three-dots menu). ml-auto keeps them on the right
+             if the bar wraps on a phone; justify-between alone put them at the left (#2157) -->
+        <div class="flex items-center gap-2 ml-auto">
             <a href="{{ URL::route('users.index') }}" class="inline-flex items-center px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm">
                 <i class="bi bi-arrow-left mr-1"></i>
                 Back
             </a>
 
-            @if ($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')))
+            @php $canManageUser = $signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')); @endphp
+            @if ($canViewFullProfile || $canManageUser)
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" type="button" class="inline-flex items-center justify-center w-10 h-10 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors" title="More actions">
                         <i class="bi bi-three-dots-vertical"></i>
                     </button>
                     <div x-show="open" @click.away="open = false" x-cloak
                          class="absolute right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
+
+                        @if ($canViewFullProfile)
+                            <a href="{{ route('users.attendingIcal', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                                <i class="bi bi-calendar-plus mr-3 w-4 text-center"></i>
+                                Attending iCal
+                            </a>
+                            <a href="{{ route('users.interestedIcal', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                                <i class="bi bi-calendar-heart mr-3 w-4 text-center"></i>
+                                Interested iCal
+                            </a>
+                        @endif
+
+                        @if ($canManageUser)
+                        @if ($canViewFullProfile)
+                            <div class="border-t border-border my-1"></div>
+                        @endif
 
                         <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                             <i class="bi bi-pencil mr-3 w-4 text-center"></i>
@@ -126,6 +128,7 @@
                                 Impersonate
                             </a>
                         @endcan
+                        @endif
                     </div>
                 </div>
             @endif
