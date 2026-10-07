@@ -4,6 +4,7 @@ namespace App\Services\Integrations;
 
 use App\Models\Activity;
 use App\Models\Event;
+use App\Models\Tag;
 use App\Models\EventShare;
 use App\Models\Visibility;
 use App\Services\ImageHandler;
@@ -39,6 +40,9 @@ class InstagramEventPoster extends InstagramPoster
      * status poll and a publish, so one job per batch stays inside its timeout.
      */
     public const WEEKEND_PREVIEW_BATCH_SIZE = 10;
+
+    // Instagram's caption length limit
+    private const CAPTION_LIMIT = 2200;
 
     /**
      * Post a single event photo to the Instagram feed.
@@ -273,14 +277,26 @@ class InstagramEventPoster extends InstagramPoster
     {
         $this->assertCredentials();
 
-        $eventIds ??= $this->weekendPreviewEventIds();
+        return $this->postEventStories($userId, $eventIds ?? $this->weekendPreviewEventIds(), 'Weekend preview');
+    }
 
-        $events = Event::whereIn('id', $eventIds)
-            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
-            ->whereNull('cancelled_at')
-            ->get()
-            ->sortBy(fn (Event $event): int|false => array_search($event->id, $eventIds, true))
-            ->values();
+    /**
+     * Post the given events to Instagram Stories, one story each, in the order
+     * given. Events made private or cancelled since the list was built are
+     * left out. Used by the weekend preview and the tag stories (#2287).
+     *
+     * Per-event failures (no photo, upload/status/publish errors) are logged
+     * and skipped; the loop continues. Throws when nothing could be posted.
+     *
+     * @param array<int, int> $eventIds
+     *
+     * @return array{posted: int, skipped: int, total: int}
+     */
+    public function postEventStories(?int $userId, array $eventIds, string $context): array
+    {
+        $this->assertCredentials();
+
+        $events = $this->publicEventsInOrder($eventIds);
 
         $posted = 0;
         $skipped = 0;
@@ -290,7 +306,7 @@ class InstagramEventPoster extends InstagramPoster
                 $this->postStory($event, $userId);
                 $posted++;
             } catch (Exception $e) {
-                Log::info('Weekend preview: skipping event '.$event->id.': '.$e->getMessage());
+                Log::info($context.': skipping event '.$event->id.': '.$e->getMessage());
                 $skipped++;
             }
         }
@@ -300,6 +316,117 @@ class InstagramEventPoster extends InstagramPoster
         }
 
         return ['posted' => $posted, 'skipped' => $skipped, 'total' => $events->count()];
+    }
+
+    /**
+     * Every public, uncancelled upcoming event with this tag that has a primary
+     * photo, soonest first: what a tag's Instagram posts draw from (#2287).
+     *
+     * @return array<int, int>
+     */
+    public function tagEventIds(Tag $tag): array
+    {
+        $ids = $tag->events()
+            ->where('events.start_at', '>=', Carbon::now())
+            ->where('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('events.cancelled_at')
+            // the photo getPrimaryPhoto() uses
+            ->whereHas('photos', fn ($query) => $query->where('photos.is_primary', '=', 1))
+            ->orderBy('events.start_at', 'asc')
+            ->orderBy('events.id', 'asc')
+            ->pluck('events.id')
+            ->map(fn ($id): int => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($ids === []) {
+            throw new RuntimeException('No upcoming events with a photo are tagged '.$tag->name.'.');
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Post a tag's next upcoming events to the Instagram feed: a carousel of
+     * up to ten event photos (a single photo when there's only one), soonest
+     * first, with one short line per event in the caption (#2287).
+     */
+    public function postTagCarousel(Tag $tag, ?int $userId): int
+    {
+        $this->assertCredentials();
+
+        $events = $this->publicEventsInOrder(array_slice($this->tagEventIds($tag), 0, self::MAX_CAROUSEL_ITEMS));
+
+        // event photos are best effort: skip any that fail to upload
+        $igContainerIds = [];
+        $included = [];
+        foreach ($events as $event) {
+            try {
+                $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
+                $igContainerIds[] = count($events) === 1 ? 0 : $this->uploadCarouselItem($imageUrl);
+                $included[] = [$event, $imageUrl];
+            } catch (Exception $e) {
+                Log::info('Tag post: skipping event '.$event->id.': '.$e->getMessage());
+            }
+        }
+
+        if ($included === []) {
+            throw new RuntimeException('None of the upcoming events tagged '.$tag->name.' could be uploaded to Instagram.');
+        }
+
+        $caption = $this->tagCaption($tag, array_column($included, 0));
+
+        $result = count($included) === 1
+            ? $this->publishSinglePhoto($included[0][1], urlEncode($caption))
+            : $this->publishCarousel($igContainerIds, $caption);
+
+        foreach ($included as [$event]) {
+            $this->recordEventShare($event, $result, $userId);
+        }
+
+        return $result;
+    }
+
+    /**
+     * One short line per event. Instagram caps captions at 2,200 characters,
+     * and the caption goes out URL-encoded (createCarousel cuts the encoded
+     * string at 2,200), so lines are added while the encoded caption fits.
+     *
+     * @param array<int, Event> $events
+     */
+    private function tagCaption(Tag $tag, array $events): string
+    {
+        $caption = 'Upcoming '.$tag->name." events\n";
+        $footer = "\n\nMore at ".route('tags.show', $tag->slug);
+
+        foreach ($events as $event) {
+            $line = "\n".$event->start_at->format('D M j').' - '.$event->name.($event->venue ? ' @ '.$event->venue->name : '');
+
+            if (strlen(urlencode($caption.$line.$footer)) > self::CAPTION_LIMIT) {
+                break;
+            }
+            $caption .= $line;
+        }
+
+        return $caption.$footer;
+    }
+
+    /**
+     * The given events that are still public and not cancelled, in the given order.
+     *
+     * @param array<int, int> $eventIds
+     *
+     * @return \Illuminate\Support\Collection<int, Event>
+     */
+    private function publicEventsInOrder(array $eventIds): \Illuminate\Support\Collection
+    {
+        return Event::whereIn('id', $eventIds)
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
+            ->get()
+            ->sortBy(fn (Event $event): int|false => array_search($event->id, $eventIds, true))
+            ->values();
     }
 
     /**

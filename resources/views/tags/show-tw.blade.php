@@ -88,6 +88,22 @@ Tags
 								</button>
 							</form>
 							@endcan
+							@if ($signedIn && $user->hasGroup('super_admin'))
+							<form method="POST" action="{{ route('tags.instagramPost', $tagObject->slug) }}" class="inline-block w-full" data-confirm="Post the next upcoming {{ $tagObject->name }} events to Instagram?">
+								@csrf
+								<button type="submit" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors w-full text-left">
+									<i class="bi bi-instagram"></i>
+									Post to Instagram
+								</button>
+							</form>
+							<form method="POST" action="{{ route('tags.instagramStories', $tagObject->slug) }}" class="inline-block w-full" data-confirm="Post every upcoming {{ $tagObject->name }} event to Instagram Stories?">
+								@csrf
+								<button type="submit" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors w-full text-left">
+									<i class="bi bi-instagram"></i>
+									Post stories to Instagram
+								</button>
+							</form>
+							@endif
 						</div>
 					</div>
 				</div>
