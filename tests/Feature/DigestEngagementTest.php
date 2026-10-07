@@ -291,10 +291,11 @@ class DigestEngagementTest extends TestCase
         $this->attendToday($active);
         $this->logActivity($active, Action::LOGIN, 2);
 
-        $this->artisan('notifyWeekly', ['--dry-run' => true])
-            ->expectsOutputToContain('DRY RUN: would send 1 weekly digest(s)')
-            ->expectsOutputToContain('1 paused notice(s)')
-            ->assertExitCode(0);
+        // one summary line; expectsOutputToContain can only match it once, so read it directly
+        $this->assertSame(0, \Illuminate\Support\Facades\Artisan::call('notifyWeekly', ['--dry-run' => true]));
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        $this->assertStringContainsString('DRY RUN: would send 1 weekly digest(s)', $output);
+        $this->assertStringContainsString('1 paused notice(s)', $output);
         $this->artisan('notify', ['--dry-run' => true])->assertExitCode(0);
 
         Mail::assertNothingSent();
