@@ -45,7 +45,11 @@ class WriteRouteAuthorizationTest extends TestCase
             'POST broadcasting/auth',
             'POST categories/filter',
             'POST csp-report',
+            // signed-URL unsubscribe and preferences (#2103): the signature is the credential
+            'POST email/preferences/{id}',
             'POST email/resend',
+            'POST email/unsubscribe/contact',
+            'POST email/unsubscribe/{id}/{list}',
             'POST entities/filter',
             'POST entity-types/all',
             'POST entity-types/filter',
@@ -80,6 +84,8 @@ class WriteRouteAuthorizationTest extends TestCase
             'POST users/{id}/attending-ical',
             'POST users/{id}/interested-ical',
             'POST users/{id}/reset-user-attending',
+            // SES bounces via SNS (#2103): authenticated by the SNS message signature
+            'POST webhooks/ses',
         ],
         'user' => [
             'POST events/attending',

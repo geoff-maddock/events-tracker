@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Transport\ArrayTransport;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Mime\Email;
 use Tests\TestCase;
@@ -251,7 +252,10 @@ class EmailUnsubscribeTest extends TestCase
     {
         $entity = $this->entityWithContact('Booker@Example.com');
 
-        $this->artisan('notifyEntities', ['--single' => $entity->slug])->assertExitCode(0);
+        $exit = Artisan::call('notifyEntities', ['--single' => (string) $entity->id]);
+        $output = Artisan::output();
+        $this->assertSame(0, $exit, $output);
+        $this->assertCount(1, $this->transport()->messages(), $output);
         $email = $this->lastSent();
 
         $this->assertSame('List-Unsubscribe=One-Click', $this->headerValue($email, 'List-Unsubscribe-Post'));
@@ -270,7 +274,7 @@ class EmailUnsubscribeTest extends TestCase
         $this->assertTrue(EmailOptOut::isOptedOut('BOOKER@example.com', EmailOptOut::LIST_ENTITY_CONTACT));
 
         Mail::fake();
-        $this->artisan('notifyEntities', ['--single' => $entity->slug])->assertExitCode(0);
+        $this->artisan('notifyEntities', ['--single' => (string) $entity->id])->assertExitCode(0);
 
         Mail::assertNotSent(EntityReminder::class);
     }
