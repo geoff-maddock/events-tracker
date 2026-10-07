@@ -2,10 +2,12 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\HasUnsubscribeLink;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\EmailPreferences;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -13,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 
 class FollowingPostUpdate extends Mailable
 {
+    use HasUnsubscribeLink;
     use Queueable;
     use SerializesModels;
 
@@ -68,6 +71,13 @@ class FollowingPostUpdate extends Mailable
 
         return $this->markdown('emails.following-post-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': New post by '.$this->post?->user?->name.' in thread "'.$this->thread?->name.'"');
+            ->subject($this->site.': New post by '.$this->post?->user?->name.' in thread "'.$this->thread?->name.'"')
+            ->withUnsubscribeLink();
+    }
+
+    /** @return array{oneClick: string, page: string}|null */
+    protected function unsubscribeUrls(): ?array
+    {
+        return $this->userUnsubscribeUrls($this->user, EmailPreferences::FORUM);
     }
 }

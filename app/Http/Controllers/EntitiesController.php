@@ -8,6 +8,7 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Action;
 use App\Models\Alias;
+use App\Models\EmailOptOut;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
@@ -1500,6 +1501,12 @@ class EntitiesController extends Controller
 
         if (!$contact || !$contact->email) {
             flash()->error('Error', 'This entity has no contact email address on file.');
+
+            return back();
+        }
+
+        if (EmailOptOut::isOptedOut($contact->email, EmailOptOut::LIST_ENTITY_CONTACT)) {
+            flash()->error('Email not sent', $contact->email.' has unsubscribed from entity emails.');
 
             return back();
         }

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\HasUnsubscribeLink;
 use App\Models\Entity;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 
 class EntityReminder extends Mailable
 {
+    use HasUnsubscribeLink;
     use Queueable;
     use SerializesModels;
 
@@ -64,6 +66,13 @@ class EntityReminder extends Mailable
         return $this->markdown('emails.entity-reminder-markdown')
             ->from($this->reply_email, $this->site)
             ->replyTo($this->feedback_email, $this->site)
-            ->subject($this->site.': A friendly reminder - '.$this->entity->name);
+            ->subject($this->site.': A friendly reminder - '.$this->entity->name)
+            ->withUnsubscribeLink();
+    }
+
+    /** @return array{oneClick: string, page: string}|null */
+    protected function unsubscribeUrls(): ?array
+    {
+        return $this->contactUnsubscribeUrls();
     }
 }

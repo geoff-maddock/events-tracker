@@ -2,15 +2,18 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\HasUnsubscribeLink;
 use App\Models\User;
+use App\Services\EmailPreferences;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 class DailyReminder extends Mailable
 {
+    use HasUnsubscribeLink;
     use Queueable;
     use SerializesModels;
 
@@ -57,6 +60,13 @@ class DailyReminder extends Mailable
 
         return $this->markdown('emails.daily-reminder-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': Daily Reminder - '.$dt->format('l F jS Y'));
+            ->subject($this->site.': Daily Reminder - '.$dt->format('l F jS Y'))
+            ->withUnsubscribeLink();
+    }
+
+    /** @return array{oneClick: string, page: string}|null */
+    protected function unsubscribeUrls(): ?array
+    {
+        return $this->userUnsubscribeUrls($this->user, EmailPreferences::DAILY);
     }
 }

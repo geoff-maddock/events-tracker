@@ -2,8 +2,10 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\HasUnsubscribeLink;
 use App\Models\Event;
 use App\Models\User;
+use App\Services\EmailPreferences;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -11,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class FollowingUpdate extends Mailable
 {
+    use HasUnsubscribeLink;
     use Queueable;
     use SerializesModels;
 
@@ -53,6 +56,13 @@ class FollowingUpdate extends Mailable
 
         return $this->markdown('emails.following-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': '.$this->tag?->name.' :: '.$this->event?->start_at->format('D F jS').' '.$this->event?->name);
+            ->subject($this->site.': '.$this->tag?->name.' :: '.$this->event?->start_at->format('D F jS').' '.$this->event?->name)
+            ->withUnsubscribeLink();
+    }
+
+    /** @return array{oneClick: string, page: string}|null */
+    protected function unsubscribeUrls(): ?array
+    {
+        return $this->userUnsubscribeUrls($this->user, EmailPreferences::INSTANT);
     }
 }

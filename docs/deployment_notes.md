@@ -378,3 +378,36 @@ Scheduled commands inherit the timezone set per-task in the Kernel (most use
 
 Some scheduled commands queue jobs rather than doing the work inline, so they also
 need the queue worker above to be running.
+## Email unsubscribe and SES bounce handling (#2103)
+
+Bulk mail (weekly/daily digests, follower and forum alerts, entity contact mail) carries
+`List-Unsubscribe` and `List-Unsubscribe-Post` headers and a footer link. All of them are
+Laravel signed URLs with no expiry, so they need no login and old emails keep working.
+They are signed with `APP_KEY`: **rotating `APP_KEY` breaks every unsubscribe link already
+sent.**
+
+- `GET /email/unsubscribe/{user}/{list}` turns one list off and shows a confirmation;
+  `POST` to the same URL is RFC 8058 one-click (CSRF-exempt, returns 204).
+- `GET|POST /email/preferences/{user}` is the logged-out preference page.
+- `GET|POST /email/unsubscribe/contact?email=…` opts an entity contact address out of
+  entity mail (`email_opt_outs`), without suppressing account mail to that address.
+
+### SES bounces and complaints
+
+`POST /webhooks/ses` takes SES notifications through SNS, verifies the SNS signature, and
+writes permanent bounces and complaints to `email_suppressions` (source `ses`). It only
+acts on topics listed in `SES_SNS_TOPIC_ARNS`; with that unset it rejects everything.
+
+1. In SNS (us-east-2), create a topic, e.g. `ses-notifications`.
+2. Add the ARN to `.env`, then `php artisan config:clear`:
+   ```
+   SES_SNS_TOPIC_ARNS=arn:aws:sns:us-east-2:<account>:ses-notifications
+   ```
+   (comma-separated for more than one)
+3. Subscribe `https://arcane.city/webhooks/ses` to the topic (protocol HTTPS). The endpoint
+   confirms the subscription itself; the log shows `SesWebhook: confirmed the SNS subscription`.
+4. In SES, point the `arcane.city` identity's Bounce and Complaint notifications at the topic
+   (or add an SNS event destination for Bounce and Complaint on `SES_CONFIGURATION_SET`;
+   both formats are handled).
+5. Check it with the SES mailbox simulator: send to `bounce@simulator.amazonses.com` and
+   `complaint@simulator.amazonses.com`, then look for the two rows in `email_suppressions`.

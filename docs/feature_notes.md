@@ -2,6 +2,18 @@
 
 A more detailed description of new features and changes to the application.
 
+## Unreleased
+
+### One-click unsubscribe and SES bounce handling (#2103)
+Every digest and alert email now has an unsubscribe link that works without logging in,
+plus `List-Unsubscribe` / one-click headers, which Gmail and Yahoo expect from bulk senders.
+The header link turns off just that email; the footer link opens a preference page where
+the recipient picks which emails to keep, or unsubscribes from all. Entity contact
+addresses (the monthly entity reminder and the update summary) get their own opt-out,
+which stops entity mail only. SES bounce and complaint notifications delivered by SNS to
+`/webhooks/ses` now add the address to the suppression list automatically. Setup is in
+`docs/deployment_notes.md`.
+
 ## 2026.09.17
 
 ### Entity owner stats (#2149, #2146)

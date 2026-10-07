@@ -36,6 +36,14 @@ return [
 		]),
 	],
 
+	// SES bounce/complaint notifications arrive through SNS at POST /webhooks/ses (#2103).
+	// Kept out of the 'ses' block above because MailManager hands that whole
+	// block to the SES client. Only messages from these topic ARNs are acted
+	// on; with none set, the endpoint accepts nothing.
+	'ses_notifications' => [
+		'topic_arns' => array_values(array_filter(array_map('trim', explode(',', (string) env('SES_SNS_TOPIC_ARNS', ''))))),
+	],
+
 	'stripe' => [
 		'model'  => 'App\Models\User',
 		'key' => '',

@@ -21,8 +21,12 @@
 {{-- Footer --}}
 @slot('footer')
 @component('mail::footer')
-You received this email because you signed up for email notifications email from {{ config('app.name') }}
-however, you may [unsubscribe]({{ config('app.url') }}profile) from this list or view our [Privacy Policy]({{ config('app.url') }}privacy) for more information.
+{{-- $unsubscribeUrl is set by bulk mail (App\Mail\Concerns\HasUnsubscribeLink) and is a signed, no-login link --}}
+@isset($unsubscribeUrl)
+You received this email from {{ config('app.name') }}. You can [unsubscribe or choose which emails you get]({{ $unsubscribeUrl }}) without logging in, or view our [Privacy Policy]({{ config('app.url') }}privacy).
+@else
+You received this email from {{ config('app.name') }}. You can change which emails you get on your [profile]({{ config('app.url') }}profile), or view our [Privacy Policy]({{ config('app.url') }}privacy).
+@endisset
 © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
 @endcomponent
 @endslot

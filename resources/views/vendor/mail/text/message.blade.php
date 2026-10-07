@@ -21,6 +21,10 @@
     {{-- Footer --}}
     @slot('footer')
         @component('mail::footer')
+            @isset($unsubscribeUrl)
+            Unsubscribe or choose which emails you get: {{ $unsubscribeUrl }}
+
+            @endisset
             © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
         @endcomponent
     @endslot

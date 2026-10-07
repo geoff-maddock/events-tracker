@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\HasUnsubscribeLink;
 use App\Models\Entity;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -11,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class EntityUpdateSummary extends Mailable
 {
+    use HasUnsubscribeLink;
     use Queueable;
     use SerializesModels;
 
@@ -68,6 +70,13 @@ class EntityUpdateSummary extends Mailable
 
         return $this->markdown('emails.entity-update-summary-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site . ': Update Summary for ' . $this->entity->name . ' - ' . $dt->format('F Y'));
+            ->subject($this->site . ': Update Summary for ' . $this->entity->name . ' - ' . $dt->format('F Y'))
+            ->withUnsubscribeLink();
+    }
+
+    /** @return array{oneClick: string, page: string}|null */
+    protected function unsubscribeUrls(): ?array
+    {
+        return $this->contactUnsubscribeUrls();
     }
 }

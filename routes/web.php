@@ -774,6 +774,21 @@ Route::get('go/ser-{id}', [\App\Http\Controllers\ClickTrackController::class, 'r
 // CSP violation reports from browsers (report-only policy, #2166); no session or CSRF token
 Route::post('csp-report', \App\Http\Controllers\CspReportController::class)->name('csp.report')->middleware('throttle:60,1');
 
+// Logged-out unsubscribe and email preferences (#2103). The signature is the credential;
+// links don't expire. The POSTs on email/unsubscribe/* are RFC 8058 one-click requests from
+// mail clients and are CSRF-exempt; the preference form POST is not.
+Route::middleware(['signed', 'throttle:30,1'])->controller(\App\Http\Controllers\EmailPreferencesController::class)->group(function () {
+    Route::get('email/preferences/{id}', 'edit')->name('email.preferences')->whereNumber('id');
+    Route::post('email/preferences/{id}', 'update')->name('email.preferences.update')->whereNumber('id');
+    Route::get('email/unsubscribe/contact', 'unsubscribeContact')->name('email.unsubscribe.contact');
+    Route::post('email/unsubscribe/contact', 'oneClickContact')->name('email.unsubscribe.contact.one-click');
+    Route::get('email/unsubscribe/{id}/{list}', 'unsubscribe')->name('email.unsubscribe')->whereNumber('id');
+    Route::post('email/unsubscribe/{id}/{list}', 'oneClick')->name('email.unsubscribe.one-click')->whereNumber('id');
+});
+
+// SES bounce and complaint notifications, delivered by SNS (#2103); verified by SNS signature
+Route::post('webhooks/ses', \App\Http\Controllers\SesWebhookController::class)->name('webhooks.ses')->middleware('throttle:120,1');
+
 // Short URLs – create a short URL and resolve it
 Route::post('short-url', [\App\Http\Controllers\ShortUrlController::class, 'shorten'])->name('short-url.shorten')->middleware('throttle:30,1');
 Route::get('s/{code}', [\App\Http\Controllers\ShortUrlController::class, 'redirect'])->name('short-url.redirect')->where('code', '[a-zA-Z0-9]+');
