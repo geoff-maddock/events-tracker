@@ -35,6 +35,12 @@ class InstagramEventPoster extends InstagramPoster
     private const PREVIEW_STORY_LIMIT = 10;
 
     /**
+     * Weekend preview stories posted per queued job: each needs an upload, a
+     * status poll and a publish, so one job per batch stays inside its timeout.
+     */
+    public const WEEKEND_PREVIEW_BATCH_SIZE = 10;
+
+    /**
      * Post a single event photo to the Instagram feed.
      */
     public function postSingle(Event $event, ?int $userId): int
@@ -205,25 +211,15 @@ class InstagramEventPoster extends InstagramPoster
     }
 
     /**
-     * Post a weekend preview to Instagram Stories: the top events for the
-     * upcoming weekend (Fri–Sun), ranked by attending-response count.
+     * Every public, uncancelled event of the upcoming weekend (Friday 00:00
+     * through Sunday 23:59), in start-time order, so the stories run from
+     * Friday to Sunday. PostWeekendPreviewToInstagram posts them in batches of
+     * WEEKEND_PREVIEW_BATCH_SIZE (#2159).
      *
-     * Selection rules:
-     *  - If <= 10 weekend events: post all of them.
-     *  - If > 10: rank by response count descending and take top 10.
-     *  - If the 10th and 11th events are tied (no clear cutoff): fall back to
-     *    5 from Friday + 5 from Saturday, each sorted by response count.
-     *
-     * Per-event failures (no photo, upload/status/publish errors) are logged
-     * and skipped; the loop continues. Throws only for terminal cases.
-     *
-     * @return array{posted: int, skipped: int, total: int}
+     * @return array<int, int>
      */
-    public function postWeekendPreview(?int $userId): array
+    public function weekendPreviewEventIds(): array
     {
-        $this->assertCredentials();
-
-        // Determine the upcoming weekend window (Friday 00:00 through Sunday 23:59)
         $today = Carbon::today();
 
         if ($today->isFriday()) {
@@ -237,50 +233,52 @@ class InstagramEventPoster extends InstagramPoster
 
         $sundayEnd = $fridayStart->copy()->next(Carbon::SUNDAY)->endOfDay();
 
-        // Fetch all weekend events ranked by number of attending responses,
-        // excluding cancelled and non-public events.
-        $allWeekendEvents = Event::where('start_at', '>=', $fridayStart)
+        $ids = Event::where('start_at', '>=', $fridayStart)
             ->where('start_at', '<=', $sundayEnd)
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
-            ->withCount(['eventResponses as response_count'])
-            ->orderBy('response_count', 'desc')
             ->orderBy('start_at', 'asc')
-            ->get();
+            ->orderBy('id', 'asc')
+            ->pluck('id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
 
-        if ($allWeekendEvents->isEmpty()) {
+        if ($ids === []) {
             throw new RuntimeException('No events found for the upcoming weekend.');
         }
 
-        if ($allWeekendEvents->count() <= 10) {
-            $selectedEvents = $allWeekendEvents;
-        } else {
-            // A clear response-count cutoff between position 10 and 11 lets us
-            // take a clean top 10; a tie falls back to day-based distribution.
-            $tenth = $allWeekendEvents->get(9);
-            $eleventh = $allWeekendEvents->get(10);
+        return $ids;
+    }
 
-            if ($tenth && $eleventh && $tenth->response_count !== $eleventh->response_count) {
-                $selectedEvents = $allWeekendEvents->take(10);
-            } else {
-                $fridayEvents = $allWeekendEvents
-                    ->filter(fn ($e) => Carbon::parse($e->start_at)->isFriday())
-                    ->take(5);
-                $saturdayEvents = $allWeekendEvents
-                    ->filter(fn ($e) => Carbon::parse($e->start_at)->isSaturday())
-                    ->take(5);
-                $selectedEvents = $fridayEvents->merge($saturdayEvents);
-            }
-        }
+    /**
+     * Post the given weekend events to Instagram Stories, one story each, in
+     * the order given; with no ids, every event of the upcoming weekend.
+     * Events made private or cancelled since the list was built are left out.
+     *
+     * Per-event failures (no photo, upload/status/publish errors) are logged
+     * and skipped; the loop continues. Throws when nothing could be posted.
+     *
+     * @param array<int, int>|null $eventIds
+     *
+     * @return array{posted: int, skipped: int, total: int}
+     */
+    public function postWeekendPreview(?int $userId, ?array $eventIds = null): array
+    {
+        $this->assertCredentials();
 
-        if ($selectedEvents->isEmpty()) {
-            throw new RuntimeException('No events selected for the weekend preview.');
-        }
+        $eventIds ??= $this->weekendPreviewEventIds();
+
+        $events = Event::whereIn('id', $eventIds)
+            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->whereNull('cancelled_at')
+            ->get()
+            ->sortBy(fn (Event $event): int|false => array_search($event->id, $eventIds, true))
+            ->values();
 
         $posted = 0;
         $skipped = 0;
 
-        foreach ($selectedEvents as $event) {
+        foreach ($events as $event) {
             try {
                 $this->postStory($event, $userId);
                 $posted++;
@@ -294,7 +292,7 @@ class InstagramEventPoster extends InstagramPoster
             throw new RuntimeException('No stories could be posted. Ensure the selected events have photos.');
         }
 
-        return ['posted' => $posted, 'skipped' => $skipped, 'total' => $selectedEvents->count()];
+        return ['posted' => $posted, 'skipped' => $skipped, 'total' => $events->count()];
     }
 
     /**
