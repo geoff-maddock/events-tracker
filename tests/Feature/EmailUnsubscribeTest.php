@@ -42,6 +42,8 @@ class EmailUnsubscribeTest extends TestCase
         parent::setUp();
         $this->withExceptionHandling();
         config()->set('app.admin', 'admin@example.com');
+        // the CI placeholder isn't an address, and the real mailer (unlike Mail::fake) rejects it
+        config()->set('app.feedback', 'feedback@example.com');
         $this->transport()->flush();
     }
 
