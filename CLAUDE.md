@@ -45,7 +45,7 @@ PHPUnit env (`phpunit.xml`) forces `APP_ENV=testing`, `CACHE_DRIVER=array`, `SES
 
 A cached config (`bootstrap/cache/config.php`) makes Laravel ignore `phpunit.xml` and `.env.testing`, which would point `RefreshDatabase` at the dev DB. `tests/CreatesApplication.php` refuses to run in that case (or when `APP_ENV` isn't `testing`, or the DB is a live one); run `php artisan config:clear` and retry.
 
-PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part of unrelated work, and don't grow it: fix new errors in code. `tests/` isn't analysed yet (#2276).
+PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part of unrelated work, and don't grow it: fix new errors in code. Both `app/` and `tests/` are analysed.
 
 ## Architecture notes worth knowing up front
 
@@ -61,7 +61,7 @@ PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part 
 
 **Auth.** Web uses session auth; API supports both HTTP basic auth (via the `auth.either` middleware, `App\Http\Middleware\AuthenticateEither`) and Sanctum tokens (acquire via `POST /api/tokens/create`). API routes live in `routes/api.php` and `app/Http/Controllers/Api/`.
 
-**Frontend bundling.** Vite, configured in `vite.config.mjs`, with Tailwind 4 via `@tailwindcss/postcss`. The bundle entry is `resources/assets/js/app.js` (axios, SweetAlert2, Echo). The hand-written jQuery scripts in `public/js` are loaded directly by the layout. There's no Vue or Alpine. Confirmations use the one `data-confirm` handler in `resources/assets/js/bootstrap.js` (on a form, submit button or link). `npm run lint` covers both `resources/assets/js` and `public/js`.
+**Frontend bundling.** Vite, configured in `vite.config.mjs`, with Tailwind 4 via `@tailwindcss/postcss`. The bundle entry is `resources/assets/js/app.js` (axios, SweetAlert2, Echo). The hand-written jQuery scripts in `public/js` are loaded directly by the layout, and Alpine.js comes from a pinned CDN script there (used for small `x-data` menus and modals). There's no Vue. Confirmations use the one `data-confirm` handler in `resources/assets/js/bootstrap.js` (on a form, submit button or link). `npm run lint` covers both `resources/assets/js` and `public/js`.
 
 **Services.** Non-trivial integrations (Instagram, oEmbed embeds, calendar export, flyer analysis, RSS, image handling) live under `app/Services/`. Prefer extending a service over adding logic to controllers.
 
