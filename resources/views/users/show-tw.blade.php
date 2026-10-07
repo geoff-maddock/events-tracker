@@ -142,7 +142,8 @@
                     @if ($primaryPhoto)
                         @php $primaryPhotoUrl = Storage::disk('external')->url($primaryPhoto->getStoragePath()); @endphp
                         <div class="flex-shrink-0">
-                            <a href="{{ $primaryPhotoUrl }}" data-lightbox="user-photos" class="block w-40 h-40 sm:w-48 sm:h-48 overflow-hidden rounded-lg border border-border bg-card shadow">
+                            {{-- phones stack the card, so the photo gets a bigger centred square there (#2158) --}}
+                            <a href="{{ $primaryPhotoUrl }}" data-lightbox="user-photos" class="block w-64 h-64 max-w-full mx-auto sm:mx-0 sm:w-48 sm:h-48 overflow-hidden rounded-lg border border-border bg-card shadow">
                                 <img src="{{ $primaryPhotoUrl }}" alt="{{ $user->name }}" class="w-full h-full object-cover hover:opacity-90 transition-opacity">
                             </a>
                         </div>
