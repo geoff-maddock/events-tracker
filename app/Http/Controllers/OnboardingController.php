@@ -10,9 +10,9 @@ use App\Models\Follow;
 use App\Models\Profile;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\PopularContent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Post-signup "Getting To Know You" onboarding (issue #901).
@@ -40,6 +40,11 @@ class OnboardingController extends Controller
     private const TAGS_PER_PAGE = 12;
 
     private const EVENTS_PER_PAGE = 6;
+
+    public function __construct(private readonly PopularContent $popular)
+    {
+        parent::__construct();
+    }
 
     /**
      * Return the popular entities, tags, and events to seed the prompt with.
@@ -162,14 +167,7 @@ class OnboardingController extends Controller
      */
     private function popularEntities(): array
     {
-        $entities = Entity::query()
-            ->active()
-            ->withCount(['follows', 'events'])
-            ->with(['photos', 'entityType'])
-            ->orderByDesc(DB::raw('follows_count + events_count'))
-            ->orderBy('name')
-            ->limit(self::ENTITIES_PER_PAGE * self::MAX_PAGES)
-            ->get();
+        $entities = $this->popular->entities(self::ENTITIES_PER_PAGE * self::MAX_PAGES);
 
         return $entities->map(fn (Entity $entity) => [
             'id' => $entity->id,
@@ -186,12 +184,7 @@ class OnboardingController extends Controller
      */
     private function popularTags(): array
     {
-        $tags = Tag::query()
-            ->withCount(['events', 'follows'])
-            ->orderByDesc(DB::raw('events_count + follows_count'))
-            ->orderBy('name')
-            ->limit(self::TAGS_PER_PAGE * self::MAX_PAGES)
-            ->get();
+        $tags = $this->popular->tags(self::TAGS_PER_PAGE * self::MAX_PAGES);
 
         return $tags->map(fn (Tag $tag) => [
             'id' => $tag->id,
@@ -206,15 +199,7 @@ class OnboardingController extends Controller
      */
     private function popularEvents(): array
     {
-        $events = Event::query()
-            ->future()
-            ->visible(auth()->user())
-            ->withCount('attendees')
-            ->with(['venue'])
-            ->orderByDesc('attendees_count')
-            ->orderBy('start_at')
-            ->limit(self::EVENTS_PER_PAGE * self::MAX_PAGES)
-            ->get();
+        $events = $this->popular->events(auth()->user(), self::EVENTS_PER_PAGE * self::MAX_PAGES);
 
         return $events->map(fn (Event $event) => [
             'id' => $event->id,

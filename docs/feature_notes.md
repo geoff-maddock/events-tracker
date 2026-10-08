@@ -4,6 +4,19 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Essential Events in the weekly email (#2102)
+Most weekly-email subscribers follow nothing, so their personal digest was always empty and
+nothing was sent. Now, when an engaged subscriber's weekly digest would be empty, they get an
+"Essential events this week" email instead: up to 10 of the coming week's most popular events
+they can see (by attendees, then date; cancelled events left out), plus popular tags and
+artists or venues they don't follow yet, and a **Pick what to follow** button that opens the
+onboarding picker (`/onboarding`). It has its own subject line, the weekly unsubscribe link and
+header, and email click tracking, and counts toward event digest reach. Subscribers paused for
+inactivity (#2083) don't get it, and the daily digest stays personal. `notifyWeekly --dry-run`
+reports how many would go out. The popularity ranking now lives in `PopularContent`, shared
+with onboarding; onboarding's events are now actually ranked by attendees (they were sorted by
+date) and leave out cancelled events.
+
 ### Fewer emails to dormant accounts (#2083)
 The daily and weekly digests now skip anyone with no activity in the last 90 days. Activity
 means logging in or doing something on the site (following, attending, creating or editing),

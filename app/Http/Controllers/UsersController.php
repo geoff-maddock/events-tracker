@@ -10,6 +10,7 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Mail\UserActivation;
 use App\Mail\UserSuspended;
 use App\Mail\UserUpdate;
+use App\Mail\WeeklyEssentials;
 use App\Mail\WeeklyUpdate;
 use App\Models\Action;
 use App\Models\Activity;
@@ -610,7 +611,7 @@ class UsersController extends Controller
 
         // the daily digest, sent now even when it lists nothing
         $digest = $digests->daily($user);
-        $mail = new UserUpdate(config('app.url'), config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
+        $mail = new UserUpdate(url('/').'/', config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
 
         // sending the email is the whole point of this action, so report the outcome honestly
         if (!(new BestEffortMailer())->send($user->email, $mail, ['user_id' => $user->id])) {
@@ -656,15 +657,19 @@ class UsersController extends Controller
             return back();
         }
 
-        // the same digest the scheduled notifyWeekly command sends
+        // the same digest the scheduled notifyWeekly command sends, including its
+        // Essential Events fallback when there is nothing personal (#2102)
         $digest = $digests->weekly($user);
-        if ($digest->isEmpty()) {
+        $essentials = $digest->isEmpty() ? $digests->essentials($user) : null;
+        if ($essentials?->isEmpty()) {
             flash()->message('Nothing to send', 'There is nothing in the week ahead for '.$user->name.', so no weekly update was sent.');
 
             return back();
         }
 
-        $mail = new WeeklyUpdate(config('app.url'), config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
+        $mail = $essentials
+            ? new WeeklyEssentials(url('/').'/', config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $essentials)
+            : new WeeklyUpdate(url('/').'/', config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
         if (!(new BestEffortMailer())->send($user->email, $mail, ['user_id' => $user->id])) {
             flash()->error('Email not sent', 'The weekly notification email to '.$user->email.' could not be sent.');
 

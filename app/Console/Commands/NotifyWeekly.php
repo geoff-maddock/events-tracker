@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\WeeklyEssentials;
 use App\Mail\WeeklyUpdate;
 use App\Models\Activity;
 use App\Models\User;
@@ -39,9 +40,10 @@ class NotifyWeekly extends Command
         $reply_email = config('app.noreplyemail');
         $admin_email = config('app.admin');
         $site = config('app.app_name');
-        $url = config('app.url');
+        // templates append paths straight onto this ("{{ $url }}events/..."), so it must end in a slash
+        $url = url('/').'/';
         $dryRun = (bool) $this->option('dry-run');
-        $counts = ['sent' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
+        $counts = ['sent' => 0, 'essentials' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
 
         // get each user
         $users = User::with('profile')->orderBy('name', 'ASC')->get();
@@ -69,8 +71,29 @@ class NotifyWeekly extends Command
             $digest = $digests->weekly($user);
 
             if ($digest->isEmpty()) {
-                $counts['empty']++;
-                Log::info('No weekly update email was sent to '.$user->name.' at '.$user->email.'.');
+                // Nothing personal: the week's essential events instead (#2102). Only for
+                // engaged subscribers; a dormant one with nothing personal stays skipped,
+                // so the fallback never turns into a paused notice about mail they never got.
+                $essentials = $decision === DigestEngagement::SEND ? $digests->essentials($user) : null;
+
+                if (!$essentials || $essentials->isEmpty()) {
+                    $counts['empty']++;
+                    Log::info('No weekly update email was sent to '.$user->name.' at '.$user->email.'.');
+
+                    continue;
+                }
+
+                $counts['essentials']++;
+                if ($dryRun) {
+                    continue;
+                }
+
+                Mail::to($user->email)
+                    ->send(new WeeklyEssentials($url, $site, $admin_email, $reply_email, $user, $essentials));
+
+                $stats->recordEventReach($essentials->eventIds());
+                Activity::log($user, $user, 15, 'Sent weekly essential events email');
+                Log::info('Weekly essential events email was sent to '.$user->name.' at '.$user->email.'.');
 
                 continue;
             }
@@ -102,6 +125,6 @@ class NotifyWeekly extends Command
             Log::info('Weekly update email was sent to '.$user->name.' at '.$user->email.'.');
         }
 
-        $this->info(($dryRun ? 'DRY RUN: would send ' : 'Sent ')."{$counts['sent']} weekly digest(s), {$counts['notices']} paused notice(s); skipped {$counts['paused']} paused and {$counts['empty']} with nothing this week.");
+        $this->info(($dryRun ? 'DRY RUN: would send ' : 'Sent ')."{$counts['sent']} weekly digest(s), {$counts['essentials']} essential events email(s), {$counts['notices']} paused notice(s); skipped {$counts['paused']} paused and {$counts['empty']} with nothing this week.");
     }
 }
