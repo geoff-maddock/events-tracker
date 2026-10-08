@@ -1,8 +1,31 @@
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import Visibility from './utilities/visibility';
 
+/**
+ * SweetAlert2 is a third of this bundle but only used for dialogs, so it is
+ * fetched on demand (#2302): window.Swal starts as a stand-in whose fire()
+ * loads the library and passes the call on, returning the same result promise.
+ * The real library replaces window.Swal once loaded. Loading starts early on
+ * the first pointer, key or touch event, so a confirm dialog opened by that
+ * click is usually ready, and 5 s after page load at the latest.
+ */
+let swalLoading = null;
+const loadSwal = () => {
+    swalLoading ??= import('sweetalert2').then((m) => (window.Swal = m.default));
+    return swalLoading;
+};
+const Swal = {
+    fire: (...args) => loadSwal().then((swal) => swal.fire(...args)),
+};
 window.Swal = Swal;
+
+const swalTriggers = ['pointerdown', 'keydown', 'touchstart'];
+const preloadSwal = () => {
+    swalTriggers.forEach((e) => window.removeEventListener(e, preloadSwal));
+    loadSwal();
+};
+swalTriggers.forEach((e) => window.addEventListener(e, preloadSwal, { once: true, passive: true }));
+window.addEventListener('load', () => setTimeout(loadSwal, 5000));
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

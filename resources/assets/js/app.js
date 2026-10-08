@@ -6,10 +6,7 @@
 import './bootstrap';
 
 // Note: Alpine.js is loaded via CDN in the layout file
-
-// sweet alert used for flash messages / alerts
-import Swal from 'sweetalert2';
-window.Swal = Swal;
+// SweetAlert2 (window.Swal) is loaded on demand by bootstrap.js (#2302)
 
 /**
  * Heavy libraries are split into their own chunks and loaded only on the pages
