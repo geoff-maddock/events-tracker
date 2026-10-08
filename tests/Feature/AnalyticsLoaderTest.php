@@ -31,6 +31,9 @@ class AnalyticsLoaderTest extends TestCase
         $response->assertSee("gtag('config', 'G-TEST123');", false);
         $response->assertSee("s.src = 'https://www.googletagmanager.com/gtag/js?id=G-TEST123';", false);
         $response->assertSee('setTimeout(load, 5000)', false);
+        // scrolling inside <main> must count as interaction too
+        $response->assertSee("var events = ['pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart'];", false);
+        $response->assertSee('document.addEventListener(e, load, options)', false);
     }
 
     public function test_no_analytics_without_a_measurement_id(): void

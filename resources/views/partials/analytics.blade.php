@@ -12,17 +12,20 @@
 
   (function () {
     var loaded = false;
-    var events = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
+    // listened for on document in the capture phase: on wide screens the page
+    // scrolls inside <main>, and an element's scroll event doesn't bubble
+    var events = ['pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart'];
+    var options = { capture: true, passive: true };
     function load() {
       if (loaded) { return; }
       loaded = true;
-      events.forEach(function (e) { window.removeEventListener(e, load); });
+      events.forEach(function (e) { document.removeEventListener(e, load, options); });
       var s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id={{ config('app.analytics') }}';
       document.head.appendChild(s);
     }
-    events.forEach(function (e) { window.addEventListener(e, load, { once: true, passive: true }); });
+    events.forEach(function (e) { document.addEventListener(e, load, options); });
     window.addEventListener('load', function () { setTimeout(load, 5000); });
   })();
 </script>
