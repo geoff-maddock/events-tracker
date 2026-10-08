@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Analytics loads after the page settles (#2302)
+Google Analytics (`gtag.js`) cost over a second of main-thread time on a mid-range phone during
+page load. It now loads on the visitor's first interaction (pointer, key, scroll or touch) or 5
+seconds after the page loads, whichever comes first; the page view is queued and still sent.
+Visits that leave within those seconds without interacting aren't counted. The analytics
+snippet is now included when `GOOGLE_ANALYTICS` is set (it was gated on `GOOGLE_TAGS`).
+
 ### Hero images at display size (#1932)
 Entity and event heroes now load a 1200px WebP variant through `srcset`, falling back to the
 full image on wide high-density screens and for photos without a variant yet. The event hero
