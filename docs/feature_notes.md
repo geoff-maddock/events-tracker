@@ -11,6 +11,11 @@ seconds after the page loads, whichever comes first; the page view is queued and
 Visits that leave within those seconds without interacting aren't counted. The analytics
 snippet is now included when `GOOGLE_ANALYTICS` is set (it was gated on `GOOGLE_TAGS`).
 
+### Card grids skip off-screen layout (#2302)
+Event, series and entity cards use `content-visibility: auto`, so the browser skips style and
+layout for cards until they near the viewport. On a throttled phone this cut style and layout
+time by about 30% on long entity pages and the events listing.
+
 ### Hero images at display size (#1932)
 Entity and event heroes now load a 1200px WebP variant through `srcset`, falling back to the
 full image on wide high-density screens and for photos without a variant yet. The event hero
