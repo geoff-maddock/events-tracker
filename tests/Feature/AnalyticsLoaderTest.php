@@ -31,8 +31,8 @@ class AnalyticsLoaderTest extends TestCase
         $response->assertSee("gtag('config', 'G-TEST123');", false);
         $response->assertSee("s.src = 'https://www.googletagmanager.com/gtag/js?id=G-TEST123';", false);
         $response->assertSee('setTimeout(load, 5000)', false);
-        // scrolling inside <main> must count as interaction too
-        $response->assertSee("var events = ['pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart'];", false);
+        // input events only: a script scrolling an element during load isn't interaction
+        $response->assertSee("var events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];", false);
         $response->assertSee('document.addEventListener(e, load, options)', false);
     }
 

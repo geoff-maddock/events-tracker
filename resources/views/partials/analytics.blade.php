@@ -12,9 +12,12 @@
 
   (function () {
     var loaded = false;
-    // listened for on document in the capture phase: on wide screens the page
-    // scrolls inside <main>, and an element's scroll event doesn't bubble
-    var events = ['pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart'];
+    // Input events only, never 'scroll': page scripts scroll elements themselves
+    // during load (FullCalendar does), which isn't interaction. Every way a visitor
+    // scrolls starts with one of these: wheel, touch, keys, or a scrollbar drag
+    // (pointerdown). On wide screens the page scrolls inside <main>, so they're
+    // caught on document in the capture phase.
+    var events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
     var options = { capture: true, passive: true };
     function load() {
       if (loaded) { return; }
