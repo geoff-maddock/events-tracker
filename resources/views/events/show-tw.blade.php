@@ -151,9 +151,16 @@
 				@php $primaryPhotoUrl = Storage::disk('external')->url($photo->getStoragePath()); @endphp
 				<div class="relative overflow-hidden rounded-lg border border-border bg-card shadow max-h-[600px] flex items-center justify-center">
 				<a href="{{ $primaryPhotoUrl }}" data-lightbox="event-main" class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-					<img src="{{ $primaryPhotoUrl }}" 
+					{{-- the 1200px variant, with the full image for wide high-density screens (#1932);
+					     sizes follows the grid: full width, then half, then two of three columns --}}
+					<img src="{{ Storage::disk('external')->url($photo->getStorageLarge()) }}"
+						@if ($photo->hasLargeVariant())
+						srcset="{{ Storage::disk('external')->url($photo->getStorageLarge()) }} 1200w, {{ $primaryPhotoUrl }} 2000w"
+						sizes="(min-width: 1280px) 66vw, (min-width: 1024px) 50vw, 100vw"
+						@endif
 						alt="{{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
-						class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity">
+						class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
+						fetchpriority="high">
 				</a>
 				</div>
 				@endif
