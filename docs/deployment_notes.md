@@ -426,3 +426,20 @@ Each prints e.g. `DRY RUN: would send 120 weekly digest(s), 85 paused notice(s);
 paused and 448 with nothing this week.` After the first run, dormant users are skipped
 quietly (the "paused" count). Run the first gated digests while still on Mailgun, which
 already suppresses its known bounces; the notice wave then never reaches SES (#2087).
+
+## Hero image variants (#1932)
+
+New uploads get a 1200px `lg-` WebP that entity and event heroes serve through `srcset`.
+Existing photos fall back to the full image until the backfill gives them one. It covers
+primary (hero) photos only, newest first, in batches, and is safe to re-run:
+
+```bash
+php -d memory_limit=512M artisan photos:generate-variants --dry-run --thumbnails --limit=50
+php -d memory_limit=512M artisan photos:generate-variants --thumbnails --limit=200   # repeat until 0 remain
+```
+
+The first line of output says how many primary photos are left. `--thumbnails` also rebuilds
+each WebP thumbnail with today's encoder and keeps it only if it is at least 10% smaller.
+Thumbnails from before about mid-July 2026 came out 30–50% smaller in testing; newer ones are
+left alone. Legacy main images that were never size-capped can be large, which is why the
+memory limit is raised. A photo whose file is missing is logged, skipped and retried next run.

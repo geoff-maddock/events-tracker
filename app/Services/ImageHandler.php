@@ -6,6 +6,7 @@ use App\Models\Photo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
+use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\Typography\FontFactory;
 use Carbon\Carbon;
 
@@ -26,13 +27,20 @@ class ImageHandler
 
     public const WEBP_QUALITY = 75;
 
+    /** Longest side of the hero-size variant (#1932). */
+    public const LARGE_DIMENSION = 1200;
+
+    /** Higher than the main image's: heroes are mostly flyers, and small text shows artifacts first. */
+    public const LARGE_WEBP_QUALITY = 82;
+
     /**
      * Make a photo from an uploaded file.
      *
      * Stores the untouched original, then builds the main webp image (capped at
      * MAX_DIMENSION) and the square thumbnail from the local upload, so nothing
      * is downloaded back from the external disk (#2174). The photo's name and
-     * path point at the webp; the thumbnail is tn-<webp name>.
+     * path point at the webp; the thumbnail is tn-<webp name>. Images larger
+     * than LARGE_DIMENSION also get an lg- variant for heroes (#1932).
      */
     public function makePhoto(UploadedFile $file): Photo
     {
@@ -56,10 +64,31 @@ class ImageHandler
         $disk = Storage::disk('external');
         $disk->put($photo->path, (string) $image->toWebp(self::WEBP_QUALITY), 'public');
 
+        $this->writeLarge($photo, $image);
+
         $image->cover(self::THUMBNAIL_SIZE, self::THUMBNAIL_SIZE);
         $disk->put($photo->thumbnail, (string) $image->toWebp(self::WEBP_QUALITY), 'public');
 
         return $photo;
+    }
+
+    /**
+     * Write the hero-size variant of a decoded main image and set
+     * $photo->large. When the image is no bigger than LARGE_DIMENSION, the
+     * main image already serves and no file is written. Scales $image down in
+     * place, which is fine for the thumbnail cut from it afterwards.
+     */
+    public function writeLarge(Photo $photo, ImageInterface $image): void
+    {
+        if (max($image->width(), $image->height()) <= self::LARGE_DIMENSION) {
+            $photo->large = $photo->path;
+
+            return;
+        }
+
+        $image->scaleDown(self::LARGE_DIMENSION, self::LARGE_DIMENSION);
+        $photo->large = $photo->largeVariantPath();
+        Storage::disk('external')->put($photo->large, (string) $image->toWebp(self::LARGE_WEBP_QUALITY), 'public');
     }
 
     /**

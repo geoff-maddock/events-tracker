@@ -4,6 +4,14 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Hero images at display size (#1932)
+Entity and event heroes now load a 1200px WebP variant through `srcset`, falling back to the
+full image on wide high-density screens and for photos without a variant yet. The event hero
+also gets `fetchpriority="high"`, as the entity hero already had. The lightbox and the OG
+image still use the full image. `photos:generate-variants` backfills the variant for existing
+hero photos and, with `--thumbnails`, rebuilds heavy legacy thumbnails (see
+`docs/deployment_notes.md`).
+
 ### Essential Events in the weekly email (#2102)
 Most weekly-email subscribers follow nothing, so their personal digest was always empty and
 nothing was sent. Now, when an engaged subscriber's weekly digest would be empty, they get an

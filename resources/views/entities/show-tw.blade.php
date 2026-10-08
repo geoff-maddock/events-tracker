@@ -151,7 +151,13 @@
 			<a href="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
 				data-lightbox="entity-main"
 				class="block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-				<img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}"
+				{{-- the 1200px variant, with the full image for wide high-density screens (#1932);
+				     sizes follows the grid: full width, then half, then two of three columns --}}
+				<img src="{{ Storage::disk('external')->url($photo->getStorageLarge()) }}"
+					 @if ($photo->hasLargeVariant())
+					 srcset="{{ Storage::disk('external')->url($photo->getStorageLarge()) }} 1200w, {{ Storage::disk('external')->url($photo->getStoragePath()) }} 2000w"
+					 sizes="(min-width: 1280px) 66vw, (min-width: 1024px) 50vw, 100vw"
+					 @endif
 					 alt="{{ $entity->name }}"
 					 class="block object-contain w-full h-auto max-h-[70svh] lg:max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
 					 width="1200"

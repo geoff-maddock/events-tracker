@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @property int                                                           $id
  * @property string                                                        $name
  * @property string                                                        $thumbnail
+ * @property string|null                                                   $large
  * @property string                                                        $path
  * @property string                                                        $caption
  * @property int                                                           $is_public
@@ -65,7 +66,7 @@ class Photo extends Eloquent
     private string $thumbName = '';
 
     protected $fillable = [
-        'name', 'path', 'thumbnail', 'caption',
+        'name', 'path', 'thumbnail', 'large', 'caption',
     ];
 
     protected $casts = [
@@ -183,7 +184,8 @@ class Photo extends Eloquent
 
     public function delete()
     {
-        Storage::disk('external')->delete([$this->path, $this->thumbnail]);
+        // large is the main image's own path when no separate variant was needed
+        Storage::disk('external')->delete(array_values(array_unique(array_filter([$this->path, $this->thumbnail, $this->large]))));
 
         return parent::delete();
     }
@@ -204,6 +206,27 @@ class Photo extends Eloquent
     {
         // changed for external / s3 storage
         return $this->thumbnail;
+    }
+
+    /**
+     * The hero-size image (#1932): the 1200px variant, or the main image when
+     * the photo has none (not generated yet, or the main is already small).
+     */
+    public function getStorageLarge(): string
+    {
+        return $this->large ?: $this->path;
+    }
+
+    /** Whether there is a separate, smaller hero image than the main one. */
+    public function hasLargeVariant(): bool
+    {
+        return !empty($this->large) && $this->large !== $this->path;
+    }
+
+    /** Where the 1200px variant of this photo is stored: lg-<main name>.webp. */
+    public function largeVariantPath(): string
+    {
+        return sprintf('%s/lg-%s.webp', dirname($this->path), pathinfo($this->path, PATHINFO_FILENAME));
     }
 
     public function getPath(): string
