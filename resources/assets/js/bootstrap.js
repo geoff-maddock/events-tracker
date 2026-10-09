@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Visibility from './utilities/visibility';
 
 /**
  * SweetAlert2 is a third of this bundle but only used for dialogs, so it is
@@ -68,14 +67,6 @@ if (token) {
 } else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
-
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
-
-Visibility.init('body');
 
 /**
  * Global confirm-modal handler: the one place a SweetAlert2 confirmation is
@@ -153,6 +144,12 @@ document.addEventListener('click', function (e) {
         }
     });
 }, true);
+
+/**
+ * Echo exposes an expressive API for subscribing to channels and listening
+ * for events that are broadcast by Laravel. Echo and event broadcasting
+ * allows your team to easily build robust real-time web applications.
+ */
 
 const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
 

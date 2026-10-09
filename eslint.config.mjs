@@ -4,7 +4,6 @@ import globals from 'globals';
 export default [
     {
         ignores: [
-            'public/js/app.js', // the Vite bundle
             'public/js/swagger.js', // committed swagger-ui build behind /api/docs
             'public/js/*.min.js',
         ],
