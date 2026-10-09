@@ -1,6 +1,6 @@
 /**
  * The site's JavaScript entry point (built by Vite). bootstrap.js sets up
- * axios, SweetAlert, the collapsible-section state and the confirm modal.
+ * axios, SweetAlert and the confirm modal.
  */
 
 import './bootstrap';

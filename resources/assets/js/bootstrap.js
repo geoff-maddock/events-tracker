@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Visibility from './utilities/visibility';
 
 /**
  * SweetAlert2 is a third of this bundle but only used for dialogs, so it is
@@ -74,8 +73,6 @@ if (token) {
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
-
-Visibility.init('body');
 
 /**
  * Global confirm-modal handler: the one place a SweetAlert2 confirmation is

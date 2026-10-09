@@ -32,7 +32,6 @@
     "dependencies": {
         "chart.js": "^4.4.3",
         "dropzone": "^6.0.0-beta.1",
-        "jquery": "^3.5.1",
         "laravel-echo": "^1.6.1",
         "sweetalert2": "^11.22"
     }
