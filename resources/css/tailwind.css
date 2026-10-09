@@ -188,13 +188,22 @@
   }
 
   /* Event card specific styles */
+  /* Cards skip style, layout and paint until they near the viewport (#2302): long
+     card grids cost seconds of layout on a phone. The cards already clip with
+     overflow-hidden, so the paint containment changes nothing visible. Only the
+     height gets a placeholder (560px, a typical card), so a card still takes its
+     width from its container; "auto" keeps its real height once rendered. */
   .event-card-tw {
     @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
+    content-visibility: auto;
+    contain-intrinsic-height: auto 560px;
   }
 
   /* Entity card specific styles */
   .entity-card-tw {
     @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
+    content-visibility: auto;
+    contain-intrinsic-height: auto 560px;
   }
 
   .event-card-image-tw {
