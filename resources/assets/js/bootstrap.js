@@ -69,12 +69,6 @@ if (token) {
 }
 
 /**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
-
-/**
  * Global confirm-modal handler: the one place a SweetAlert2 confirmation is
  * attached to a destructive or state-changing action (#2269).
  *
@@ -150,6 +144,12 @@ document.addEventListener('click', function (e) {
         }
     });
 }, true);
+
+/**
+ * Echo exposes an expressive API for subscribing to channels and listening
+ * for events that are broadcast by Laravel. Echo and event broadcasting
+ * allows your team to easily build robust real-time web applications.
+ */
 
 const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
 
