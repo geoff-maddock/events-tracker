@@ -1,8 +1,49 @@
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import Visibility from './utilities/visibility';
 
+/**
+ * SweetAlert2 is a third of this bundle but only used for dialogs, so it is
+ * fetched on demand (#2302): window.Swal starts as a stand-in whose fire()
+ * loads the library and passes the call on, returning the same result promise.
+ * The real library replaces window.Swal once loaded. Loading starts early on
+ * the first pointer, key or touch event, so a confirm dialog opened by that
+ * click is usually ready, and 5 s after page load at the latest.
+ *
+ * If the chunk can't be fetched (offline, or a tab left open across a deploy
+ * that changed its hash), dialogs fall back to the browser's own confirm() or
+ * alert() rather than failing silently. The browser caches a failed import,
+ * so the fallback stays in use until the page is reloaded.
+ */
+let swalLoading = null;
+const loadSwal = () => {
+    swalLoading ??= import('sweetalert2').then((m) => (window.Swal = m.default));
+    return swalLoading;
+};
+const nativeFire = (options) => {
+    const o = typeof options === 'object' && options !== null ? options : { title: String(options ?? '') };
+    const message = [o.title, o.text].filter(Boolean).join('\n\n') || 'Are you sure?';
+    if (o.showCancelButton) {
+        const confirmed = window.confirm(message);
+        return { isConfirmed: confirmed, isDenied: false, isDismissed: !confirmed, value: confirmed || undefined };
+    }
+    window.alert(message);
+    return { isConfirmed: true, isDenied: false, isDismissed: false, value: true };
+};
+const Swal = {
+    fire: (...args) => loadSwal().then(
+        (swal) => swal.fire(...args),
+        () => nativeFire(args[0]),
+    ),
+};
 window.Swal = Swal;
+
+const swalTriggers = ['pointerdown', 'keydown', 'touchstart'];
+const preloadSwal = () => {
+    swalTriggers.forEach((e) => window.removeEventListener(e, preloadSwal));
+    loadSwal();
+};
+swalTriggers.forEach((e) => window.addEventListener(e, preloadSwal, { once: true, passive: true }));
+window.addEventListener('load', () => setTimeout(loadSwal, 5000));
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

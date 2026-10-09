@@ -16,6 +16,15 @@ Event, series and entity cards use `content-visibility: auto`, so the browser sk
 layout for cards until they near the viewport. On a throttled phone this cut style and layout
 time by about 30% on long entity pages and the events listing.
 
+### SweetAlert2 loads on demand (#2302)
+SweetAlert2 was a third of the main JavaScript bundle but is only used for dialogs. `window.Swal`
+now starts as a stand-in whose `fire()` loads the library and passes the call on, returning the
+same result promise, so existing `Swal.fire(...)` calls are unchanged. Loading starts on the first
+pointer, key or touch event, or 5 seconds after page load. The main bundle went from 218 KB to
+141 KB (50 KB gzipped). Only `fire()` is provided before the library loads; use `fire()` rather
+than other Swal methods in page scripts. If the chunk can't be fetched, dialogs fall back to the
+browser's own `confirm()` or `alert()` until the page is reloaded.
+
 ### Hero images at display size (#1932)
 Entity and event heroes now load a 1200px WebP variant through `srcset`, falling back to the
 full image on wide high-density screens and for photos without a variant yet. The event hero
