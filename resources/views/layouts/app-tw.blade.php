@@ -56,7 +56,7 @@
 	<!-- Full Calendar -->
 	@yield('calendar.include')
 
-	@if (config('app.google_tags') !== "")
+	@if (config('app.analytics') !== "")
 	@include ('partials.analytics')
 	@endif
 
