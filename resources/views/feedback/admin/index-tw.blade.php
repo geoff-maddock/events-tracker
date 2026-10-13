@@ -142,7 +142,7 @@
         </div>
 
         <div class="mt-4">
-            <x-ui.pagination :paginator="$responses" />
+            {!! $responses->onEachSide(2)->links('vendor.pagination.tailwind') !!}
         </div>
     @endif
 </div>
