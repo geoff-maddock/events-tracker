@@ -121,7 +121,7 @@
         </form>
 
         <div class="mt-4">
-            <x-ui.pagination :paginator="$signups" />
+            {!! $signups->onEachSide(2)->links('vendor.pagination.tailwind') !!}
         </div>
     @endif
 </div>

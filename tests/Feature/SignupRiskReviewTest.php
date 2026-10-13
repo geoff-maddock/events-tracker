@@ -175,6 +175,15 @@ class SignupRiskReviewTest extends TestCase
             ->assertDontSee($fine->email);
     }
 
+    public function test_the_review_list_paginates(): void
+    {
+        User::factory()->count(51)->create(['user_status_id' => UserStatus::PENDING]);
+
+        $this->actingAs($this->admin())->get(route('users.signups', ['show' => 'all']))
+            ->assertOk()
+            ->assertSee('page=2', false);
+    }
+
     public function test_approving_a_signup_trusts_and_activates_it(): void
     {
         $user = $this->apiRegister('Kevinzzexods', 'kz@spammy-zz.ru');
