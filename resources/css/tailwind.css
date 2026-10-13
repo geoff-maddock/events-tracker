@@ -197,14 +197,24 @@
     @apply px-4 py-3;
   }
 
-  /* Tighter desktop sidebar rows on short (laptop) viewports (#2309) */
+  /* Tighter desktop sidebar on short (laptop) viewports (#2309). Rows step down
+     only as the height requires: a signed-in nav (10 rows) fits without
+     scrolling down to ~795px tall at py-2, ~755px at py-1.5, ~715px at py-1. */
   @media (max-height: 860px) {
-    .sidebar-desktop-tw .nav-item-tw {
-      @apply py-1;
-    }
-
     .sidebar-desktop-tw .sidebar-block-tw {
       @apply py-2;
+    }
+  }
+
+  @media (max-height: 810px) {
+    .sidebar-desktop-tw .nav-item-tw {
+      @apply py-1.5;
+    }
+  }
+
+  @media (max-height: 770px) {
+    .sidebar-desktop-tw .nav-item-tw {
+      @apply py-1;
     }
   }
 
