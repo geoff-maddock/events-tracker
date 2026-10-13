@@ -221,4 +221,54 @@ class SignupRiskReviewTest extends TestCase
         $this->assertSame(UserStatus::ACTIVE, (int) $admin->fresh()->user_status_id);
         $this->assertSame(UserStatus::ACTIVE, (int) $other->fresh()->user_status_id);
     }
+    public function test_music_scene_names_and_words_are_not_scored_as_spam(): void
+    {
+        $scorer = app(SignupRiskScorer::class);
+
+        foreach (['djdancefloor', 'SUBCINEMA', 'DJ Shadow'] as $name) {
+            $this->assertFalse(SignupRiskScorer::looksGenerated($name), $name);
+        }
+        $this->assertTrue(SignupRiskScorer::looksGenerated('Kevinexods'));
+        $this->assertTrue(SignupRiskScorer::looksGenerated('JessicalStync'));
+
+        $user = User::factory()->create(['name' => 'Telegram', 'user_status_id' => UserStatus::ACTIVE]);
+        $profile = new Profile();
+        $profile->user_id = $user->id;
+        $profile->bio = 'Booking DJ slots for our Friday night. Ask on Telegram.';
+        $profile->save();
+
+        $this->assertSame([], $scorer->contentReasons($user->fresh()));
+    }
+
+    public function test_links_anywhere_in_the_profile_are_a_signal(): void
+    {
+        $user = User::factory()->create(['name' => 'Jane Doe', 'user_status_id' => UserStatus::ACTIVE]);
+        $profile = new Profile();
+        $profile->user_id = $user->id;
+        $profile->location = 'www.spam.example';
+        $profile->save();
+
+        $this->assertSame(['profile_links'], app(SignupRiskScorer::class)->contentReasons($user->fresh()));
+    }
+
+    public function test_not_yet_trusted_leaves_out_established_members(): void
+    {
+        $new = User::factory()->create(['name' => 'Brand New Member', 'user_status_id' => UserStatus::ACTIVE]);
+        $established = User::factory()->create([
+            'name' => 'Established Member',
+            'user_status_id' => UserStatus::ACTIVE,
+            'created_at' => now()->subDays(20),
+        ]);
+        \App\Models\EventResponse::create([
+            'user_id' => $established->id,
+            'event_id' => \App\Models\Event::factory()->create()->id,
+            'response_type_id' => \App\Models\ResponseType::ATTENDING,
+        ]);
+        $this->assertTrue($established->fresh()->isTrusted());
+
+        $this->actingAs($this->admin())->get(route('users.signups', ['show' => 'untrusted']))
+            ->assertOk()
+            ->assertSee('Brand New Member')
+            ->assertDontSee('Established Member');
+    }
 }

@@ -6,13 +6,14 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
- * Caps the links in the bio of an account that isn't trusted yet (#2312).
- * Spam accounts that get past signup use the bio as a billboard; a real new
- * member can add their links once the account is established.
+ * Caps the links an account that isn't trusted yet can put in its profile
+ * text: bio, display name, alias and location (#2312). Spam accounts that get
+ * past signup use these as a billboard; a real new member can add links once
+ * the account is established.
  */
-class BioLinks implements ValidationRule
+class UntrustedLinks implements ValidationRule
 {
-    public function __construct(private readonly bool $allowLinks)
+    public function __construct(private readonly bool $allowLinks, private readonly int $maxLinks = 0)
     {
     }
 
@@ -22,8 +23,8 @@ class BioLinks implements ValidationRule
             return;
         }
 
-        if (self::countLinks($value) > (int) config('signup.untrusted_bio_max_links')) {
-            $fail('Links in your bio are available once your account is established. Please remove them for now.');
+        if (self::countLinks($value) > $this->maxLinks) {
+            $fail('Links aren\'t allowed in your :attribute until your account is established. Please remove them for now.');
         }
     }
 

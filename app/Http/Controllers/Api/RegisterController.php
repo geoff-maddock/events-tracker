@@ -9,6 +9,7 @@ use App\Models\UserStatus;
 use App\Models\Profile;
 use App\Http\Resources\UserResource;
 use App\Rules\NotDisposableEmail;
+use App\Rules\UntrustedLinks;
 use App\Services\FrontendUrl;
 use App\Services\Signup\SignupFormToken;
 use App\Services\Signup\SignupRiskScorer;
@@ -74,7 +75,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'name' => ['required', 'string', 'min:3', 'max:255', new UntrustedLinks(false)],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users', new NotDisposableEmail()],
             'password' => ['required', 'string', 'min:8'],
             'g-recaptcha-response' => 'required|captcha',

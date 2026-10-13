@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 use App\Models\User;
-use App\Rules\BioLinks;
+use App\Rules\UntrustedLinks;
 
 class ProfileRequest extends Request
 {
@@ -29,13 +29,13 @@ class ProfileRequest extends Request
         $userId = optional($owner)->id;
 
         return [
-            'name' => 'required|string|min:3|max:255',
+            'name' => ['required', 'string', 'min:3', 'max:255', self::linkRule($owner instanceof User ? $owner : null, $this->user())],
             'email' => 'required|string|email|max:255|unique:users,email,'.($userId ?? 'NULL').',id',
             // the profile form's fields, so the controller can save validated() alone (#2180)
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
-            'alias' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
+            'alias' => ['nullable', 'string', 'max:255', self::linkRule($owner instanceof User ? $owner : null, $this->user())],
+            'location' => ['nullable', 'string', 'max:255', self::linkRule($owner instanceof User ? $owner : null, $this->user())],
             'bio' => self::bioRules($owner instanceof User ? $owner : null, $this->user()),
             'default_theme' => 'nullable|in:dark,light',
             'facebook_username' => 'nullable|string|max:255',
@@ -64,8 +64,22 @@ class ProfileRequest extends Request
      */
     public static function bioRules(?User $owner, ?User $editor): array
     {
-        $allowLinks = ($editor && $editor->can('grant_access')) || ($owner && $owner->isTrusted());
+        return [
+            'nullable', 'string', 'max:'.(int) config('signup.bio_max_length'),
+            new UntrustedLinks(self::allowsLinks($owner, $editor), (int) config('signup.untrusted_bio_max_links')),
+        ];
+    }
 
-        return ['nullable', 'string', 'max:'.(int) config('signup.bio_max_length'), new BioLinks($allowLinks)];
+    /**
+     * No links in the name, alias or location of an untrusted account (#2312).
+     */
+    public static function linkRule(?User $owner, ?User $editor): UntrustedLinks
+    {
+        return new UntrustedLinks(self::allowsLinks($owner, $editor));
+    }
+
+    private static function allowsLinks(?User $owner, ?User $editor): bool
+    {
+        return ($editor && $editor->can('grant_access')) || ($owner && $owner->isTrusted());
     }
 }

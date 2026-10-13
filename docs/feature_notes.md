@@ -12,15 +12,19 @@ those accounts used their profile bio for spam.
   Disposable email domains (`resources/data/disposable_email_domains.txt`, CC0) are refused on the
   web and the API. Registration is capped at 10 per IP per hour, with web and API sharing the budget.
 - **Before an account is trusted:** only the account and admins see its bio and social handles
-  (profile page, user cards, API), and its bio can't hold links. An account is trusted once it's
+  (profile page, user cards, API). Its bio, display name, alias and location can't hold links, and
+  neither can a display name at signup. An account is trusted once it's
   active and verified, and then either approved by an admin or at least 7 days old with something
   done on the site (an event, entity, comment, response or follow). Bios are capped at 2000
   characters. Comments, posts, reviews and entity edits now need a verified email.
-- **Risk score:** each signup is scored on links or spam keywords in the bio, a generated-looking
-  name, an unusual email TLD, a burst of signups from one IP and, optionally, StopForumSpam. A score
+- **Risk score:** each signup is scored on links in the profile, spam keywords in the bio, a
+  generated-looking name (a capitalised single word of 9+ letters; all-lowercase or all-caps
+  aliases don't count), an unusual email TLD, a burst of signups from one IP and, optionally, StopForumSpam. A score
   of 3 or more keeps the account Pending after it verifies. A new account is rescored when it edits
   its profile. Admins review signups at `/users/signups` (linked from Admin Tools), where they can
-  approve accounts, or ban them as spam, which also clears their bio and social handles.
+  approve accounts, or ban them as spam, which also clears their bio and social handles. Admin
+  Tools' "Purge Users" now removes only Pending accounts that never verified, so flagged accounts
+  waiting for review are kept.
 - **Settings:** in `config/signup.php`. The StopForumSpam lookup is off until
   `STOPFORUMSPAM_ENABLED=true`, because it sends an MD5 hash of the email and the signup IP to
   stopforumspam.org.

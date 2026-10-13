@@ -153,4 +153,16 @@ class SignupBotChecksTest extends TestCase
             'ip_address' => '127.0.0.1',
         ]);
     }
+    public function test_a_link_in_the_name_is_refused_at_signup(): void
+    {
+        $this->post('/register', $this->payload(['name' => 'Visit spam-shop.com']))
+            ->assertSessionHasErrors('name');
+
+        $this->postJson('/api/register', [
+            'name' => 'https://spam.example',
+            'email' => 'api-link-name@example.com',
+            'password' => 'password1234',
+            'g-recaptcha-response' => 'valid-captcha-token',
+        ])->assertStatus(422)->assertJsonValidationErrors('name');
+    }
 }

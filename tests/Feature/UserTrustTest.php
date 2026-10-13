@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\Profile;
 use App\Models\ResponseType;
+use App\Models\Thread;
 use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -177,5 +178,40 @@ class UserTrustTest extends TestCase
             ->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseMissing('comments', ['message' => 'ZZ unverified comment']);
+    }
+    public function test_an_unverified_account_cannot_post_or_review(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
+        $thread = Thread::factory()->create();
+        $event = Event::factory()->create();
+
+        $this->actingAs($user)
+            ->post("/threads/{$thread->id}/posts", ['body' => 'ZZ unverified post'])
+            ->assertRedirect(route('verification.notice'));
+
+        $this->actingAs($user)
+            ->post("/events/{$event->id}/reviews", ['review' => 'ZZ unverified review'])
+            ->assertRedirect(route('verification.notice'));
+    }
+
+    public function test_an_untrusted_account_cannot_put_links_in_its_name_alias_or_location(): void
+    {
+        $user = $this->member([], '');
+
+        $this->actingAs($user)->put("/users/{$user->slug}", [
+            'name' => 'Cheap pills spam-shop.com',
+            'email' => $user->email,
+            'alias' => 'see www.spam.example',
+            'location' => 'https://spam.example',
+        ])->assertSessionHasErrors(['name', 'alias', 'location']);
+
+        $this->actingAs($user, 'sanctum')
+            ->patchJson("/api/users/{$user->id}", ['profile' => ['alias' => 'www.spam.example']])
+            ->assertStatus(422)->assertJsonValidationErrors('profile.alias');
+
+        $trusted = $this->member(['trusted_at' => now()], '');
+        $this->actingAs($trusted)->put("/users/{$trusted->slug}", [
+            'name' => $trusted->name, 'email' => $trusted->email, 'alias' => 'label.com',
+        ])->assertSessionHasNoErrors();
     }
 }

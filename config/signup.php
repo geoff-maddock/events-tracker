@@ -48,10 +48,12 @@ return [
     // Email TLDs that are rare for real members here.
     'suspicious_tlds' => ['ru', 'cn', 'xyz', 'top', 'click', 'buzz', 'icu', 'cyou', 'shop', 'site', 'online', 'store', 'loan', 'work'],
 
+    // Whole words or phrases. Avoid words with an ordinary meaning on a music
+    // site ("slots" as in DJ slots, a band called Telegram); use a phrase instead.
     'spam_keywords' => [
-        'casino', 'viagra', 'cialis', 'crypto', 'bitcoin', 'forex', 'payday', 'loan', 'escort', 'porn',
-        'betting', 'slots', 'seo service', 'backlinks', 'essay writing', 'buy cheap', 'click here',
-        'telegram', 'whatsapp', 'onlyfans', 'replica', 'weight loss',
+        'casino', 'viagra', 'cialis', 'crypto trading', 'crypto investment', 'bitcoin', 'forex', 'payday',
+        'escort', 'porn', 'sports betting', 'online slots', 'seo service', 'backlinks', 'essay writing',
+        'buy cheap', 'click here', 'onlyfans', 'replica watches', 'weight loss',
     ],
 
     // Registrations from one IP within a day before the next one scores as a burst.

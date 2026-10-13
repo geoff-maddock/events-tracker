@@ -5,8 +5,8 @@ namespace App\Services\Signup;
 use App\Models\Activity;
 use App\Models\User;
 use App\Models\UserStatus;
-use App\Rules\BioLinks;
 use App\Rules\NotDisposableEmail;
+use App\Rules\UntrustedLinks;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -23,7 +23,7 @@ use Throwable;
 class SignupRiskScorer
 {
     public const WEIGHTS = [
-        'bio_links' => 2,
+        'profile_links' => 2,
         'spam_keywords' => 2,
         'name_pattern' => 1,
         'suspicious_tld' => 2,
@@ -33,7 +33,7 @@ class SignupRiskScorer
     ];
 
     public const LABELS = [
-        'bio_links' => 'Links in bio',
+        'profile_links' => 'Links in profile',
         'spam_keywords' => 'Spam keywords',
         'name_pattern' => 'Generated-looking name',
         'suspicious_tld' => 'Unusual email domain',
@@ -97,17 +97,17 @@ class SignupRiskScorer
         $reasons = [];
         $bio = (string) $user->profile?->bio;
 
-        if ($bio !== '' && BioLinks::countLinks($bio) > 0) {
-            $reasons[] = 'bio_links';
+        // links anywhere in the profile text: an older account may still have them
+        $profileText = implode(' ', [$user->name, $user->profile?->alias, $user->profile?->location, $bio]);
+        if (UntrustedLinks::countLinks($profileText) > 0) {
+            $reasons[] = 'profile_links';
         }
 
         if ($this->hasSpamKeyword($user->name.' '.$bio)) {
             $reasons[] = 'spam_keywords';
         }
 
-        // the classic generated name: one long run of letters, e.g. a first
-        // name with a random suffix. Weak alone, so it only adds a point.
-        if (preg_match('/^\p{L}{9,}$/u', trim((string) $user->name))) {
+        if (self::looksGenerated(trim((string) $user->name))) {
             $reasons[] = 'name_pattern';
         }
 
@@ -123,6 +123,17 @@ class SignupRiskScorer
         }
 
         return $reasons;
+    }
+
+    /**
+     * The classic generated name: a capitalised first name run into a random
+     * suffix, one word of 9+ letters ("Kevinexods", "JessicalStync"). All
+     * lowercase or all caps, as many DJ and band names are, doesn't count.
+     * Weak alone, so it only adds a point.
+     */
+    public static function looksGenerated(string $name): bool
+    {
+        return mb_strlen($name) >= 9 && preg_match('/^\p{Lu}\p{Ll}+(?:\p{Lu}\p{Ll}+)?$/u', $name) === 1;
     }
 
     /**

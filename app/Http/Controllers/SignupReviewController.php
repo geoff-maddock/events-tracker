@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Services\Signup\SignupRiskScorer;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,7 +50,9 @@ class SignupReviewController extends Controller
         if ($show === 'flagged') {
             $query->where('risk_score', '>=', (int) config('signup.risk_threshold'));
         } elseif ($show === 'untrusted') {
-            $query->whereNull('trusted_at')->where('user_status_id', '!=', UserStatus::BANNED);
+            // not trusted by any route (approval, admin, or established), and not already banned
+            $query->whereNot(fn (Builder $query) => $query->trusted())
+                ->where('users.user_status_id', '!=', UserStatus::BANNED);
         }
 
         return view('users.signups-tw', [

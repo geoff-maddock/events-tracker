@@ -17,9 +17,11 @@ class ProfileResource extends JsonResource
      */
     public function toArray($request)
     {
-        // bio and social handles stay private until the account is trusted (#2312)
-        $viewer = $request->user() ?? $request->user('sanctum');
-        $shown = $this->user->showsProfileContentTo($viewer);
+        // bio and social handles stay private until the account is trusted (#2312).
+        // Most profiles have none, so skip the trust lookup (a few queries) for those.
+        $hasContent = filled($this->bio) || filled($this->facebook_username)
+            || filled($this->twitter_username) || filled($this->instagram_username);
+        $shown = !$hasContent || $this->user->showsProfileContentTo($request->user() ?? $request->user('sanctum'));
 
         return [
             'id' => $this->id,

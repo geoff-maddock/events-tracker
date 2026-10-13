@@ -771,8 +771,12 @@ class UsersController extends Controller
     {
         abort_unless($request->user()?->can('grant_access'), 403);
 
-        // get all the users who are not approved
-        $users = User::where('user_status_id', '=', '1')->orderBy('name', 'ASC')->get();
+        // pending users who never verified their email. A verified signup that the
+        // risk score holds at Pending waits in the signup review instead (#2312)
+        $users = User::where('user_status_id', '=', UserStatus::PENDING)
+            ->whereNull('email_verified_at')
+            ->orderBy('name', 'ASC')
+            ->get();
 
         if (count($users) < 1) {
             flash()->success('Error', 'There are no users to purge.');

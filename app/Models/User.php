@@ -470,30 +470,61 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * What counts as doing something on the site, for trust (#2312): table => user column.
+     */
+    public const CONTRIBUTION_COLUMNS = [
+        'events' => 'created_by',
+        'entities' => 'created_by',
+        'comments' => 'created_by',
+        'event_responses' => 'user_id',
+        'follows' => 'user_id',
+    ];
+
+    /**
      * Whether the user has done anything on the site: added an event or an
      * entity, commented, responded to an event, or followed something.
      */
     public function hasContributed(): bool
     {
         if ($this->hasContributedMemo === null) {
-            $id = $this->id;
-            $exists = fn (string $table, string $column): string => sprintf('exists (select 1 from %s where %s = ?)', $table, $column);
+            $exists = array_map(
+                fn (string $table, string $column): string => sprintf('exists (select 1 from %s where %s = ?)', $table, $column),
+                array_keys(self::CONTRIBUTION_COLUMNS),
+                self::CONTRIBUTION_COLUMNS
+            );
 
             $row = DB::selectOne(
-                'select ('.implode(' or ', [
-                    $exists('events', 'created_by'),
-                    $exists('entities', 'created_by'),
-                    $exists('comments', 'created_by'),
-                    $exists('event_responses', 'user_id'),
-                    $exists('follows', 'user_id'),
-                ]).') as contributed',
-                [$id, $id, $id, $id, $id]
+                'select ('.implode(' or ', $exists).') as contributed',
+                array_fill(0, count($exists), $this->id)
             );
 
             $this->hasContributedMemo = (bool) ($row->contributed ?? false);
         }
 
         return $this->hasContributedMemo;
+    }
+
+    /**
+     * Users that isTrusted() would accept, as a query; keep the two in step.
+     *
+     * @param Builder<User> $query
+     */
+    public function scopeTrusted(Builder $query): void
+    {
+        $query->where('users.user_status_id', UserStatus::ACTIVE)
+            ->whereNotNull('users.email_verified_at')
+            ->where(function (Builder $query) {
+                $query->whereNotNull('users.trusted_at')
+                    ->orWhereHas('groups', fn (Builder $groups) => $groups->whereIn('groups.name', ['admin', 'super_admin']))
+                    ->orWhere(function (Builder $query) {
+                        $query->where('users.created_at', '<=', now()->subDays((int) config('signup.trust_after_days')))
+                            ->where(function (Builder $query) {
+                                foreach (self::CONTRIBUTION_COLUMNS as $table => $column) {
+                                    $query->orWhereExists(fn ($sub) => $sub->selectRaw('1')->from($table)->whereColumn("{$table}.{$column}", 'users.id'));
+                                }
+                            });
+                    });
+            });
     }
 
     /**
