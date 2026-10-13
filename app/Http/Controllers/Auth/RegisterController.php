@@ -4,8 +4,14 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\Models\Activity;
 use App\Models\Profile;
 use App\Models\User;
+use App\Rules\NotDisposableEmail;
+use App\Rules\UntrustedLinks;
+use App\Rules\SignupFormSubmission;
+use App\Services\Signup\SignupFormToken;
+use App\Services\Signup\SignupRiskScorer;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +39,7 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        return view('auth.register-tw');
+        return view('auth.register-tw', ['formToken' => SignupFormToken::issue()]);
     }
 
     /**
@@ -51,6 +57,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware('throttle:registrations')->only('register');
     }
 
     /**
@@ -62,10 +69,16 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'name' => ['required', 'string', 'max:255', new UntrustedLinks(false)],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', new NotDisposableEmail()],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'g-recaptcha-response' => 'required|captcha'
+            'g-recaptcha-response' => 'required|captcha',
+            // the honeypot and the form timing (#2312); both fail with the same vague message
+            SignupFormToken::HONEYPOT => 'prohibited',
+            SignupFormToken::FIELD => ['required', new SignupFormSubmission()],
+        ], [
+            SignupFormToken::HONEYPOT.'.prohibited' => SignupFormSubmission::MESSAGE,
+            SignupFormToken::FIELD.'.required' => SignupFormSubmission::MESSAGE,
         ]);
     }
 
@@ -106,6 +119,10 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user): mixed
     {
+        // score before logging, so the IP burst counts only earlier signups (#2312)
+        app(SignupRiskScorer::class)->assessRegistration($user, $request->ip());
+        Activity::log($user, null, 1, sprintf('New user registered: %s', $user->email));
+
         if (! $user->hasVerifiedEmail()) {
             $request->session()->flash('show_verification_notice', $user->email);
         }

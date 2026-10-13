@@ -38,6 +38,13 @@
 
             <form method="POST" action="{{ url('/register') }}" class="space-y-6">
                 @csrf
+                <input type="hidden" name="{{ \App\Services\Signup\SignupFormToken::FIELD }}" value="{{ $formToken }}">
+
+                {{-- honeypot (#2312): moved off-screen rather than display:none, which some bots skip --}}
+                <div aria-hidden="true" style="position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;">
+                    <label for="{{ \App\Services\Signup\SignupFormToken::HONEYPOT }}">Leave this field empty</label>
+                    <input type="text" name="{{ \App\Services\Signup\SignupFormToken::HONEYPOT }}" id="{{ \App\Services\Signup\SignupFormToken::HONEYPOT }}" value="" tabindex="-1" autocomplete="off">
+                </div>
 
                 <x-ui.form-group name="name" label="Name" :error="$errors->first('name')" required>
                     <x-ui.input

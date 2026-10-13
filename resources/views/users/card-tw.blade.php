@@ -25,7 +25,7 @@
         </h3>
 
         <!-- User Bio/Description -->
-        @if ($user->profile && $user->profile->bio)
+        @if ($user->profile && $user->profile->bio && $user->showsProfileContentTo(Auth::user()))
         <p class="text-sm text-muted-foreground mb-3 line-clamp-3">{{ $user->profile->bio }}</p>
         @endif
 

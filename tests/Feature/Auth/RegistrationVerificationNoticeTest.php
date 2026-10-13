@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Services\Signup\SignupFormToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +33,8 @@ class RegistrationVerificationNoticeTest extends TestCase
             'password' => 'password1234',
             'password_confirmation' => 'password1234',
             'g-recaptcha-response' => 'valid-captcha-token',
+            // a form loaded a little while ago (#2312)
+            SignupFormToken::FIELD => SignupFormToken::issue(time() - 10),
         ], $overrides);
     }
 

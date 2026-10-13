@@ -113,6 +113,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
         });
 
+        // new accounts, web and API sharing one budget per IP (#2312)
+        RateLimiter::for('registrations', function (Request $request) {
+            return Limit::perHour((int) config('signup.registrations_per_hour'))->by('register:'.$request->ip());
+        });
+
         RateLimiter::for('photo-from-url', function (Request $request) {
             return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
         });

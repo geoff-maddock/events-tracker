@@ -8,7 +8,11 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Profile;
 use App\Http\Resources\UserResource;
+use App\Rules\NotDisposableEmail;
+use App\Rules\UntrustedLinks;
 use App\Services\FrontendUrl;
+use App\Services\Signup\SignupFormToken;
+use App\Services\Signup\SignupRiskScorer;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,6 +53,9 @@ class RegisterController extends Controller
         
         event(new Registered($user));
 
+        // score before logging, so the IP burst counts only earlier signups (#2312)
+        app(SignupRiskScorer::class)->assessRegistration($user, $request->ip());
+
         // add an activity log that a new user was added
         Activity::log($user, null, 1, sprintf('New user registered: %s', $user->email));
 
@@ -68,10 +75,12 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'min:3', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'name' => ['required', 'string', 'min:3', 'max:255', new UntrustedLinks(false)],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', new NotDisposableEmail()],
             'password' => ['required', 'string', 'min:8'],
             'g-recaptcha-response' => 'required|captcha',
+            // a client that renders the honeypot sends it empty; the form timing is web-only (#2312)
+            SignupFormToken::HONEYPOT => 'prohibited',
             'frontend-url' => ['nullable', 'string', 'url', 'max:255']
         ], [
             'name.required' => 'A name is required',
@@ -84,6 +93,7 @@ class RegisterController extends Controller
             'password.min' => 'A password must be at least 8 characters',
             'g-recaptcha-response.required' => 'Please complete the captcha verification',
             'g-recaptcha-response.captcha' => 'Captcha verification failed',
+            SignupFormToken::HONEYPOT.'.prohibited' => 'Registration failed. Please try again.',
             'frontend-url.url' => 'The frontend URL must be a valid URL',
             'frontend-url.max' => 'The frontend URL must be less than 255 characters'
         ]);

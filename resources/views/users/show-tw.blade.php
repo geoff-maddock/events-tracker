@@ -187,15 +187,20 @@
                         </div>
                     @endif
 
-                    @if ($canViewFullProfile && $user->profile->bio)
+                    @if ($canViewFullProfile && $showProfileContent && $user->profile->bio)
                         <div class="pt-4 border-t border-border">
                             <span class="font-semibold text-foreground block mb-2">Bio:</span>
                             <p class="text-muted-foreground">{{ $user->profile->bio }}</p>
+                            @if (Auth::id() === $user->id && !$user->isTrusted())
+                                <p class="text-xs text-muted-foreground mt-2">
+                                    <i class="bi bi-eye-slash mr-1"></i>Only you can see your bio and social links until your account is established.
+                                </p>
+                            @endif
                         </div>
                     @endif
 
                     <!-- Social Links -->
-                    @if ($canViewFullProfile && ($user->profile->facebook_username || $user->profile->twitter_username || $user->profile->instagram_username))
+                    @if ($canViewFullProfile && $showProfileContent && ($user->profile->facebook_username || $user->profile->twitter_username || $user->profile->instagram_username))
                         <div class="pt-4 border-t border-border">
                             <span class="font-semibold text-foreground block mb-2">Social:</span>
                             <div class="flex flex-wrap gap-3">

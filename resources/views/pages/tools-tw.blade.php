@@ -51,6 +51,19 @@
             </form>
         </div>
 
+        <!-- Signup Review Section (#2312) -->
+        <div class="card-tw p-6">
+            <h2 class="text-xl font-semibold text-foreground mb-4">
+                <i class="bi bi-person-check mr-2"></i>Signup Review
+            </h2>
+            <p class="text-muted-foreground mb-4">
+                Recent signups with their spam risk. Approve real members, or ban spam accounts and clear their profiles.
+            </p>
+            <x-ui.button variant="outline" href="{{ route('users.signups', ['show' => 'flagged']) }}">
+                <i class="bi bi-flag mr-2"></i>Review Flagged Signups
+            </x-ui.button>
+        </div>
+
         <!-- Purge Users Section -->
         <div class="card-tw p-6 border-destructive/50">
             <h2 class="text-xl font-semibold text-destructive mb-4">

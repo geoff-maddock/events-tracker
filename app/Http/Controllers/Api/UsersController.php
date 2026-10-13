@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Filters\UserFilters;
+use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
@@ -16,6 +17,7 @@ use App\Models\Activity;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\BestEffortMailer;
+use App\Services\Signup\SignupRiskScorer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Exception;
@@ -223,7 +225,7 @@ class UsersController extends Controller
         $isAdmin = $this->user->can('grant_access');
 
         $validated = $request->validate([
-            'name' => ['sometimes', 'required', 'min:6', 'max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/'],
+            'name' => ['sometimes', 'required', 'min:6', 'max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/', ProfileRequest::linkRule($user, $this->user)],
             // users are looked up by slug, so it must stay unique and URL-safe (#2180)
             'slug' => ['sometimes', 'required', 'string', 'max:255', 'regex:/^[a-z0-9-]+$/', Rule::unique('users', 'slug')->ignore($user->id)],
             'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id],
@@ -232,9 +234,9 @@ class UsersController extends Controller
             'profile' => ['sometimes', 'array'],
             'profile.first_name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'profile.last_name' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'profile.alias' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'profile.location' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'profile.bio' => ['sometimes', 'nullable', 'string'],
+            'profile.alias' => ['sometimes', 'nullable', 'string', 'max:255', ProfileRequest::linkRule($user, $this->user)],
+            'profile.location' => ['sometimes', 'nullable', 'string', 'max:255', ProfileRequest::linkRule($user, $this->user)],
+            'profile.bio' => ['sometimes', ...ProfileRequest::bioRules($user, $this->user)],
             'profile.default_theme' => ['sometimes', 'nullable', 'in:dark,light'],
             'profile.facebook_username' => ['sometimes', 'nullable', 'string', 'max:255'],
             'profile.twitter_username' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -266,6 +268,11 @@ class UsersController extends Controller
 
         if ($isAdmin && $request->has('group_list')) {
             $user->groups()->sync($request->input('group_list', []));
+        }
+
+        // a new account editing its own profile is rescored (#2312)
+        if ($this->user->id === $user->id) {
+            app(SignupRiskScorer::class)->assessProfileChange($user->load('profile'));
         }
 
         // add to activity log

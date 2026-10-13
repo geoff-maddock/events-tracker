@@ -324,6 +324,7 @@ class WriteRouteAuthorizationTest extends TestCase
             'POST roles',
             'POST tags/{tag}/instagram-post',
             'POST tags/{tag}/instagram-stories',
+            'POST users/signups',
             'POST users/{id}/activate',
             'POST users/{id}/delete',
             'POST users/{id}/reminder',

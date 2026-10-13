@@ -20,6 +20,8 @@ class CommentsController extends Controller
     public function __construct(Entity $entity)
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        // like events and series: only a verified account writes content (#2312)
+        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
         $this->entity = $entity;
 
         parent::__construct();

@@ -24,7 +24,7 @@ class UsersPurgeAuthorizationTest extends TestCase
 
     public function test_guest_cannot_purge_pending_users(): void
     {
-        $pending = User::factory()->create(['user_status_id' => UserStatus::PENDING]);
+        $pending = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
 
         $this->post(route('users.purge'))->assertRedirect();
 
@@ -34,22 +34,36 @@ class UsersPurgeAuthorizationTest extends TestCase
     public function test_member_cannot_purge_pending_users(): void
     {
         $member = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
-        $pending = User::factory()->create(['user_status_id' => UserStatus::PENDING]);
+        $pending = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
 
         $this->actingAs($member)->post(route('users.purge'))->assertForbidden();
 
         $this->assertNotNull(User::find($pending->id));
     }
 
-    public function test_admin_can_purge_pending_users(): void
+    public function test_admin_can_purge_unverified_pending_users(): void
     {
         $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         $admin->assignGroup('admin');
-        $pending = User::factory()->create(['user_status_id' => UserStatus::PENDING]);
+        $pending = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
 
         $this->actingAs($admin->fresh())->post(route('users.purge'))->assertRedirect();
 
         $this->assertNull(User::find($pending->id));
+    }
+
+    public function test_purge_keeps_verified_signups_held_for_review(): void
+    {
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        // verified, but held at Pending by the signup risk score (#2312)
+        $flagged = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'risk_score' => 5]);
+        $unverified = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
+
+        $this->actingAs($admin->fresh())->post(route('users.purge'))->assertRedirect();
+
+        $this->assertNotNull(User::find($flagged->id));
+        $this->assertNull(User::find($unverified->id));
     }
 
     public function test_debug_dispatch_routes_are_gone(): void
