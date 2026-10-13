@@ -1,7 +1,9 @@
 <!-- Sidebar Navigation -->
-<aside class="sidebar hidden lg:flex lg:flex-col lg:w-64 min-h-screen bg-card border-r border-border">
+{{-- Pinned to the viewport height (#2309): header and footer stay put and only
+     the nav list scrolls, so the page itself never gets a second scrollbar. --}}
+<aside class="sidebar sidebar-desktop-tw hidden lg:flex lg:flex-col lg:w-64 lg:h-screen shrink-0 bg-card border-r border-border">
     <!-- Logo/Brand -->
-    <div class="p-4 border-b border-border text-center">
+    <div class="sidebar-block-tw border-b border-border text-center shrink-0">
         <a href="{{ url('/') }}" class="flex items-center justify-center gap-2">
             <span class="text-xl font-bold text-foreground">{{ config('app.app_name') }}</span>
         </a>
@@ -9,7 +11,7 @@
     </div>
 
     <!-- Search and add -->
-    <div class="p-4 flex items-center gap-2">
+    <div class="sidebar-block-tw flex items-center gap-2 shrink-0">
         <div class="flex-1 min-w-0">
             @include('partials.search-autocomplete', ['variant' => 'tw', 'inputId' => 'search-sidebar'])
         </div>
@@ -17,10 +19,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="px-4 py-2 space-y-1">
-        <!-- Your Radar (logged in users only) -->
-
-
+    <nav class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-1 space-y-1">
         <!-- Events Section -->
         <div>
             @auth
@@ -34,21 +33,21 @@
                 <i class="bi bi-calendar-event text-lg"></i>
                 <span>Events</span>
             </a>
-            <div class="ml-8 space-y-1 mt-1">
-                <a href="{{ url('/events/tonight') }}" class="nav-item-tw text-sm {{ Request::is('events/tonight') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-moon-stars text-sm"></i>
+            <div class="ml-8 mt-0.5 space-y-0.5">
+                <a href="{{ url('/events/tonight') }}" class="nav-subitem-tw {{ Request::is('events/tonight') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-moon-stars"></i>
                     <span>Tonight</span>
                 </a>
-                <a href="{{ url('/events/this-weekend') }}" class="nav-item-tw text-sm {{ Request::is('events/this-weekend') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-calendar-week text-sm"></i>
+                <a href="{{ url('/events/this-weekend') }}" class="nav-subitem-tw {{ Request::is('events/this-weekend') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-week"></i>
                     <span>This Weekend</span>
                 </a>
-                <a href="{{ url('/events/this-week') }}" class="nav-item-tw text-sm {{ Request::is('events/this-week') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-calendar-range text-sm"></i>
+                <a href="{{ url('/events/this-week') }}" class="nav-subitem-tw {{ Request::is('events/this-week') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-calendar-range"></i>
                     <span>This Week</span>
                 </a>
-                <a href="{{ url('/events/grid') }}" class="nav-item-tw text-sm {{ Request::is('events/grid') ? 'nav-item-active-tw' : '' }}">
-                    <i class="bi bi-grid text-sm"></i>
+                <a href="{{ url('/events/grid') }}" class="nav-subitem-tw {{ Request::is('events/grid') ? 'nav-item-active-tw' : '' }}">
+                    <i class="bi bi-grid"></i>
                     <span>Event Grid</span>
                 </a>
             </div>
@@ -56,20 +55,16 @@
         </div>
 
         <!-- Calendar -->
-        <div class="pt-2">
-            <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') && !Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
-                <i class="bi bi-calendar3 text-lg"></i>
-                <span>Event Calendar</span>
-            </a>
-        </div>
+        <a href="{{ url('/calendar') }}" class="nav-item-tw {{ Request::is('calendar') && !Request::is('calendar/attending') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-calendar3 text-lg"></i>
+            <span>Event Calendar</span>
+        </a>
 
         <!-- Entity Listings -->
-        <div class="pt-2">
-            <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') && !Request::is('entities/*') ? 'nav-item-active-tw' : '' }}">
-                <i class="bi bi-people text-lg"></i>
-                <span>Entities</span>
-            </a>
-        </div>
+        <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') && !Request::is('entities/*') ? 'nav-item-active-tw' : '' }}">
+            <i class="bi bi-people text-lg"></i>
+            <span>Entities</span>
+        </a>
 
         <!-- Series Listings -->
         <a href="{{ url('/series') }}" class="nav-item-tw {{ Request::is('series') ? 'nav-item-active-tw' : '' }}">
@@ -99,7 +94,7 @@
         @endif
 
         <!-- Divider -->
-        <div class="border-t border-border my-4"></div>
+        <div class="border-t border-border my-2"></div>
 
         <!-- About -->
         <a href="{{ url('/about') }}" class="nav-item-tw {{ Request::is('about') ? 'nav-item-active-tw' : '' }}">
@@ -131,40 +126,50 @@
 
     </nav>
 
-    <!-- User Section -->
-    <div class="p-4 border-t border-border">
+    <!-- Account and theme, on one row -->
+    <div class="sidebar-block-tw border-t border-border shrink-0 flex items-center gap-2">
         @if (Auth::guest())
-        <a href="{{ url('/login') }}" class="nav-item-tw">
-            <i class="bi bi-person-circle text-lg"></i>
-            <span>My Account</span>
-        </a>
-        <a href="{{ url('/register') }}" class="nav-item-tw mt-1">
-            <i class="bi bi-box-arrow-in-right text-lg"></i>
-            <span>Register</span>
-        </a>
-        @else
-        <div class="flex items-center gap-3 px-3 py-2 text-muted-foreground">
-            <i class="bi bi-person-circle text-lg"></i>
-            <a href="{{ url('/users/'.Auth::user()->id) }}" class="hover:text-foreground">{{ Auth::user()->name }}</a>
+        <div class="flex-1 min-w-0 flex items-center gap-1 text-sm">
+            <a href="{{ url('/login') }}" class="nav-item-tw px-2">
+                <i class="bi bi-person-circle text-lg"></i>
+                <span>Log in</span>
+            </a>
+            <a href="{{ url('/register') }}" class="nav-item-tw px-2">
+                <span>Register</span>
+            </a>
         </div>
-        @can('admin')
-        <a href="{{ route('pages.allModules') }}" class="nav-item-tw mt-1 {{ Request::is('all-modules') ? 'nav-item-active-tw' : '' }}">
-            <i class="bi bi-grid-3x3-gap text-lg"></i>
-            <span>All Modules</span>
-        </a>
-        @endcan
-        <form action="{{ route('logout') }}" method="POST" class="w-full">
-            @csrf
-            <button type="submit" class="nav-item-tw mt-1 w-full text-left">
-                <i class="bi bi-box-arrow-right text-lg" aria-hidden="true"></i>
-                <span>Log out</span>
+        @else
+        <div class="relative flex-1 min-w-0" x-data="{ open: false }" @keydown.escape.window="open = false">
+            <button @click="open = !open" type="button" class="nav-item-tw w-full text-left {{ Request::is('users/'.Auth::id()) || Request::is('all-modules') ? 'nav-item-active-tw' : '' }}"
+                aria-haspopup="true" :aria-expanded="open">
+                <i class="bi bi-person-circle text-lg shrink-0" aria-hidden="true"></i>
+                <span class="truncate flex-1">{{ Auth::user()->name }}</span>
+                <i class="bi bi-chevron-up text-xs shrink-0" aria-hidden="true"></i>
             </button>
-        </form>
+            <div x-show="open" @click.away="open = false" style="display: none"
+                class="absolute left-0 bottom-full mb-1 w-full bg-card border border-border rounded-lg shadow-lg z-50">
+                <div class="py-1">
+                    <a href="{{ url('/users/'.Auth::user()->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <i class="bi bi-person"></i>
+                        Your Profile
+                    </a>
+                    @can('admin')
+                    <a href="{{ route('pages.allModules') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        All Modules
+                    </a>
+                    @endcan
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors text-left">
+                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                            Log out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
         @endif
-    </div>
-
-    <!-- Theme Toggle -->
-    <div class="p-4 border-t border-border">
         <x-theme-toggle />
     </div>
 </aside>

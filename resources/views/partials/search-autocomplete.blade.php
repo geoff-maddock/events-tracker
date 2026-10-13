@@ -93,7 +93,7 @@
          x-cloak
          x-transition.opacity
          role="listbox"
-         class="absolute z-50 mt-1 left-0 right-0 min-w-[18rem] max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden text-sm">
+         class="absolute z-50 mt-1 left-0 right-0 min-w-[18rem] max-w-md max-h-[calc(100vh-10rem)] overflow-y-auto overscroll-contain bg-card border border-border rounded-lg shadow-lg text-sm">
         @include('partials.search-autocomplete-results')
     </div>
 

@@ -187,6 +187,27 @@
     @apply text-foreground bg-accent;
   }
 
+  /* Compact Events sub-links (Tonight, This Weekend, ...) under Events */
+  .nav-subitem-tw {
+    @apply flex items-center gap-2 px-3 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors whitespace-nowrap;
+  }
+
+  /* Desktop sidebar header, search and footer blocks */
+  .sidebar-block-tw {
+    @apply px-4 py-3;
+  }
+
+  /* Tighter desktop sidebar rows on short (laptop) viewports (#2309) */
+  @media (max-height: 860px) {
+    .sidebar-desktop-tw .nav-item-tw {
+      @apply py-1;
+    }
+
+    .sidebar-desktop-tw .sidebar-block-tw {
+      @apply py-2;
+    }
+  }
+
   /* Event card specific styles */
   /* Cards skip style, layout and paint until they near the viewport (#2302): long
      card grids cost seconds of layout on a phone. The cards already clip with
