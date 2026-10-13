@@ -506,6 +506,7 @@ class DigestEngagementTest extends TestCase
             'password' => 'password1234',
             'password_confirmation' => 'password1234',
             'g-recaptcha-response' => 'valid-captcha-token',
+            \App\Services\Signup\SignupFormToken::FIELD => \App\Services\Signup\SignupFormToken::issue(time() - 10),
         ]);
 
         $profile = User::where('email', 'defaults-tester@example.com')->sole()->profile;

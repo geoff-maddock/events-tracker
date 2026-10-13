@@ -4,6 +4,27 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Spam signup defenses (#2312)
+Captcha and email verification didn't stop people, or captcha farms, with a working inbox, and
+those accounts used their profile bio for spam.
+- **At signup:** the register form has a hidden honeypot field and an encrypted render time, and
+  refuses a submission posted under 3 seconds after loading, or one that never loaded the form.
+  Disposable email domains (`resources/data/disposable_email_domains.txt`, CC0) are refused on the
+  web and the API. Registration is capped at 10 per IP per hour, with web and API sharing the budget.
+- **Before an account is trusted:** only the account and admins see its bio and social handles
+  (profile page, user cards, API), and its bio can't hold links. An account is trusted once it's
+  active and verified, and then either approved by an admin or at least 7 days old with something
+  done on the site (an event, entity, comment, response or follow). Bios are capped at 2000
+  characters. Comments, posts, reviews and entity edits now need a verified email.
+- **Risk score:** each signup is scored on links or spam keywords in the bio, a generated-looking
+  name, an unusual email TLD, a burst of signups from one IP and, optionally, StopForumSpam. A score
+  of 3 or more keeps the account Pending after it verifies. A new account is rescored when it edits
+  its profile. Admins review signups at `/users/signups` (linked from Admin Tools), where they can
+  approve accounts, or ban them as spam, which also clears their bio and social handles.
+- **Settings:** in `config/signup.php`. The StopForumSpam lookup is off until
+  `STOPFORUMSPAM_ENABLED=true`, because it sends an MD5 hash of the email and the signup IP to
+  stopforumspam.org.
+
 ### Analytics loads after the page settles (#2302)
 Google Analytics (`gtag.js`) cost over a second of main-thread time on a mid-range phone during
 page load. It now loads on the visitor's first interaction (pointer, key, mouse wheel or touch) or 5

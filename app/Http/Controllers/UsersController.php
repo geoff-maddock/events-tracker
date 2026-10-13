@@ -21,6 +21,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use App\Services\Signup\SignupRiskScorer;
 use App\Services\DigestBuilder;
 use App\Services\BestEffortMailer;
 use App\Services\ImageHandler;
@@ -363,7 +364,10 @@ class UsersController extends Controller
             ? $createdEntitiesQuery->with(Entity::CARD_EAGER_LOAD)->orderBy('entities.name')->limit(20)->get()
             : collect();
 
-        return view('users.show-tw', compact('user', 'tabs', 'canViewFullProfile', 'profileEvents', 'createdEntities', 'createdEntitiesCount'));
+        // an account's bio and social handles stay private until it is trusted (#2312)
+        $showProfileContent = $user->showsProfileContentTo($this->user);
+
+        return view('users.show-tw', compact('user', 'tabs', 'canViewFullProfile', 'showProfileContent', 'profileEvents', 'createdEntities', 'createdEntitiesCount'));
     }
 
     public function profile(Request $request): RedirectResponse
@@ -445,6 +449,11 @@ class UsersController extends Controller
             $user->groups()->sync($input['group_list']);
         }
 
+        // a new account editing its own profile is rescored (#2312)
+        if ($this->user->id === $user->id) {
+            app(SignupRiskScorer::class)->assessProfileChange($user->load('profile'));
+        }
+
         // add to activity log
         Activity::log($user, $this->user, 2);
 
@@ -519,6 +528,8 @@ class UsersController extends Controller
         // add the following response
         $user->user_status_id = UserStatus::ACTIVE;
         $user->email_verified_at = Carbon::now();
+        // an admin vouching for the account also trusts it (#2312)
+        $user->trusted_at = now();
         $user->save();
 
         Log::info('User '.$user->name.' is activated.');

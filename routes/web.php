@@ -231,6 +231,10 @@ Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' =>
 Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\UsersController@reset']);
 Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => '\App\Http\Controllers\UsersController@rppReset']);
 
+// admin review of recent signups (#2312); before users/{user} so "signups" isn't read as a user
+Route::get('users/signups', [\App\Http\Controllers\SignupReviewController::class, 'index'])->name('users.signups')->middleware(['auth', 'can:grant_access']);
+Route::post('users/signups', [\App\Http\Controllers\SignupReviewController::class, 'update'])->name('users.signups.update')->middleware(['auth', 'can:grant_access']);
+
 Route::resource('users', \App\Http\Controllers\UsersController::class)->except(['show'])->middleware('auth');
 Route::get('users/{user}', [\App\Http\Controllers\UsersController::class, 'show'])->name('users.show');
 

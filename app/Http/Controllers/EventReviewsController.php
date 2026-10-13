@@ -21,6 +21,8 @@ class EventReviewsController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        // like events and series: only a verified account writes content (#2312)
+        $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
 
         parent::__construct();
     }

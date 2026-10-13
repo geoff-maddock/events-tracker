@@ -215,7 +215,7 @@ Route::get('calendar-events', [\App\Http\Controllers\EventsController::class, 'c
 Route::get('tag-calendar-events', [\App\Http\Controllers\EventsController::class, 'tagCalendarEventsApi'])->name('tagCalendarEvents.api');
 
 // user registration endpoint
-Route::post('register', [\App\Http\Controllers\Api\RegisterController::class, 'register']);
+Route::post('register', [\App\Http\Controllers\Api\RegisterController::class, 'register'])->middleware('throttle:registrations');
 
 // Email verification endpoint — signature enforced to prevent
 // account takeover via crafted URLs.

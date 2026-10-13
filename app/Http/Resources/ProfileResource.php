@@ -17,16 +17,20 @@ class ProfileResource extends JsonResource
      */
     public function toArray($request)
     {
+        // bio and social handles stay private until the account is trusted (#2312)
+        $viewer = $request->user() ?? $request->user('sanctum');
+        $shown = $this->user->showsProfileContentTo($viewer);
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'bio' => $this->bio,
+            'bio' => $shown ? $this->bio : null,
             'alias' => $this->alias,
             'location' => $this->location,
             'visibility_id' => $this->visibility_id,
-            'facebook_username' => $this->facebook_username,
-            'twitter_username' => $this->twitter_username,
-            'instagram_username' => $this->instagram_username,
+            'facebook_username' => $shown ? $this->facebook_username : null,
+            'twitter_username' => $shown ? $this->twitter_username : null,
+            'instagram_username' => $shown ? $this->instagram_username : null,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'default_theme' => $this->default_theme,

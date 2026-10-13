@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -37,6 +38,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \Illuminate\Support\Carbon|null                                                                           $updated_at
  * @property int|null                                                                                                  $user_status_id
  * @property string|null                                                                                               $email_verified_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $trusted_at
+ * @property int|null                                                                                                  $risk_score
+ * @property list<string>|null                                                                                         $risk_reasons
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Activity[]                                           $activity
  * @property int|null                                                                                                  $activity_count
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[]                                            $comments
@@ -104,6 +108,19 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      * The attributes that are mass assignable.
      */
     protected $fillable = ['name', 'slug', 'email', 'password', 'user_status_id'];
+
+    /**
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'trusted_at' => 'datetime',
+        'risk_reasons' => 'array',
+    ];
+
+    /**
+     * Memo for hasContributed(); null until asked.
+     */
+    private ?bool $hasContributedMemo = null;
 
     /**
      * Cache key for the id => name user list used by form selects (e.g. event Owner).
@@ -202,11 +219,13 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     // protected $with = ['profile'];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes excluded from the model's JSON form. The spam risk
+     * assessment is for admins only; a spammer shouldn't learn what flagged
+     * them (#2312).
      *
      * @var array<int, string>
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'risk_score', 'risk_reasons'];
 
     /**
      * A how many events the user created.
@@ -426,6 +445,68 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         }
 
         return $this->follows()->count() === 0;
+    }
+
+    /**
+     * Whether this account has earned a public profile (#2312). Until then its
+     * bio and social handles show only to itself and to admins, and its bio
+     * can't hold links. Trusted means active and verified, and then either
+     * approved by an admin, an admin itself, or at least signup.trust_after_days
+     * old with something done on the site.
+     */
+    public function isTrusted(): bool
+    {
+        if ((int) $this->user_status_id !== UserStatus::ACTIVE || ! $this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        if ($this->trusted_at !== null || $this->isAdmin()) {
+            return true;
+        }
+
+        return $this->created_at !== null
+            && $this->created_at->lte(now()->subDays((int) config('signup.trust_after_days')))
+            && $this->hasContributed();
+    }
+
+    /**
+     * Whether the user has done anything on the site: added an event or an
+     * entity, commented, responded to an event, or followed something.
+     */
+    public function hasContributed(): bool
+    {
+        if ($this->hasContributedMemo === null) {
+            $id = $this->id;
+            $exists = fn (string $table, string $column): string => sprintf('exists (select 1 from %s where %s = ?)', $table, $column);
+
+            $row = DB::selectOne(
+                'select ('.implode(' or ', [
+                    $exists('events', 'created_by'),
+                    $exists('entities', 'created_by'),
+                    $exists('comments', 'created_by'),
+                    $exists('event_responses', 'user_id'),
+                    $exists('follows', 'user_id'),
+                ]).') as contributed',
+                [$id, $id, $id, $id, $id]
+            );
+
+            $this->hasContributedMemo = (bool) ($row->contributed ?? false);
+        }
+
+        return $this->hasContributedMemo;
+    }
+
+    /**
+     * Whether the viewer may see this user's bio and social handles: anyone
+     * once the account is trusted; before that only the user and admins.
+     */
+    public function showsProfileContentTo(?User $viewer): bool
+    {
+        if ($viewer && ($viewer->id === $this->id || $viewer->can('grant_access'))) {
+            return true;
+        }
+
+        return $this->isTrusted();
     }
 
     /**
