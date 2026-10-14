@@ -22,8 +22,8 @@ use Carbon\CarbonImmutable;
 enum EventTimeWindow: string
 {
     case Tonight = 'tonight';
-    case ThisWeekend = 'this-weekend';
     case ThisWeek = 'this-week';
+    case ThisWeekend = 'this-weekend';
 
     protected const TIMEZONE = 'America/New_York';
 
