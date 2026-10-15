@@ -300,11 +300,13 @@ class TagsController extends Controller
 
             // add to activity log
             Activity::log($tag, $this->user, 1);
-        } else {
-            flash()->error('Error', sprintf('The tag %s already exists.', $input['name']));
+
+            return redirect()->route('tags.show', ['tag' => $tag->slug]);
         }
 
-        return back();
+        flash()->error('Error', sprintf('The tag %s already exists.', $input['name']));
+
+        return back()->withInput();
     }
 
     /**

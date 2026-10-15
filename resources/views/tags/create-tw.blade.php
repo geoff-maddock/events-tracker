@@ -19,7 +19,7 @@
 	<!-- Form Card -->
 	<div class="card-tw">
 		<div class="p-6">
-			<form action="{{ route('tags.store') }}" method="POST">
+			<form action="{{ route('tags.store') }}" method="POST" class="space-y-4">
 				@csrf
 
 				@include('tags.form-tw')

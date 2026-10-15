@@ -64,7 +64,7 @@
 </x-ui.form-group>
 
 {{-- Submit Button --}}
-<div class="flex items-center gap-3">
+<div class="flex items-center gap-3 pt-3">
     <x-ui.button type="submit">
         {{ isset($action) && $action === 'update' ? 'Update Tag' : 'Add Tag' }}
     </x-ui.button>
