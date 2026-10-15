@@ -26,7 +26,7 @@
 	<!-- Form Card -->
 	<div class="card-tw mb-6">
 		<div class="p-6">
-			<form action="{{ route('tags.update', $tag->slug) }}" method="POST">
+			<form action="{{ route('tags.update', $tag->slug) }}" method="POST" class="space-y-4">
 				@csrf
 				@method('PATCH')
 
