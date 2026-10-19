@@ -362,7 +362,6 @@ class WriteRouteAuthorizationTest extends TestCase
         'POST api/entities/{entity}/follow',
         'POST api/entities/{entity}/unfollow',
         'POST api/events/{event}/attend',
-        'POST api/events/{id}/instagram-post',
         'POST api/forums/filter',
         'POST api/occurrence-days/filter',
         'POST api/occurrence-types/filter',
