@@ -41,6 +41,8 @@ class ApiUsersHappyPathTest extends TestCase
 
     public function test_store_creates_user_and_profile(): void
     {
+        // creating accounts through the API is admin-only (#2314)
+        $this->actor->assignGroup('admin');
         $payload = [
             'name' => 'ZZ-NewAccount',
             'email' => 'zz-newaccount-'.uniqid().'@example.com',
@@ -58,6 +60,7 @@ class ApiUsersHappyPathTest extends TestCase
 
     public function test_store_validates_invalid_payload(): void
     {
+        $this->actor->assignGroup('admin');
         $response = $this->postJson('/api/users', [
             'name' => 'x', // too short
             'email' => 'not-an-email',
