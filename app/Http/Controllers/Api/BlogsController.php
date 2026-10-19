@@ -43,6 +43,9 @@ class BlogsController extends Controller
 
     public function __construct(BlogFilters $filter)
     {
+        // like the web controllers: only a verified account writes content (#2314)
+        $this->middleware('verified', ['only' => ['store', 'update', 'patch']]);
+
         $this->filter = $filter;
 
         // prefix for session storage

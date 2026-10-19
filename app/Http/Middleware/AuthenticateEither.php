@@ -19,6 +19,9 @@ class AuthenticateEither implements AuthenticatesRequests
     public function handle($request, Closure $next)
     {
         if (Auth::guard('sanctum')->check()) {
+            // like auth:sanctum, so $request->user() and the verified middleware see the token's user
+            Auth::shouldUse('sanctum');
+
             return $next($request);
         }
 

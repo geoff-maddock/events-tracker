@@ -96,7 +96,8 @@ class ApiUserUpdateAuthorizationTest extends TestCase
 
     public function test_store_ignores_a_requested_status(): void
     {
-        $actor = $this->makeUser();
+        // creating accounts through the API is admin-only (#2314); even an admin can't pick the status
+        $actor = $this->makeUser('admin');
 
         $this->actingAs($actor, 'sanctum')
             ->postJson('/api/users', [

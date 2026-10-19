@@ -9,6 +9,11 @@ info:
     anonymous requests, and 20 requests/minute for photos/from-url. After 20 failed basic auth
     attempts in a minute from one IP, basic auth from that IP is refused until the minute is up.
     Over any limit the API returns 429 with a Retry-After header.
+
+    Creating or updating content (events, entities and their contacts, links, locations and
+    photos, series, tags, threads, posts, blogs, links, locations) needs a verified email. An
+    unverified account gets 403 with `{"message": "Your email address is not verified."}`.
+    Reads, follow/unfollow, attend and token creation don't need one.
   contact:
     name: Geoff Maddock
     email: geoff.maddock@gmail.com
@@ -7302,7 +7307,7 @@ paths:
       tags:
         - users
       summary: Create User
-      description: Creates a new user account.
+      description: Creates a new pending user account. Admins only; members sign up with `POST /api/register`.
       operationId: createUser
       requestBody:
         content:
@@ -7316,6 +7321,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
     get:
       tags:
         - users

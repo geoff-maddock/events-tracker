@@ -52,6 +52,9 @@ class PostsController extends Controller
 
     public function __construct(PostFilters $filter)
     {
+        // like the web controllers: only a verified account writes content (#2314)
+        $this->middleware('verified', ['only' => ['store', 'update', 'patch']]);
+
         // prefix for session storage
         $this->prefix = 'app.posts.';
 

@@ -20,6 +20,14 @@ class EventInstagramController extends Controller
 {
     use ChecksInstagramPosting;
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        // posting to the site's Instagram needs a verified email, like other content writes (#2314)
+        $this->middleware('verified');
+    }
+
     public function postCarouselToInstagramApi(int $id, Instagram $instagram, Request $request): JsonResponse
     {
         $user = Auth::guard('sanctum')->user() ?? Auth::user();

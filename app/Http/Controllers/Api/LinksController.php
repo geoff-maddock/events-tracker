@@ -44,6 +44,8 @@ class LinksController extends Controller
     public function __construct(LinkFilters $filter)
     {
         $this->middleware('auth', ['only' => ['store', 'update']]);
+        // like the web controllers: only a verified account writes content (#2314)
+        $this->middleware('verified', ['only' => ['store', 'update']]);
 
         // http(s) only; scheme-less input is stored as https:// (#2220)
         $this->rules['url'] = ['required', new LinkUrl()];

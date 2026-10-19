@@ -84,6 +84,10 @@ class UsersController extends Controller
         $this->defaultTabs = ['events' => 'created', 'following' => 'tags'];
 
         parent::__construct();
+
+        // only admins create accounts through the API; members sign up via api/register.
+        // Middleware rather than a check in store(), so it runs before UserRequest validates
+        $this->middleware(fn ($request, $next) => $this->requireAdmin() ?? $next($request), ['only' => ['store']]);
     }
 
     /**

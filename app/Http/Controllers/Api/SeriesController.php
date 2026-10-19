@@ -61,7 +61,9 @@ class SeriesController extends Controller
 
     public function __construct(SeriesFilters $filter)
     {
-        //$this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        // like the web controllers: only a verified account writes content (#2314)
+        $this->middleware('verified', ['only' => ['store', 'update', 'patch', 'addPhoto', 'addPhotoFromUrl']]);
+
         $this->filter = $filter;
 
         // prefix for session storage
