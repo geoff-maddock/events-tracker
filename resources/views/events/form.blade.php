@@ -188,14 +188,6 @@
             label="Start At"
             :error="$errors->first('start_at')"
             required>
-            <template x-slot:label>
-                <div class="flex items-center justify-between">
-                    <x-ui.label for="start_at" required>Start At</x-ui.label>
-                    <button type="button" class="text-muted-foreground hover:text-foreground" title="Show additional time options" data-bs-toggle="collapse" data-bs-target="#form-time">
-                        <i class="bi bi-clock-fill"></i>
-                    </button>
-                </div>
-            </template>
             <x-ui.input
                 type="datetime-local"
                 name="start_at"
