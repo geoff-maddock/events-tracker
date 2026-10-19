@@ -351,6 +351,37 @@ class WriteRouteAuthorizationTest extends TestCase
         ],
     ];
 
+    // API user and owner write routes an unverified account may still use
+    // (#2314): reads sent as POST, follow and attend, photo housekeeping and
+    // account routes. Every other one must answer it with the verified 403,
+    // so a new API write route is gated unless it is added here. DELETE
+    // routes are left out of the check: removing your own content isn't a
+    // spam vector.
+    private const UNVERIFIED_ALLOWED = [
+        'POST api/blogs/filter',
+        'POST api/entities/{entity}/follow',
+        'POST api/entities/{entity}/unfollow',
+        'POST api/events/{event}/attend',
+        'POST api/events/{id}/instagram-post',
+        'POST api/forums/filter',
+        'POST api/occurrence-days/filter',
+        'POST api/occurrence-types/filter',
+        'POST api/occurrence-weeks/filter',
+        'POST api/photos/{photo}/set-primary',
+        'POST api/photos/{photo}/unset-primary',
+        'POST api/posts/filter',
+        'POST api/series/{series}/follow',
+        'POST api/series/{series}/unfollow',
+        'POST api/tag-types/filter',
+        'POST api/tags/{tag}/follow',
+        'POST api/tags/{tag}/unfollow',
+        'POST api/threads/filter',
+        'POST api/users',
+        'POST api/users/filter',
+        'POST api/visibilities/filter',
+        'PUT api/users/{user}',
+    ];
+
     // Owner/admin PUT, PATCH and DELETE routes where the stranger check can't
     // show much, because the same payload has no effect even for the owner or
     // an admin (checked when this matrix was written, #2186). Every other such
@@ -521,6 +552,30 @@ class WriteRouteAuthorizationTest extends TestCase
         }
 
         $this->assertSame([], $failures);
+    }
+
+    public function test_unverified_accounts_are_refused_by_api_content_writes(): void
+    {
+        $unverified = User::factory()->create(['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
+        $routes = $this->writeRoutes();
+        $failures = [];
+
+        foreach ($routes as $key => $route) {
+            [$method] = explode(' ', $key, 2);
+            if (!str_starts_with($route->uri(), 'api/') || 'DELETE' === $method
+                || !in_array($this->classOf($key), ['user', 'owner'], true)
+                || in_array($key, self::UNVERIFIED_ALLOWED, true)) {
+                continue;
+            }
+            $this->actingAs($unverified, 'sanctum');
+            $response = $this->send($key, $route, $this->validPayload($key));
+            if (403 !== $response->status() || 'Your email address is not verified.' !== $response->json('message')) {
+                $failures[] = "{$key} answered an unverified user with {$response->status()}";
+            }
+        }
+
+        $this->assertSame([], $failures);
+        $this->assertSame([], array_values(array_diff(self::UNVERIFIED_ALLOWED, array_keys($routes))), 'UNVERIFIED_ALLOWED lists routes that no longer exist');
     }
 
     /**

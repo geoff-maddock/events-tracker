@@ -48,7 +48,9 @@ class TagsController extends Controller
 
     public function __construct(Tag $tag, TagFilters $filter)
     {
-        // $this->middleware('verified', ['only' => ['create', 'edit', 'store', 'update']]);
+        // like the web controllers: only a verified account writes content (#2314)
+        $this->middleware('verified', ['only' => ['store', 'update']]);
+
         $this->tag = $tag;
 
         // prefix for session storage
