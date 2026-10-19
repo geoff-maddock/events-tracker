@@ -4,6 +4,8 @@
     Shown once, on the page a user lands on straight after registering, while
     their account is still pending activation. RegisterController::registered()
     flashes `show_verification_notice` with the address the link was sent to.
+    UsersController::update() flashes it too when a user changes their own
+    email, which must be verified again (#2321).
 
     Deliberately self-contained Alpine rather than <x-ui.modal>: that component
     emits an inline script with a hardcoded element id and stacks a fresh
@@ -11,6 +13,8 @@
 
     Required variables:
       $email (string)  address the activation link was sent to
+    Optional:
+      $emailChanged (bool)  the link verifies a changed email, not a new account
 --}}
 <style>[x-cloak]{display:none!important}</style>
 <div x-data="verifyEmailNotice()" x-show="open" x-cloak
@@ -29,12 +33,21 @@
 
         <!-- Body -->
         <div class="px-6 pb-2 space-y-3 text-sm text-muted-foreground text-center">
-            <p>
-                We sent an activation link to
-                <span class="font-medium text-foreground break-all">{{ $email }}</span>.
-                Click that link to finish activating your account.
-            </p>
-            <p>Until then you're signed in, but some features stay locked.</p>
+            @if($emailChanged ?? false)
+                <p>
+                    Your email changed, so we sent a verification link to
+                    <span class="font-medium text-foreground break-all">{{ $email }}</span>.
+                    Click that link to confirm the new address.
+                </p>
+                <p>Until then you can't add or edit content.</p>
+            @else
+                <p>
+                    We sent an activation link to
+                    <span class="font-medium text-foreground break-all">{{ $email }}</span>.
+                    Click that link to finish activating your account.
+                </p>
+                <p>Until then you're signed in, but some features stay locked.</p>
+            @endif
             <p class="text-xs">Can't find it? Check your spam or promotions folder.</p>
 
             <p x-show="status" x-cloak class="text-xs"
@@ -88,7 +101,7 @@
                         if (r.status === 204) {
                             this.status = 'That address is already verified — you\'re all set.';
                         } else if (r.ok) {
-                            this.status = 'Sent. A fresh activation link is on its way.';
+                            this.status = 'Sent. A fresh {{ ($emailChanged ?? false) ? 'verification' : 'activation' }} link is on its way.';
                         } else if (r.status === 429) {
                             this.statusIsError = true;
                             this.status = 'Too many requests. Please wait a minute and try again.';

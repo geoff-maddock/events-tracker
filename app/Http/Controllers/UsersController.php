@@ -24,6 +24,7 @@ use App\Models\Visibility;
 use App\Services\Signup\SignupRiskScorer;
 use App\Services\DigestBuilder;
 use App\Services\BestEffortMailer;
+use App\Services\EmailChangeVerifier;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -441,7 +442,11 @@ class UsersController extends Controller
         $input['setting_public_profile'] = isset($input['setting_public_profile']) ? 1 : 0;
         $input['setting_feedback_requests'] = isset($input['setting_feedback_requests']) ? 1 : 0;
 
-        $user->fill($input)->save();
+        $user->fill($input);
+        // a self-made email change must be verified again (#2321)
+        $emailChanges = app(EmailChangeVerifier::class);
+        $oldEmail = $emailChanges->prepare($user, $this->user);
+        $user->save();
         // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
         $user->profile()->firstOrCreate([])->fill($input)->save();
 
@@ -458,6 +463,12 @@ class UsersController extends Controller
         Activity::log($user, $this->user, 2);
 
         flash('Success', 'The user has been updated');
+
+        if (null !== $oldEmail) {
+            $emailChanges->notify($user, $oldEmail);
+            $request->session()->flash('show_verification_notice', $user->email);
+            $request->session()->flash('verification_notice_reason', 'email-changed');
+        }
 
         return redirect()->route('users.show', ['user' => $user]);
     }

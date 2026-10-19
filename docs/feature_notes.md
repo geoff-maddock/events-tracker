@@ -4,6 +4,15 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Changing your email needs a new verification (#2321)
+A user who changes their own email on the web profile form or with `PUT /api/users/{user}` is
+unverified until they click the link sent to the new address, so they can't add or edit content
+in the meantime. The old address gets a notice that the email was changed, in case someone else
+made the change. Re-saving the same address (or changing only its case) keeps verification, and so
+does an admin changing someone else's email. On the web, the "Check your email" prompt shows after
+the change. The API response shows `email_verified_at: null`, and the update accepts an optional
+`frontend-url` for the link, as registration does.
+
 ### Spam signup defenses (#2312)
 Captcha and email verification didn't stop people, or captcha farms, with a working inbox, and
 those accounts used their profile bio for spam.
