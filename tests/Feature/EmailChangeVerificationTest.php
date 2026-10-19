@@ -7,6 +7,7 @@ use App\Models\Forum;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
+use App\Services\EmailChangeVerifier;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -15,7 +16,8 @@ use Tests\TestCase;
 
 /**
  * Users who change their own email must verify the new address before
- * content writes resume; an admin's change keeps them verified (#2321).
+ * content writes resume; an admin's change, including to their own email,
+ * keeps them verified (#2321).
  */
 class EmailChangeVerificationTest extends TestCase
 {
@@ -31,9 +33,12 @@ class EmailChangeVerificationTest extends TestCase
         Mail::fake();
     }
 
-    private function makeUser(string $email, ?string $group = null): User
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    private function makeUser(string $email, ?string $group = null, array $attributes = []): User
     {
-        $user = User::factory()->create([
+        $user = User::factory()->create($attributes + [
             'name' => 'Person '.strtok($email, '@'),
             'email' => $email,
             'user_status_id' => UserStatus::ACTIVE,
@@ -175,5 +180,92 @@ class EmailChangeVerificationTest extends TestCase
         $this->assertSame('api-moved@example.com', $target->email);
         $this->assertTrue($target->hasVerifiedEmail());
         $this->assertNothingSent();
+    }
+
+    public function test_an_admin_changing_their_own_email_stays_verified(): void
+    {
+        $admin = $this->makeUser('self-admin@example.com', 'admin');
+
+        $this->actingAs($admin)
+            ->patch(route('users.update', $admin->id), ['name' => $admin->name, 'email' => 'self-admin-new@example.com'])
+            ->assertSessionHasNoErrors()
+            ->assertSessionMissing('show_verification_notice');
+
+        $admin->refresh();
+        $this->assertSame('self-admin-new@example.com', $admin->email);
+        $this->assertTrue($admin->hasVerifiedEmail());
+        $this->assertNothingSent();
+    }
+
+    public function test_an_unverified_account_changing_its_email_does_not_notify_the_unconfirmed_address(): void
+    {
+        $user = $this->makeUser('typo@gmial.com', null, ['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null]);
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'fixed@gmail.com'])
+            ->assertSessionHasNoErrors();
+
+        $user->refresh();
+        Notification::assertSentTo($user, VerifyEmail::class);
+        Mail::assertNotSent(EmailChanged::class);
+        // still a never-verified signup, so cleanup may remove it as before
+        $this->assertNull($user->email_change_pending_at);
+    }
+
+    public function test_cleanup_and_purge_keep_an_account_unverified_only_by_an_email_change(): void
+    {
+        $admin = $this->makeUser('purge-admin@example.com', 'admin');
+        $changed = $this->makeUser('old-member@example.com', null, ['created_at' => now()->subYear()]);
+        // a verified signup held at Pending for review (#2312)
+        $held = $this->makeUser('held@example.com', null, ['user_status_id' => UserStatus::PENDING, 'created_at' => now()->subYear()]);
+        $stale = $this->makeUser('stale@example.com', null, ['user_status_id' => UserStatus::PENDING, 'email_verified_at' => null, 'created_at' => now()->subYear()]);
+
+        foreach ([$changed, $held] as $user) {
+            $this->actingAs($user)
+                ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'new-'.$user->email])
+                ->assertSessionHasNoErrors();
+            $this->assertNotNull($user->fresh()->email_change_pending_at);
+        }
+
+        $this->actingAs($admin)->post(route('users.purge'))->assertRedirect();
+        $this->artisan('userCleanup')->assertSuccessful();
+
+        $this->assertNotNull($changed->fresh());
+        $this->assertNotNull($held->fresh());
+        $this->assertNull($stale->fresh());
+    }
+
+    public function test_verifying_the_new_address_ends_the_pending_change(): void
+    {
+        $user = $this->makeUser('verify-old@example.com');
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'verify-new@example.com'])
+            ->assertSessionHasNoErrors();
+
+        $user->refresh();
+        $this->assertNotNull($user->email_change_pending_at);
+
+        $user->markEmailAsVerified();
+
+        $user->refresh();
+        $this->assertTrue($user->hasVerifiedEmail());
+        $this->assertNull($user->email_change_pending_at);
+    }
+
+    public function test_email_changes_are_rate_limited(): void
+    {
+        $user = $this->makeUser('limit-0@example.com');
+        $headers = $this->tokenHeaders($user);
+
+        for ($i = 1; $i <= EmailChangeVerifier::MAX_CHANGES_PER_HOUR; ++$i) {
+            $this->putJson('/api/users/'.$user->id, ['email' => "limit-{$i}@example.com"], $headers)->assertOk();
+        }
+
+        $this->putJson('/api/users/'.$user->id, ['email' => 'limit-over@example.com'], $headers)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('email');
+
+        $this->assertSame('limit-'.EmailChangeVerifier::MAX_CHANGES_PER_HOUR.'@example.com', $user->fresh()->email);
     }
 }

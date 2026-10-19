@@ -783,9 +783,11 @@ class UsersController extends Controller
         abort_unless($request->user()?->can('grant_access'), 403);
 
         // pending users who never verified their email. A verified signup that the
-        // risk score holds at Pending waits in the signup review instead (#2312)
+        // risk score holds at Pending waits in the signup review instead (#2312),
+        // even after changing its email (#2321)
         $users = User::where('user_status_id', '=', UserStatus::PENDING)
             ->whereNull('email_verified_at')
+            ->whereNull('email_change_pending_at')
             ->orderBy('name', 'ASC')
             ->get();
 

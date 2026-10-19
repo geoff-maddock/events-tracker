@@ -7,11 +7,14 @@ A more detailed description of new features and changes to the application.
 ### Changing your email needs a new verification (#2321)
 A user who changes their own email on the web profile form or with `PUT /api/users/{user}` is
 unverified until they click the link sent to the new address, so they can't add or edit content
-in the meantime. The old address gets a notice that the email was changed, in case someone else
-made the change. Re-saving the same address (or changing only its case) keeps verification, and so
-does an admin changing someone else's email. On the web, the "Check your email" prompt shows after
-the change. The API response shows `email_verified_at: null`, and the update accepts an optional
-`frontend-url` for the link, as registration does.
+in the meantime. If the old address was verified, it gets a notice that the email was changed, in case someone
+else made the change. Re-saving the same address (or changing only its case) keeps verification,
+and so does any email change made by an admin, including to their own. Users can change their email
+3 times an hour. An account that is unverified only because of an email change is kept by the daily
+`userCleanup` command and by Admin Tools' "Purge Users" (`users.email_change_pending_at` marks it).
+On the web, the "Check your email" prompt shows after the change. The API response shows
+`email_verified_at: null`, and the update accepts an optional `frontend-url` for the link, as
+registration does. Needs `php artisan migrate`.
 
 ### Spam signup defenses (#2312)
 Captcha and email verification didn't stop people, or captcha farms, with a working inbox, and

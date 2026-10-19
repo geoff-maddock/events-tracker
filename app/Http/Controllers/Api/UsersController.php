@@ -18,7 +18,6 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Services\BestEffortMailer;
 use App\Services\EmailChangeVerifier;
-use App\Services\FrontendUrl;
 use App\Services\Signup\SignupRiskScorer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -275,14 +274,6 @@ class UsersController extends Controller
         $oldEmail = $emailChanges->prepare($user, $this->user);
         $user->save();
 
-        if (null !== $oldEmail) {
-            // only allowlisted origins; anything else falls back to the configured frontend
-            if ($request->filled('frontend-url')) {
-                $user->frontendUrl = FrontendUrl::resolve($request->input('frontend-url'));
-            }
-            $emailChanges->notify($user, $oldEmail);
-        }
-
         // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
         $user->profile()->firstOrCreate([])->fill($profileFields)->save();
 
@@ -297,6 +288,12 @@ class UsersController extends Controller
 
         // add to activity log
         Activity::log($user, $this->user, 2);
+
+        if (null !== $oldEmail) {
+            // the link generator allowlists the frontend-url (FrontendUrl::resolve)
+            $user->frontendUrl = $request->input('frontend-url');
+            $emailChanges->notify($user, $oldEmail);
+        }
 
         return response()->json(new UserResource($user));
     }
