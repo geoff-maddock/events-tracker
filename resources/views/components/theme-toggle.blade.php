@@ -1,7 +1,11 @@
 <div x-data="{
-    isDark: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && '{{ $theme ?? config("app.default_theme") }}' === 'dark'),
+    isDark: document.documentElement.classList.contains('dark'),
     toggle() {
-        this.isDark = !this.isDark;
+        const nextIsDark = !document.documentElement.classList.contains('dark');
+        if (document.documentElement.dataset.artistTheme) {
+            window.dispatchEvent(new Event('artist-theme-reset'));
+        }
+        this.isDark = nextIsDark;
 
         // Update both html and body elements
         document.documentElement.classList.remove('dark', 'light');
@@ -12,7 +16,7 @@
         localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
         fetch('/theme/' + (this.isDark ? 'dark' : 'light'));
     }
-}">
+}" @artist-theme-change.window="isDark = document.documentElement.classList.contains('dark')">
     <button
         @click="toggle()"
         class="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"

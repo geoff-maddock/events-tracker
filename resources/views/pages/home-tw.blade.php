@@ -11,7 +11,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<div class="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 rounded-xl border border-border shadow-sm mb-8">
+<div class="artist-hero relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 rounded-xl border border-border shadow-sm mb-8">
 	<div class="relative p-6 md:p-8">
 		<!-- Header with Toggle -->
 		<div class="flex items-start justify-between gap-4">

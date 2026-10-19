@@ -1,0 +1,450 @@
+/* Dev-only artist studies. All selectors are inert without data-artist-theme.
+   Palette and reference rationale: docs/artist-themes.md. */
+
+html[data-artist-theme="joe-taylor"] {
+  --background: 49.1 44.0% 90.2%;
+  --foreground: 156.5 24.2% 18.6%;
+  --card: 46.7 69.2% 94.9%;
+  --card-foreground: 156.5 24.2% 18.6%;
+  --popover: 46.7 69.2% 94.9%;
+  --popover-foreground: 156.5 24.2% 18.6%;
+  --primary: 142.3 27.7% 30.4%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 244.3 28.0% 90.2%;
+  --secondary-foreground: 156.5 24.2% 18.6%;
+  --muted: 244.3 28.0% 90.2%;
+  --muted-foreground: 136.8 13.2% 36.1%;
+  --accent: 244.3 28.0% 90.2%;
+  --accent-foreground: 156.5 24.2% 18.6%;
+  --border: 91.1 16.6% 68.0%;
+  --input: 244.3 28.0% 90.2%;
+  --ring: 142.3 27.7% 30.4%;
+  --radius: 1.3rem;
+  --artist-heading: "Trebuchet MS", sans-serif;
+  --artist-motif: url("../images/artist-themes/joe-taylor.svg");
+}
+
+html[data-artist-theme="flesh-from-the-acid"] {
+  --background: 60.0 2.4% 8.0%;
+  --foreground: 44.4 38.0% 86.1%;
+  --card: 120.0 3.2% 12.2%;
+  --card-foreground: 44.4 38.0% 86.1%;
+  --popover: 120.0 3.2% 12.2%;
+  --popover-foreground: 44.4 38.0% 86.1%;
+  --primary: 12.5 80.6% 69.6%;
+  --primary-foreground: 140 6% 10%;
+  --secondary: 96.0 5.2% 19.0%;
+  --secondary-foreground: 44.4 38.0% 86.1%;
+  --muted: 96.0 5.2% 19.0%;
+  --muted-foreground: 63.8 10.1% 69.0%;
+  --accent: 96.0 5.2% 19.0%;
+  --accent-foreground: 44.4 38.0% 86.1%;
+  --border: 75.0 7.7% 40.8%;
+  --input: 96.0 5.2% 19.0%;
+  --ring: 12.5 80.6% 69.6%;
+  --radius: 0.12rem;
+  --artist-heading: Impact, "Arial Narrow", sans-serif;
+  --artist-motif: url("../images/artist-themes/flesh-from-the-acid.svg");
+}
+
+html[data-artist-theme="tuukzs"] {
+  --background: 251.2 30.8% 10.2%;
+  --foreground: 256.2 100.0% 94.9%;
+  --card: 253.0 29.9% 15.1%;
+  --card-foreground: 256.2 100.0% 94.9%;
+  --popover: 253.0 29.9% 15.1%;
+  --popover-foreground: 256.2 100.0% 94.9%;
+  --primary: 281.4 67.6% 79.4%;
+  --primary-foreground: 140.0 6.1% 9.6%;
+  --secondary: 263.6 29.2% 22.2%;
+  --secondary-foreground: 256.2 100.0% 94.9%;
+  --muted: 263.6 29.2% 22.2%;
+  --muted-foreground: 259.5 30.6% 76.3%;
+  --accent: 263.6 29.2% 22.2%;
+  --accent-foreground: 256.2 100.0% 94.9%;
+  --border: 258.7 22.0% 40.2%;
+  --input: 263.6 29.2% 22.2%;
+  --ring: 281.4 67.6% 79.4%;
+  --radius: 1.2rem;
+  --artist-heading: "Trebuchet MS", sans-serif;
+  --artist-motif: url("../images/artist-themes/tuukzs.svg");
+}
+
+html[data-artist-theme="fuuurio"] {
+  --background: 202.5 32.0% 9.8%;
+  --foreground: 152.0 30.6% 90.4%;
+  --card: 204.5 29.7% 14.5%;
+  --card-foreground: 152.0 30.6% 90.4%;
+  --popover: 204.5 29.7% 14.5%;
+  --popover-foreground: 152.0 30.6% 90.4%;
+  --primary: 147.4 57.6% 80.6%;
+  --primary-foreground: 140.0 6.1% 9.6%;
+  --secondary: 214.8 26.5% 22.9%;
+  --secondary-foreground: 152.0 30.6% 90.4%;
+  --muted: 214.8 26.5% 22.9%;
+  --muted-foreground: 177.6 16.3% 70.0%;
+  --accent: 214.8 26.5% 22.9%;
+  --accent-foreground: 152.0 30.6% 90.4%;
+  --border: 195.0 18.0% 39.2%;
+  --input: 214.8 26.5% 22.9%;
+  --ring: 147.4 57.6% 80.6%;
+  --radius: 0.25rem;
+  --artist-heading: "Arial Narrow", sans-serif;
+  --artist-motif: url("../images/artist-themes/fuuurio.svg");
+}
+
+html[data-artist-theme="noirmatic"] {
+  --background: 132.0 9.8% 10.0%;
+  --foreground: 54.7 37.0% 82.0%;
+  --card: 127.5 10.5% 14.9%;
+  --card-foreground: 54.7 37.0% 82.0%;
+  --popover: 127.5 10.5% 14.9%;
+  --popover-foreground: 54.7 37.0% 82.0%;
+  --primary: 55.1 40.9% 70.8%;
+  --primary-foreground: 140.0 6.1% 9.6%;
+  --secondary: 90.0 13.2% 20.8%;
+  --secondary-foreground: 54.7 37.0% 82.0%;
+  --muted: 90.0 13.2% 20.8%;
+  --muted-foreground: 69.2 14.8% 65.5%;
+  --accent: 90.0 13.2% 20.8%;
+  --accent-foreground: 54.7 37.0% 82.0%;
+  --border: 80.7 15.0% 37.8%;
+  --input: 90.0 13.2% 20.8%;
+  --ring: 55.1 40.9% 70.8%;
+  --radius: 0.05rem;
+  --artist-heading: Georgia, serif;
+  --artist-motif: url("../images/artist-themes/noirmatic.svg");
+}
+
+html[data-artist-theme="redaderr"] {
+  --background: 41.2 29.6% 89.4%;
+  --foreground: 81.8 10.7% 20.2%;
+  --card: 37.5 47.1% 93.3%;
+  --card-foreground: 81.8 10.7% 20.2%;
+  --popover: 37.5 47.1% 93.3%;
+  --popover-foreground: 81.8 10.7% 20.2%;
+  --primary: 266.8 18.4% 40.4%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 341.5 28.9% 82.4%;
+  --secondary-foreground: 81.8 10.7% 20.2%;
+  --muted: 341.5 28.9% 82.4%;
+  --muted-foreground: 63.0 11.2% 30.4%;
+  --accent: 341.5 28.9% 82.4%;
+  --accent-foreground: 81.8 10.7% 20.2%;
+  --border: 62.3 13.1% 61.2%;
+  --input: 341.5 28.9% 82.4%;
+  --ring: 266.8 18.4% 40.4%;
+  --radius: 0.4rem;
+  --artist-heading: "Trebuchet MS", sans-serif;
+  --artist-motif: url("../images/artist-themes/redaderr.svg");
+}
+
+html[data-artist-theme="indecent-ink"] {
+  --background: 180.0 2.6% 7.6%;
+  --foreground: 45.0 26.7% 88.2%;
+  --card: 180.0 3.6% 11.0%;
+  --card-foreground: 45.0 26.7% 88.2%;
+  --popover: 180.0 3.6% 11.0%;
+  --popover-foreground: 45.0 26.7% 88.2%;
+  --primary: 45.0 29.3% 83.9%;
+  --primary-foreground: 140.0 6.1% 9.6%;
+  --secondary: 120.0 2.2% 17.6%;
+  --secondary-foreground: 45.0 26.7% 88.2%;
+  --muted: 120.0 2.2% 17.6%;
+  --muted-foreground: 55.0 7.6% 69.0%;
+  --accent: 120.0 2.2% 17.6%;
+  --accent-foreground: 45.0 26.7% 88.2%;
+  --border: 73.3 4.4% 40.2%;
+  --input: 120.0 2.2% 17.6%;
+  --ring: 45.0 29.3% 83.9%;
+  --radius: 0.05rem;
+  --artist-heading: Georgia, serif;
+  --artist-motif: url("../images/artist-themes/indecent-ink.svg");
+}
+
+html[data-artist-theme="hollowed-graphix"] {
+  --background: 174.5 24.4% 8.8%;
+  --foreground: 109.1 20.8% 89.6%;
+  --card: 176.0 22.4% 13.1%;
+  --card-foreground: 109.1 20.8% 89.6%;
+  --popover: 176.0 22.4% 13.1%;
+  --popover-foreground: 109.1 20.8% 89.6%;
+  --primary: 260.0 35.6% 76.9%;
+  --primary-foreground: 140.0 6.1% 9.6%;
+  --secondary: 156.9 12.1% 21.0%;
+  --secondary-foreground: 109.1 20.8% 89.6%;
+  --muted: 156.9 12.1% 21.0%;
+  --muted-foreground: 145.3 12.9% 71.2%;
+  --accent: 156.9 12.1% 21.0%;
+  --accent-foreground: 109.1 20.8% 89.6%;
+  --border: 160.6 16.9% 35.9%;
+  --input: 156.9 12.1% 21.0%;
+  --ring: 260.0 35.6% 76.9%;
+  --radius: 1.5rem;
+  --artist-heading: Georgia, serif;
+  --artist-motif: url("../images/artist-themes/hollowed-graphix.svg");
+}
+
+html[data-artist-theme="doomkitsch"] {
+  --background: 336.0 40.0% 90.2%;
+  --foreground: 278.2 20.8% 20.8%;
+  --card: 352.5 53.3% 94.1%;
+  --card-foreground: 278.2 20.8% 20.8%;
+  --popover: 352.5 53.3% 94.1%;
+  --popover-foreground: 278.2 20.8% 20.8%;
+  --primary: 272.1 26.1% 43.5%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 282.4 42.5% 84.3%;
+  --secondary-foreground: 278.2 20.8% 20.8%;
+  --muted: 282.4 42.5% 84.3%;
+  --muted-foreground: 314.5 16.3% 36.3%;
+  --accent: 282.4 42.5% 84.3%;
+  --accent-foreground: 278.2 20.8% 20.8%;
+  --border: 304.4 22.9% 64.9%;
+  --input: 282.4 42.5% 84.3%;
+  --ring: 272.1 26.1% 43.5%;
+  --radius: 0.85rem;
+  --artist-heading: "Trebuchet MS", sans-serif;
+  --artist-motif: url("../images/artist-themes/doomkitsch.svg");
+}
+
+html[data-artist-theme="infiniteyay"] {
+  --background: 258.8 36.4% 91.4%;
+  --foreground: 246.2 24.4% 23.3%;
+  --card: 275.0 66.7% 96.5%;
+  --card-foreground: 246.2 24.4% 23.3%;
+  --popover: 275.0 66.7% 96.5%;
+  --popover-foreground: 246.2 24.4% 23.3%;
+  --primary: 257.8 35.4% 44.9%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 247.8 35.4% 87.3%;
+  --secondary-foreground: 246.2 24.4% 23.3%;
+  --muted: 247.8 35.4% 87.3%;
+  --muted-foreground: 255.5 14.4% 40.2%;
+  --accent: 247.8 35.4% 87.3%;
+  --accent-foreground: 246.2 24.4% 23.3%;
+  --border: 255.5 18.1% 66.5%;
+  --input: 247.8 35.4% 87.3%;
+  --ring: 257.8 35.4% 44.9%;
+  --radius: 0.1rem;
+  --artist-heading: "Courier New", monospace;
+  --artist-motif: url("../images/artist-themes/infiniteyay.svg");
+}
+
+html[data-artist-theme="high-road-design"] {
+  --background: 43.4 55.3% 83.3%;
+  --foreground: 33.0 18.5% 21.2%;
+  --card: 43.1 66.1% 88.4%;
+  --card-foreground: 33.0 18.5% 21.2%;
+  --popover: 43.1 66.1% 88.4%;
+  --popover-foreground: 33.0 18.5% 21.2%;
+  --primary: 27.3 44.6% 34.7%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 42.4 56.4% 73.9%;
+  --secondary-foreground: 33.0 18.5% 21.2%;
+  --muted: 42.4 56.4% 73.9%;
+  --muted-foreground: 34.7 24.1% 31.7%;
+  --accent: 42.4 56.4% 73.9%;
+  --accent-foreground: 33.0 18.5% 21.2%;
+  --border: 40.3 25.7% 55.7%;
+  --input: 42.4 56.4% 73.9%;
+  --ring: 27.3 44.6% 34.7%;
+  --radius: 0.5rem;
+  --artist-heading: Georgia, serif;
+  --artist-motif: url("../images/artist-themes/high-road-design.svg");
+}
+
+html[data-artist-theme="horriblparty"] {
+  --background: 48.0 58.8% 86.7%;
+  --foreground: 260.0 18.1% 16.3%;
+  --card: 48.0 78.9% 92.5%;
+  --card-foreground: 260.0 18.1% 16.3%;
+  --popover: 48.0 78.9% 92.5%;
+  --popover-foreground: 260.0 18.1% 16.3%;
+  --primary: 242.0 37.1% 48.6%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 325.2 53.2% 81.6%;
+  --secondary-foreground: 260.0 18.1% 16.3%;
+  --muted: 325.2 53.2% 81.6%;
+  --muted-foreground: 272.0 14.7% 35.0%;
+  --accent: 325.2 53.2% 81.6%;
+  --accent-foreground: 260.0 18.1% 16.3%;
+  --border: 43.3 14.6% 51.8%;
+  --input: 325.2 53.2% 81.6%;
+  --ring: 242.0 37.1% 48.6%;
+  --radius: 1.1rem;
+  --artist-heading: "Trebuchet MS", sans-serif;
+  --artist-motif: url("../images/artist-themes/horriblparty.svg");
+}
+
+html[data-artist-theme="dasha-plesen"] {
+  --background: 54.5 26.8% 92.0%;
+  --foreground: 166.4 18.6% 23.1%;
+  --card: 53.3 47.4% 96.3%;
+  --card-foreground: 166.4 18.6% 23.1%;
+  --popover: 53.3 47.4% 96.3%;
+  --popover-foreground: 166.4 18.6% 23.1%;
+  --primary: 337.9 37.3% 40.0%;
+  --primary-foreground: 0.0 0.0% 100.0%;
+  --secondary: 137.1 22.6% 87.8%;
+  --secondary-foreground: 166.4 18.6% 23.1%;
+  --muted: 137.1 22.6% 87.8%;
+  --muted-foreground: 142.1 9.3% 37.7%;
+  --accent: 137.1 22.6% 87.8%;
+  --accent-foreground: 166.4 18.6% 23.1%;
+  --border: 145.7 13.5% 69.6%;
+  --input: 137.1 22.6% 87.8%;
+  --ring: 337.9 37.3% 40.0%;
+  --radius: 1.7rem;
+  --artist-heading: "Trebuchet MS", sans-serif;
+  --artist-motif: url("../images/artist-themes/dasha-plesen.svg");
+}
+
+html[data-artist-theme] { color-scheme: light; }
+html[data-artist-theme].dark { color-scheme: dark; }
+html[data-artist-theme] body { color: hsl(var(--foreground)); }
+html[data-artist-theme] :is(h1, h2, .event-card-title-tw, .sidebar-block-tw .text-xl) {
+  font-family: var(--artist-heading);
+  text-wrap: pretty;
+}
+html[data-artist-theme] :is(.event-card-tw, .entity-card-tw, .card-tw) {
+  border-radius: var(--radius);
+  border-color: hsl(var(--border));
+  box-shadow: 0 4px 14px hsl(var(--foreground) / 0.06);
+}
+html[data-artist-theme] :is(.event-card-tw, .entity-card-tw):hover {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 5px 18px hsl(var(--primary) / 0.14);
+}
+html[data-artist-theme] :is(.nav-item-active-tw, .nav-item-tw:hover) {
+  box-shadow: inset 3px 0 hsl(var(--primary));
+}
+html[data-artist-theme] .badge-tw { border-radius: 0.3rem; }
+html[data-artist-theme] :is(select, select option) {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+html[data-artist-theme] :is(input, textarea, select):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+html[data-artist-theme] .artist-hero {
+  isolation: isolate;
+  background: hsl(var(--card));
+  border-radius: var(--radius);
+}
+html[data-artist-theme] .artist-hero::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0.5rem;
+  right: 2.5rem;
+  width: clamp(100px, 20vw, 230px);
+  height: clamp(100px, 20vw, 230px);
+  background: var(--artist-motif) center / contain no-repeat;
+  pointer-events: none;
+}
+@media (min-width: 1280px) {
+  html[data-artist-theme] .artist-hero h1 { padding-right: 220px; }
+  html[data-artist-theme] .artist-hero #home-content > p { max-width: calc(100% - 220px); }
+}
+@media (max-width: 1279px) {
+  html[data-artist-theme] .artist-hero::after { opacity: 0.08; right: 0; }
+}
+html[data-artist-theme] main h1:not(.artist-hero h1)::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 0.3rem;
+  margin-top: 0.8rem;
+  background: hsl(var(--primary));
+  border-radius: var(--radius);
+}
+/* Distinct surface and shape decisions, restrained around data and artwork. */
+html[data-artist-theme="joe-taylor"] :is(.event-card-tw, .entity-card-tw) {
+  border-radius: 1.5rem 0.6rem 1.8rem 0.7rem;
+  box-shadow: 3px 4px 0 hsl(var(--border) / 0.5);
+}
+html[data-artist-theme="joe-taylor"] .sidebar-block-tw:first-child { border-bottom: 3px solid hsl(var(--primary)); }
+html[data-artist-theme="flesh-from-the-acid"] :is(.artist-hero, .sidebar-block-tw:first-child) {
+  background-image: repeating-linear-gradient(115deg, transparent 0 12px, #d9d1b908 12px 13px);
+  border-bottom: 3px double hsl(var(--primary));
+}
+html[data-artist-theme="flesh-from-the-acid"] :is(h1, h2) { letter-spacing: 0.035em; }
+html[data-artist-theme="flesh-from-the-acid"] :is(.event-card-tw, .entity-card-tw) { border-top: 3px solid hsl(var(--primary)); }
+html[data-artist-theme="tuukzs"] .artist-hero {
+  background-image: radial-gradient(ellipse at 85% 20%, #bc78d330, transparent 50%), radial-gradient(ellipse at 10% 95%, #79d6b51a, transparent 60%);
+}
+html[data-artist-theme="tuukzs"] :is(.event-card-tw, .entity-card-tw) { box-shadow: 0 0 20px #bf8bd30f; }
+html[data-artist-theme="tuukzs"] .nav-item-active-tw { box-shadow: inset 3px 0 #c8a0e6, inset 0 0 15px #9af9cd12; }
+html[data-artist-theme="fuuurio"] :is(.artist-hero, .event-card-tw, .entity-card-tw) {
+  border-top: 2px solid #c5d7e2;
+  border-image: linear-gradient(110deg, #72988a, #f7ceee, #5c7088, #bde7cd) 1;
+}
+html[data-artist-theme="fuuurio"] .artist-hero {
+  background-image: linear-gradient(#9ac4b908 1px, transparent 1px), linear-gradient(90deg, #9ac4b908 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+html[data-artist-theme="noirmatic"] :is(.artist-hero, .event-card-tw, .entity-card-tw) { outline: 1px solid hsl(var(--border) / 0.4); outline-offset: -6px; }
+html[data-artist-theme="noirmatic"] :is(h1, h2) { letter-spacing: 0.045em; }
+html[data-artist-theme="noirmatic"] .sidebar-block-tw:first-child { border-bottom: 4px double hsl(var(--border)); }
+html[data-artist-theme="redaderr"] :is(.event-card-tw, .entity-card-tw, .artist-hero) { border-width: 2px; box-shadow: 4px 4px 0 #c7b3b9; }
+html[data-artist-theme="redaderr"] .badge-tw { border: 1px dashed hsl(var(--border)); }
+html[data-artist-theme="indecent-ink"] :is(.event-card-tw, .entity-card-tw, .artist-hero) { border: 3px double hsl(var(--border)); }
+html[data-artist-theme="indecent-ink"] .artist-hero { background-image: repeating-radial-gradient(ellipse at 100% 0, transparent 0 12px, #e5dfcf07 12px 13px); }
+html[data-artist-theme="hollowed-graphix"] .artist-hero { background-image: radial-gradient(ellipse at bottom, #8fa58a20, transparent 65%); border-top: 2px solid #a18bb2; }
+html[data-artist-theme="hollowed-graphix"] .sidebar-block-tw:first-child { border-radius: 60% 60% 0 0; background: linear-gradient(#77608e22, transparent); }
+html[data-artist-theme="doomkitsch"] :is(.event-card-tw, .entity-card-tw) { border: 2px solid #a27aab; box-shadow: 3px 4px 0 #d9adbd; }
+html[data-artist-theme="doomkitsch"] .artist-hero { background-image: radial-gradient(#71528c16 0.7px, transparent 0.7px); background-size: 5px 5px; }
+html[data-artist-theme="doomkitsch"] .badge-tw { border-radius: 45% 40% 45% 25%; }
+html[data-artist-theme="infiniteyay"] :is(.event-card-tw, .entity-card-tw) { border-top: 8px solid #b6abd2; box-shadow: 3px 3px 0 #b0a5cb, 6px 6px 0 #cec6e0; }
+html[data-artist-theme="infiniteyay"] .artist-hero { border-top: 18px solid #b6abd2; box-shadow: inset 0 0 0 4px #f8f1fc, 4px 4px 0 #b0a5cb; }
+html[data-artist-theme="infiniteyay"] .nav-item-tw { border-radius: 0; }
+html[data-artist-theme="high-road-design"] :is(.artist-hero, .sidebar-block-tw:first-child) { background-image: radial-gradient(#80553118 0.8px, transparent 0.8px); background-size: 4px 4px; }
+html[data-artist-theme="high-road-design"] :is(.event-card-tw, .entity-card-tw) { border: 2px solid #8e7958; box-shadow: 3px 3px 0 #c7b588; }
+html[data-artist-theme="high-road-design"] .badge-tw { border-radius: 999px; }
+html[data-artist-theme="horriblparty"] :is(.event-card-tw, .entity-card-tw, .artist-hero) { border: 2px solid #514360; box-shadow: 4px 4px 0 #e6b0cb; }
+html[data-artist-theme="horriblparty"] :is(.badge-primary-tw, .badge-secondary-tw, .badge-accent-tw) { background: #e9d76f; color: #302633; border: 1px solid #a39158; border-radius: 0.7rem; }
+html[data-artist-theme="horriblparty"] h1 { text-shadow: 2px 2px #e9b7d4; }
+html[data-artist-theme="dasha-plesen"] :is(.event-card-tw, .entity-card-tw) { border-radius: 1.9rem 1.2rem 1.6rem 1.1rem; border-bottom: 3px solid #bdd2bf; }
+html[data-artist-theme="dasha-plesen"] .artist-hero { background-image: radial-gradient(ellipse at 100% 10%, #dbb8ba40, transparent 45%); }
+html[data-artist-theme="dasha-plesen"] :is(.badge-primary-tw, .badge-secondary-tw, .badge-accent-tw) { border-radius: 999px; background: #e2e9df; }
+/* Quiet mode keeps palettes and typography; hides decoration only. */
+html[data-artist-theme][data-artist-flourishes="off"] .artist-hero::after,
+html[data-artist-theme][data-artist-flourishes="off"] main h1::after { display: none; }
+html[data-artist-theme][data-artist-flourishes="off"] :is(.artist-hero, .sidebar-block-tw:first-child) { background-image: none; }
+@media (min-width: 1280px) {
+  html[data-artist-theme][data-artist-flourishes="off"] .artist-hero h1 { padding-right: 0; }
+  html[data-artist-theme][data-artist-flourishes="off"] .artist-hero #home-content > p { max-width: 48rem; }
+}
+/* The lab uses the same tokens as the page, but does not rely on Tailwind. */
+.artist-theme-lab {
+  position: fixed; bottom: 1rem; right: 1rem; z-index: 60;
+  width: min(360px, calc(100vw - 2rem));
+  background: hsl(var(--card)); color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border)); border-radius: 12px;
+  box-shadow: 0 8px 35px #0003; font: 13px/1.5 system-ui, sans-serif;
+}
+.artist-theme-lab:not([open]) { width: auto; max-width: calc(100vw - 2rem); }
+.artist-theme-lab summary { display: flex; align-items: center; gap: 9px; padding: 11px 14px; cursor: pointer; list-style: none; }
+.artist-theme-lab summary::-webkit-details-marker { display: none; }
+.artist-theme-lab summary small { font: 10px/1.3 monospace; padding: 3px 5px; border: 1px solid hsl(var(--border)); border-radius: 4px; }
+.artist-lab-dot { width: 9px; height: 9px; border-radius: 50%; background: hsl(var(--primary)); }
+.artist-lab-body { display: grid; gap: 12px; padding: 0 16px 16px; max-height: min(480px, 65dvh); overflow: auto; }
+.artist-lab-body select { width: 100%; min-height: 44px; border: 1px solid hsl(var(--border)); border-radius: 6px; padding: 6px 8px; font: inherit; }
+.artist-lab-body p { margin: 0; color: hsl(var(--muted-foreground)); min-height: 4.5em; }
+.artist-lab-body button { padding: 9px 12px; border: 1px solid hsl(var(--border)); border-radius: 6px; background: hsl(var(--secondary)); color: hsl(var(--foreground)); cursor: pointer; font: inherit; }
+.artist-lab-body button:hover { border-color: hsl(var(--primary)); }
+.artist-lab-actions { display: flex; gap: 8px; }
+.artist-lab-actions button { flex: 1; }
+.artist-lab-check { display: flex; align-items: center; gap: 8px; }
+.artist-lab-check input { accent-color: hsl(var(--primary)); }
+.artist-lab-body small { color: hsl(var(--muted-foreground)); }
+.artist-theme-lab :is(summary, button, select, input):focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-artist-theme] :is(.event-card-tw, .entity-card-tw, .nav-item-tw) { transition: none; }
+}
+@media print {
+  .artist-theme-lab { display: none; }
+  html[data-artist-theme] .artist-hero::after { display: none; }
+}

@@ -1,3 +1,4 @@
+@php($artistThemesEnabled = app()->environment(['local', 'testing']) && config('artist-themes.enabled'))
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +38,11 @@
 		})();
 	</script>
 
+	@if ($artistThemesEnabled)
+	<script src="{{ asset('js/artist-themes.js') }}?v={{ filemtime(public_path('js/artist-themes.js')) }}"></script>
+	@vite('resources/css/artist-themes.css')
+	@endif
+
 	<link rel="manifest" href="/manifest.json">
 	<link rel="apple-touch-icon" href="/apple-icon-180x180.png">
 	<link rel="alternate" type="application/rss+xml" href="{{ url('rss') }}"
@@ -73,7 +79,7 @@
 		// Set body theme class from localStorage
 		(function() {
 			const theme = localStorage.getItem('theme') || '{{ $theme ?? config("app.default_theme") }}';
-			document.body.classList.add(theme);
+			if (!document.documentElement.dataset.artistTheme) document.body.classList.add(theme);
 		})();
 	</script>
 	@if (config('app.google_tags') !== "")
@@ -105,6 +111,10 @@
 			</main>
 		</div>
 	</div>
+
+	@if ($artistThemesEnabled)
+		@include('partials.artist-theme-lab')
+	@endif
 
 	<!-- Alpine.js for reactive components; pinned, so a new release can't change the site unannounced -->
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.4/dist/cdn.min.js" integrity="sha384-5/joNqFnRyVWzXp99bHot6RHG+EksGp+USSgZwPar7T9SD9PKKER37n/8bXBAZGd" crossorigin="anonymous"></script>
