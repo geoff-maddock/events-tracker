@@ -24,6 +24,7 @@ use App\Models\Visibility;
 use App\Services\Signup\SignupRiskScorer;
 use App\Services\DigestBuilder;
 use App\Services\BestEffortMailer;
+use App\Services\EmailChangeVerifier;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -441,7 +442,11 @@ class UsersController extends Controller
         $input['setting_public_profile'] = isset($input['setting_public_profile']) ? 1 : 0;
         $input['setting_feedback_requests'] = isset($input['setting_feedback_requests']) ? 1 : 0;
 
-        $user->fill($input)->save();
+        $user->fill($input);
+        // a self-made email change must be verified again (#2321)
+        $emailChanges = app(EmailChangeVerifier::class);
+        $emailChange = $emailChanges->prepare($user, $this->user, $request->ip());
+        $user->save();
         // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
         $user->profile()->firstOrCreate([])->fill($input)->save();
 
@@ -458,6 +463,16 @@ class UsersController extends Controller
         Activity::log($user, $this->user, 2);
 
         flash('Success', 'The user has been updated');
+
+        if (null !== $emailChange) {
+            $emailChanges->notify($user, $emailChange);
+
+            // an admin correcting someone else's address doesn't need the prompt
+            if ($this->user->id === $user->id) {
+                $request->session()->flash('show_verification_notice', $user->email);
+                $request->session()->flash('verification_notice_reason', 'email-changed');
+            }
+        }
 
         return redirect()->route('users.show', ['user' => $user]);
     }
@@ -528,6 +543,7 @@ class UsersController extends Controller
         // add the following response
         $user->user_status_id = UserStatus::ACTIVE;
         $user->email_verified_at = Carbon::now();
+        $user->email_change_pending_at = null;
         // an admin vouching for the account also trusts it (#2312)
         $user->trusted_at = now();
         $user->save();
@@ -772,9 +788,11 @@ class UsersController extends Controller
         abort_unless($request->user()?->can('grant_access'), 403);
 
         // pending users who never verified their email. A verified signup that the
-        // risk score holds at Pending waits in the signup review instead (#2312)
+        // risk score holds at Pending waits in the signup review instead (#2312),
+        // even after changing its email (#2321)
         $users = User::where('user_status_id', '=', UserStatus::PENDING)
             ->whereNull('email_verified_at')
+            ->whereNull('email_change_pending_at')
             ->orderBy('name', 'ASC')
             ->get();
 

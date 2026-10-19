@@ -17,6 +17,7 @@ use App\Models\Activity;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\BestEffortMailer;
+use App\Services\EmailChangeVerifier;
 use App\Services\Signup\SignupRiskScorer;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
@@ -232,7 +233,7 @@ class UsersController extends Controller
             'name' => ['sometimes', 'required', 'min:6', 'max:255', 'regex:/^[a-zA-Z0-9\s._-]+$/', ProfileRequest::linkRule($user, $this->user)],
             // users are looked up by slug, so it must stay unique and URL-safe (#2180)
             'slug' => ['sometimes', 'required', 'string', 'max:255', 'regex:/^[a-z0-9-]+$/', Rule::unique('users', 'slug')->ignore($user->id)],
-            'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id, ProfileRequest::changedEmailRule($user)],
             'password' => ['sometimes', 'required', 'min:8', 'max:60'],
             'user_status_id' => ['sometimes', 'integer', 'exists:user_statuses,id'],
             'profile' => ['sometimes', 'array'],
@@ -255,6 +256,8 @@ class UsersController extends Controller
             'profile.setting_feedback_requests' => ['sometimes', 'boolean'],
             'group_list' => ['sometimes', 'array'],
             'group_list.*' => ['integer', 'exists:groups,id'],
+            // where an email change's verification link opens (allowlisted origins only)
+            'frontend-url' => ['sometimes', 'nullable', 'string', 'url', 'max:255'],
         ]);
 
         // status and group membership are admin-only fields
@@ -265,7 +268,11 @@ class UsersController extends Controller
         // only the validated profile fields (not e.g. the onboarding timestamps)
         $profileFields = $validated['profile'] ?? [];
 
-        $user->fill($userFields)->save();
+        $user->fill($userFields);
+        // a self-made email change must be verified again (#2321)
+        $emailChanges = app(EmailChangeVerifier::class);
+        $emailChange = $emailChanges->prepare($user, $this->user, $request->ip());
+        $user->save();
 
         // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
         $user->profile()->firstOrCreate([])->fill($profileFields)->save();
@@ -281,6 +288,12 @@ class UsersController extends Controller
 
         // add to activity log
         Activity::log($user, $this->user, 2);
+
+        if (null !== $emailChange) {
+            // the link generator allowlists the frontend-url (FrontendUrl::resolve)
+            $user->frontendUrl = $request->input('frontend-url');
+            $emailChanges->notify($user, $emailChange);
+        }
 
         return response()->json(new UserResource($user));
     }

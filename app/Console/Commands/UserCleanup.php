@@ -47,7 +47,8 @@ class UserCleanup extends Command
         $days_to_verify = 7;
 
         // get all the users who have not verified their email within the number of days granted and delete them
-        $users = User::whereNull('email_verified_at')->where('created_at', '<', Carbon::now()->subDays($days_to_verify))->orderBy('name', 'ASC')->get();
+        // an account unverified only by an email change is not a stale signup (#2321)
+        $users = User::whereNull('email_verified_at')->whereNull('email_change_pending_at')->where('created_at', '<', Carbon::now()->subDays($days_to_verify))->orderBy('name', 'ASC')->get();
         foreach ($users as $user) {
             $this->info('The user ' . $user->email . ' was deleted.');
             $user->delete();
@@ -56,10 +57,20 @@ class UserCleanup extends Command
         $days_for_reminder = 3;
 
         // for all users who have not verified their email after the reminder days, resend the verification email
-        $users = User::whereNull('email_verified_at')->where('created_at', '<', Carbon::now()->subDays($days_for_reminder))->orderBy('name', 'ASC')->get();
+        $users = User::whereNull('email_verified_at')->whereNull('email_change_pending_at')->where('created_at', '<', Carbon::now()->subDays($days_for_reminder))->orderBy('name', 'ASC')->get();
         foreach ($users as $user) {
             $user->sendEmailVerificationNotification();
             $this->info('The user ' . $user->email . ' was resent a verification email.');
+        }
+
+        // one reminder for an email change still unverified after the reminder days (#2321)
+        $users = User::whereNull('email_verified_at')
+            ->whereBetween('email_change_pending_at', [Carbon::now()->subDays($days_for_reminder + 1), Carbon::now()->subDays($days_for_reminder)])
+            ->orderBy('name', 'ASC')
+            ->get();
+        foreach ($users as $user) {
+            $user->sendEmailVerificationNotification();
+            $this->info('The user ' . $user->email . ' was reminded to verify their changed email.');
         }
     }
 }

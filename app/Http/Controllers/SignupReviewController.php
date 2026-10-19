@@ -106,6 +106,7 @@ class SignupReviewController extends Controller
         $user->trusted_at = now();
         $user->user_status_id = UserStatus::ACTIVE;
         $user->email_verified_at ??= now()->toDateTimeString();
+        $user->email_change_pending_at = null;
         $user->save();
 
         Activity::log($user, $this->user, 10, sprintf('Approved signup: %s', $user->name));

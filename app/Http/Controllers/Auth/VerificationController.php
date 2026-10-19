@@ -86,8 +86,15 @@ class VerificationController extends Controller
             return redirect($this->redirectPath())->with('status', 'Email already verified.');
         }
 
+        // a changed email may be mistyped, so its link must not sign anyone in (#2321)
+        $emailChange = null !== $user->email_change_pending_at;
+
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
+        }
+
+        if ($emailChange && Auth::id() !== $user->id) {
+            return redirect()->route('login')->with('status', 'Your new email address is verified. Please log in.');
         }
 
         // Optional: auto-login after verification

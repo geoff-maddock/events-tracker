@@ -38,6 +38,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \Illuminate\Support\Carbon|null                                                                           $updated_at
  * @property int|null                                                                                                  $user_status_id
  * @property string|null                                                                                               $email_verified_at
+ * @property \Illuminate\Support\Carbon|null                                                                           $email_change_pending_at
  * @property \Illuminate\Support\Carbon|null                                                                           $trusted_at
  * @property int|null                                                                                                  $risk_score
  * @property list<string>|null                                                                                         $risk_reasons
@@ -114,6 +115,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     protected $casts = [
         'trusted_at' => 'datetime',
+        'email_change_pending_at' => 'datetime',
         'risk_reasons' => 'array',
     ];
 
@@ -154,6 +156,17 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
                 Event::where('created_by', $user->id)->toBase()->update(['created_by' => $adminId]);
             }
         });
+    }
+
+    /**
+     * Verifying the address also ends a pending email change (#2321).
+     */
+    public function markEmailAsVerified(): bool
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+            'email_change_pending_at' => null,
+        ])->save();
     }
 
     /**
