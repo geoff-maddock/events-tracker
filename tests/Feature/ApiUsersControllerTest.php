@@ -46,6 +46,29 @@ class ApiUsersControllerTest extends TestCase
         $this->assertContains($response->status(), [401, 403, 422]);
     }
 
+    public function test_members_cannot_create_users(): void
+    {
+        $member = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+
+        $this->actingAs($member, 'sanctum')
+            ->postJson('/api/users', ['name' => 'New Member User', 'email' => 'new@example.com', 'password' => 'password123'])
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('users', ['email' => 'new@example.com']);
+    }
+
+    public function test_admins_can_create_users(): void
+    {
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+
+        $this->actingAs($admin, 'sanctum')
+            ->postJson('/api/users', ['name' => 'New Admin Made User', 'email' => 'new@example.com', 'password' => 'password123'])
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('users', ['email' => 'new@example.com', 'user_status_id' => UserStatus::PENDING]);
+    }
+
     public function test_users_update_requires_authentication(): void
     {
         $target = User::factory()->create();

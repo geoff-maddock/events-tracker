@@ -7307,7 +7307,7 @@ paths:
       tags:
         - users
       summary: Create User
-      description: Creates a new user account.
+      description: Creates a new pending user account. Admins only; members sign up with `POST /api/register`.
       operationId: createUser
       requestBody:
         content:
@@ -7321,6 +7321,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
     get:
       tags:
         - users
