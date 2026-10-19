@@ -235,8 +235,24 @@
     </div>
 </div>
 
+@php
+    $showExtraTimes = filled(old('soundcheck_at', $series->soundcheck_at ?? null))
+        || filled(old('door_at', $series->door_at ?? null))
+        || $errors->has('soundcheck_at')
+        || $errors->has('door_at');
+@endphp
+<div x-data="{ showExtraTimes: @js($showExtraTimes) }">
+<button type="button"
+    class="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+    aria-controls="form-time"
+    :aria-expanded="showExtraTimes.toString()"
+    @click="showExtraTimes = !showExtraTimes">
+    <i class="bi bi-clock-fill"></i>
+    <span x-text="showExtraTimes ? 'Hide soundcheck and door times' : 'Show soundcheck and door times'">{{ $showExtraTimes ? 'Hide' : 'Show' }} soundcheck and door times</span>
+</button>
+
 {{-- Additional Time Fields (Collapsible) --}}
-<div class="collapse @if(isset($series->soundcheck_at) || isset($series->door_at)) show @endif" id="form-time">
+<div x-show="showExtraTimes" id="form-time" @unless($showExtraTimes) style="display: none;" @endunless>
     <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 md:col-span-6">
             <x-ui.form-group
@@ -267,6 +283,7 @@
         </div>
     </div>
 </div>
+</div>
 
 {{-- Start, End, Length --}}
 <div class="grid grid-cols-12 gap-4">
@@ -275,14 +292,6 @@
             name="start_at"
             label="Start At"
             :error="$errors->first('start_at')">
-            <template x-slot:label>
-                <div class="flex items-center justify-between">
-                    <x-ui.label for="start_at">Start At</x-ui.label>
-                    <button type="button" class="text-muted-foreground hover:text-foreground" title="Show additional time options" data-bs-toggle="collapse" data-bs-target="#form-time">
-                        <i class="bi bi-clock-fill"></i>
-                    </button>
-                </div>
-            </template>
             <x-ui.input
                 type="datetime-local"
                 name="start_at"
