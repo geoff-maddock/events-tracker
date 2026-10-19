@@ -62,5 +62,15 @@ class UserCleanup extends Command
             $user->sendEmailVerificationNotification();
             $this->info('The user ' . $user->email . ' was resent a verification email.');
         }
+
+        // one reminder for an email change still unverified after the reminder days (#2321)
+        $users = User::whereNull('email_verified_at')
+            ->whereBetween('email_change_pending_at', [Carbon::now()->subDays($days_for_reminder + 1), Carbon::now()->subDays($days_for_reminder)])
+            ->orderBy('name', 'ASC')
+            ->get();
+        foreach ($users as $user) {
+            $user->sendEmailVerificationNotification();
+            $this->info('The user ' . $user->email . ' was reminded to verify their changed email.');
+        }
     }
 }

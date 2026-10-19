@@ -9,9 +9,13 @@ A user who changes their own email on the web profile form or with `PUT /api/use
 unverified until they click the link sent to the new address, so they can't add or edit content
 in the meantime. If the old address was verified, it gets a notice that the email was changed, in case someone
 else made the change. Re-saving the same address (or changing only its case) keeps verification,
-and so does any email change made by an admin, including to their own. Users can change their email
-3 times an hour. An account that is unverified only because of an email change is kept by the daily
-`userCleanup` command and by Admin Tools' "Purge Users" (`users.email_change_pending_at` marks it).
+and so does any email change made by an admin, including to their own; an admin correcting the
+email of an unverified account sends a new link to the corrected address. A new address gets the
+same disposable-domain check as registration. Users can change their email 3 times an hour, and
+10 times an hour per IP. The link for a changed email verifies it without signing in whoever opens
+it (the new address may be mistyped). An account that is unverified only because of an email change
+is kept by the daily `userCleanup` command and by Admin Tools' "Purge Users"
+(`users.email_change_pending_at` marks it), and gets one reminder after 3 days.
 On the web, the "Check your email" prompt shows after the change. The API response shows
 `email_verified_at: null`, and the update accepts an optional `frontend-url` for the link, as
 registration does. Needs `php artisan migrate`.

@@ -12,6 +12,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 /**
@@ -267,5 +268,82 @@ class EmailChangeVerificationTest extends TestCase
             ->assertJsonValidationErrors('email');
 
         $this->assertSame('limit-'.EmailChangeVerifier::MAX_CHANGES_PER_HOUR.'@example.com', $user->fresh()->email);
+    }
+
+    public function test_an_email_change_link_verifies_without_signing_in_whoever_clicks_it(): void
+    {
+        $user = $this->makeUser('link-old@example.com');
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'link-typo@example.com'])
+            ->assertSessionHasNoErrors();
+
+        // the new inbox may be a stranger's, opening the link signed out
+        auth()->logout();
+        $this->app['auth']->forgetGuards();
+
+        $url = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), ['id' => $user->id, 'hash' => sha1('link-typo@example.com')], false);
+
+        $this->get($url)->assertRedirect(route('login'));
+
+        $this->assertGuest();
+        $user->refresh();
+        $this->assertTrue($user->hasVerifiedEmail());
+        $this->assertNull($user->email_change_pending_at);
+    }
+
+    public function test_a_disposable_address_is_refused_on_change_but_an_existing_one_can_be_resaved(): void
+    {
+        $user = $this->makeUser('keeper@example.com');
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'throwaway@mailinator.com'])
+            ->assertSessionHasErrors('email');
+        $this->putJson('/api/users/'.$user->id, ['email' => 'throwaway@mailinator.com'], $this->tokenHeaders($user))
+            ->assertJsonValidationErrors('email');
+        $this->assertSame('keeper@example.com', $user->fresh()->email);
+
+        $legacy = $this->makeUser('legacy@mailinator.com');
+
+        $this->actingAs($legacy)
+            ->patch(route('users.update', $legacy->id), ['name' => $legacy->name, 'email' => 'legacy@mailinator.com'])
+            ->assertSessionHasNoErrors();
+    }
+
+    public function test_an_admin_correcting_an_unverified_users_email_sends_a_new_link(): void
+    {
+        $admin = $this->makeUser('fix-admin@example.com', 'admin');
+        $user = $this->makeUser('fix-old@example.com');
+
+        $this->actingAs($user)
+            ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'fix-typo@exmaple.com'])
+            ->assertSessionHasNoErrors();
+        Notification::fake();
+        Mail::fake();
+
+        $this->actingAs($admin)
+            ->patch(route('users.update', $user->id), ['name' => $user->name, 'email' => 'fix-right@example.com'])
+            ->assertSessionHasNoErrors()
+            ->assertSessionMissing('show_verification_notice');
+
+        $user->refresh();
+        $this->assertSame('fix-right@example.com', $user->email);
+        $this->assertFalse($user->hasVerifiedEmail());
+        Notification::assertSentTo($user, VerifyEmail::class);
+        Mail::assertNotSent(EmailChanged::class);
+    }
+
+    public function test_cleanup_reminds_a_pending_email_change_once(): void
+    {
+        $due = $this->makeUser('remind-due@example.com', null, ['email_verified_at' => null, 'email_change_pending_at' => now()->subDays(3)->subHours(12)]);
+        $recent = $this->makeUser('remind-recent@example.com', null, ['email_verified_at' => null, 'email_change_pending_at' => now()->subDay()]);
+        $reminded = $this->makeUser('remind-done@example.com', null, ['email_verified_at' => null, 'email_change_pending_at' => now()->subDays(5)]);
+
+        $this->artisan('userCleanup')->assertSuccessful();
+
+        Notification::assertSentTo($due, VerifyEmail::class);
+        Notification::assertNotSentTo($recent, VerifyEmail::class);
+        Notification::assertNotSentTo($reminded, VerifyEmail::class);
+        $this->assertNotNull($reminded->fresh());
     }
 }

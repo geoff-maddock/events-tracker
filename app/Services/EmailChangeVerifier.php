@@ -14,37 +14,38 @@ use Throwable;
  * content writes resume (#2321). Otherwise `verified` only proves the account
  * once confirmed some inbox, not the one it uses now.
  *
- * Admins keep their verification: an admin changing someone else's email made
- * the change themselves, as when SignupReviewController vouches for an
- * account, and an admin changing their own must not be locked out of the
- * site when mail is down.
+ * Admins don't take verification away: an admin changing someone else's
+ * email made the change themselves, as when SignupReviewController vouches
+ * for an account, and an admin changing their own must not be locked out of
+ * the site when mail is down. An admin correcting the email of an account
+ * that isn't verified sends a new link to the corrected address.
  *
- * Usage: fill the user, call prepare() before save() and, when it returns an
- * old address, notify() after the rest of the update has been saved.
+ * Usage: fill the user, call prepare() before save() and, when it returns a
+ * change, notify() after the rest of the update has been saved.
  */
 class EmailChangeVerifier
 {
     /**
-     * Self-made email changes allowed per user per hour. Each sends two
-     * emails, so without a cap the profile form could mail strangers.
+     * Self-made email changes allowed per user per hour. Each sends mail, so
+     * without a cap the profile form could mail strangers.
      */
     public const MAX_CHANGES_PER_HOUR = 3;
 
     /**
-     * Whether the address prepare() replaced was verified, so notify() only
-     * writes to an inbox the account had confirmed.
+     * Self-made email changes allowed per IP per hour, across accounts, so
+     * a batch of throwaway signups can't multiply the per-user cap.
      */
-    private bool $oldEmailWasVerified = false;
+    public const MAX_CHANGES_PER_IP_PER_HOUR = 10;
 
     /**
-     * Clear the verification of a self-made email change. Returns the old
-     * address when the change needs a new verification, otherwise null.
+     * Clear the verification of a self-made email change. Returns the change
+     * when it needs a new verification link, otherwise null.
      *
-     * @throws ValidationException when the user changes their email too often
+     * @throws ValidationException when the user or IP changes email too often
      */
-    public function prepare(User $user, User $actor): ?string
+    public function prepare(User $user, User $actor, ?string $ip): ?EmailChange
     {
-        if (!$user->exists || $actor->id !== $user->id || $actor->can('grant_access') || !$user->isDirty('email')) {
+        if (!$user->exists || !$user->isDirty('email')) {
             return null;
         }
 
@@ -55,22 +56,30 @@ class EmailChangeVerifier
             return null;
         }
 
-        $key = 'email-change:'.$user->id;
-        if (RateLimiter::tooManyAttempts($key, self::MAX_CHANGES_PER_HOUR)) {
-            throw ValidationException::withMessages(['email' => 'You have changed your email too many times. Please try again later.']);
+        if ($actor->id !== $user->id || $actor->can('grant_access')) {
+            return $user->hasVerifiedEmail() ? null : new EmailChange($oldEmail, false);
         }
-        RateLimiter::hit($key, 3600);
 
-        $this->oldEmailWasVerified = $user->hasVerifiedEmail();
+        $limits = ['email-change:'.$user->id => self::MAX_CHANGES_PER_HOUR];
+        if (null !== $ip) {
+            $limits['email-change-ip:'.$ip] = self::MAX_CHANGES_PER_IP_PER_HOUR;
+        }
+        foreach ($limits as $key => $max) {
+            if (RateLimiter::tooManyAttempts($key, $max)) {
+                throw ValidationException::withMessages(['email' => 'You have changed your email too many times. Please try again later.']);
+            }
+        }
+
+        $oldEmailWasVerified = $user->hasVerifiedEmail();
 
         // marks an account unverified only by this change, which the
         // never-verified signup cleanup and purge leave alone
-        if ($this->oldEmailWasVerified) {
+        if ($oldEmailWasVerified) {
             $user->email_change_pending_at = now();
         }
         $user->email_verified_at = null;
 
-        return $oldEmail;
+        return new EmailChange($oldEmail, $oldEmailWasVerified, array_keys($limits));
     }
 
     /**
@@ -79,8 +88,13 @@ class EmailChangeVerifier
      * takeover. The change is already saved, so a mail failure is logged
      * rather than failing the request; the user can resend the link.
      */
-    public function notify(User $user, string $oldEmail): void
+    public function notify(User $user, EmailChange $change): void
     {
+        // counted only once the change is saved
+        foreach ($change->limiterKeys as $key) {
+            RateLimiter::hit($key, 3600);
+        }
+
         try {
             $user->sendEmailVerificationNotification();
         } catch (Throwable $e) {
@@ -89,11 +103,11 @@ class EmailChangeVerifier
         }
 
         // an address that was never confirmed may belong to someone else
-        if (!$this->oldEmailWasVerified) {
+        if (!$change->oldEmailWasVerified) {
             return;
         }
 
-        (new BestEffortMailer())->send($oldEmail, new EmailChanged(
+        (new BestEffortMailer())->send($change->oldEmail, new EmailChanged(
             (string) config('app.url'),
             (string) config('app.app_name'),
             (string) config('app.admin'),

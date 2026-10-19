@@ -4,7 +4,9 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 use App\Models\User;
+use App\Rules\NotDisposableEmail;
 use App\Rules\UntrustedLinks;
+use Closure;
 
 class ProfileRequest extends Request
 {
@@ -30,7 +32,7 @@ class ProfileRequest extends Request
 
         return [
             'name' => ['required', 'string', 'min:3', 'max:255', self::linkRule($owner instanceof User ? $owner : null, $this->user())],
-            'email' => 'required|string|email|max:255|unique:users,email,'.($userId ?? 'NULL').',id',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.($userId ?? 'NULL').',id', self::changedEmailRule($owner instanceof User ? $owner : null)],
             // the profile form's fields, so the controller can save validated() alone (#2180)
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
@@ -54,6 +56,21 @@ class ProfileRequest extends Request
             'group_list' => 'nullable|array',
             'group_list.*' => 'integer|exists:groups,id',
         ];
+    }
+
+    /**
+     * A new email gets the disposable-domain check registration applies
+     * (#2321); an existing address can still be re-saved. Shared with api/users.
+     */
+    public static function changedEmailRule(?User $owner): Closure
+    {
+        return function (string $attribute, mixed $value, Closure $fail) use ($owner): void {
+            if (null !== $owner && is_string($value) && 0 === strcasecmp((string) $owner->email, $value)) {
+                return;
+            }
+
+            (new NotDisposableEmail())->validate($attribute, $value, $fail);
+        };
     }
 
     /**

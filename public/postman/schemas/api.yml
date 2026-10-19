@@ -2345,7 +2345,7 @@ components:
           maxLength: 255
         email:
           type: string
-          description: Email address of the user. When users change their own email, email_verified_at is cleared and a verification link is sent to the new address (a verified old address is told about the change); content writes return 403 until it is verified. Admins stay verified, whether they change their own or another user's email. A user can change their email 3 times an hour; more returns a 422 validation error on email.
+          description: Email address of the user. When users change their own email, email_verified_at is cleared and a verification link is sent to the new address (a verified old address is told about the change); content writes return 403 until it is verified. Admins stay verified, whether they change their own or another user's email; an admin correcting an unverified user's email sends a new link. Disposable email domains are refused for a new address. A user can change their email 3 times an hour (10 per IP); more returns a 422 validation error on email.
           example: john.smith@gmail.com
           maxLength: 255
         frontend-url:

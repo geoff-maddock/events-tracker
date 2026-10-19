@@ -445,7 +445,7 @@ class UsersController extends Controller
         $user->fill($input);
         // a self-made email change must be verified again (#2321)
         $emailChanges = app(EmailChangeVerifier::class);
-        $oldEmail = $emailChanges->prepare($user, $this->user);
+        $emailChange = $emailChanges->prepare($user, $this->user, $request->ip());
         $user->save();
         // Some legacy users have no profile row yet (EVENTREPO-VW); create one on demand.
         $user->profile()->firstOrCreate([])->fill($input)->save();
@@ -464,10 +464,14 @@ class UsersController extends Controller
 
         flash('Success', 'The user has been updated');
 
-        if (null !== $oldEmail) {
-            $emailChanges->notify($user, $oldEmail);
-            $request->session()->flash('show_verification_notice', $user->email);
-            $request->session()->flash('verification_notice_reason', 'email-changed');
+        if (null !== $emailChange) {
+            $emailChanges->notify($user, $emailChange);
+
+            // an admin correcting someone else's address doesn't need the prompt
+            if ($this->user->id === $user->id) {
+                $request->session()->flash('show_verification_notice', $user->email);
+                $request->session()->flash('verification_notice_reason', 'email-changed');
+            }
         }
 
         return redirect()->route('users.show', ['user' => $user]);
@@ -539,6 +543,7 @@ class UsersController extends Controller
         // add the following response
         $user->user_status_id = UserStatus::ACTIVE;
         $user->email_verified_at = Carbon::now();
+        $user->email_change_pending_at = null;
         // an admin vouching for the account also trusts it (#2312)
         $user->trusted_at = now();
         $user->save();
