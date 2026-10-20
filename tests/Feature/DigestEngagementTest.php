@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Mailer\Exception\TransportException;
+use Symfony\Component\Mailer\SentMessage;
+use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Tests\TestCase;
 
 /**
@@ -155,6 +158,65 @@ class DigestEngagementTest extends TestCase
 
         Mail::assertSent(WeeklyUpdate::class, fn ($mail) => $mail->hasTo($user->email));
         Mail::assertNotSent(DigestsPaused::class);
+    }
+
+    /**
+     * One failed send used to throw out of the loop, so everyone after that user got
+     * nothing and a re-run mailed everyone before them twice (#2338).
+     *
+     * @dataProvider digestCommands
+     */
+    public function test_a_failed_send_does_not_stop_the_digest_run(string $command, int $weekly, int $daily): void
+    {
+        $failing = $this->subscriber($weekly, $daily);
+        $failing->forceFill(['name' => 'Aaa Failing Subscriber'])->save();
+        $working = $this->subscriber($weekly, $daily);
+        $working->forceFill(['name' => 'Zzz Working Subscriber'])->save();
+        foreach ([$failing, $working] as $user) {
+            $this->attendToday($user);
+            $this->logActivity($user, Action::LOGIN, 3);
+        }
+
+        // a transport that refuses one address and records the rest
+        $transport = new class($failing->email) extends AbstractTransport {
+            /** @var list<string> */
+            public array $recipients = [];
+
+            public function __construct(private string $refuse)
+            {
+                parent::__construct();
+            }
+
+            protected function doSend(SentMessage $message): void
+            {
+                foreach ($message->getEnvelope()->getRecipients() as $address) {
+                    if ($address->getAddress() === $this->refuse) {
+                        throw new TransportException('Simulated SMTP failure');
+                    }
+                    $this->recipients[] = $address->getAddress();
+                }
+            }
+
+            public function __toString(): string
+            {
+                return 'flaky://';
+            }
+        };
+        Mail::extend('flaky', fn () => $transport);
+        config(['mail.mailers.flaky' => ['transport' => 'flaky'], 'mail.default' => 'flaky']);
+
+        $this->artisan($command)->assertExitCode(0);
+
+        $this->assertContains($working->email, $transport->recipients);
+        $this->assertNotContains($failing->email, $transport->recipients);
+    }
+
+    public static function digestCommands(): array
+    {
+        return [
+            'weekly' => ['notifyWeekly', 1, 0],
+            'daily' => ['notify', 0, 1],
+        ];
     }
 
     public function test_activity_older_than_90_days_does_not_count(): void

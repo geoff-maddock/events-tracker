@@ -7,12 +7,12 @@ use App\Mail\WeeklyUpdate;
 use App\Models\Activity;
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Services\BestEffortMailer;
 use App\Services\DigestBuilder;
 use App\Services\DigestEngagement;
 use App\Services\EntityStats;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class NotifyWeekly extends Command
 {
@@ -45,6 +45,10 @@ class NotifyWeekly extends Command
         $url = url('/').'/';
         $dryRun = (bool) $this->option('dry-run');
         $counts = ['sent' => 0, 'essentials' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
+
+        // one bad address or transport hiccup must not end the run for everyone after it,
+        // since re-running would mail everyone before it twice (#2338)
+        $mailer = new BestEffortMailer();
 
         // get each active user with a verified address: not suspended or banned
         // accounts, and not an address changed but not yet confirmed
@@ -89,13 +93,16 @@ class NotifyWeekly extends Command
                     continue;
                 }
 
-                $counts['essentials']++;
                 if ($dryRun) {
+                    $counts['essentials']++;
+
                     continue;
                 }
 
-                Mail::to($user->email)
-                    ->send(new WeeklyEssentials($url, $site, $admin_email, $reply_email, $user, $essentials));
+                if (!$mailer->send($user->email, new WeeklyEssentials($url, $site, $admin_email, $reply_email, $user, $essentials), ['user_id' => $user->id])) {
+                    continue;
+                }
+                $counts['essentials']++;
 
                 $stats->recordEventReach($essentials->eventIds());
                 Activity::log($user, $user, 15, 'Sent weekly essential events email');
@@ -106,21 +113,23 @@ class NotifyWeekly extends Command
 
             // dormant: this would have been a digest, so it is the one paused notice instead
             if ($decision === DigestEngagement::NOTICE) {
-                $counts['notices']++;
-                if (!$dryRun) {
-                    $engagement->pause($user);
+                if ($dryRun || $mailer->attempt(fn () => $engagement->pause($user), ['user_id' => $user->id, 'mailable' => 'DigestsPaused'])) {
+                    $counts['notices']++;
                 }
 
                 continue;
             }
 
-            $counts['sent']++;
             if ($dryRun) {
+                $counts['sent']++;
+
                 continue;
             }
 
-            Mail::to($user->email)
-                ->send(new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $digest->attending, $digest->series, $digest->interests));
+            if (!$mailer->send($user->email, new WeeklyUpdate($url, $site, $admin_email, $reply_email, $user, $digest->attending, $digest->series, $digest->interests), ['user_id' => $user->id])) {
+                continue;
+            }
+            $counts['sent']++;
 
             // count this recipient toward each event's digest reach for the owner dashboard
             $stats->recordEventReach($digest->eventIds());
@@ -132,5 +141,11 @@ class NotifyWeekly extends Command
         }
 
         $this->info(($dryRun ? 'DRY RUN: would send ' : 'Sent ')."{$counts['sent']} weekly digest(s), {$counts['essentials']} essential events email(s), {$counts['notices']} paused notice(s); skipped {$counts['paused']} paused and {$counts['empty']} with nothing this week.");
+
+        $summary = $mailer->summary();
+        if ($summary['failed'] || $summary['skipped']) {
+            $this->warn("{$summary['failed']} email(s) failed to send and {$summary['skipped']} were skipped after the mail transport failed repeatedly; see the log.");
+        }
+        $mailer->logSummary('notifyWeekly');
     }
 }
