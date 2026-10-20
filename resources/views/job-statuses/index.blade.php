@@ -14,7 +14,7 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto w-full overflow-x-hidden">
-    <div class="mb-4 md:mb-8 flex items-center justify-between">
+    <div class="mb-4 md:mb-8 flex flex-wrap items-center justify-between gap-2">
         <h1 class="text-2xl md:text-3xl font-bold text-foreground">
             <i class="bi bi-bell mr-2"></i>Notifications
         </h1>
@@ -34,7 +34,7 @@
             @php $data = $notification->data; @endphp
             <div class="card-tw p-4 flex items-start gap-3 {{ $notification->read_at ? 'opacity-60' : '' }}">
                 <i class="bi {{ ($data['succeeded'] ?? false) ? 'bi-check-circle text-green-600' : 'bi-x-circle text-red-600' }} text-xl mt-0.5"></i>
-                <div class="flex-1 min-w-0">
+                <div class="flex-1 min-w-0 break-words">
                     <p class="text-foreground font-medium">{{ $data['label'] ?? 'Background job' }}</p>
                     <p class="text-sm text-muted-foreground">{{ $data['message'] ?? '' }}</p>
                     <p class="text-xs text-muted-foreground mt-1">{{ $notification->created_at->diffForHumans() }}</p>
@@ -66,7 +66,7 @@
             @php [$icon, $color, $label] = $statusStyles[$job->status] ?? ['bi-question-circle', 'text-muted-foreground', ucfirst($job->status)]; @endphp
             <div class="card-tw p-4 flex items-start gap-3">
                 <i class="bi {{ $icon }} {{ $color }} text-xl mt-0.5"></i>
-                <div class="flex-1 min-w-0">
+                <div class="flex-1 min-w-0 break-words">
                     <p class="text-foreground font-medium">{{ $job->label ?? $job->type }}</p>
                     <p class="text-sm {{ $color }}">{{ $label }}</p>
                     @if ($job->message)
