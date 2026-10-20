@@ -8,7 +8,13 @@
     <p class="text-muted-foreground">Admin-only event trends over time, broken down by type, tag, venue, series or related entities.</p>
 </div>
 
-<div class="card-tw p-4 mb-6">
+<div x-data="{ showFilters: false }" class="mb-6">
+    <button type="button" @click="showFilters = !showFilters" :aria-expanded="showFilters.toString()" aria-controls="graphFilters" class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
+        <i class="bi bi-funnel"></i>
+        <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'">Show Filters</span>
+        <i class="bi" :class="showFilters ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+    </button>
+    <div id="graphFilters" x-show="showFilters" class="card-tw p-4 mt-3">
     <form method="GET" action="{{ route('events.graph') }}" id="graphForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
             <label for="series_by" class="block text-sm text-muted-foreground mb-1">Break down by</label>
@@ -99,6 +105,7 @@
                class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">Export CSV</a>
         </div>
     </form>
+    </div>
 </div>
 
 <div class="card-tw p-4 mb-6">
@@ -116,7 +123,9 @@
             <button data-type="stacked" class="chart-type-btn px-3 py-1 text-sm rounded-lg border border-border bg-card text-foreground hover:bg-accent transition-colors">Stacked</button>
         </div>
     </div>
-    <canvas id="eventGraph" height="120"></canvas>
+    <div class="relative h-72 sm:h-96">
+        <canvas id="eventGraph"></canvas>
+    </div>
     <p id="eventGraphEmpty" class="hidden mt-3 text-sm text-muted-foreground">No data available for the selected filters.</p>
 </div>
 
@@ -230,6 +239,7 @@
             data: { labels, datasets: coloredDatasets(stacked) },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { position: 'bottom' } },
                 scales: {
@@ -241,6 +251,7 @@
                     x: {
                         stacked: stacked,
                         title: { display: true, text: `Period (${groupBy})` },
+                        ticks: { autoSkip: true, maxTicksLimit: window.innerWidth < 640 ? 6 : 12 },
                     },
                 },
             },

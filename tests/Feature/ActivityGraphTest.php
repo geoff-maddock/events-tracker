@@ -54,6 +54,10 @@ class ActivityGraphTest extends TestCase
         $response->assertSee('Activity Graph');
         $response->assertSee('Create Event');
         $response->assertSee('Create Entity');
+        $response->assertSee('Show Filters');
+        $response->assertSee('x-show="showFilters"', false);
+        $response->assertSee('relative h-72 sm:h-96', false);
+        $response->assertSee('maintainAspectRatio: false', false);
     }
 
     public function test_admin_can_export_activity_graph_csv(): void
