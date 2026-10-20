@@ -520,13 +520,13 @@ class SeriesController extends Controller
     {
         $user = $request->user();
 
-        $follow = Follow::where('object_type', 'series')
+        $deleted = Follow::where('object_type', 'series')
             ->where('object_id', $series->id)
             ->where('user_id', $user->id)
-            ->first();
+            // every matching row, including duplicates left by older double submits
+            ->delete();
 
-        if ($follow) {
-            $follow->delete();
+        if ($deleted) {
             Activity::log($series, $user, 7);
         }
 

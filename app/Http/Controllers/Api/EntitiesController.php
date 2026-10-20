@@ -987,13 +987,13 @@ class EntitiesController extends Controller
     {
         $user = $request->user();
 
-        $follow = Follow::where('object_type', 'entity')
+        $deleted = Follow::where('object_type', 'entity')
             ->where('object_id', $entity->id)
             ->where('user_id', $user->id)
-            ->first();
+            // every matching row, including duplicates left by older double submits
+            ->delete();
 
-        if ($follow) {
-            $follow->delete();
+        if ($deleted) {
             Activity::log($entity, $user, 7);
         }
 

@@ -334,17 +334,15 @@ class TagsController extends Controller
 
         $tag = $object;
 
-        // add the following response
-        $follow = new Follow();
-        $follow->object_id = $id;
-        $follow->user_id = $this->user->id;
-        $follow->object_type = $type;
-        $follow->save();
+        // add the following response; a double submit must not add a second row (#2341)
+        $follow = Follow::firstOrCreate(['object_id' => $tag->id, 'user_id' => $this->user->id, 'object_type' => $type]);
 
-        Log::info('User '.$id.' is following '.$object->name);
+        if ($follow->wasRecentlyCreated) {
+            Log::info('User '.$id.' is following '.$object->name);
 
-        // add to activity log
-        Activity::log($tag, $this->user, 6);
+            // add to activity log
+            Activity::log($tag, $this->user, 6);
+        }
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -383,11 +381,8 @@ class TagsController extends Controller
             return back();
         }
 
-        // delete the follow
-        $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', $type)->first();
-        if ($response) {
-            $response->delete();
-
+        // delete the follow, including any duplicates left by older double submits
+        if (Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', $type)->delete()) {
             // add to activity log
             Activity::log($tag, $this->user, 7);
         }

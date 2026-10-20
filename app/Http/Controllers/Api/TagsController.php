@@ -279,13 +279,13 @@ class TagsController extends Controller
     {
         $user = $request->user();
 
-        $follow = Follow::where('object_type', 'tag')
+        $deleted = Follow::where('object_type', 'tag')
             ->where('object_id', $tag->id)
             ->where('user_id', $user->id)
-            ->first();
+            // every matching row, including duplicates left by older double submits
+            ->delete();
 
-        if ($follow) {
-            $follow->delete();
+        if ($deleted) {
             Activity::log($tag, $user, 7);
         }
 
