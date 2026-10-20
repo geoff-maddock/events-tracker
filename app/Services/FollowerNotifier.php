@@ -157,7 +157,7 @@ class FollowerNotifier
                 if (!array_key_exists($user->id, $users)) {
                     $mailer->send(
                         $user->email,
-                        new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread),
+                        new FollowingThreadUpdate($url, $site, $admin_email, $reply_email, $user, $thread, null, $s),
                         ['thread_id' => $thread->id, 'user_id' => $user->id, 'via' => 'series']
                     );
                     $users[$user->id] = $s->name;

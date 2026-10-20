@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Mail\Concerns\HasUnsubscribeLink;
 use App\Mail\Concerns\TracksEmailClicks;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
@@ -34,12 +35,15 @@ class FollowingThreadUpdate extends Mailable
 
     public ?Tag $tag;
 
+    // set when the follow that triggered this mail is of a series rather than a tag
+    public ?Series $series;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, ?Thread $thread, ?Tag $tag = null)
+    public function __construct(string $url, string $site, string $admin_email, string $reply_email, ?User $user, ?Thread $thread, ?Tag $tag = null, ?Series $series = null)
     {
         $this->url = $url;
         $this->site = $site;
@@ -48,6 +52,7 @@ class FollowingThreadUpdate extends Mailable
         $this->user = $user;
         $this->thread = $thread;
         $this->tag = $tag;
+        $this->series = $series;
     }
 
     /**
@@ -61,7 +66,7 @@ class FollowingThreadUpdate extends Mailable
 
         return $this->markdown('emails.following-thread-update-markdown')
             ->from($this->reply_email, $this->site)
-            ->subject($this->site.': '.$this->tag?->name.' :: '.$this->thread?->created_at->format('D F jS').' '.$this->thread?->name)
+            ->subject($this->site.': '.($this->tag->name ?? $this->series?->name).' :: '.$this->thread?->created_at->format('D F jS').' '.$this->thread?->name)
             ->withUnsubscribeLink();
     }
 
