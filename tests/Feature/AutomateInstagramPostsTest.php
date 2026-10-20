@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Console\Commands\AutomateInstagramPosts;
+use App\Mail\InstagramPostFailure;
 use App\Models\Event;
 use App\Models\EventShare;
 use App\Models\EventType;
@@ -11,6 +12,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AutomateInstagramPostsTest extends TestCase
@@ -340,5 +342,80 @@ class AutomateInstagramPostsTest extends TestCase
         $events = $method->invoke($command);
 
         $this->assertFalse($events->contains($event));
+    }
+
+    private function eligibleEvent(): Event
+    {
+        $user = User::factory()->create();
+        $event = Event::factory()->create([
+            'created_by' => $user->id,
+            'event_type_id' => EventType::first()->id,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => Carbon::now()->addDays(5),
+        ]);
+        $photo = Photo::factory()->create(['is_primary' => 1, 'path' => 'test.jpg', 'thumbnail' => 'test_thumb.jpg', 'created_by' => $user->id]);
+        $event->photos()->attach($photo->id);
+
+        return $event;
+    }
+
+    private function failedAttempt(Event $event, Carbon $at): void
+    {
+        (new EventShare())->forceFill([
+            'event_id' => $event->id,
+            'platform' => 'instagram',
+            'posted_at' => null,
+            'created_at' => $at,
+            'updated_at' => $at,
+        ])->save();
+    }
+
+    private function eventsToPost()
+    {
+        $method = (new \ReflectionClass(AutomateInstagramPosts::class))->getMethod('getEventsToPost');
+        $method->setAccessible(true);
+
+        return $method->invoke(new AutomateInstagramPosts());
+    }
+
+    // a failing event used to stay "never posted" and take a batch slot every run (#2339)
+    public function test_an_event_that_failed_recently_waits_before_a_retry(): void
+    {
+        $event = $this->eligibleEvent();
+        $this->failedAttempt($event, Carbon::now()->subHour());
+
+        $this->assertFalse($this->eventsToPost()->contains($event));
+    }
+
+    public function test_an_event_is_retried_once_the_wait_has_passed(): void
+    {
+        $event = $this->eligibleEvent();
+        $this->failedAttempt($event, Carbon::now()->subHours(AutomateInstagramPosts::RETRY_AFTER_HOURS + 1));
+
+        $this->assertTrue($this->eventsToPost()->contains($event));
+    }
+
+    public function test_an_event_is_given_up_on_after_repeated_failures(): void
+    {
+        $event = $this->eligibleEvent();
+        foreach (range(1, AutomateInstagramPosts::MAX_FAILED_ATTEMPTS) as $daysAgo) {
+            $this->failedAttempt($event, Carbon::now()->subDays($daysAgo));
+        }
+
+        $this->assertFalse($this->eventsToPost()->contains($event));
+    }
+
+    public function test_the_failure_email_goes_out_once_a_day_per_event(): void
+    {
+        Mail::fake();
+        $event = $this->eligibleEvent();
+        $method = (new \ReflectionClass(AutomateInstagramPosts::class))->getMethod('sendFailureEmail');
+        $method->setAccessible(true);
+        $command = new AutomateInstagramPosts();
+
+        $method->invoke($command, $event, 'first failure');
+        $method->invoke($command, $event, 'second failure');
+
+        Mail::assertSent(InstagramPostFailure::class, 1);
     }
 }

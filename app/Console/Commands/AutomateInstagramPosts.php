@@ -9,6 +9,7 @@ use App\Services\Integrations\Instagram;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Storage;
@@ -28,6 +29,17 @@ class AutomateInstagramPosts extends Command
      * @var string
      */
     protected $description = 'Automatically post events to Instagram based on configured schedule';
+
+    /**
+     * After this many failed attempts since the last successful post, an event is
+     * left alone; it kept taking batch slots ahead of later events (#2339).
+     */
+    public const MAX_FAILED_ATTEMPTS = 3;
+
+    /**
+     * Hours to wait after a failed attempt before trying that event again.
+     */
+    public const RETRY_AFTER_HOURS = 6;
 
     /**
      * Execute the console command.
@@ -105,11 +117,23 @@ class AutomateInstagramPosts extends Command
                 }
 
                 // Get all shares for this event on Instagram
-                $shares = EventShare::where('event_id', $event->id)
+                $allShares = EventShare::where('event_id', $event->id)
                     ->where('platform', 'instagram')
-                    ->where('posted_at', '!=', null) // Only successful posts
-                    ->orderBy('posted_at', 'DESC')
                     ->get();
+                $shares = $allShares->whereNotNull('posted_at')->sortByDesc('posted_at')->values(); // Only successful posts
+
+                // failed attempts (posted_at null) since the last successful post
+                $since = $shares->first()?->posted_at;
+                $failures = $allShares->whereNull('posted_at')
+                    ->filter(fn ($share) => $since === null || $share->created_at > $since);
+                if ($failures->count() >= self::MAX_FAILED_ATTEMPTS) {
+                    Log::info("AutomateInstagramPosts: Event #{$event->id} skipped after {$failures->count()} failed attempts.");
+                    return false;
+                }
+                $lastFailure = $failures->max('created_at');
+                if ($lastFailure && $lastFailure->gt(Carbon::now()->subHours(self::RETRY_AFTER_HOURS))) {
+                    return false;
+                }
 
                 $shareCount = $shares->count();
 
@@ -297,6 +321,11 @@ class AutomateInstagramPosts extends Command
      */
     protected function sendFailureEmail(Event $event, string $errorMessage): void
     {
+        // at most one failure email per event per day
+        if (!Cache::add('instagram-autopost-failure-mail:'.$event->id, true, now()->addDay())) {
+            return;
+        }
+
         try {
             $site = config('app.app_name');
             $admin_email = config('app.admin');
