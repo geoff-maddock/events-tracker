@@ -99,6 +99,7 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
 
         $sent = 0;
         $failed = 0;
+        $transient = 0;
 
         foreach ($targets as $target) {
             try {
@@ -110,6 +111,9 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
             } catch (DiscordWebhookException $e) {
                 // Caught per target so one broken channel cannot stop the rest.
                 $failed++;
+                if (! $e->permanent) {
+                    $transient++;
+                }
                 Log::warning('Discord: target failed, continuing', [
                     'target_id' => $target->id,
                     'event_id' => $event->id,
@@ -119,6 +123,20 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
         }
 
         $summary = $sent.' channel(s) posted'.($failed > 0 ? ', '.$failed.' failed' : '.');
+
+        // A timeout, long 429 or repeated 5xx is worth another go after the backoff
+        // (#2340). Channels that already got the post are a no-op on the retry,
+        // because the ledger row is already marked sent.
+        if ($transient > 0 && $this->attempts() < $this->tries) {
+            Log::info('Discord: retrying after a transient failure', [
+                'event_id' => $event->id,
+                'attempt' => $this->attempts(),
+                'transient_failures' => $transient,
+            ]);
+            $this->release($this->backoff[$this->attempts() - 1] ?? end($this->backoff));
+
+            return;
+        }
 
         if ($failed > 0 && 0 === $sent) {
             $this->markFailed($summary);

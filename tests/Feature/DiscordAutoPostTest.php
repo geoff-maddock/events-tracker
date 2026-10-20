@@ -194,4 +194,40 @@ class DiscordAutoPostTest extends TestCase
             DiscordPost::where('discord_target_id', $bad->id)->value('status')
         );
     }
+
+    // a transient failure used to be caught and dropped, so the queue never retried it (#2340)
+    public function test_a_transient_failure_releases_the_job_for_a_retry(): void
+    {
+        config(['discord.max_retries' => 1]);
+        $good = DiscordTarget::factory()->matchAll()->create();
+        $flaky = DiscordTarget::factory()->matchAll()->create();
+
+        Http::fake([
+            '*'.$flaky->webhook_id.'*' => Http::response('Service Unavailable', 503),
+            '*' => Http::response(['id' => '100'], 200),
+        ]);
+
+        $event = $this->eligibleEvent();
+
+        $job = (new PostEventToDiscord($event->id, DiscordPost::REASON_CREATE))->withFakeQueueInteractions();
+        $job->handle(app(DiscordTargetMatcher::class), app(DiscordEventPoster::class));
+
+        $job->assertReleased(60);
+        $this->assertSame(DiscordPost::STATUS_SENT, DiscordPost::where('discord_target_id', $good->id)->value('status'));
+    }
+
+    public function test_a_permanent_failure_is_not_retried(): void
+    {
+        $bad = DiscordTarget::factory()->matchAll()->create();
+
+        Http::fake(['*' => Http::response(['message' => 'Invalid Form Body', 'code' => 50035], 400)]);
+
+        $event = $this->eligibleEvent();
+
+        $job = (new PostEventToDiscord($event->id, DiscordPost::REASON_CREATE))->withFakeQueueInteractions();
+        $job->handle(app(DiscordTargetMatcher::class), app(DiscordEventPoster::class));
+
+        $job->assertNotReleased();
+        $this->assertSame(DiscordPost::STATUS_FAILED, DiscordPost::where('discord_target_id', $bad->id)->value('status'));
+    }
 }
