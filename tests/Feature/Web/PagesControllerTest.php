@@ -28,6 +28,31 @@ class PagesControllerTest extends TestCase
         $this->get('/')->assertOk();
     }
 
+    public function test_guest_sees_login_and_register_buttons_in_home_hero(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+        $heroStart = strpos($html, '<!-- Hero Section -->');
+        $heroEnd = strpos($html, '<!-- Upcoming Events Section -->');
+        $hero = substr($html, $heroStart, $heroEnd - $heroStart);
+
+        $this->assertStringContainsString('href="'.route('login').'"', $hero);
+        $this->assertStringContainsString('>Login</span>', $hero);
+        $this->assertStringContainsString('href="'.route('register').'"', $hero);
+        $this->assertStringContainsString('>Register</span>', $hero);
+    }
+
+    public function test_authenticated_user_does_not_see_login_or_register_buttons_in_home_hero(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $html = $this->actingAs($user)->get('/')->assertOk()->getContent();
+        $heroStart = strpos($html, '<!-- Hero Section -->');
+        $heroEnd = strpos($html, '<!-- Upcoming Events Section -->');
+        $hero = substr($html, $heroStart, $heroEnd - $heroStart);
+
+        $this->assertStringNotContainsString('href="'.route('login').'"', $hero);
+        $this->assertStringNotContainsString('href="'.route('register').'"', $hero);
+    }
+
     public function test_home_alias_loads(): void
     {
         $this->get('/home')->assertOk();
