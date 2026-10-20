@@ -123,6 +123,11 @@
 						<i class="bi bi-person-plus"></i>
 						<span class="font-medium">Register</span>
 					</a>
+					<a href="{!! URL::route('login') !!}"
+						class="inline-flex items-center gap-2 px-4 py-2.5 bg-accent text-foreground rounded-lg hover:bg-accent/80 transition-all border border-border">
+						<i class="bi bi-box-arrow-in-right"></i>
+						<span class="font-medium">Login</span>
+					</a>
 					@endif
 				</div>
 			</div>
