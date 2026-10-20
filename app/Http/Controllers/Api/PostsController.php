@@ -183,6 +183,9 @@ class PostsController extends Controller
 
         $thread = Thread::findOrFail($request->input('thread_id'));
 
+        // the web reply form is hidden on a locked thread; the API refuses the same (#2343)
+        abort_if((bool) $thread->is_locked, 403, 'This thread has been locked.');
+
         // TODO change this to use the trust_post permission to allow html
         if (auth()->id() === config('app.superuser')) {
             $allow_html = 1;
