@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\EventDateRange;
 use App\Services\PriceLabel;
 use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
@@ -139,6 +140,17 @@ class Event extends Model implements HasPhotos
     public static function boot()
     {
         parent::boot();
+    }
+
+    protected static function booted(): void
+    {
+        // the dated listings 404 outside the cached range of start dates
+        static::saved(function (Event $event) {
+            if ($event->wasRecentlyCreated || $event->wasChanged('start_at')) {
+                EventDateRange::forget();
+            }
+        });
+        static::deleted(fn () => EventDateRange::forget());
     }
 
     public function getRouteKeyName(): string
