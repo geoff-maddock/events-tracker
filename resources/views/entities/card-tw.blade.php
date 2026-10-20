@@ -137,7 +137,7 @@
 
 				<!-- Auto Relate (admin only) -->
 				@if (isset($search) && $signedIn && $user->can('show_admin'))
-				<a href="{!! route('pages.relate', ['id' => $entity->id, 'keyword' => $search]) !!}"
+				<a data-method="post" href="{!! route('pages.relate', ['id' => $entity->id, 'keyword' => $search]) !!}"
 					title="Auto relate {{ $entity->name }}"
 					class="text-muted-foreground hover:text-primary transition-colors">
 					<i class="bi bi-link-45deg text-lg"></i>

@@ -2384,7 +2384,7 @@ class EventsController extends Controller
         // get the events
         /* @phpstan-ignore-next-line */
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
+            ->with(self::FEED_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
         return view('events.feed', compact('events'));

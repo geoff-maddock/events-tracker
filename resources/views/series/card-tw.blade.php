@@ -185,7 +185,7 @@
 
             <!-- Auto Relate (admin only, search results) -->
             @if (!empty($autoRelateKeyword) && $signedIn && $user->can('show_admin'))
-            <a href="{!! route('pages.relateSeries', ['id' => $series->id, 'keyword' => $autoRelateKeyword]) !!}"
+            <a data-method="post" href="{!! route('pages.relateSeries', ['id' => $series->id, 'keyword' => $autoRelateKeyword]) !!}"
                 class="text-muted-foreground hover:text-primary transition-colors"
                 title="Auto relate matching events to {{ $series->name }}">
                 <i class="bi bi-link-45deg"></i>

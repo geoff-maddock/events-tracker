@@ -125,12 +125,13 @@ Route::get('calendar/min-age/{age}', [\App\Http\Controllers\CalendarController::
 
 Route::get('search', [\App\Http\Controllers\PagesController::class, 'search'])->name('pages.search');
 
-Route::match(['get', 'post'], 'auto-relate-entity/{id}', [
+// these relate events in bulk, so POST only: a GET could be triggered by a link or image (#2345)
+Route::post('auto-relate-entity/{id}', [
     'as' => 'pages.relate',
     'uses' => '\App\Http\Controllers\PagesController@autoRelateEntity',
 ]);
 
-Route::match(['get', 'post'], 'auto-relate-series/{id}', [
+Route::post('auto-relate-series/{id}', [
     'as' => 'pages.relateSeries',
     'uses' => '\App\Http\Controllers\PagesController@autoRelateSeries',
 ]);
@@ -360,7 +361,7 @@ Route::get(
 Route::get('events/{id}/generate-image', [
     'as' => 'events.generateImage',
     'uses' => '\App\Http\Controllers\EventsController@generateImage',
-]);
+])->middleware('throttle:10,1');
 
 Route::get('events/{id}/import-photo', [
     'as' => 'events.importPhoto',

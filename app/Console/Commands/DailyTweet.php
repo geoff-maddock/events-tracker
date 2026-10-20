@@ -52,8 +52,9 @@ class DailyTweet extends Command
             $event->notify(new EventPublished());
 
             // unlink the temp file
-            if ($photo = $event->getPrimaryPhoto()) {
-                unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
+            // a missing temp file must not stop the remaining tweets
+            if (($photo = $event->getPrimaryPhoto()) && is_file($temp = storage_path().'/app/public/photos/temp/'.$photo->name)) {
+                unlink($temp);
             };
         };
         
