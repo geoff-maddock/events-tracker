@@ -57,6 +57,10 @@ class EventGraphTest extends TestCase
         $response->assertSee('Event Graph');
         $response->assertSee('Zz Concert Type');
         $response->assertSee('Zz Club Night Type');
+        $response->assertSee('Show Filters');
+        $response->assertSee('x-show="showFilters"', false);
+        $response->assertSee('relative h-72 sm:h-96', false);
+        $response->assertSee('maintainAspectRatio: false', false);
     }
 
     public function test_admin_can_view_event_graph_by_tag(): void
