@@ -50,6 +50,18 @@ class SeoGuardsTest extends TestCase
         $this->get('/events/upcoming/' . now()->format('Ymd'))->assertOk();
     }
 
+    // the range is cached for an hour; a new event beyond it used to 404 until it expired (#2344)
+    public function test_a_new_event_beyond_the_cached_range_is_reachable_at_once(): void
+    {
+        $this->createEventOn(now()->format('Y-m-d'));
+        $far = now()->addMonths(5);
+        $this->get('/events/upcoming/' . $far->format('Ymd'))->assertNotFound();
+
+        $this->createEventOn($far->format('Y-m-d'));
+
+        $this->get('/events/upcoming/' . $far->format('Ymd'))->assertOk();
+    }
+
     public function test_dated_upcoming_page_is_noindexed_and_canonicalized(): void
     {
         $this->createEventOn(now()->format('Y-m-d'));

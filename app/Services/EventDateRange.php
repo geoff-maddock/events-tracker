@@ -39,6 +39,14 @@ class EventDateRange
         ];
     }
 
+    /**
+     * Drop the cached range, so a new event outside it is reachable straight away (#2344).
+     */
+    public static function forget(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
     public function contains(Carbon $date): bool
     {
         $bounds = $this->bounds();
