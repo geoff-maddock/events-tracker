@@ -21,6 +21,7 @@ use App\Mail\WeeklyUpdate;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\Post;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
@@ -158,6 +159,22 @@ class MailableBuildTest extends TestCase
 
         $this->assertBuilt($mailable, 'emails.following-thread-update-markdown');
         $this->assertStringContainsString($tag->name, $mailable->subject);
+    }
+
+    // series followers get this mail with no tag; the template used to read $tag->name and throw (#2337)
+    public function test_following_thread_update_renders_for_a_series_follow(): void
+    {
+        $user = User::factory()->create();
+        $thread = Thread::factory()->create();
+        $series = Series::factory()->create(['name' => 'ZZ Followed Series']);
+
+        $mailable = new FollowingThreadUpdate(self::URL, self::SITE, self::ADMIN, self::REPLY, $user, $thread, null, $series);
+
+        $this->assertBuilt($mailable, 'emails.following-thread-update-markdown');
+        $this->assertStringContainsString($series->name, $mailable->subject);
+        $html = $mailable->render();
+        $this->assertStringContainsString('following the series', $html);
+        $this->assertStringContainsString('ZZ Followed Series', $html);
     }
 
     public function test_following_post_update_builds(): void
