@@ -877,7 +877,9 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * Get the threads that belong to the series.
+     * Get the threads that belong to the entity.
+     *
+     * @return BelongsToMany<Thread, $this>
      */
     public function threads(): BelongsToMany
     {

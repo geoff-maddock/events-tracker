@@ -494,7 +494,7 @@
                             </div>
                             @break
                         @case('threads')
-                            @include('threads.list-tw', ['threads' => $user->getThreadsFollowing()->take(20)])
+                            @include('threads.list-tw', ['threads' => $user->getThreadsFollowing(Auth::user())->take(20)])
                             <div class="mt-4 pt-4 border-t border-border">
                                 <a href="{{ route('threads.following') }}" class="text-primary hover:underline text-sm">
                                     View all threads followed &rarr;

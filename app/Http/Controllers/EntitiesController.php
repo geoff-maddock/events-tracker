@@ -975,7 +975,7 @@ class EntitiesController extends Controller
         $entity->loadMissing(['roles', 'aliases', 'photos', 'tags', 'locations.visibility', 'links', 'entityType']);
 
         // get the threads for the entity
-        $threads = $entity->threads()->paginate($this->limit);
+        $threads = $entity->threads()->visible($this->user)->paginate($this->limit);
 
         // pass empty embeds here - this was moved to a deferred ajax load
         $embeds = [];

@@ -758,6 +758,7 @@ class SeriesController extends Controller
 
         // posts/briefList renders each thread's posts with their user/tags/entities.
         $threads = $series->threads()
+            ->visible($this->user)
             ->with(['posts.user', 'posts.tags', 'posts.entities'])
             ->paginate($this->childLimit);
 

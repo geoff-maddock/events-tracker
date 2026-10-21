@@ -218,7 +218,10 @@ class PagesController extends Controller
 
     public function about(): View
     {
-        $menu = Menu::with('blogs.contentType')->find(1);
+        $menu = Menu::with([
+            'blogs' => fn ($query) => $query->visible($this->user),
+            'blogs.contentType',
+        ])->find(1);
 
         return view('pages.about-tw', compact('menu'));
     }

@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use App\Mail\FollowingPostUpdate;
 use App\Mail\FollowingThreadUpdate;
 use App\Models\Blog;
+use App\Models\Event;
 use App\Models\Follow;
+use App\Models\Menu;
 use App\Models\Post;
 use App\Models\Profile;
+use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
@@ -147,6 +150,53 @@ class ForumContentVisibilityTest extends TestCase
         $blog = Blog::factory()->create(['visibility_id' => Visibility::VISIBILITY_PRIVATE, 'created_by' => $this->author->id]);
 
         $this->getJson('/api/blogs/'.$blog->slug, $this->token($this->author))->assertOk();
+    }
+
+    public function test_the_event_page_leaves_out_a_private_thread_attached_to_it(): void
+    {
+        $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $this->thread(Visibility::VISIBILITY_PUBLIC, ['event_id' => $event->id, 'name' => 'Open thread Zq']);
+        $this->thread(Visibility::VISIBILITY_PRIVATE, ['event_id' => $event->id, 'name' => 'Hidden thread Zq']);
+
+        $this->get(route('events.show', $event->slug))
+            ->assertOk()
+            ->assertSee('Open thread Zq')
+            ->assertDontSee('Hidden thread Zq');
+    }
+
+    public function test_the_series_page_leaves_out_a_private_thread_attached_to_it(): void
+    {
+        $series = Series::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $hidden = $this->thread(Visibility::VISIBILITY_PRIVATE, ['name' => 'Hidden thread Zq']);
+        $series->threads()->attach($hidden->id);
+
+        $this->get(route('series.show', $series->slug))
+            ->assertOk()
+            ->assertDontSee('Hidden thread Zq');
+    }
+
+    public function test_a_public_profile_leaves_out_followed_threads_the_viewer_cannot_see(): void
+    {
+        $hidden = $this->thread(Visibility::VISIBILITY_PRIVATE, ['name' => 'Hidden thread Zq']);
+        Profile::where('user_id', $this->author->id)->delete();
+        Profile::factory()->create(['user_id' => $this->author->id, 'setting_public_profile' => 1]);
+        Follow::create(['object_type' => 'thread', 'object_id' => $hidden->id, 'user_id' => $this->author->id]);
+
+        $this->get('/users/'.$this->author->id.'?tabs[events]=created&tabs[following]=threads')
+            ->assertOk()
+            ->assertDontSee('Hidden thread Zq');
+    }
+
+    public function test_the_about_page_leaves_out_a_private_blog(): void
+    {
+        $menu = Menu::find(1) ?? Menu::factory()->create(['id' => 1]);
+        Blog::factory()->create(['menu_id' => $menu->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'body' => 'Open blog Zq']);
+        Blog::factory()->create(['menu_id' => $menu->id, 'visibility_id' => Visibility::VISIBILITY_PRIVATE, 'body' => 'Hidden blog Zq', 'created_by' => $this->author->id]);
+
+        $this->get('/about')
+            ->assertOk()
+            ->assertSee('Open blog Zq')
+            ->assertDontSee('Hidden blog Zq');
     }
 
     public function test_site_search_leaves_out_another_users_private_thread(): void

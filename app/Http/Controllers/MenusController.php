@@ -256,6 +256,7 @@ class MenusController extends Controller
         }
 
         // todo - confirm the menu is visible
+        $menu->load(['blogs' => fn ($query) => $query->visible($this->user)]);
 
         return view('menus.content-tw', compact('menu'));
     }

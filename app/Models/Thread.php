@@ -153,6 +153,8 @@ class Thread extends Eloquent
 
     /**
      * Returns visible threads.
+     *
+     * @return Builder<Thread>
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {

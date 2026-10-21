@@ -1459,6 +1459,7 @@ class EventsController extends Controller
         $embeds = [];
 
         $relatedThreads = $event->threads()
+            ->visible($this->user)
             ->with(['posts.user', 'user'])
             ->latest()
             ->take(5)
