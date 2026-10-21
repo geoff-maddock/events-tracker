@@ -16,6 +16,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -72,6 +73,14 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
         return 'discord:'.$this->reason.':'.$this->eventId.':'.$this->reasonKey;
     }
 
+    /**
+     * Where a released job keeps the ids of the channels it should retry.
+     */
+    private function retryKey(): string
+    {
+        return 'discord-retry-targets:'.$this->uniqueId();
+    }
+
     public function handle(DiscordTargetMatcher $matcher, DiscordEventPoster $poster): void
     {
         if (! config('discord.enabled')) {
@@ -91,6 +100,11 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
 
         $targets = $this->resolveTargets($matcher, $event);
 
+        // A retry only goes back to the channels that failed transiently last
+        // time. A permanent failure isn't sent again (each send would count
+        // against the channel's auto-disable streak).
+        $retryIds = $this->attempts() > 1 ? Cache::get($this->retryKey()) : null;
+
         if ($targets->isEmpty()) {
             $this->markSucceeded('No Discord channels matched this event.');
 
@@ -99,8 +113,26 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
 
         $sent = 0;
         $failed = 0;
+        $transientIds = [];
 
         foreach ($targets as $target) {
+            if (is_array($retryIds) && ! in_array($target->id, $retryIds, true)) {
+                // settled on an earlier attempt; count it from the ledger
+                $status = DiscordPost::where([
+                    'discord_target_id' => $target->id,
+                    'event_id' => $event->id,
+                    'reason' => $this->reason,
+                    'reason_key' => $this->reasonKey,
+                ])->value('status');
+                if (DiscordPost::STATUS_SENT === $status) {
+                    $sent++;
+                } elseif (DiscordPost::STATUS_FAILED === $status) {
+                    $failed++;
+                }
+
+                continue;
+            }
+
             try {
                 $post = $poster->post($event, $target, $this->reason, $this->reasonKey, $this->userId);
 
@@ -110,6 +142,9 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
             } catch (DiscordWebhookException $e) {
                 // Caught per target so one broken channel cannot stop the rest.
                 $failed++;
+                if (! $e->permanent) {
+                    $transientIds[] = $target->id;
+                }
                 Log::warning('Discord: target failed, continuing', [
                     'target_id' => $target->id,
                     'event_id' => $event->id,
@@ -119,6 +154,22 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
         }
 
         $summary = $sent.' channel(s) posted'.($failed > 0 ? ', '.$failed.' failed' : '.');
+
+        // A timeout, long 429 or repeated 5xx is worth another go after the backoff
+        // (#2340). The sync driver can't release a job, so it settles now.
+        if ([] !== $transientIds && $this->attempts() < $this->tries && 'sync' !== $this->job?->getConnectionName()) {
+            Log::info('Discord: retrying after a transient failure', [
+                'event_id' => $event->id,
+                'attempt' => $this->attempts(),
+                'transient_failures' => count($transientIds),
+            ]);
+            Cache::put($this->retryKey(), $transientIds, $this->uniqueFor);
+            $this->release($this->backoff[$this->attempts() - 1] ?? end($this->backoff));
+
+            return;
+        }
+
+        Cache::forget($this->retryKey());
 
         if ($failed > 0 && 0 === $sent) {
             $this->markFailed($summary);
