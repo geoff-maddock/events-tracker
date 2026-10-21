@@ -47,6 +47,24 @@ class AutoRelateEntityTest extends TestCase
         return Entity::factory()->create(['name' => 'Gun Ray', 'slug' => 'gun-ray']);
     }
 
+    // it changes data, so a GET (a link or image tag in an admin's browser) is refused (#2345)
+    /** @test */
+    public function auto_relate_does_not_accept_get(): void
+    {
+        $entity = $this->makeEntity();
+        $event = Event::factory()->create([
+            'name'          => 'Dance Night',
+            'description'   => 'Lineup: Gun Ray, Someone Else',
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->withExceptionHandling()->actingAs($this->admin())
+            ->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']))
+            ->assertStatus(405);
+
+        $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
+    }
+
     /** @test */
     public function guest_cannot_auto_relate(): void
     {
@@ -57,7 +75,7 @@ class AutoRelateEntityTest extends TestCase
             'visibility_id' => Visibility::VISIBILITY_PUBLIC,
         ]);
 
-        $this->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
+        $this->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
 
         $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
     }
@@ -73,7 +91,7 @@ class AutoRelateEntityTest extends TestCase
         ]);
 
         $this->actingAs($this->activeUser())
-            ->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
+            ->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
 
         $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
     }
@@ -100,7 +118,7 @@ class AutoRelateEntityTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin())
-            ->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'Gun Ray']));
+            ->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'Gun Ray']));
 
         $response->assertRedirect(route('pages.search', ['keyword' => 'Gun Ray']));
         $this->assertDatabaseHas('entity_event', ['event_id' => $byName->id, 'entity_id' => $entity->id]);
@@ -119,7 +137,7 @@ class AutoRelateEntityTest extends TestCase
         ]);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
+            ->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
 
         $this->assertDatabaseHas('entity_series', ['series_id' => $series->id, 'entity_id' => $entity->id]);
     }
@@ -134,8 +152,8 @@ class AutoRelateEntityTest extends TestCase
         ]);
 
         $admin = $this->admin();
-        $this->actingAs($admin)->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
-        $this->actingAs($admin)->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
+        $this->actingAs($admin)->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
+        $this->actingAs($admin)->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
 
         $this->assertSame(
             1,
@@ -155,7 +173,7 @@ class AutoRelateEntityTest extends TestCase
         ]);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
+            ->post(route('pages.relate', ['id' => $entity->id, 'keyword' => 'gun ray']));
 
         $this->assertDatabaseMissing('entity_event', ['event_id' => $privateEvent->id, 'entity_id' => $entity->id]);
     }
@@ -170,7 +188,7 @@ class AutoRelateEntityTest extends TestCase
         ]);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relate', ['id' => $entity->id, 'keyword' => '']));
+            ->post(route('pages.relate', ['id' => $entity->id, 'keyword' => '']));
 
         $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
     }

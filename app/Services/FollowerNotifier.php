@@ -44,7 +44,7 @@ class FollowerNotifier
         foreach ($tags as $tag) {
             foreach ($tag->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user->profile && $user->profile->setting_instant_update !== 1) {
+                if ($user->profile?->setting_instant_update !== 1) {
                     continue;
                 }
                 // never tell a follower about an event they can't see (private, proposal)
@@ -77,7 +77,7 @@ class FollowerNotifier
         foreach ($entities as $entity) {
             foreach ($entity->followers() as $user) {
                 // if the user does not have this setting, continue
-                if ($user->profile && $user->profile->setting_instant_update !== 1) {
+                if ($user->profile?->setting_instant_update !== 1) {
                     continue;
                 }
                 // never tell a follower about an event they can't see (private, proposal)

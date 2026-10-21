@@ -60,7 +60,7 @@ class AutoRelateSeriesTest extends TestCase
         $series = $this->makeSeries();
         $event = $this->makeEvent(['name' => 'Cutups Vol. 12']);
 
-        $this->get(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
+        $this->post(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
 
         $this->assertNull($event->fresh()->series_id);
     }
@@ -72,7 +72,7 @@ class AutoRelateSeriesTest extends TestCase
         $event = $this->makeEvent(['name' => 'Cutups Vol. 12']);
 
         $this->actingAs($this->activeUser())
-            ->get(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
+            ->post(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
 
         $this->assertNull($event->fresh()->series_id);
     }
@@ -94,7 +94,7 @@ class AutoRelateSeriesTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin())
-            ->get(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'Cutups']));
+            ->post(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'Cutups']));
 
         $response->assertRedirect(route('pages.search', ['keyword' => 'Cutups']));
         $this->assertSame($series->id, $byName->fresh()->series_id);
@@ -110,7 +110,7 @@ class AutoRelateSeriesTest extends TestCase
         $event = $this->makeEvent(['name' => 'Cutups Vol. 12', 'series_id' => $otherSeries->id]);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
+            ->post(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
 
         $this->assertSame($otherSeries->id, $event->fresh()->series_id);
     }
@@ -127,7 +127,7 @@ class AutoRelateSeriesTest extends TestCase
         ]);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
+            ->post(route('pages.relateSeries', ['id' => $series->id, 'keyword' => 'cutups']));
 
         $this->assertNull($privateEvent->fresh()->series_id);
     }
@@ -139,7 +139,7 @@ class AutoRelateSeriesTest extends TestCase
         $event = $this->makeEvent(['name' => 'Cutups Vol. 12']);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relateSeries', ['id' => $series->id, 'keyword' => '']));
+            ->post(route('pages.relateSeries', ['id' => $series->id, 'keyword' => '']));
 
         $this->assertNull($event->fresh()->series_id);
     }
@@ -150,7 +150,7 @@ class AutoRelateSeriesTest extends TestCase
         $event = $this->makeEvent(['name' => 'Cutups Vol. 12']);
 
         $this->actingAs($this->admin())
-            ->get(route('pages.relateSeries', ['id' => 999999, 'keyword' => 'cutups']));
+            ->post(route('pages.relateSeries', ['id' => 999999, 'keyword' => 'cutups']));
 
         $this->assertNull($event->fresh()->series_id);
     }
