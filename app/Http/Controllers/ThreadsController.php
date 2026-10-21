@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Gate;
 
 class ThreadsController extends Controller
 {
@@ -698,12 +697,9 @@ class ThreadsController extends Controller
 
     public function show(Thread $thread): RedirectResponse | View
     {
-        // if the gate does not allow this user to show a forum redirect to home
-        if ($thread->forum_id && Gate::denies('show_forum', $thread->forum_id) && $thread->visibility_id !== 3) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
+        // the same rule as the thread lists, so an author can open their own private
+        // thread and a guest can't open anyone's (#2342)
+        abort_unless($thread->isVisibleTo($this->user), 404);
 
         $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 

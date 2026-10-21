@@ -173,6 +173,24 @@ class Thread extends Eloquent
     }
 
     /**
+     * Whether $user may open this thread: the scopeVisible() rule for one row.
+     * Admins see everything.
+     */
+    public function isVisibleTo(?User $user): bool
+    {
+        if ($user?->isAdmin()) {
+            return true;
+        }
+
+        return match ((int) $this->visibility_id) {
+            Visibility::VISIBILITY_PUBLIC => true,
+            Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE => $user !== null && (int) $this->created_by === $user->id,
+            Visibility::VISIBILITY_GUARDED => $user !== null,
+            default => false,
+        };
+    }
+
+    /**
      * The posts that belong to the thread.
      */
     public function posts(): HasMany
