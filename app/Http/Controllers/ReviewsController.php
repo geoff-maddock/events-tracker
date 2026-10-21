@@ -218,6 +218,10 @@ class ReviewsController extends Controller
 
     public function show(EventReview $review): View
     {
+        // a review is only as visible as its event, as in index()
+        $event = Event::find($review->event_id);
+        abort_unless($event && $event->isVisibleTo($this->user), 404);
+
         return view('reviews.show-tw', compact('review'));
     }
 

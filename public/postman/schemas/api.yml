@@ -7589,6 +7589,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
+        "403":
+          description: The user's profile is private (allowed for the user, an admin, or when the profile is public)
   /api/events-recommended:
     get:
       parameters:

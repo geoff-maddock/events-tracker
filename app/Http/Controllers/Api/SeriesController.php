@@ -494,6 +494,7 @@ class SeriesController extends Controller
     public function followJson(Series $series, Request $request): JsonResponse
     {
         $user = $request->user();
+        abort_unless($series->isVisibleTo($user), 404);
 
         $follow = Follow::where('object_type', 'series')
             ->where('object_id', $series->id)

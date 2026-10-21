@@ -65,7 +65,7 @@ class SeriesController extends Controller
     public function __construct(SeriesFilters $filter)
     {
         // auth first, so a guest is sent to sign in and back (#2108) rather than to the verify notice
-        $this->middleware(['auth', 'verified'], ['only' => ['create', 'edit', 'store', 'update']]);
+        $this->middleware(['auth', 'verified'], ['only' => ['create', 'createOccurrence', 'edit', 'store', 'update']]);
         $this->middleware(['auth', 'verified'], ['only' => ['destroy']]);
         $this->filter = $filter;
 
@@ -871,9 +871,9 @@ class SeriesController extends Controller
 
     public function createOccurrence(Request $request): View
     {
-        // create an event occurrence based on the series template
-
+        // create an event occurrence based on the template of a series the user can see
         $series = Series::find($request->id);
+        abort_unless($series && $series->isVisibleTo($this->user), 404);
 
         $seriesOptions = ['' => ''] + Series::visible($this->user)->orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $userOptions = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
@@ -1018,7 +1018,7 @@ class SeriesController extends Controller
             return back();
         }
 
-        if (!$series = Series::find($id)) {
+        if (!($series = Series::find($id)) || !$series->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such series');
 
             return back();
@@ -1078,6 +1078,17 @@ class SeriesController extends Controller
             Activity::log($series, $this->user, 7);
         }
 
+        // the series may have gone private since: the follow still goes, but
+        // the reply doesn't show the series
+        if (!$series->isVisibleTo($this->user)) {
+            if ($request->ajax()) {
+                return ['Message' => 'You are no longer following the series.', 'Success' => ''];
+            }
+            flash()->success('Success', 'You are no longer following the series.');
+
+            return back();
+        }
+
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the series - '.$series->name,
@@ -1100,7 +1111,7 @@ class SeriesController extends Controller
     public function loadEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the series
-        if (!$series = Series::find($id)) {
+        if (!($series = Series::find($id)) || !$series->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such series');
 
             return back();
@@ -1132,7 +1143,7 @@ class SeriesController extends Controller
     public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the series
-        if (!$series = Series::find($id)) {
+        if (!($series = Series::find($id)) || !$series->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such series');
 
             return back();
@@ -1163,7 +1174,7 @@ class SeriesController extends Controller
      */
     public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
     {
-        if (!$series = Series::with('entities.links')->where('slug', $slug)->first()) {
+        if (!($series = Series::with('entities.links')->where('slug', $slug)->first()) || !$series->isVisibleTo($this->user)) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['error' => 'Series not found'], 404);
             }
@@ -1193,7 +1204,7 @@ class SeriesController extends Controller
     public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
     {
         // load the series by slug
-        if (!$series = Series::where('slug', $slug)->first()) {
+        if (!($series = Series::where('slug', $slug)->first()) || !$series->isVisibleTo($this->user)) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['error' => 'Series not found'], 404);
             }

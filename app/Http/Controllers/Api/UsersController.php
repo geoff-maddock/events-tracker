@@ -324,6 +324,10 @@ class UsersController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         EventFilters $eventFilters
     ): JsonResponse {
+        if (!$user->profileIsVisibleTo($this->user)) {
+            return response()->json(['message' => 'This profile is private.'], 403);
+        }
+
         // initialize the list parameter session store for this route
         $listParamSessionStore->setBaseIndex('api_user_event');
         $listParamSessionStore->setKeyPrefix('api_user_event_index');

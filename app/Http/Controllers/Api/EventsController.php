@@ -749,7 +749,8 @@ class EventsController extends Controller
     public function attendJson(Event $event, Request $request): JsonResponse
     {
         $user = $request->user();
-        
+        abort_unless($event->isVisibleTo($user), 404);
+
         $response = EventResponse::where('event_id', $event->id)
             ->where('user_id', $user->id)
             ->where('response_type_id', 1)
