@@ -6,6 +6,7 @@ use App\Mail\WeeklyUpdate;
 use App\Models\Event;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,7 @@ class NotifyWeeklyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         Profile::factory()->create([
             'user_id' => $user->id,
             'setting_weekly_update' => 1,
@@ -57,7 +58,7 @@ class NotifyWeeklyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         Profile::factory()->create([
             'user_id' => $user->id,
             'setting_weekly_update' => 0,
@@ -73,7 +74,7 @@ class NotifyWeeklyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         $this->attendFuture($user);
 
         $this->artisan('notifyWeekly')->assertExitCode(0);

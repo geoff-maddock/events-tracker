@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\DailyReminder;
 use App\Models\User;
+use App\Models\UserStatus;
 use App\Services\DigestBuilder;
 use App\Services\DigestEngagement;
 use Illuminate\Console\Command;
@@ -42,8 +43,13 @@ class Notify extends Command
         $dryRun = (bool) $this->option('dry-run');
         $counts = ['sent' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
 
-        // get each user
-        $users = User::with('profile')->orderBy('name', 'ASC')->get();
+        // get each active user with a verified address: not suspended or banned
+        // accounts, and not an address changed but not yet confirmed
+        $users = User::with('profile')
+            ->where('user_status_id', UserStatus::ACTIVE)
+            ->whereNotNull('email_verified_at')
+            ->orderBy('name', 'ASC')
+            ->get();
 
         foreach ($users as $user) {
             // if the user does not have this setting, continue

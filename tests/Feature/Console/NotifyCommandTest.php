@@ -6,6 +6,7 @@ use App\Mail\DailyReminder;
 use App\Models\Event;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,7 @@ class NotifyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         Profile::factory()->create([
             'user_id' => $user->id,
             'setting_daily_update' => 1,
@@ -57,7 +58,7 @@ class NotifyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         // No profile created.
         $this->attendToday($user);
 
@@ -70,7 +71,7 @@ class NotifyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         Profile::factory()->create([
             'user_id' => $user->id,
             'setting_daily_update' => 0,
@@ -86,7 +87,7 @@ class NotifyCommandTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
         Profile::factory()->create([
             'user_id' => $user->id,
             'setting_daily_update' => 1,
