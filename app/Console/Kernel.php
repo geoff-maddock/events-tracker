@@ -107,7 +107,9 @@ class Kernel extends ConsoleKernel
             ->everyThirtyMinutes()
             ->timezone('America/New_York')
             ->between('9:00', '17:00')
-            ->weekdays();
+            ->weekdays()
+            // a slow run must not overlap the next and post the same events twice
+            ->withoutOverlapping(60);
 
         // DISCORD (issue #2058). Both no-op unless DISCORD_ENABLED is set.
         // Reminders for events starting in N days, per target.

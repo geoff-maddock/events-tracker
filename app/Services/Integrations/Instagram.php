@@ -125,7 +125,8 @@ class Instagram
         $children = rtrim($children, ',');
         $children =  urlEncode($children);
 
-        $caption = substr(urlEncode($caption), 0, 2200);
+        // Instagram's limit is 2200 characters of the caption itself; cut before encoding (#2339)
+        $caption = urlencode(mb_substr($caption, 0, 2200));
         $params = [];
         $endpoint = 'https://graph.facebook.com/'.$this->apiVersion.'/'.$this->igUserId.'/media?media_type=CAROUSEL&children='.$children.'&caption='.$caption.'&access_token='.$this->pageAccessToken;
 
@@ -323,6 +324,9 @@ class Instagram
         // set other curl options
         curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // a hung Graph API connection otherwise blocks the scheduled run indefinitely
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
         // set values based on type
         if ($type == 'POST') {
