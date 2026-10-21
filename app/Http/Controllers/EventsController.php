@@ -91,7 +91,7 @@ class EventsController extends Controller
     public function __construct(EventFilters $filter)
     {
         // auth first, so a guest is sent to sign in and back (#2108) rather than to the verify notice
-        $this->middleware(['auth', 'verified'], ['only' => ['create', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
+        $this->middleware(['auth', 'verified'], ['only' => ['create', 'createSeries', 'edit', 'duplicate','store', 'update', 'indexAttending']]);
         $this->middleware(['auth', 'verified'], ['only' => ['destroy']]);
         $this->filter = $filter;
 
@@ -1482,7 +1482,7 @@ class EventsController extends Controller
     public function loadEmbeds(int $id, OembedExtractor $oembedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
-        if (!$event = Event::with('entities.links')->find($id)) {
+        if (!($event = Event::with('entities.links')->find($id)) || !$event->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such event');
 
             return back();
@@ -1514,7 +1514,7 @@ class EventsController extends Controller
     public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
     {
         // load the event
-        if (!$event = Event::with('entities.links')->find($id)) {
+        if (!($event = Event::with('entities.links')->find($id)) || !$event->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such event');
 
             return back();
@@ -1544,7 +1544,7 @@ class EventsController extends Controller
      */
     public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
     {
-        if (!$event = Event::with('entities.links')->where('slug', $slug)->first()) {
+        if (!($event = Event::with('entities.links')->where('slug', $slug)->first()) || !$event->isVisibleTo($this->user)) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['error' => 'Event not found'], 404);
             }
@@ -1625,7 +1625,7 @@ class EventsController extends Controller
     public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
     {
         // load the event by slug
-        if (!$event = Event::with('entities.links')->where('slug', $slug)->first()) {
+        if (!($event = Event::with('entities.links')->where('slug', $slug)->first()) || !$event->isVisibleTo($this->user)) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['error' => 'Event not found'], 404);
             }
@@ -1837,7 +1837,7 @@ class EventsController extends Controller
             return back();
         }
 
-        if (!$event = Event::find($id)) {
+        if (!($event = Event::find($id)) || !$event->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such event');
 
             return back();
@@ -1882,7 +1882,7 @@ class EventsController extends Controller
             return back();
         }
 
-        if (!$event = Event::find($id)) {
+        if (!($event = Event::find($id)) || !$event->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such event');
 
             return back();
@@ -2260,9 +2260,9 @@ class EventsController extends Controller
      */
     public function createSeries(Request $request)
     {
-        // create a series from a single event
-
+        // create a series from a single event the user can see
         $event = Event::find($request->id);
+        abort_unless($event && $event->isVisibleTo($this->user), 404);
 
         // initialize the form object with the values from the template
         $series = new Series(
@@ -2345,10 +2345,9 @@ class EventsController extends Controller
 
     public function duplicate(int $id): View
     {
-        // find the event to duplicate
-        $this->middleware('auth');
-
+        // find the event to duplicate; one the user can't see is missing
         $e = Event::find($id);
+        abort_unless($e && $e->isVisibleTo($this->user), 404);
         $event = $e->replicate();
 
         return view('events.create', compact('event'))->with($this->getFormOptions());

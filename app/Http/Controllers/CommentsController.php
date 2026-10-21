@@ -81,8 +81,21 @@ class CommentsController extends Controller
     /**
      * Display the specified comment.
      */
-    public function show(Entity $entity, Comment $comment): View
+    // Entity and Event both appear, as in edit(): whichever the route binds is the parent
+    public function show(Entity $entity, Event $event, Comment $comment): View|RedirectResponse
     {
+        $parent = $event->exists ? $event : $entity;
+
+        // the comment must belong to the page in the URL
+        abort_unless($parent->exists && $parent->is($comment->commentable), 404);
+
+        // the comment page is built for entities; an event comment lives on its event page
+        if ($parent instanceof Event) {
+            abort_unless($parent->isVisibleTo($this->user), 404);
+
+            return redirect()->route('events.show', ['event' => $parent->id]);
+        }
+
         return view('comments.show-tw', compact('entity', 'comment'));
     }
 

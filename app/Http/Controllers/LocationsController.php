@@ -112,6 +112,11 @@ class LocationsController extends Controller
      */
     public function show(Entity $entity, Location $location): View
     {
+        $this->ensureBelongsToEntity($entity, $location);
+        // the same rule as the entity page's location list: Guarded needs a signed-in viewer
+        abort_unless($location->visibility_id !== null
+            && ((int) $location->visibility_id !== Visibility::VISIBILITY_GUARDED || $this->user !== null), 404);
+
         return view('locations.show-tw', compact('entity', 'location'));
     }
 
