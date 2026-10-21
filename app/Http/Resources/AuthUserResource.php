@@ -35,7 +35,7 @@ class AuthUserResource extends JsonResource
             'followed_tags' => MinimalSlugResource::collection($this->getTagsFollowing()),
             'followed_entities' => MinimalSlugResource::collection($this->getEntitiesFollowing()),
             'followed_series' => MinimalSlugResource::collection($this->getSeriesFollowing()),
-            'followed_threads' => MinimalSlugResource::collection($this->getThreadsFollowing()),
+            'followed_threads' => MinimalSlugResource::collection($this->getThreadsFollowing($this->resource)),
             'groups' => GroupResource::collection($this->groups),
             'permissions' => PermissionResource::collection($this->getPermissions()),
             'photos' => $this->photos->map(function ($photo) {

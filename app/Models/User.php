@@ -736,11 +736,13 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
-     * Return a list of threads the user is following.
+     * Return a list of threads the user is following, limited to the ones the
+     * viewer can see.
      */
-    public function getThreadsFollowing(): Collection
+    public function getThreadsFollowing(?User $viewer): Collection
     {
-        $threads = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
+        $threads = Thread::visible($viewer)
+            ->join('follows', 'threads.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'thread')
             ->where('follows.user_id', '=', $this->id)
             ->orderBy('follows.created_at', 'desc')

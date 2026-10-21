@@ -221,6 +221,11 @@ class PostsController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // a post is readable wherever its thread is
+        if (!Thread::visible($this->user)->whereKey($post->thread_id)->exists()) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         return response()->json(new PostResource($post));
     }
 

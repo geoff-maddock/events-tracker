@@ -91,7 +91,13 @@ class Forum extends Eloquent
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
-        return $query->whereRelation('visibility','name','Public')->orWhere('created_by', '=', ($user ? $user->id : null));
+        return $query->where(function (Builder $query) use ($user) {
+            $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+            // never created_by = null for guests: that compiles to IS NULL
+            if ($user) {
+                $query->orWhere('created_by', '=', $user->id);
+            }
+        });
     }
 
     /**

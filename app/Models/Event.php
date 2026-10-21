@@ -523,6 +523,8 @@ class Event extends Model implements HasPhotos
 
     /**
      * An event can belong to many threads.
+     *
+     * @return HasMany<Thread, $this>
      */
     public function threads(): HasMany
     {

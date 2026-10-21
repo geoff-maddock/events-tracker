@@ -5,6 +5,7 @@ namespace Tests\Feature\Web;
 use App\Models\Blog;
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +28,8 @@ class BlogsControllerTest extends TestCase
 
     public function test_show_loads_for_existing_blog(): void
     {
-        $blog = Blog::factory()->create();
+        // the factory picks a random visibility; the show page needs a public one
+        $blog = Blog::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
         $this->get('/blogs/'.$blog->slug)->assertOk();
     }

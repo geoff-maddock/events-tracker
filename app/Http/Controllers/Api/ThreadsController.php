@@ -106,6 +106,7 @@ class ThreadsController extends Controller
 
         // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Thread::query()
+            ->visible($this->user)
             ->with(['visibility', 'forum', 'user', 'tags', 'threadCategory', 'lastPost'])
             ->withCount('posts')
             ->select('threads.*');
@@ -306,8 +307,9 @@ class ThreadsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
         // Check if the thread exists
-        $thread = Thread::find($threadId);
-        
+        // a thread the user can't see is reported as missing, same as show()
+        $thread = Thread::visible($this->user)->find($threadId);
+
         if (!$thread) {
             return response()->json(['error' => 'Thread not found'], 404);
         }

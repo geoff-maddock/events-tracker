@@ -51,7 +51,7 @@ class UserResource extends JsonResource
             'followed_tags' => $this->when($private, fn () => MinimalSlugResource::collection($this->relationLoaded('followedTags') ? $this->followedTags : $this->getTagsFollowing())),
             'followed_entities' => $this->when($private, fn () => MinimalSlugResource::collection($this->relationLoaded('followedEntities') ? $this->followedEntities : $this->getEntitiesFollowing())),
             'followed_series' => $this->when($private, fn () => MinimalSlugResource::collection($this->relationLoaded('followedSeries') ? $this->followedSeries : $this->getSeriesFollowing())),
-            'followed_threads' => $this->when($private, fn () => MinimalSlugResource::collection($this->relationLoaded('followedThreads') ? $this->followedThreads : $this->getThreadsFollowing())),
+            'followed_threads' => $this->when($private, fn () => MinimalSlugResource::collection($this->relationLoaded('followedThreads') ? $this->followedThreads : $this->getThreadsFollowing($viewer))),
             'photos' => $this->photos->map(function ($photo) {
                 return [
                     'id' => $photo->id,

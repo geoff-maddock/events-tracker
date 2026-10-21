@@ -231,6 +231,8 @@ class BlogsController extends Controller
      */
     public function show(Blog $blog): View
     {
+        abort_unless($blog->isVisibleTo($this->user), 404);
+
         // eager-load relations consumed by the page + JSON-LD
         $blog->loadMissing(['user', 'photos']);
 

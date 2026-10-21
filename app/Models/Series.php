@@ -548,6 +548,8 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * Get the threads that belong to the series.
+     *
+     * @return BelongsToMany<Thread, $this>
      */
     public function threads(): BelongsToMany
     {
