@@ -1366,11 +1366,8 @@ class EntitiesController extends Controller
             return back();
         }
 
-        // delete the follow
-        $follow = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->first();
-        if ($follow) {
-            $follow->delete();
-
+        // delete the follow, including any duplicates left by older double submits (#2341)
+        if (Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'entity')->delete()) {
             // add to activity log
             Activity::log($entity, $this->user, Action::UNFOLLOW);
         }

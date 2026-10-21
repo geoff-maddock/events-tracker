@@ -864,14 +864,12 @@ class ThreadsController extends Controller
             return back();
         }
 
-        // add the following response
-        $follow = new Follow();
-        $follow->object_id = $id;
-        $follow->user()->associate($this->user);
-        $follow->object_type = 'thread'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
-        $follow->save();
+        // add the following response; a double submit must not add a second row (#2341)
+        $follow = Follow::firstOrCreate(['object_id' => $thread->id, 'user_id' => $this->user->id, 'object_type' => 'thread']);
 
-        Log::info('User '.$id.' is following '.$thread->name);
+        if ($follow->wasRecentlyCreated) {
+            Log::info('User '.$id.' is following '.$thread->name);
+        }
 
         flash()->success('Success', 'You are now following the thread - '.$thread->name);
 
@@ -893,11 +891,8 @@ class ThreadsController extends Controller
             return back();
         }
 
-        // delete the follow
-        $response = Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'thread')->first();
-        if ($response) {
-            $response->delete();
-        }
+        // delete the follow, including any duplicates left by older double submits
+        Follow::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'thread')->delete();
 
         flash()->success('Success', 'You are no longer following the thread.');
 

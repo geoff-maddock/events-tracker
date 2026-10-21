@@ -1844,15 +1844,17 @@ class EventsController extends Controller
             return back();
         }
 
-        // add the attending response
-        $response = new EventResponse();
-        $response->event()->associate($id);
-        $response->user()->associate($this->user);
-        $response->responseType()->associate(ResponseType::find(1)); // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
-        $response->save();
+        // add the attending response; a double submit must not add a second row (#2341)
+        $response = EventResponse::firstOrCreate([
+            'event_id' => $event->id,
+            'user_id' => $this->user->id,
+            'response_type_id' => ResponseType::ATTENDING,
+        ]);
 
         // add to activity log
-        Activity::log($event, $this->user, 6);
+        if ($response->wasRecentlyCreated) {
+            Activity::log($event, $this->user, 6);
+        }
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -1889,11 +1891,8 @@ class EventsController extends Controller
             return back();
         }
 
-        // delete the attending response
-        $response = EventResponse::where('event_id', '=', $id)->where('user_id', '=', $this->user->id)->where('response_type_id', '=', 1)->first();
-        if ($response) {
-            $response->delete();
-
+        // delete the attending response, including any duplicates left by older double submits
+        if (EventResponse::where('event_id', '=', $id)->where('user_id', '=', $this->user->id)->where('response_type_id', '=', 1)->delete()) {
             // add to activity log
             Activity::log($event, $this->user, 7);
         }
