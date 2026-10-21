@@ -138,7 +138,8 @@ class ApiBlogsCrudTest extends TestCase
 
     public function test_show_returns_existing_blog(): void
     {
-        $blog = Blog::factory()->create();
+        // the factory picks a random visibility; show needs a public blog (or the author)
+        $blog = Blog::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
 
         $this->getJson('/api/blogs/'.$blog->slug)
             ->assertStatus(200)
