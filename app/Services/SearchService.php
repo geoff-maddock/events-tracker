@@ -62,7 +62,7 @@ class SearchService
         $entities = $this->entities($keyword, $perPage);
         $tags     = $this->tags($keyword, $perPage);
         $users    = $this->users($keyword, $perPage);
-        $threads  = $this->threads($keyword, $perPage);
+        $threads  = $this->threads($keyword, $user, $perPage);
         $modules  = collect($this->moduleRegistry->search($keyword, $user));
 
         $tagsCount    = $this->countLike(Tag::query(), ['name'], $keyword);
@@ -218,7 +218,7 @@ class SearchService
             ->simplePaginate($perPage);
     }
 
-    private function threads(string $keyword, int $perPage): LengthAwarePaginator
+    private function threads(string $keyword, ?User $user, int $perPage): LengthAwarePaginator
     {
         $useFulltext = $this->useFulltext($keyword);
 
@@ -237,7 +237,8 @@ class SearchService
                 }
 
                 $q->orWhereHas('tags', $this->ciNameMatch($keyword));
-            });
+            })
+            ->visible($user);
 
         if ($useFulltext) {
             $query->orderByRaw(

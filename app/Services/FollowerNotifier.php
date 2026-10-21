@@ -11,6 +11,8 @@ use App\Models\Post;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
+use App\Models\User;
+use App\Models\Visibility;
 
 /**
  * Emails the followers of an event's tags/entities, a thread's tags/series, or a
@@ -127,6 +129,10 @@ class FollowerNotifier
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
+                // never tell a follower about a thread they can't see (private, proposal)
+                if (!$this->threadVisibleTo($thread, $user)) {
+                    continue;
+                }
                 if (!array_key_exists($user->id, $users)) {
                     $mailer->send(
                         $user->email,
@@ -154,6 +160,10 @@ class FollowerNotifier
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
+                // never tell a follower about a thread they can't see (private, proposal)
+                if (!$this->threadVisibleTo($thread, $user)) {
+                    continue;
+                }
                 if (!array_key_exists($user->id, $users)) {
                     $mailer->send(
                         $user->email,
@@ -192,6 +202,10 @@ class FollowerNotifier
                 continue;
             }
             // if the user hasn't already been notified, then email them
+            // never tell a follower about a thread they can't see (private, proposal)
+            if (!$this->threadVisibleTo($thread, $user)) {
+                continue;
+            }
             if (!array_key_exists($user->id, $users)) {
                 $mailer->send(
                     $user->email,
@@ -211,6 +225,10 @@ class FollowerNotifier
                     continue;
                 }
                 // if the user hasn't already been notified, then email them
+                // never tell a follower about a thread they can't see (private, proposal)
+                if (!$this->threadVisibleTo($thread, $user)) {
+                    continue;
+                }
                 if (!array_key_exists($user->id, $users)) {
                     $mailer->send(
                         $user->email,
@@ -235,6 +253,10 @@ class FollowerNotifier
                 }
 
                 // if the user hasn't already been notified, then email them
+                // never tell a follower about a thread they can't see (private, proposal)
+                if (!$this->threadVisibleTo($thread, $user)) {
+                    continue;
+                }
                 if (!array_key_exists($user->id, $users)) {
                     $mailer->send(
                         $user->email,
@@ -247,5 +269,17 @@ class FollowerNotifier
         }
 
         $mailer->logSummary('FollowerNotifier@post', ['post_id' => $post->id]);
+    }
+
+    /**
+     * Thread visibility for one recipient, by the same scope the thread lists use.
+     */
+    private function threadVisibleTo(Thread $thread, User $user): bool
+    {
+        if ((int) $thread->visibility_id === Visibility::VISIBILITY_PUBLIC) {
+            return true;
+        }
+
+        return Thread::visible($user)->whereKey($thread->id)->exists();
     }
 }

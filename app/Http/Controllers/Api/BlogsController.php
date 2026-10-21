@@ -172,6 +172,10 @@ class BlogsController extends Controller
      */
     public function show(Blog $blog): JsonResponse
     {
+        if (!$blog->isVisibleTo($this->user)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         return response()->json($blog);
     }
 

@@ -147,9 +147,15 @@ class Post extends Eloquent
      */
     public function scopeVisible(Builder $query, ?User $user): Builder
     {
-        $public = Visibility::where('name', '=', 'Public')->first();
-
-        return $query->where('visibility_id', '=', $public ? $public->id : null)->orWhere('created_by', '=', ($user ? $user->id : null));
+        return $query->where(function (Builder $query) use ($user) {
+            $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+            // never created_by = null for guests: that compiles to IS NULL
+            if ($user) {
+                $query->orWhere('created_by', '=', $user->id);
+            }
+        })
+            // and only in threads the user can see
+            ->whereIn('thread_id', Thread::visible($user)->select('threads.id'));
     }
 
     /**
