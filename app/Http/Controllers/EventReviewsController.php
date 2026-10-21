@@ -93,11 +93,14 @@ class EventReviewsController extends Controller
      * Display the specified resource.
      *
      * @param  Event 		$event
-     * @param  EventReview  	$eventReview
+     * @param  EventReview  	$review
      */
-    public function show(Event $event, EventReview $eventReview): View
+    public function show(Event $event, EventReview $review): RedirectResponse
     {
-        return view('events.show-tw', compact('event', 'eventReview'));
+        // the review page lives at /reviews/{review}; this nested URL only redirects there (#2336)
+        abort_unless((int) $review->event_id === (int) $event->id && $event->isVisibleTo($this->user), 404);
+
+        return redirect()->route('reviews.show', $review->id);
     }
 
     /**

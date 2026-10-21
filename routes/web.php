@@ -355,7 +355,7 @@ Route::get(
         'as' => 'events.export.attending',
         'uses' => '\App\Http\Controllers\EventsController@exportAttending',
     ]
-);
+)->middleware('auth');
 
 Route::get('events/{id}/generate-image', [
     'as' => 'events.generateImage',
