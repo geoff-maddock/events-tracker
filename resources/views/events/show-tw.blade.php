@@ -76,14 +76,14 @@
 												<a href="{!! route('events.createSeries', ['id' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-collection mr-2"></i>Create Series from Event
 												</a>
-												<form action="{!! route('events.instagramPost', ['id' => $event->id]) !!}" method="POST" class="block">
+												<form action="{!! route('events.instagramPost', ['id' => $event->id]) !!}" method="POST" class="block" data-ajax-action>
 													@csrf
 													<button type="submit" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors w-full text-left" role="menuitem">
 														<i class="bi bi-instagram mr-2"></i>Post to Instagram
 													</button>
 												</form>
 												@if ($user->hasGroup('super_admin'))
-													<form action="{!! route('events.instagramStoryPost', ['id' => $event->id]) !!}" method="POST" class="block">
+													<form action="{!! route('events.instagramStoryPost', ['id' => $event->id]) !!}" method="POST" class="block" data-ajax-action>
 														@csrf
 														<button type="submit" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors w-full text-left" role="menuitem">
 															<i class="bi bi-instagram mr-2"></i>Post to Instagram Story
@@ -539,18 +539,23 @@ $(document).ready(function(){
             });
         }
 
-        // Fire-and-redirect actions (e.g. Post to Instagram) must not enter the
-        // browser history, otherwise clicking Back re-triggers the post. Fire
-        // them via fetch so the page never navigates and history is untouched.
-        document.querySelectorAll('a[data-replace-history]').forEach(function(link) {
-            link.addEventListener('click', function(e) {
+        // Queue-only actions (the Instagram posts) post via fetch and show the
+        // JSON reply in a popup, so the page doesn't reload. A redirect-and-flash
+        // round trip can lose the message to the embed requests sharing the session.
+        document.querySelectorAll('form[data-ajax-action]').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 if (menu) {
                     menu.classList.add('hidden');
                 }
 
-                fetch(this.href, {
+                const button = form.querySelector('button[type="submit"]');
+                if (button) button.disabled = true;
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -574,6 +579,8 @@ $(document).ready(function(){
                         text: 'Could not start the Instagram post. Please try again.',
                         icon: 'error'
                     });
+                }).finally(function() {
+                    if (button) button.disabled = false;
                 });
             });
         });

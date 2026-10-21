@@ -79,14 +79,14 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 			</a>
 			@if ($signedIn && $user && $user->hasGroup('super_admin'))
 			<div class="border-t border-border my-1"></div>
-			<form action="{!! URL::route('events.instagramWeekendPreview') !!}" method="POST" class="block">
+			<form action="{!! URL::route('events.instagramWeekendPreview') !!}" method="POST" class="block" data-ajax-action>
 				@csrf
 				<button type="submit" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent transition-colors w-full text-left">
 					<i class="bi bi-instagram mr-2"></i>
 					Weekend Preview
 				</button>
 			</form>
-			<form action="{!! URL::route('events.instagramTodaysPreview') !!}" method="POST" class="block">
+			<form action="{!! URL::route('events.instagramTodaysPreview') !!}" method="POST" class="block" data-ajax-action>
 				@csrf
 				<button type="submit" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-b-lg transition-colors w-full text-left">
 					<i class="bi bi-instagram mr-2"></i>
@@ -313,9 +313,9 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 		});
 	})();
 
-	// Fire-and-redirect actions (e.g. Weekend Preview) must not enter the
-	// browser history, otherwise clicking Back re-triggers the post. Fire
-	// them via fetch so the page never navigates and history is untouched.
+	// Queue-only admin actions (the Instagram previews) post via fetch and show the
+	// JSON reply in a popup, so the page doesn't reload. A redirect-and-flash
+	// round trip can lose the message to the embed requests sharing the session.
 	(function() {
 		const fireAlert = function(options) {
 			if (window.Swal && typeof window.Swal.fire === 'function') {
@@ -324,11 +324,16 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 			window.alert(options.text || options.title || 'Notification');
 		};
 
-		document.querySelectorAll('a[data-replace-history]').forEach(function(link) {
-			link.addEventListener('click', function(e) {
+		document.querySelectorAll('form[data-ajax-action]').forEach(function(form) {
+			form.addEventListener('submit', function(e) {
 				e.preventDefault();
 
-				fetch(this.href, {
+				const button = form.querySelector('button[type="submit"]');
+				if (button) button.disabled = true;
+
+				fetch(form.action, {
+					method: 'POST',
+					body: new FormData(form),
 					headers: {
 						'X-Requested-With': 'XMLHttpRequest',
 						'Accept': 'application/json'
@@ -352,6 +357,8 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 						text: 'Could not start the Instagram post. Please try again.',
 						icon: 'error'
 					});
+				}).finally(function() {
+					if (button) button.disabled = false;
 				});
 			});
 		});
