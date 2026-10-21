@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
+use App\Models\Profile;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
@@ -111,6 +112,8 @@ class SeoMetaLayoutTest extends TestCase
     public function test_user_attending_page_is_noindexed(): void
     {
         $user = User::factory()->create();
+        // the list is only open to guests on a public profile
+        Profile::factory()->create(['user_id' => $user->id, 'setting_public_profile' => 1]);
 
         $response = $this->get('/users/'.$user->id.'/attending');
 

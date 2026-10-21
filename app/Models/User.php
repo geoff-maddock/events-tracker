@@ -816,6 +816,20 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         return $this->hasGroup('admin') || $this->hasGroup('super_admin');
     }
 
+    /**
+     * Whether the viewer can see this user's full profile and the lists hung off
+     * it (attending, following): the user, an admin, or anyone when the profile
+     * is public.
+     */
+    public function profileIsVisibleTo(?User $viewer): bool
+    {
+        if ($viewer && ($viewer->id === $this->id || $viewer->isAdmin() || $viewer->id == config('app.superuser'))) {
+            return true;
+        }
+
+        return (int) $this->profile?->setting_public_profile === 1;
+    }
+
     public function hasPermission(string $permission): bool
     {
         return $this->getPermissions()->contains('name', $permission);

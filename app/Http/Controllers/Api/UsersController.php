@@ -324,11 +324,7 @@ class UsersController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         EventFilters $eventFilters
     ): JsonResponse {
-        // the attending list follows the web profile rule: the user, an admin,
-        // or anyone when the user has a public profile
-        $canView = ($this->user && ($this->user->id === $user->id || $this->user->isAdmin()))
-            || (int) $user->profile?->setting_public_profile === 1;
-        if (!$canView) {
+        if (!$user->profileIsVisibleTo($this->user)) {
             return response()->json(['message' => 'This profile is private.'], 403);
         }
 

@@ -1882,7 +1882,7 @@ class EventsController extends Controller
             return back();
         }
 
-        if (!($event = Event::find($id)) || !$event->isVisibleTo($this->user)) {
+        if (!$event = Event::find($id)) {
             flash()->error('Error', 'No such event');
 
             return back();
@@ -1895,6 +1895,17 @@ class EventsController extends Controller
 
             // add to activity log
             Activity::log($event, $this->user, 7);
+        }
+
+        // the event may have gone private since: the attendance still goes, but
+        // the reply doesn't show the event
+        if (!$event->isVisibleTo($this->user)) {
+            if ($request->ajax()) {
+                return ['Message' => 'You are no longer attending the event.', 'Success' => ''];
+            }
+            flash()->success('Success', 'You are no longer attending the event.');
+
+            return back();
         }
 
         // handle the request if ajax
@@ -2455,6 +2466,7 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
         $user = User::findOrFail($id);
+        abort_unless($user->profileIsVisibleTo($this->user), 403);
 
         [$query, $listResultSet] = $this->startEventList(
             $listParamSessionStore,
@@ -2489,6 +2501,7 @@ class EventsController extends Controller
     ) {
         // find user or fail
         $user = User::findOrFail($id);
+        abort_unless($user->profileIsVisibleTo($this->user), 403);
 
         // initialized listParamSessionStore with baseindex key
         $listParamSessionStore->setBaseIndex('internal_event');

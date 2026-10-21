@@ -46,6 +46,8 @@ class EventReviewsController extends Controller
      */
     public function create(Event $event): View
     {
+        abort_unless($event->isVisibleTo($this->user), 404);
+
         return view('reviews.create-tw', compact('event'))
             ->with($this->getFormOptions());
     }
@@ -63,6 +65,8 @@ class EventReviewsController extends Controller
      */
     public function store(EventReviewRequest $request, Event $event): RedirectResponse
     {
+        abort_unless($event->isVisibleTo($this->user), 404);
+
         $msg = '';
 
         // get the request

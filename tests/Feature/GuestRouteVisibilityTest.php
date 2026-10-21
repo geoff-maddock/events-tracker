@@ -7,6 +7,7 @@ use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\EventReview;
+use App\Models\Follow;
 use App\Models\Location;
 use App\Models\Profile;
 use App\Models\Series;
@@ -184,5 +185,76 @@ class GuestRouteVisibilityTest extends TestCase
 
         $this->getJson('/api/users/'.$this->owner->id.'/events-attending', ['Authorization' => 'Bearer '.$token])
             ->assertOk();
+    }
+
+    public function test_the_api_attending_list_is_open_to_the_user_on_a_private_profile(): void
+    {
+        Profile::factory()->create(['user_id' => $this->owner->id, 'setting_public_profile' => 0]);
+        $token = $this->owner->createToken('test')->plainTextToken;
+
+        $this->getJson('/api/users/'.$this->owner->id.'/events-attending', ['Authorization' => 'Bearer '.$token])
+            ->assertOk();
+    }
+
+    public function test_the_web_attending_list_and_feed_follow_the_profile_rule(): void
+    {
+        Profile::factory()->create(['user_id' => $this->owner->id, 'setting_public_profile' => 0]);
+
+        $this->get('/users/'.$this->owner->id.'/attending')->assertForbidden();
+        $this->get('/users/'.$this->owner->id.'/attending-ical')->assertForbidden();
+        $this->actingAs($this->other)->get('/users/'.$this->owner->id.'/attending')->assertForbidden();
+        $this->actingAs($this->owner)->get('/users/'.$this->owner->id.'/attending')->assertOk();
+    }
+
+    public function test_api_attend_and_follow_treat_private_content_as_missing(): void
+    {
+        $event = $this->privateEvent();
+        $series = $this->privateSeries();
+        $headers = ['Authorization' => 'Bearer '.$this->other->createToken('test')->plainTextToken];
+
+        $this->postJson('/api/events/'.$event->id.'/attend', [], $headers)->assertNotFound();
+        $this->postJson('/api/series/'.$series->id.'/follow', [], $headers)->assertNotFound();
+        $this->assertFalse(EventResponse::where('event_id', $event->id)->exists());
+        $this->assertFalse(Follow::where('object_type', 'series')->where('object_id', $series->id)->exists());
+    }
+
+    public function test_comment_and_review_forms_treat_a_private_event_as_missing(): void
+    {
+        $event = $this->privateEvent();
+
+        $this->actingAs($this->other)->get('/events/'.$event->id.'/comments/create')->assertNotFound();
+        $this->actingAs($this->other)->post('/events/'.$event->id.'/comments', ['message' => 'Hi'])->assertNotFound();
+        $this->actingAs($this->other)->get('/events/'.$event->id.'/reviews/create')->assertNotFound();
+        $this->actingAs($this->owner)->get('/events/'.$event->id.'/reviews/create')->assertOk();
+        $this->assertFalse(Comment::where('commentable_type', 'event')->where('commentable_id', $event->id)->exists());
+    }
+
+    public function test_ticket_links_treat_private_content_as_missing(): void
+    {
+        $event = $this->privateEvent();
+        $event->update(['ticket_link' => 'https://tickets.example.com/e']);
+        $series = $this->privateSeries();
+        $series->update(['ticket_link' => 'https://tickets.example.com/s']);
+
+        $this->get('/go/evt-'.$event->id)->assertNotFound();
+        $this->get('/go/ser-'.$series->id)->assertNotFound();
+        $this->actingAs($this->owner)->get('/go/evt-'.$event->id)->assertRedirect();
+    }
+
+    public function test_leaving_content_that_went_private_still_removes_the_row_without_showing_it(): void
+    {
+        $event = $this->privateEvent();
+        $series = $this->privateSeries();
+        EventResponse::create(['event_id' => $event->id, 'user_id' => $this->other->id, 'response_type_id' => 1]);
+        Follow::create(['object_type' => 'series', 'object_id' => $series->id, 'user_id' => $this->other->id]);
+        $ajax = ['X-Requested-With' => 'XMLHttpRequest'];
+
+        $unattend = $this->actingAs($this->other)->post('/events/'.$event->id.'/unattend', [], $ajax)->assertOk();
+        $unfollow = $this->actingAs($this->other)->post('/series/'.$series->id.'/unfollow', [], $ajax)->assertOk();
+
+        $this->assertStringNotContainsString($event->name, (string) $unattend->getContent());
+        $this->assertStringNotContainsString($series->name, (string) $unfollow->getContent());
+        $this->assertFalse(EventResponse::where('event_id', $event->id)->exists());
+        $this->assertFalse(Follow::where('object_type', 'series')->where('object_id', $series->id)->exists());
     }
 }

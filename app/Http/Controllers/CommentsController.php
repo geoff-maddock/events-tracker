@@ -41,6 +41,7 @@ class CommentsController extends Controller
         }
 
         if (isset($event->id)) {
+            abort_unless($event->isVisibleTo($this->user), 404);
             $object = $event;
             $type = 'events';
         }
@@ -55,6 +56,8 @@ class CommentsController extends Controller
     {
         $msg = '';
         $type = null;
+
+        abort_if(isset($event->id) && !$event->isVisibleTo($this->user), 404);
 
         $input = $this->validate($request, $this->rules);
 

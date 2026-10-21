@@ -1062,7 +1062,7 @@ class SeriesController extends Controller
             return back();
         }
 
-        if (!($series = Series::find($id)) || !$series->isVisibleTo($this->user)) {
+        if (!$series = Series::find($id)) {
             flash()->error('Error', 'No such series');
 
             return back();
@@ -1075,6 +1075,17 @@ class SeriesController extends Controller
 
             // add to activity log
             Activity::log($series, $this->user, 7);
+        }
+
+        // the series may have gone private since: the follow still goes, but
+        // the reply doesn't show the series
+        if (!$series->isVisibleTo($this->user)) {
+            if ($request->ajax()) {
+                return ['Message' => 'You are no longer following the series.', 'Success' => ''];
+            }
+            flash()->success('Success', 'You are no longer following the series.');
+
+            return back();
         }
 
         if ($request->ajax()) {

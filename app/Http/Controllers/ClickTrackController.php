@@ -24,6 +24,8 @@ class ClickTrackController extends Controller
     {
         // Find the event
         $event = Event::find($id);
+        // a private event's ticket link is no more public than the event
+        abort_if($event && !$event->isVisibleTo(Auth::user()), 404);
 
         // If event doesn't exist or has no ticket link, redirect to event page
         if (!$event || !$event->ticket_link) {
@@ -71,6 +73,7 @@ class ClickTrackController extends Controller
     {
         // Find the series
         $series = Series::find($id);
+        abort_if($series && !$series->isVisibleTo(Auth::user()), 404);
 
         // If series doesn't exist or has no ticket link, redirect to series page
         if (!$series || !$series->ticket_link) {
