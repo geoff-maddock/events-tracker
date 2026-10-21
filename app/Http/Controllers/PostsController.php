@@ -292,6 +292,9 @@ class PostsController extends Controller
         // requires visibility_id) doesn't fit; same body rule
         $request->validate(['body' => 'required|min:3']);
 
+        // a locked thread hides its reply form; refuse a direct POST too (#2343)
+        abort_if((bool) $thread->is_locked, 403, 'This thread has been locked.');
+
         $msg = '';
 
         // TODO change this to use the trust_post permission to allow html
