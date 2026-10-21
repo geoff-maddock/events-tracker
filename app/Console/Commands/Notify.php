@@ -5,11 +5,11 @@ namespace App\Console\Commands;
 use App\Mail\DailyReminder;
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Services\BestEffortMailer;
 use App\Services\DigestBuilder;
 use App\Services\DigestEngagement;
 use Illuminate\Console\Command;
 use Log;
-use Mail;
 
 class Notify extends Command
 {
@@ -42,6 +42,10 @@ class Notify extends Command
         $url = url('/').'/';
         $dryRun = (bool) $this->option('dry-run');
         $counts = ['sent' => 0, 'notices' => 0, 'paused' => 0, 'empty' => 0];
+
+        // one bad address or transport hiccup must not end the run for everyone after it,
+        // since re-running would mail everyone before it twice (#2338)
+        $mailer = new BestEffortMailer();
 
         // get each active user with a verified address: not suspended or banned
         // accounts, and not an address changed but not yet confirmed
@@ -82,25 +86,33 @@ class Notify extends Command
 
             // dormant: this would have been a digest, so it is the one paused notice instead
             if ($decision === DigestEngagement::NOTICE) {
-                $counts['notices']++;
-                if (!$dryRun) {
-                    $engagement->pause($user);
+                if ($dryRun || $mailer->attempt(fn () => $engagement->pause($user), ['user_id' => $user->id, 'mailable' => 'DigestsPaused'])) {
+                    $counts['notices']++;
                 }
 
                 continue;
             }
 
-            $counts['sent']++;
             if ($dryRun) {
+                $counts['sent']++;
+
                 continue;
             }
 
-            Mail::to($user->email)
-                ->send(new DailyReminder($url, $site, $admin_email, $reply_email, $user, $digest->attending, $digest->series, $digest->interests));
+            if (!$mailer->send($user->email, new DailyReminder($url, $site, $admin_email, $reply_email, $user, $digest->attending, $digest->series, $digest->interests), ['user_id' => $user->id])) {
+                continue;
+            }
+            $counts['sent']++;
 
             Log::info('Daily events email was sent to '.$user->name.' at '.$user->email.'.');
         }
 
         $this->info(($dryRun ? 'DRY RUN: would send ' : 'Sent ')."{$counts['sent']} daily digest(s), {$counts['notices']} paused notice(s); skipped {$counts['paused']} paused and {$counts['empty']} with nothing today.");
+
+        $summary = $mailer->summary();
+        if ($summary['failed'] || $summary['skipped']) {
+            $this->warn("{$summary['failed']} email(s) failed to send and {$summary['skipped']} were skipped after the mail transport failed repeatedly; see the log.");
+        }
+        $mailer->logSummary('notify');
     }
 }
