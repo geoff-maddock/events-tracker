@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\AudienceFilter;
 use App\Filters\EventFilters;
 use App\Models\Entity;
 use App\Models\Event;
@@ -92,6 +93,10 @@ class CalendarController extends Controller
             'venueOptions' => ['' => ''] + Cache::remember('filter-opts-venues-name', 3600, fn () => Entity::getVenues()->pluck('name', 'name')->all()),
             'relatedOptions' => ['' => ''] + Cache::remember('filter-opts-entities-name', 3600, fn () => Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
             'eventTypeOptions' => ['' => ''] + Cache::remember('filter-opts-event-types-name', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
+            'promoterOptions' => ['' => ''] + Entity::getPromoterFilterOptions(),
+            'seriesOptions' => ['' => ''] + Series::getFilterOptions(),
+            'ageOptions' => ['' => 'Any'] + AudienceFilter::AGE_OPTIONS,
+            'priceOptions' => ['' => 'Any'] + AudienceFilter::PRICE_OPTIONS,
         ];
     }
 
@@ -180,7 +185,8 @@ class CalendarController extends Controller
 
     /**
      * The feed filters events and series share: name, tag, venue, related
-     * entity (by name or slug), event type, free entry and minimum age.
+     * entity (by name or slug), event type, free entry, minimum age, and the
+     * panel's age, price, promoter, tickets and benefit filters.
      *
      * @param \Illuminate\Database\Eloquent\Builder<Event>|\Illuminate\Database\Eloquent\Builder<Series> $query
      * @param array<string, mixed> $filters
@@ -224,17 +230,42 @@ class CalendarController extends Controller
         if (isset($filters['min_age']) && is_numeric($filters['min_age'])) {
             $query->where($table.'.min_age', '<=', (int) $filters['min_age']);
         }
+
+        // the filter panel's age and price selects, as the event lists read them (#2361)
+        if (!empty($filters['age']) && is_string($filters['age'])) {
+            AudienceFilter::applyAge($query, $table.'.min_age', $filters['age']);
+        }
+
+        if (!empty($filters['price']) && is_string($filters['price'])) {
+            AudienceFilter::applyPrice($query, $table.'.door_price', $filters['price']);
+        }
+
+        if (!empty($filters['promoter'])) {
+            $query->whereHas('promoter', fn ($q) => $q->where('slug', $filters['promoter']));
+        }
+
+        if (!empty($filters['has_tickets'])) {
+            $query->whereNotNull($table.'.ticket_link')->where($table.'.ticket_link', '!=', '');
+        }
+
+        if (!empty($filters['is_benefit'])) {
+            $query->where($table.'.is_benefit', 1);
+        }
     }
 
     /**
-     * The feed filter only events have: (signed in) the viewer's relation to
-     * the event.
+     * The feed filters only events have: the series they belong to, and
+     * (signed in) the viewer's relation to the event.
      *
      * @param \Illuminate\Database\Eloquent\Builder<Event> $query
      * @param array<string, mixed> $filters
      */
     private function applyEventOnlyFeedFilters($query, array $filters): void
     {
+        if (!empty($filters['series'])) {
+            $query->whereHas('series', fn ($q) => $q->where('series.slug', $filters['series']));
+        }
+
         if (empty($filters['display_type']) || $filters['display_type'] === 'all' || !$this->user) {
             return;
         }
@@ -258,13 +289,18 @@ class CalendarController extends Controller
     }
 
     /**
-     * Series for the "attending" display type are the ones the viewer follows.
+     * A series filter keeps that series' own occurrences; series for the
+     * "attending" display type are the ones the viewer follows.
      *
      * @param \Illuminate\Database\Eloquent\Builder<Series> $query
      * @param array<string, mixed> $filters
      */
     private function applySeriesOnlyFeedFilters($query, array $filters): void
     {
+        if (!empty($filters['series'])) {
+            $query->where('series.slug', $filters['series']);
+        }
+
         if (($filters['display_type'] ?? null) === 'attending' && $this->user) {
             $query->whereIn('series.id', $this->user->getSeriesFollowing()->modelKeys());
         }

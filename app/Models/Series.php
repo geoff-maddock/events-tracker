@@ -144,6 +144,8 @@ class Series extends Eloquent implements HasPhotos
 
     public const FORM_OPTIONS_CACHE_KEY = 'form-opts-series';
 
+    public const FILTER_OPTIONS_CACHE_KEY = 'filter-opts-series-slug';
+
     /**
      * Relations series/card-tw reads for each card; list pages eager-load these
      * so a page of cards costs a fixed number of queries (#2173).
@@ -176,6 +178,18 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
+     * Cached name-by-slug options for the event list series filter (#2361):
+     * public series only, since everyone sees the filter panel.
+     *
+     * @return array<string, string>
+     */
+    public static function getFilterOptions(): array
+    {
+        return Cache::remember(self::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => static::where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->orderBy('name', 'ASC')->pluck('name', 'slug')->all());
+    }
+
+    /**
      * Bust and immediately re-warm the cached series dropdown options.
      *
      * @return array<int, string>
@@ -183,6 +197,7 @@ class Series extends Eloquent implements HasPhotos
     public static function refreshFormOptionsCache(): array
     {
         Cache::forget(self::FORM_OPTIONS_CACHE_KEY);
+        Cache::forget(self::FILTER_OPTIONS_CACHE_KEY);
 
         return static::getFormOptions();
     }

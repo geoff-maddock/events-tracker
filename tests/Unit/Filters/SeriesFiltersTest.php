@@ -197,6 +197,15 @@ class SeriesFiltersTest extends TestCase
         }
     }
 
+    public function test_ages_filter_ignores_non_numeric_values(): void
+    {
+        $series = Series::factory()->create(['min_age' => 21]);
+
+        $results = $this->applyFilters(['ages' => 'abc'])->get();
+
+        $this->assertTrue($results->contains('id', $series->id));
+    }
+
     public function test_visibility_filter_matches_by_id(): void
     {
         Series::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);

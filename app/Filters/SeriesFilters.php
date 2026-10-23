@@ -195,8 +195,9 @@ class SeriesFilters extends QueryFilter
     }
     public function ages(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('series.min_age', '=', $value);
+        // digits only: MySQL reads "abc" as 0, which matched every all-ages series
+        if (isset($value) && ctype_digit($value)) {
+            return $this->builder->where('series.min_age', '=', (int) $value);
         }
 
         return $this->builder;

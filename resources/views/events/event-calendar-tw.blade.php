@@ -142,6 +142,7 @@
                 Type: {{ $filters['event_type'] }}
             </span>
             @endif
+            @include('events.filters.audience-badges')
             @if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
             <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
                 {{ ['attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
@@ -193,6 +194,8 @@
                     <x-ui.select-field name="filters[event_type]" :options="$eventTypeOptions ?? ['' => '']" :selected="$filters['event_type'] ?? null"
                         data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a type" id="filter_event_type" />
                 </div>
+
+                @include('events.filters.audience-fields')
 
                 @auth
                 <!-- Display Type Filter -->

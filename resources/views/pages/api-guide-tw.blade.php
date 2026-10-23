@@ -172,6 +172,8 @@
 						<li><code class="px-1 py-0.5 rounded bg-muted text-xs">filters[tag_all]=techno,house</code>: has <em>all</em> of these tags.</li>
 						<li><code class="px-1 py-0.5 rounded bg-muted text-xs">filters[venue]=…</code>: events at a venue, matched by its slug (events only).</li>
 						<li><code class="px-1 py-0.5 rounded bg-muted text-xs">filters[start_at][start]=2026-10-01&amp;filters[start_at][end]=2026-10-31</code>: events starting in a date range.</li>
+						<li><code class="px-1 py-0.5 rounded bg-muted text-xs">filters[age]=all_ages</code>: events by age policy: <code class="px-1 py-0.5 rounded bg-muted text-xs">all_ages</code>, <code class="px-1 py-0.5 rounded bg-muted text-xs">under_21</code>, <code class="px-1 py-0.5 rounded bg-muted text-xs">18_plus</code> or <code class="px-1 py-0.5 rounded bg-muted text-xs">21_plus</code> (events only).</li>
+						<li><code class="px-1 py-0.5 rounded bg-muted text-xs">filters[price]=free</code>: free events, or <code class="px-1 py-0.5 rounded bg-muted text-xs">filters[price]=10</code> for a door price of $10 or less (events only).</li>
 						<li><code class="px-1 py-0.5 rounded bg-muted text-xs">filters[entity_type]=venue</code>: entities of one type, matched by the type's slug (entities only).</li>
 					</ul>
 					<p class="text-muted-foreground">
