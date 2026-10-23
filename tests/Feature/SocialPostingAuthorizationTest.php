@@ -136,6 +136,20 @@ class SocialPostingAuthorizationTest extends TestCase
         Queue::assertPushed(PostEventToInstagram::class);
     }
 
+    public function test_event_page_posts_instagram_actions_via_ajax(): void
+    {
+        // data-ajax-action makes the page script post the form with fetch and
+        // show the JSON reply in a popup, instead of reloading the page.
+        $admin = $this->makeUser('super_admin');
+        $event = $this->eventWithPhoto($admin);
+
+        $this->actingAs($admin)->get('/events/'.$event->slug)
+            ->assertOk()
+            ->assertSee('action="'.route('events.instagramPost', ['id' => $event->id]).'" method="POST" class="block" data-ajax-action', false)
+            ->assertSee('action="'.route('events.instagramStoryPost', ['id' => $event->id]).'" method="POST" class="block" data-ajax-action', false)
+            ->assertSee('form[data-ajax-action]', false);
+    }
+
     public function test_week_post_is_super_admin_only(): void
     {
         $this->actingAs($this->makeUser())

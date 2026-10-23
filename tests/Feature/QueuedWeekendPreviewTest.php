@@ -422,4 +422,15 @@ class QueuedWeekendPreviewTest extends TestCase
             ]);
         Queue::assertNothingPushed();
     }
+
+    public function test_events_index_posts_the_preview_actions_via_ajax(): void
+    {
+        // data-ajax-action makes the page script post the form with fetch and
+        // show the JSON reply in a popup, instead of reloading the page.
+        $this->actingAs($this->superAdmin())->get('/events')
+            ->assertOk()
+            ->assertSee('action="'.route('events.instagramWeekendPreview').'" method="POST" class="block" data-ajax-action', false)
+            ->assertSee('action="'.route('events.instagramTodaysPreview').'" method="POST" class="block" data-ajax-action', false)
+            ->assertSee('form[data-ajax-action]', false);
+    }
 }
