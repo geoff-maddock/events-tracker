@@ -145,6 +145,18 @@ class Entity extends Eloquent implements HasPhotos
 
     
     /**
+     * Cached name-by-slug options for the event list promoter filter (#2361).
+     *
+     * @return array<string, string>
+     */
+    public static function getPromoterFilterOptions(): array
+    {
+        return Cache::remember('filter-opts-promoters-slug', 3600, fn () => self::whereHas('roles', function ($q) {
+            $q->where('name', '=', 'Promoter');
+        })->orderBy('name', 'ASC')->pluck('name', 'slug')->all());
+    }
+
+    /**
      * Return a collection of entities with the role venue.
      * @return Builder<Entity>
      **/

@@ -89,6 +89,7 @@
 			My Events
 		</span>
 		@endif
+		@include('events.filters.audience-badges')
 		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
 			{{ ['attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
@@ -169,6 +170,8 @@
 				</div>
 			</div>
 		</div>
+
+		@include('events.filters.audience-fields')
 
 		@auth
 		<!-- Display Type Filter -->

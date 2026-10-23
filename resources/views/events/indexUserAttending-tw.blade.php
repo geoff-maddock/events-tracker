@@ -197,6 +197,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        @include('events.filters.audience-fields')
                     </div>
 
                     <div class="flex gap-2">

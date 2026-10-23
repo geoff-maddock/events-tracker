@@ -72,15 +72,18 @@ class EventFiltersTest extends TestCase
         $this->assertCount(1, $results);
     }
 
-    public function test_promoter_filter_partial_matches_slug(): void
+    public function test_promoter_filter_matches_slug_exactly(): void
     {
         $promoter = Entity::factory()->promoter()->create(['slug' => 'zz-night-runner']);
+        $longer = Entity::factory()->promoter()->create(['slug' => 'zz-night-runner-presents']);
         Event::factory()->create(['promoter_id' => $promoter->id]);
+        Event::factory()->create(['promoter_id' => $longer->id]);
         Event::factory()->create();
 
-        $results = $this->applyFilters(['promoter' => 'night-runner'])->get();
+        $results = $this->applyFilters(['promoter' => 'zz-night-runner'])->get();
 
         $this->assertCount(1, $results);
+        $this->assertSame($promoter->id, $results->first()->promoter_id);
     }
 
     public function test_tag_filter_matches_single_tag_by_slug(): void
@@ -148,6 +151,17 @@ class EventFiltersTest extends TestCase
         $this->assertCount(1, $results);
     }
 
+    public function test_series_filter_matches_series_slug(): void
+    {
+        $series = Series::factory()->create(['name' => 'Zz Late Mondays', 'slug' => 'zz-late-mondays']);
+        Event::factory()->create(['series_id' => $series->id]);
+        Event::factory()->create();
+
+        $results = $this->applyFilters(['series' => 'zz-late-mondays'])->get();
+
+        $this->assertCount(1, $results);
+    }
+
     public function test_event_type_filter_matches_by_slug(): void
     {
         $type = EventType::first();
@@ -204,6 +218,68 @@ class EventFiltersTest extends TestCase
         $results = $this->applyFilters(['ages' => 18])->get();
 
         $this->assertCount(1, $results);
+    }
+
+    public function test_ages_filter_ignores_non_numeric_values(): void
+    {
+        Event::factory()->create(['min_age' => 0]);
+        Event::factory()->create(['min_age' => 21]);
+
+        // MySQL compares "abc" as 0, which used to return the all-ages event
+        $results = $this->applyFilters(['ages' => 'abc'])->get();
+
+        $this->assertCount(2, $results);
+    }
+
+    public function test_age_filter_matches_each_policy(): void
+    {
+        $allAges = Event::factory()->create(['min_age' => 0]);
+        $eighteen = Event::factory()->create(['min_age' => 18]);
+        $twentyOne = Event::factory()->create(['min_age' => 21]);
+        Event::factory()->create(['min_age' => null]);
+
+        $ids = fn (string $age) => $this->applyFilters(['age' => $age])->pluck('events.id')->sort()->values()->all();
+
+        $this->assertSame([$allAges->id], $ids('all_ages'));
+        $this->assertSame([$eighteen->id], $ids('18_plus'));
+        $this->assertSame([$twentyOne->id], $ids('21_plus'));
+        $this->assertSame([$allAges->id, $eighteen->id], $ids('under_21'));
+    }
+
+    public function test_age_filter_ignores_unknown_values(): void
+    {
+        Event::factory()->create(['min_age' => 0]);
+        Event::factory()->create(['min_age' => 21]);
+
+        $results = $this->applyFilters(['age' => 'toddlers'])->get();
+
+        $this->assertCount(2, $results);
+    }
+
+    public function test_price_filter_free_and_maximum(): void
+    {
+        $free = Event::factory()->create(['door_price' => 0]);
+        $cheap = Event::factory()->create(['door_price' => 10]);
+        Event::factory()->create(['door_price' => 25]);
+        Event::factory()->create(['door_price' => null]);
+
+        $ids = fn (string $price) => $this->applyFilters(['price' => $price])->pluck('events.id')->sort()->values()->all();
+
+        $this->assertSame([$free->id], $ids('free'));
+        $this->assertSame([$free->id, $cheap->id], $ids('10'));
+        $this->assertCount(4, $this->applyFilters(['price' => 'cheap'])->get());
+    }
+
+    public function test_has_tickets_filter(): void
+    {
+        $withLink = Event::factory()->create(['ticket_link' => 'https://tickets.example.com/zz']);
+        Event::factory()->create(['ticket_link' => null]);
+        Event::factory()->create(['ticket_link' => '']);
+
+        $results = $this->applyFilters(['has_tickets' => '1'])->get();
+
+        $this->assertCount(1, $results);
+        $this->assertSame($withLink->id, $results->first()->id);
     }
 
     public function test_is_benefit_filter(): void

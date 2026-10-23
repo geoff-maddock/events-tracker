@@ -2890,10 +2890,10 @@ paths:
         - name: filters[promoter]
           in: query
           required: false
-          description: A filter query of the promoter name
+          description: The promoter, matched exactly by its slug
           schema:
             type: string
-            example: "Cutups"
+            example: "cutups"
         - name: filters[related]
           in: query
           required: false
@@ -2904,7 +2904,7 @@ paths:
         - name: filters[series]
           in: query
           required: false
-          description: A filter query of related series name
+          description: The series, matched by its slug or exact name
           schema:
             type: string
             example: "Lazercrunk"
@@ -2946,10 +2946,32 @@ paths:
         - name: filters[ages]
           in: query
           required: false
-          description: A filter query of the end time ending
+          description: Exact minimum age (0, 18 or 21); non-numeric values are ignored
           schema:
             type: integer
             example: 21
+        - name: filters[age]
+          in: query
+          required: false
+          description: "Age policy: all_ages (min_age 0), under_21 (all ages or 18+), 18_plus, or 21_plus. Events with no age set never match."
+          schema:
+            type: string
+            enum: [all_ages, under_21, 18_plus, 21_plus]
+            example: all_ages
+        - name: filters[price]
+          in: query
+          required: false
+          description: "free (a door price of 0), or the most the door price may be in dollars. Events with no door price never match."
+          schema:
+            type: string
+            example: "10"
+        - name: filters[has_tickets]
+          in: query
+          required: false
+          description: Set to 1 for only events with a ticket link
+          schema:
+            type: integer
+            example: 1
         - name: filters[tag]
           in: query
           required: false
@@ -3012,10 +3034,10 @@ paths:
         - name: filters[promoter]
           in: query
           required: false
-          description: A filter query of the promoter name
+          description: The promoter, matched exactly by its slug
           schema:
             type: string
-            example: "Cutups"
+            example: "cutups"
         - name: filters[related]
           in: query
           required: false
@@ -3026,7 +3048,7 @@ paths:
         - name: filters[series]
           in: query
           required: false
-          description: A filter query of related series name
+          description: The series, matched by its slug or exact name
           schema:
             type: string
             example: "Lazercrunk"
@@ -3068,10 +3090,32 @@ paths:
         - name: filters[ages]
           in: query
           required: false
-          description: A filter query of the end time ending
+          description: Exact minimum age (0, 18 or 21); non-numeric values are ignored
           schema:
             type: integer
             example: 21
+        - name: filters[age]
+          in: query
+          required: false
+          description: "Age policy: all_ages (min_age 0), under_21 (all ages or 18+), 18_plus, or 21_plus. Events with no age set never match."
+          schema:
+            type: string
+            enum: [all_ages, under_21, 18_plus, 21_plus]
+            example: all_ages
+        - name: filters[price]
+          in: query
+          required: false
+          description: "free (a door price of 0), or the most the door price may be in dollars. Events with no door price never match."
+          schema:
+            type: string
+            example: "10"
+        - name: filters[has_tickets]
+          in: query
+          required: false
+          description: Set to 1 for only events with a ticket link
+          schema:
+            type: integer
+            example: 1
         - name: filters[tag]
           in: query
           required: false
@@ -6221,7 +6265,7 @@ paths:
         - name: filters[ages]
           in: query
           required: false
-          description: A filter query of the end time ending
+          description: Exact minimum age (0, 18 or 21); non-numeric values are ignored
           schema:
             type: integer
             example: 21
@@ -7482,10 +7526,10 @@ paths:
         - name: filters[promoter]
           in: query
           required: false
-          description: A filter query of the promoter name
+          description: The promoter, matched exactly by its slug
           schema:
             type: string
-            example: "Cutups"
+            example: "cutups"
         - name: filters[related]
           in: query
           required: false
@@ -7496,7 +7540,7 @@ paths:
         - name: filters[series]
           in: query
           required: false
-          description: A filter query of related series name
+          description: The series, matched by its slug or exact name
           schema:
             type: string
             example: "Lazercrunk"
@@ -7538,10 +7582,32 @@ paths:
         - name: filters[ages]
           in: query
           required: false
-          description: A filter query of the end time ending
+          description: Exact minimum age (0, 18 or 21); non-numeric values are ignored
           schema:
             type: integer
             example: 21
+        - name: filters[age]
+          in: query
+          required: false
+          description: "Age policy: all_ages (min_age 0), under_21 (all ages or 18+), 18_plus, or 21_plus. Events with no age set never match."
+          schema:
+            type: string
+            enum: [all_ages, under_21, 18_plus, 21_plus]
+            example: all_ages
+        - name: filters[price]
+          in: query
+          required: false
+          description: "free (a door price of 0), or the most the door price may be in dollars. Events with no door price never match."
+          schema:
+            type: string
+            example: "10"
+        - name: filters[has_tickets]
+          in: query
+          required: false
+          description: Set to 1 for only events with a ticket link
+          schema:
+            type: integer
+            example: 1
         - name: filters[tag]
           in: query
           required: false

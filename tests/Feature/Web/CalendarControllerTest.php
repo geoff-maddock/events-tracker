@@ -106,6 +106,46 @@ class CalendarControllerTest extends TestCase
         $this->assertFalse($ids->contains('event-'.$other->id));
     }
 
+    public function test_feed_applies_the_age_and_price_filters(): void
+    {
+        $allAgesFree = $this->publicEvent(['start_at' => now()->addDays(3), 'min_age' => 0, 'door_price' => 0]);
+        $allAgesPaid = $this->publicEvent(['start_at' => now()->addDays(3), 'min_age' => 0, 'door_price' => 15]);
+        $barShow = $this->publicEvent(['start_at' => now()->addDays(3), 'min_age' => 21, 'door_price' => 0]);
+
+        $ids = fn (string $query) => collect($this->getJson($this->feedUrl($query))->assertOk()->json())->pluck('id');
+
+        $allAges = $ids('filters[age]=all_ages');
+        $this->assertTrue($allAges->contains('event-'.$allAgesFree->id));
+        $this->assertTrue($allAges->contains('event-'.$allAgesPaid->id));
+        $this->assertFalse($allAges->contains('event-'.$barShow->id));
+
+        $allAgesAndFree = $ids('filters[age]=all_ages&filters[price]=free');
+        $this->assertTrue($allAgesAndFree->contains('event-'.$allAgesFree->id));
+        $this->assertFalse($allAgesAndFree->contains('event-'.$allAgesPaid->id));
+        $this->assertFalse($allAgesAndFree->contains('event-'.$barShow->id));
+    }
+
+    public function test_feed_applies_the_series_filter(): void
+    {
+        $series = Series::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC, 'slug' => 'zz-feed-series']);
+        $inSeries = $this->publicEvent(['start_at' => now()->addDays(3), 'series_id' => $series->id]);
+        $other = $this->publicEvent(['start_at' => now()->addDays(3)]);
+
+        $ids = collect($this->getJson($this->feedUrl('filters[series]=zz-feed-series'))->assertOk()->json())->pluck('id');
+
+        $this->assertTrue($ids->contains('event-'.$inSeries->id));
+        $this->assertFalse($ids->contains('event-'.$other->id));
+    }
+
+    public function test_calendar_page_shows_the_new_filter_fields(): void
+    {
+        $this->get('/calendar?filters[age]=21_plus')
+            ->assertOk()
+            ->assertSee('name="filters[age]"', false)
+            ->assertSee('name="filters[promoter]"', false)
+            ->assertSee('Ages: 21+ only');
+    }
+
     public function test_feed_range_is_capped(): void
     {
         $late = $this->publicEvent(['start_at' => now()->addDays(150)]);

@@ -768,6 +768,7 @@ class EntitiesController extends Controller
         Cache::forget('form-opts-promoters');
         Cache::forget('form-opts-entities-active');
         Cache::forget('filter-opts-venues-slug');
+        Cache::forget('filter-opts-promoters-slug');
         Cache::forget('filter-opts-entities-slug');
         Cache::forget('filter-opts-venues-name');
         Cache::forget('filter-opts-entities-name');
@@ -833,6 +834,7 @@ class EntitiesController extends Controller
         Cache::forget('form-opts-promoters');
         Cache::forget('form-opts-entities-active');
         Cache::forget('filter-opts-venues-slug');
+        Cache::forget('filter-opts-promoters-slug');
         Cache::forget('filter-opts-entities-slug');
         Cache::forget('filter-opts-venues-name');
         Cache::forget('filter-opts-entities-name');
@@ -1224,6 +1226,7 @@ class EntitiesController extends Controller
         Cache::forget('form-opts-promoters');
         Cache::forget('form-opts-entities-active');
         Cache::forget('filter-opts-venues-slug');
+        Cache::forget('filter-opts-promoters-slug');
         Cache::forget('filter-opts-entities-slug');
         Cache::forget('filter-opts-venues-name');
         Cache::forget('filter-opts-entities-name');

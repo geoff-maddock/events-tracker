@@ -6,6 +6,7 @@ use App\Events\EventCreated;
 use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
 use App\Events\EventUpdated;
+use App\Filters\AudienceFilter;
 use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
 use App\Http\Response\ResultSet\ListResultSet;
@@ -422,6 +423,10 @@ class EventsController extends Controller
             'venueOptions' => ['' => ''] + Cache::remember('filter-opts-venues-slug', 3600, fn () => Entity::getVenues()->pluck('name', 'slug')->all()),
             'relatedOptions' => ['' => ''] + Cache::remember('filter-opts-entities-slug', 3600, fn () => Entity::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
             'eventTypeOptions' => ['' => ''] + Cache::remember('filter-opts-event-types-slug', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
+            'promoterOptions' => ['' => ''] + Entity::getPromoterFilterOptions(),
+            'seriesOptions' => ['' => ''] + Series::getFilterOptions(),
+            'ageOptions' => ['' => 'Any'] + AudienceFilter::AGE_OPTIONS,
+            'priceOptions' => ['' => 'Any'] + AudienceFilter::PRICE_OPTIONS,
         ];
     }
 

@@ -48,8 +48,9 @@ class EventFilters extends QueryFilter
     public function promoter(?string $value = null): Builder
     {
         if (isset($value)) {
+            // exact: a partial match let "inter" pull in "winterforge" (#2361)
             return $this->builder->whereHas('promoter', function ($q) use ($value) {
-                $q->where('slug', 'like', '%'.$value.'%');
+                $q->where('slug', '=', $value);
             });
         } else {
             return $this->builder;
@@ -122,8 +123,12 @@ class EventFilters extends QueryFilter
     public function series(?string $value = null): Builder
     {
         if (isset($value)) {
+            // the panel sends the slug; API callers may still send the name
             return $this->builder->whereHas('series', function ($q) use ($value) {
-                $q->where('name', '=', ucfirst($value));
+                $q->where(function ($q) use ($value) {
+                    $q->where('series.slug', '=', $value)
+                        ->orWhere('series.name', '=', ucfirst($value));
+                });
             });
         } else {
             return $this->builder;
@@ -191,11 +196,37 @@ class EventFilters extends QueryFilter
 
     public function ages(?string $value = null): Builder
     {
-        if (isset($value)) {
-            return $this->builder->where('events.min_age', '=', $value);
-        } else {
+        // digits only: MySQL reads "abc" as 0, which matched every all-ages event
+        if (isset($value) && ctype_digit($value)) {
+            return $this->builder->where('events.min_age', '=', (int) $value);
+        }
+
+        return $this->builder;
+    }
+
+    /**
+     * An age policy from AudienceFilter::AGE_OPTIONS, e.g. all_ages or 21_plus.
+     */
+    public function age(?string $value = null): Builder
+    {
+        return AudienceFilter::applyAge($this->builder, 'events.min_age', $value);
+    }
+
+    /**
+     * "free", or the most the door price may be in dollars.
+     */
+    public function price(?string $value = null): Builder
+    {
+        return AudienceFilter::applyPrice($this->builder, 'events.door_price', $value);
+    }
+
+    public function has_tickets(?string $value = null): Builder
+    {
+        if (!$value) {
             return $this->builder;
         }
+
+        return $this->builder->whereNotNull('events.ticket_link')->where('events.ticket_link', '!=', '');
     }
 
     public function is_benefit(?string $value = null): Builder
