@@ -300,6 +300,7 @@ class InstagramEventPoster extends InstagramPoster
 
         $posted = 0;
         $skipped = 0;
+        $errors = [];
 
         foreach ($events as $event) {
             try {
@@ -307,12 +308,13 @@ class InstagramEventPoster extends InstagramPoster
                 $posted++;
             } catch (Exception $e) {
                 Log::info($context.': skipping event '.$event->id.': '.$e->getMessage());
+                $errors[] = $e->getMessage();
                 $skipped++;
             }
         }
 
         if ($posted === 0) {
-            throw new RuntimeException('No stories could be posted. Ensure the selected events have photos.');
+            throw new RuntimeException('No stories could be posted.'.$this->noStoriesReason($errors));
         }
 
         return ['posted' => $posted, 'skipped' => $skipped, 'total' => $events->count()];
@@ -476,6 +478,7 @@ class InstagramEventPoster extends InstagramPoster
 
         $posted = 0;
         $skipped = 0;
+        $errors = [];
 
         foreach ($selectedEvents as $event) {
             try {
@@ -483,14 +486,33 @@ class InstagramEventPoster extends InstagramPoster
                 $posted++;
             } catch (Exception $e) {
                 Log::info("Today's preview: skipping event ".$event->id.': '.$e->getMessage());
+                $errors[] = $e->getMessage();
                 $skipped++;
             }
         }
 
         if ($posted === 0) {
-            throw new RuntimeException('No stories could be posted. Ensure the selected events have photos.');
+            throw new RuntimeException('No stories could be posted.'.$this->noStoriesReason($errors));
         }
 
         return ['posted' => $posted, 'skipped' => $skipped, 'total' => $selectedEvents->count()];
+    }
+
+    /**
+     * The reason to append when no stories could be posted. Surfaces the actual
+     * per-event failure (e.g. an Instagram rate limit) rather than the
+     * misleading "no photos" guidance — events reaching this point were already
+     * selected for having a primary photo, so a hardcoded "ensure they have
+     * photos" message hid the real cause in error reporting.
+     *
+     * @param array<int, string> $errors
+     */
+    private function noStoriesReason(array $errors): string
+    {
+        if ($errors === []) {
+            return ' Ensure the selected events have photos.';
+        }
+
+        return ' '.end($errors);
     }
 }

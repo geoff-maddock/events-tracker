@@ -141,7 +141,9 @@ class QueuedWeekendPreviewTest extends TestCase
         $poster = new InstagramEventPoster($instagram);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('No stories could be posted. Ensure the selected events have photos.');
+        // The real cause (the rejected publish) is surfaced, not the misleading
+        // "no photos" guidance — the event was selected for having a photo.
+        $this->expectExceptionMessage('No stories could be posted. limit reached');
 
         $poster->postWeekendPreview($user->id);
     }

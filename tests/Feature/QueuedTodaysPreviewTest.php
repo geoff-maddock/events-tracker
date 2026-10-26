@@ -128,7 +128,8 @@ class QueuedTodaysPreviewTest extends TestCase
         $poster = new InstagramEventPoster($this->mockStoryPostingInstagram());
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('No stories could be posted. Ensure the selected events have photos.');
+        // The underlying per-event failure is surfaced in the message.
+        $this->expectExceptionMessage('No stories could be posted. You must have a photo to extract the image to post to Instagram.');
 
         $poster->postTodaysPreview($user->id);
     }
