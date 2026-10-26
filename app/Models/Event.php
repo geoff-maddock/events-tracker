@@ -456,6 +456,33 @@ class Event extends Model implements HasPhotos
     }
 
     /**
+     * Events starting on any calendar day in the inclusive window
+     * [$startDate, $endDate], with the same visibility rules as
+     * scopeStarting(). The day partition matches scopeStarting() exactly,
+     * so a multi-day view can load the whole window in one query and group
+     * the result by day instead of issuing one query per day (N+1).
+     *
+     * @param Builder<Event> $query
+     */
+    public function scopeStartingBetween(Builder $query, string $startDate, string $endDate): Builder
+    {
+        $rangeStart = Carbon::parse($startDate)->startOfDay();
+        $rangeEnd = Carbon::parse($endDate)->addDay()->startOfDay();
+
+        return $query->where('start_at', '>=', $rangeStart->toDateTimeString())
+            ->where('start_at', '<', $rangeEnd->toDateTimeString())
+            ->where(function ($query) {
+                $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+                // a guest has no id: comparing created_by to null would compile to IS NULL
+                if (Auth::id() !== null) {
+                    $query->orWhere('created_by', '=', Auth::id());
+                }
+            })
+            ->orderBy('start_at', 'ASC')
+            ->with('visibility');
+    }
+
+    /**
      * Get all of the events comments.
      *
      * @return MorphMany<Comment, $this>

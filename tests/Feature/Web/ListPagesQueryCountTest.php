@@ -129,6 +129,36 @@ class ListPagesQueryCountTest extends TestCase
         }
     }
 
+    public function test_upcoming_page_loads_its_four_day_window_in_one_query(): void
+    {
+        // a public event on each of the four days the page shows
+        for ($i = 0; $i < 4; $i++) {
+            Event::factory()->create([
+                'start_at' => now()->addDays($i)->setTime(20, 0),
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            ]);
+        }
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+        $this->get('/events/upcoming')->assertOk();
+        $log = DB::getQueryLog();
+        DB::disableQueryLog();
+
+        // scopeStartingBetween() is the only query combining `start_at` >= and <
+        // with a visibility filter; before #Z4 it ran once per day (N+1).
+        $windowQueries = array_filter($log, function ($entry) {
+            $sql = $entry['query'];
+
+            return str_contains($sql, 'from `events`')
+                && str_contains($sql, '`start_at` >=')
+                && str_contains($sql, '`start_at` <')
+                && str_contains($sql, '`visibility_id`');
+        });
+
+        $this->assertCount(1, $windowQueries, 'the 4-day upcoming window should load its events in a single query, not one per day');
+    }
+
     public function test_cards_show_follow_state_from_the_users_follows(): void
     {
         $followed = $this->makeEntity();
