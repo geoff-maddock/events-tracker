@@ -1,9 +1,17 @@
 <!-- DISPLAY THE NEXT FOUR DAYS OF EVENTS -->
+<?php
+	// Load the whole 4-day window in one query, grouped by day, instead of
+	// letting each day column query for itself (N+1, EVENTREPO-Z4).
+	$eventsByDay = App\Models\Event::dayCards(
+		\Carbon\Carbon::parse($date)->format('Y-m-d'),
+		\Carbon\Carbon::parse($date)->addDays(3)->format('Y-m-d')
+	);
+?>
 <div class="home grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 w-full">
 	@for ($offset = 0; $offset < 4; $offset++)
 	<?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
 		<section class="day min-h-[500px]" data-num="{{ $offset }}" id="day-position-{{ $offset }}" href="/events/day/{{ $day->format('Y-m-d') }}">
-			@include('events.day-tw', ['day' => $day, 'position' => $offset ])
+			@include('events.day-tw', ['day' => $day, 'position' => $offset, 'events' => $eventsByDay->get($day->format('Y-m-d'), collect()) ])
 		</section>
 	@endfor
 </div>

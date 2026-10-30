@@ -456,6 +456,58 @@ class Event extends Model implements HasPhotos
     }
 
     /**
+     * Same visibility rule and ordering as starting(), but across the whole
+     * [$startDate, $endDate] day range (inclusive). Lets the upcoming day
+     * views load a multi-day window in one query instead of one per day.
+     *
+     * @param Builder<Event> $query
+     * @return Builder<Event>
+     */
+    public function scopeStartingBetween(Builder $query, string $startDate, string $endDate): Builder
+    {
+        return $query->where('start_at', '>=', Carbon::parse($startDate)->startOfDay())
+            ->where('start_at', '<=', Carbon::parse($endDate)->endOfDay())
+            ->where(function ($query) {
+                $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
+                // a guest has no id: comparing created_by to null would compile to IS NULL
+                if (Auth::id() !== null) {
+                    $query->orWhere('created_by', '=', Auth::id());
+                }
+            })
+            ->orderBy('start_at', 'ASC')
+            ->with('visibility');
+    }
+
+    /**
+     * Events for the day-column cards over [$startDate, $endDate], eager-loaded
+     * for single-card-tw and grouped by start date (Y-m-d). The upcoming day
+     * views use this to fetch the whole window at once rather than running a
+     * query per day column (N+1, EVENTREPO-Z4).
+     *
+     * @return Collection<string, \Illuminate\Database\Eloquent\Collection<int, Event>>
+     */
+    public static function dayCards(string $startDate, string $endDate): Collection
+    {
+        return self::with([
+            'series.occurrenceType',
+            'series.occurrenceWeek',
+            'series.occurrenceDay',
+            'series.visibility',
+            'visibility',
+            'venue',
+            'entities',
+            'tags',
+            'threads',
+            // only the viewer's response is shown on the card
+            'eventResponses' => fn ($q) => $q->where('user_id', auth()->id()),
+            'photos',
+        ])
+            ->startingBetween($startDate, $endDate)
+            ->get()
+            ->groupBy(fn (Event $event) => $event->start_at->format('Y-m-d'));
+    }
+
+    /**
      * Get all of the events comments.
      *
      * @return MorphMany<Comment, $this>
