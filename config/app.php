@@ -63,7 +63,11 @@ return [
     |
     */
 
-    'timezone' => 'EST',
+    // A fixed UTC-5 offset with no daylight saving (POSIX sign: GMT+5 is UTC-5).
+    // This was the legacy 'EST' ID, which newer tz databases only ship in an
+    // optional legacy package, so PHP rejects it on fresh systems. Same offset,
+    // same behaviour; see App\Services\EventTime for why it isn't New York time.
+    'timezone' => 'Etc/GMT+5',
 
     /*
     |--------------------------------------------------------------------------

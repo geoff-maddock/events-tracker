@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
  *
  * A series is a recurring thing with no single date, so its startDate is the
  * next instantiated event's — the date a searcher would act on. Dates go
- * through App\Services\EventTime for the fixed-offset 'EST' reason spelled out
+ * through App\Services\EventTime for the fixed-offset 'Etc/GMT+5' reason spelled out
  * in that class.
  *
  * Shared with EventSchema rather than reimplemented: location(), organization(),

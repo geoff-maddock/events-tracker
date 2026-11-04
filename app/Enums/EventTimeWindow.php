@@ -16,7 +16,7 @@ use Carbon\CarbonImmutable;
  * /events/tonight. Daytime events are still covered by This Week.
  *
  * All window math happens in America/New_York wall-clock time. Never use
- * config('app.timezone') here — it's a fixed-offset 'EST' zone and will
+ * config('app.timezone') here — it's a fixed-offset 'Etc/GMT+5' zone and will
  * silently miscompute DST transitions.
  */
 enum EventTimeWindow: string

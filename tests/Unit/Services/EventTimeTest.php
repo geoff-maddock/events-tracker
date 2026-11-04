@@ -10,7 +10,7 @@ use Tests\TestCase;
  * Naive wall-clock values → real instants.
  *
  * The whole point of this class is the DST case. config('app.timezone') is
- * 'EST', a fixed UTC-5 offset that never observes daylight saving, so anything
+ * 'Etc/GMT+5', a fixed UTC-5 offset that never observes daylight saving, so anything
  * deriving an instant from the model's cast Carbon is an hour late from March
  * to November. These tests pin the offsets on both sides of that boundary,
  * because a regression here is silent — it produces a perfectly well-formed
