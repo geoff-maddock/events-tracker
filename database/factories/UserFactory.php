@@ -34,11 +34,33 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
-            'user_status_id' => function () {
-                return UserStatus::all()->random()->id;
-            },
+            // Active by default: a random status made ~40% of users banned or
+            // suspended, which CheckBanned (global middleware) turns into a
+            // 401/redirect, so tests failed intermittently. Use the states
+            // below for any other status.
+            'user_status_id' => UserStatus::ACTIVE,
             'created_at' => now(),
             'updated_at' => now()
         ];
+    }
+
+    public function pending(): static
+    {
+        return $this->state(fn () => ['user_status_id' => UserStatus::PENDING]);
+    }
+
+    public function suspended(): static
+    {
+        return $this->state(fn () => ['user_status_id' => UserStatus::SUSPENDED]);
+    }
+
+    public function banned(): static
+    {
+        return $this->state(fn () => ['user_status_id' => UserStatus::BANNED]);
+    }
+
+    public function deleted(): static
+    {
+        return $this->state(fn () => ['user_status_id' => UserStatus::DELETED]);
     }
 }
