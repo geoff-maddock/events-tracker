@@ -3,12 +3,15 @@
  * Pop-out audio player (#2366).
  *
  * The queue comes from /player/queue with this window's own query string
- * (source=upcoming|radar|event|series|entity plus filters[...]); each artist's
- * playable sources are fetched lazily from its sources_url.
+ * (source=upcoming|radar|event|series|entity plus filters[...]), one page at a
+ * time: the next page loads when the listener scrolls to the end of the list,
+ * or plays past the last artist. Each artist's playable sources are fetched
+ * lazily from its sources_url.
  *
- * SoundCloud items are driven through the Widget API (play/pause, seek,
- * auto-advance when a track finishes). Bandcamp's embed has no API, so those
- * items show Bandcamp's own controls and the queue only moves on prev/next.
+ * Playback uses the SoundCloud and Bandcamp players' own controls. SoundCloud
+ * items are watched through the Widget API so the queue moves on to the next
+ * artist when a track finishes; Bandcamp's embed has no API, so those items
+ * move on with next/previous.
  *
  * Other windows talk to this one over BroadcastChannel('arcane-player'):
  *   {type: 'ping'}                         -> replies {type: 'pong'}
@@ -22,8 +25,9 @@
         return;
     }
 
-    var STORAGE_KEY = 'arcane-player:v1';
-    var SEEK_STEP_MS = 15000;
+    var STORAGE_KEY = 'arcane-player:v2';
+    // start fetching the next page when this close to the end of the queue
+    var PREFETCH_DISTANCE = 2;
 
     var el = {
         source: document.getElementById('player-source'),
@@ -32,19 +36,14 @@
         event: document.querySelector('#player-event a'),
         star: document.getElementById('player-star'),
         frame: document.getElementById('player-frame'),
-        bandcampNote: document.getElementById('player-bandcamp-note'),
-        seekRow: document.getElementById('player-seek-row'),
-        seek: document.getElementById('player-seek'),
-        timeCurrent: document.getElementById('player-time-current'),
-        timeTotal: document.getElementById('player-time-total'),
         prev: document.getElementById('player-prev'),
         next: document.getElementById('player-next'),
-        back: document.getElementById('player-back'),
-        forward: document.getElementById('player-forward'),
-        toggle: document.getElementById('player-toggle'),
         status: document.getElementById('player-status'),
         queue: document.getElementById('player-queue'),
+        queueScroller: document.getElementById('player-queue').closest('section'),
         empty: document.getElementById('player-empty'),
+        more: document.getElementById('player-more'),
+        moreSentinel: document.getElementById('player-more-sentinel'),
         template: document.getElementById('player-queue-item'),
     };
 
@@ -61,11 +60,10 @@
         query: currentQuery(),
         items: [],
         index: -1,
+        // offset of the queue's next page, or null when there's nothing more
+        nextOffset: null,
+        loadingMore: null,
         widget: null,
-        provider: null,
-        playing: false,
-        duration: 0,
-        seeking: false,
         mountToken: 0,
     };
 
@@ -73,13 +71,6 @@
 
     function currentQuery() {
         return window.location.search.replace(/^\?/, '');
-    }
-
-    function formatTime(ms) {
-        var total = Math.max(0, Math.floor((ms || 0) / 1000));
-        var minutes = Math.floor(total / 60);
-        var seconds = total % 60;
-        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
     }
 
     function formatDate(iso) {
@@ -143,6 +134,16 @@
         });
     }
 
+    function withOffset(query, offset) {
+        var params = new URLSearchParams(query);
+        params.delete('offset');
+        if (offset) {
+            params.set('offset', String(offset));
+        }
+        var string = params.toString();
+        return string ? '?' + string : '';
+    }
+
     // ---- persistence ---------------------------------------------------
 
     function save() {
@@ -150,6 +151,7 @@
             window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
                 query: state.query,
                 index: state.index,
+                nextOffset: state.nextOffset,
                 // sources are re-fetched (and served from the server cache) on reload
                 items: state.items.map(function (item) {
                     return { entity: item.entity, event: item.event, providers: item.providers, sources_url: item.sources_url };
@@ -180,11 +182,20 @@
         return item;
     }
 
-    function loadQueue(query) {
-        setStatus('Building your queue…');
-        return fetchJson(config.queueUrl + (query ? '?' + query : ''))
+    // one page of a queue: {items, nextOffset}, or null on failure
+    function loadQueue(query, offset) {
+        if (!offset) {
+            setStatus('Building your queue…');
+        }
+        return fetchJson(config.queueUrl + withOffset(query, offset))
             .then(function (data) {
-                return (data.items || []).map(prepare);
+                if (!offset) {
+                    setStatus('');
+                }
+                return {
+                    items: (data.items || []).map(prepare),
+                    nextOffset: typeof data.next_offset === 'number' ? data.next_offset : null,
+                };
             })
             .catch(function (error) {
                 if (error.status === 401) {
@@ -198,6 +209,23 @@
             });
     }
 
+    // add items whose artist isn't queued yet; returns how many were added
+    function appendItems(items) {
+        var known = {};
+        state.items.forEach(function (item) {
+            known[item.entity.id] = true;
+        });
+        var added = 0;
+        items.forEach(function (item) {
+            if (!known[item.entity.id]) {
+                known[item.entity.id] = true;
+                state.items.push(item);
+                added++;
+            }
+        });
+        return added;
+    }
+
     function replaceQueue(query, autoplay) {
         state.query = query;
         el.source.textContent = describeSource(query);
@@ -206,49 +234,72 @@
         } catch {
             // history unavailable
         }
-        return loadQueue(query).then(function (items) {
-            if (items === null) {
+        return loadQueue(query, 0).then(function (page) {
+            if (page === null) {
                 return;
             }
-            state.items = items;
+            state.items = page.items;
+            state.nextOffset = page.nextOffset;
+            state.loadingMore = null;
             state.index = -1;
             renderQueue();
-            if (items.length) {
-                setStatus('');
+            if (state.items.length) {
                 playIndex(0, 1, autoplay);
             } else {
                 clearNowPlaying();
-                setStatus('');
             }
             save();
         });
     }
 
+    // the next page of the current queue; resolves to how many artists it added
+    function loadMore() {
+        if (state.nextOffset === null) {
+            return Promise.resolve(0);
+        }
+        if (state.loadingMore) {
+            return state.loadingMore;
+        }
+        var query = state.query;
+        el.more.hidden = false;
+        state.loadingMore = loadQueue(query, state.nextOffset).then(function (page) {
+            el.more.hidden = true;
+            state.loadingMore = null;
+            if (page === null || query !== state.query) {
+                return 0;
+            }
+            state.nextOffset = page.nextOffset;
+            var added = appendItems(page.items);
+            renderQueue();
+            save();
+            // a page of artists already queued (e.g. added from another page): keep going
+            if (added === 0 && state.nextOffset !== null) {
+                return loadMore();
+            }
+            return added;
+        });
+        return state.loadingMore;
+    }
+
     function addToQueue(query, playNow) {
-        return loadQueue(query).then(function (items) {
-            if (items === null) {
+        return loadQueue(query, 0).then(function (page) {
+            if (page === null) {
                 return;
             }
-            var known = {};
-            state.items.forEach(function (item, i) {
-                known[item.entity.id] = i;
-            });
             var firstIndex = null;
-            var added = 0;
-            items.forEach(function (item) {
-                if (known[item.entity.id] !== undefined) {
-                    if (firstIndex === null) {
-                        firstIndex = known[item.entity.id];
-                    }
-                    return;
-                }
-                state.items.push(item);
-                added++;
-                known[item.entity.id] = state.items.length - 1;
-                if (firstIndex === null) {
-                    firstIndex = state.items.length - 1;
+            page.items.forEach(function (item) {
+                var existing = state.items.findIndex(function (queued) {
+                    return queued.entity.id === item.entity.id;
+                });
+                if (firstIndex === null && existing !== -1) {
+                    firstIndex = existing;
                 }
             });
+            var before = state.items.length;
+            var added = appendItems(page.items);
+            if (firstIndex === null && added > 0) {
+                firstIndex = before;
+            }
             renderQueue();
             save();
             if (firstIndex === null) {
@@ -275,9 +326,7 @@
             button.setAttribute('aria-current', i === state.index ? 'true' : 'false');
             node.querySelector('.player-queue-number').textContent = String(i + 1);
             node.querySelector('.player-queue-name').textContent = item.entity.name;
-            node.querySelector('.player-queue-event').textContent = item.event
-                ? describeEvent(item.event)
-                : '';
+            node.querySelector('.player-queue-event').textContent = item.event ? describeEvent(item.event) : '';
             node.querySelector('.player-queue-providers').textContent = (item.providers || []).map(function (provider) {
                 return provider === 'soundcloud' ? 'SoundCloud' : 'Bandcamp';
             }).join(' / ');
@@ -322,32 +371,48 @@
     // ---- playback ------------------------------------------------------
 
     function playIndex(i, direction, autoplay) {
-        var attempts = 0;
+        var step = direction || 1;
+        var skipped = 0;
 
         function attempt(target) {
-            if (target < 0 || target >= state.items.length || attempts >= state.items.length) {
-                setStatus(direction > 0 ? 'End of the queue.' : 'Start of the queue.');
+            if (target >= state.items.length && step > 0 && state.nextOffset !== null) {
+                // past the end of what's loaded: fetch the next page, then carry on
+                loadMore().then(function (added) {
+                    if (added > 0) {
+                        attempt(target);
+                    } else {
+                        setStatus('End of the queue.');
+                    }
+                });
                 return;
             }
-            attempts++;
+            if (target < 0 || target >= state.items.length || skipped > state.items.length) {
+                setStatus(step > 0 ? 'End of the queue.' : 'Start of the queue.');
+                return;
+            }
             var item = state.items[target];
             state.index = target;
             refreshQueueItem(target);
             showItem(item);
             save();
 
+            if (step > 0 && target >= state.items.length - PREFETCH_DISTANCE) {
+                loadMore();
+            }
+
             ensureSources(item, target).then(function (sources) {
                 if (state.index !== target) {
                     return; // the user moved on while this was loading
                 }
                 if (!sources.length) {
+                    skipped++;
                     setStatus('No playable tracks for ' + item.entity.name + ', skipping.');
-                    attempt(target + (direction || 1));
+                    attempt(target + step);
                     return;
                 }
                 setStatus('');
                 mount(item, sources[0], autoplay);
-                prefetch(target + (direction || 1));
+                prefetch(target + step);
             });
         }
 
@@ -386,20 +451,14 @@
     function teardown() {
         if (state.widget && typeof SC !== 'undefined') {
             try {
-                state.widget.unbind(SC.Widget.Events.PLAY_PROGRESS);
                 state.widget.unbind(SC.Widget.Events.FINISH);
             } catch {
                 // widget already gone
             }
         }
         state.widget = null;
-        state.provider = null;
-        state.duration = 0;
         setPlaying(false);
         el.frame.textContent = '';
-        el.seek.value = '0';
-        el.timeCurrent.textContent = '0:00';
-        el.timeTotal.textContent = '0:00';
     }
 
     function soundcloudSrc(src, autoplay) {
@@ -423,7 +482,6 @@
         var iframe = document.createElement('iframe');
         iframe.setAttribute('allow', 'autoplay; encrypted-media');
         iframe.setAttribute('loading', 'eager');
-        state.provider = source.provider;
 
         el.track.textContent = source.title || '';
 
@@ -432,34 +490,20 @@
             iframe.height = '166';
             iframe.src = soundcloudSrc(source.src, autoplay);
             el.frame.appendChild(iframe);
-            setControlsFor('soundcloud');
             bindSoundcloud(iframe, item, token);
         } else {
             iframe.title = 'Bandcamp player: ' + item.entity.name;
             iframe.height = '120';
             iframe.src = source.src;
             el.frame.appendChild(iframe);
-            setControlsFor('bandcamp');
         }
 
         updateMediaSession(item, source);
     }
 
-    function setControlsFor(provider) {
-        var controllable = provider === 'soundcloud' && typeof SC !== 'undefined';
-        el.bandcampNote.hidden = provider !== 'bandcamp';
-        el.seekRow.hidden = provider === 'bandcamp';
-        [el.toggle, el.back, el.forward].forEach(function (button) {
-            button.disabled = !controllable;
-            button.setAttribute('aria-disabled', controllable ? 'false' : 'true');
-        });
-        el.seek.disabled = !controllable;
-    }
-
     function bindSoundcloud(iframe, item, token) {
         if (typeof SC === 'undefined') {
-            setStatus('SoundCloud controls are unavailable; use the player above.');
-            return;
+            return; // widget API blocked: the embed still plays, it just won't auto-advance
         }
         var widget = SC.Widget(iframe);
         state.widget = widget;
@@ -475,31 +519,16 @@
                     updateMediaSession(item, { title: sound.title, artwork: sound.artwork_url });
                 }
             });
-            widget.getDuration(function (duration) {
-                state.duration = duration || 0;
-                el.timeTotal.textContent = formatTime(state.duration);
-            });
         });
         widget.bind(events.PLAY, function () {
             if (token === state.mountToken) {
                 setPlaying(true);
-                widget.getDuration(function (duration) {
-                    state.duration = duration || state.duration;
-                    el.timeTotal.textContent = formatTime(state.duration);
-                });
             }
         });
         widget.bind(events.PAUSE, function () {
             if (token === state.mountToken) {
                 setPlaying(false);
             }
-        });
-        widget.bind(events.PLAY_PROGRESS, function (progress) {
-            if (token !== state.mountToken || state.seeking) {
-                return;
-            }
-            el.timeCurrent.textContent = formatTime(progress.currentPosition);
-            el.seek.value = String(Math.round((progress.relativePosition || 0) * 1000));
         });
         // one track per artist, then on to the next artist in the queue
         widget.bind(events.FINISH, function () {
@@ -510,31 +539,16 @@
     }
 
     function setPlaying(playing) {
-        state.playing = playing;
-        el.toggle.setAttribute('aria-label', playing ? 'Pause' : 'Play');
-        el.toggle.querySelector('i').className = playing ? 'bi bi-pause-fill' : 'bi bi-play-fill';
         if ('mediaSession' in navigator) {
             navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
         }
     }
 
+    // space and OS media keys; SoundCloud only, Bandcamp's embed can't be driven
     function togglePlay() {
         if (state.widget) {
             state.widget.toggle();
         }
-    }
-
-    function seekBy(delta) {
-        if (!state.widget) {
-            return;
-        }
-        state.widget.getPosition(function (position) {
-            var target = Math.max(0, position + delta);
-            if (state.duration) {
-                target = Math.min(target, state.duration - 500);
-            }
-            state.widget.seekTo(target);
-        });
     }
 
     function next() {
@@ -594,7 +608,6 @@
                 throw new Error('HTTP ' + response.status);
             }
             item.entity.followed = !following;
-            // the same entity can't appear twice, but keep saved state in step
             save();
             updateStar(item);
             setStatus((following ? 'Unfollowed ' : 'Following ') + item.entity.name + '.');
@@ -639,25 +652,23 @@
     });
     el.prev.addEventListener('click', prev);
     el.next.addEventListener('click', next);
-    el.toggle.addEventListener('click', togglePlay);
-    el.back.addEventListener('click', function () {
-        seekBy(-SEEK_STEP_MS);
-    });
-    el.forward.addEventListener('click', function () {
-        seekBy(SEEK_STEP_MS);
-    });
     el.star.addEventListener('click', toggleFollow);
 
-    el.seek.addEventListener('input', function () {
-        state.seeking = true;
-        el.timeCurrent.textContent = formatTime((parseInt(el.seek.value, 10) / 1000) * state.duration);
-    });
-    el.seek.addEventListener('change', function () {
-        state.seeking = false;
-        if (state.widget && state.duration) {
-            state.widget.seekTo((parseInt(el.seek.value, 10) / 1000) * state.duration);
-        }
-    });
+    // scrolling to the bottom of the list loads the next page
+    if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+            if (entries.some(function (entry) { return entry.isIntersecting; }) && state.items.length) {
+                loadMore();
+            }
+        }, { root: el.queueScroller, rootMargin: '0px 0px 120px 0px' }).observe(el.moreSentinel);
+    } else {
+        el.queueScroller.addEventListener('scroll', function () {
+            var scroller = el.queueScroller;
+            if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 120) {
+                loadMore();
+            }
+        });
+    }
 
     document.addEventListener('keydown', function (event) {
         var tag = (event.target.tagName || '').toLowerCase();
@@ -674,10 +685,6 @@
         } else if (event.key === 'ArrowLeft') {
             event.preventDefault();
             prev();
-        } else if (event.key === 'j' || event.key === 'J') {
-            seekBy(-SEEK_STEP_MS);
-        } else if (event.key === 'l' || event.key === 'L') {
-            seekBy(SEEK_STEP_MS);
         }
     });
 
@@ -719,6 +726,7 @@
     var saved = restore();
     if (saved) {
         state.items = saved.items.map(prepare);
+        state.nextOffset = typeof saved.nextOffset === 'number' ? saved.nextOffset : null;
         renderQueue();
         // resume where the listener was, but don't start audio unprompted
         playIndex(Math.min(Math.max(saved.index, 0), state.items.length - 1), 1, false);

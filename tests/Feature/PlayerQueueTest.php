@@ -165,6 +165,36 @@ class PlayerQueueTest extends TestCase
             ->assertJsonPath('items.1.event.id', $recentEvent->id);
     }
 
+    public function test_queue_is_served_in_pages(): void
+    {
+        $artists = collect(range(1, 25))->map(function (int $day) {
+            $artist = $this->artist('https://soundcloud.com/artist-'.$day);
+            $this->eventWith([$artist], ['start_at' => now()->addDays($day)]);
+
+            return $artist;
+        });
+
+        $first = $this->getJson('/player/queue')->assertOk()
+            ->assertJsonCount(20, 'items')
+            ->assertJsonPath('offset', 0)
+            ->assertJsonPath('next_offset', 20)
+            ->assertJsonPath('total', 25);
+
+        $second = $this->getJson('/player/queue?offset=20')->assertOk()
+            ->assertJsonCount(5, 'items')
+            ->assertJsonPath('next_offset', null);
+
+        $this->assertSame(
+            $artists->pluck('id')->all(),
+            array_merge(
+                array_column(array_column($first->json('items'), 'entity'), 'id'),
+                array_column(array_column($second->json('items'), 'entity'), 'id')
+            )
+        );
+
+        $this->getJson('/player/queue?offset=-1')->assertStatus(422);
+    }
+
     public function test_radar_requires_sign_in(): void
     {
         $this->getJson('/player/queue?source=radar')->assertStatus(401);

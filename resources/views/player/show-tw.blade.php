@@ -67,28 +67,9 @@
 
 		<div id="player-frame" class="player-frame rounded-md overflow-hidden"></div>
 
-		<p id="player-bandcamp-note" class="text-sm text-muted-foreground" hidden>
-			Use the Bandcamp player's own controls to play, pause and seek this release. Next and previous still move through the queue.
-		</p>
-
-		<div id="player-seek-row" class="flex items-center gap-3 text-sm tabular-nums">
-			<span id="player-time-current" aria-hidden="true">0:00</span>
-			<input id="player-seek" type="range" min="0" max="1000" value="0" step="1" class="flex-1" aria-label="Seek within the track" disabled>
-			<span id="player-time-total" aria-hidden="true">0:00</span>
-		</div>
-
 		<div class="flex items-center justify-center gap-2" role="group" aria-label="Player controls">
 			<button type="button" id="player-prev" class="p-3 rounded-full hover:bg-accent text-2xl" aria-label="Previous artist" title="Previous artist (←)">
 				<i class="bi bi-skip-start-fill" aria-hidden="true"></i>
-			</button>
-			<button type="button" id="player-back" class="p-3 rounded-full hover:bg-accent text-xl" aria-label="Back 15 seconds" title="Back 15 seconds (J)">
-				<i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-			</button>
-			<button type="button" id="player-toggle" class="p-3 rounded-full bg-primary text-primary-foreground text-3xl" aria-label="Play" title="Play / pause (space)">
-				<i class="bi bi-play-fill" aria-hidden="true"></i>
-			</button>
-			<button type="button" id="player-forward" class="p-3 rounded-full hover:bg-accent text-xl" aria-label="Forward 15 seconds" title="Forward 15 seconds (L)">
-				<i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
 			</button>
 			<button type="button" id="player-next" class="p-3 rounded-full hover:bg-accent text-2xl" aria-label="Next artist" title="Next artist (→)">
 				<i class="bi bi-skip-end-fill" aria-hidden="true"></i>
@@ -100,7 +81,10 @@
 
 	<section class="flex-1 overflow-y-auto" aria-labelledby="player-queue-title">
 		<h2 id="player-queue-title" class="px-4 pt-3 pb-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Up next</h2>
-		<ol id="player-queue" class="pb-4"></ol>
+		<ol id="player-queue"></ol>
+		{{-- scrolled into view: player.js fetches the next page of the queue --}}
+		<p id="player-more" class="px-4 py-3 text-sm text-muted-foreground" aria-live="polite" hidden>Loading more…</p>
+		<div id="player-more-sentinel" class="h-4" aria-hidden="true"></div>
 		<p id="player-empty" class="px-4 py-6 text-muted-foreground" hidden>
 			No artists with SoundCloud or Bandcamp links were found for this list.
 		</p>

@@ -25,7 +25,8 @@ class PlayerController extends Controller
 
     /**
      * The player queue for a source: upcoming (optionally filtered with the same
-     * filters[...] as event lists), radar, or one event/series/entity.
+     * filters[...] as event lists), radar, or one event/series/entity, a page
+     * of PlayerQueueBuilder::PAGE_SIZE items from `offset`.
      */
     public function queue(Request $request, PlayerQueueBuilder $builder, EventFilters $eventFilters): JsonResponse
     {
@@ -34,6 +35,7 @@ class PlayerController extends Controller
             'id' => ['required_if:source,event,series', 'integer'],
             'slug' => ['required_if:source,entity', 'string', 'max:255'],
             'filters' => ['nullable', 'array'],
+            'offset' => ['nullable', 'integer', 'min:0', 'max:'.PlayerQueueBuilder::MAX_ITEMS],
         ]);
 
         $user = $request->user();
@@ -64,9 +66,17 @@ class PlayerController extends Controller
             return response()->json(['message' => 'Not found.'], 404);
         }
 
+        // one page at a time: the player asks for the next when the listener
+        // scrolls to the end of the list or plays past the last item
+        $offset = (int) ($validated['offset'] ?? 0);
+        $nextOffset = $offset + PlayerQueueBuilder::PAGE_SIZE;
+
         return response()->json([
             'source' => $source,
-            'items' => $items,
+            'items' => array_slice($items, $offset, PlayerQueueBuilder::PAGE_SIZE),
+            'offset' => $offset,
+            'next_offset' => $nextOffset < count($items) ? $nextOffset : null,
+            'total' => count($items),
         ]);
     }
 

@@ -25,10 +25,13 @@ use Illuminate\Support\Collection;
  */
 class PlayerQueueBuilder
 {
-    public const MAX_ITEMS = 50;
+    // the whole queue; the player fetches it PAGE_SIZE items at a time
+    public const MAX_ITEMS = 200;
 
-    // events scanned for a queue; enough to fill MAX_ITEMS on a busy listing
-    public const MAX_EVENTS = 300;
+    public const PAGE_SIZE = 20;
+
+    // events scanned per pass; enough to fill MAX_ITEMS on a busy listing
+    public const MAX_EVENTS = 1000;
 
     public function __construct(protected OembedExtractor $extractor)
     {

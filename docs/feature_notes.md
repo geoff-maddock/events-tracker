@@ -14,15 +14,18 @@ it keeps playing while you browse the site.
   and series pages. When the player is already open, the icon adds to its queue rather than
   replacing it.
 - **The queue** has one item per artist, in event order, from upcoming events the viewer can see,
-  capped at 50. The radar queue follows the radar page: shows you're attending first, then
+  up to 200, loaded 20 at a time: more load when you scroll to the bottom of the list or play past
+  the last artist. The radar queue follows the radar page: shows you're attending first, then
   recommended ones. A filtered queue (tag page, filtered event list) mirrors its list, which
-  includes past shows: upcoming matches first, then past ones, most recent first ("Played …"). Venue-only entities are skipped. Each artist's tracks are looked up only when the
-  player reaches them, and cached per link for a week (an hour if nothing was found).
-- **Playback:** SoundCloud items have play/pause, a seek bar, ±15s, and move on to the next artist
-  when a track ends. Bandcamp's embed has no API, so Bandcamp items use Bandcamp's own controls and
-  only move on with next/previous; an artist with both plays SoundCloud first. Space, ←/→ and J/L work as shortcuts, as do OS media keys.
+  includes past shows: upcoming matches first, then past ones, most recent first ("Played …").
+  Venue-only entities are skipped. Each artist's tracks are looked up only when the player reaches
+  them, and cached per link for a week (an hour if nothing was found).
+- **Playback** uses the SoundCloud and Bandcamp players' own controls; previous/next (and ←/→)
+  move between artists. SoundCloud items move on to the next artist when a track ends. Bandcamp's
+  embed has no API, so Bandcamp items only move on with next/previous; an artist with both plays
+  SoundCloud first. Space and OS media keys play/pause SoundCloud items.
 - **Star** follows the artist (signed-in users). A reload resumes the same queue and artist.
-- Endpoints: `GET /player/queue?source=upcoming|radar|event|series|entity&filters[...]` and
+- Endpoints: `GET /player/queue?source=upcoming|radar|event|series|entity&filters[...]&offset=` and
   `GET /player/entities/{slug}/sources`. The CSP allows `https://w.soundcloud.com` scripts for the
   SoundCloud Widget API.
 
