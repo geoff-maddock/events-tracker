@@ -52,7 +52,9 @@ class PlayerQueueBuilder
     }
 
     /**
-     * The user's radar: upcoming events they're attending or that match what they follow.
+     * The user's radar, in the radar page's order: the lineups of upcoming
+     * events they're attending first, then events matching what they follow.
+     * Each group is in date order; an artist in both stays in the first.
      *
      * @return list<array<string, mixed>>
      */
@@ -61,13 +63,19 @@ class PlayerQueueBuilder
         $attendingIds = $user->getAttendingFuture()->pluck('id');
         $recommendedIds = $user->getRecommendedEvents()->reorder()->select('events.id');
 
-        $query = Event::query()->visible($user)->future()
-            ->where(function (Builder $q) use ($attendingIds, $recommendedIds) {
-                $q->whereIn('events.id', $attendingIds)
-                    ->orWhereIn('events.id', $recommendedIds);
-            });
+        $items = [];
+        $seen = [];
 
-        return $this->fromEvents($query, $user);
+        $this->collect(Event::query()->visible($user)->future()->whereIn('events.id', $attendingIds), $items, $seen);
+        $this->collect(
+            Event::query()->visible($user)->future()
+                ->whereIn('events.id', $recommendedIds)
+                ->whereNotIn('events.id', $attendingIds),
+            $items,
+            $seen
+        );
+
+        return $this->finish($items, $user);
     }
 
     /**
@@ -110,7 +118,9 @@ class PlayerQueueBuilder
 
         $events = Event::query()->visible($user)->future()->where('events.series_id', $series->id);
 
-        return $this->finish($this->collect($events, $items, $seen), $user);
+        $this->collect($events, $items, $seen);
+
+        return $this->finish($items, $user);
     }
 
     /**
@@ -166,7 +176,9 @@ class PlayerQueueBuilder
         $items = [];
         $seen = [];
 
-        return $this->finish($this->collect($events, $items, $seen), $user);
+        $this->collect($events, $items, $seen);
+
+        return $this->finish($items, $user);
     }
 
     /**
@@ -175,10 +187,8 @@ class PlayerQueueBuilder
      * @param Builder<Event> $events
      * @param list<array<string, mixed>> $items
      * @param array<int, true> $seen
-     *
-     * @return list<array<string, mixed>>
      */
-    protected function collect(Builder $events, array $items, array $seen): array
+    protected function collect(Builder $events, array &$items, array &$seen): void
     {
         $events = $events
             ->reorder('events.start_at', 'asc')
@@ -195,8 +205,6 @@ class PlayerQueueBuilder
                 $this->push($items, $seen, $entity, $event);
             }
         }
-
-        return $items;
     }
 
     /**

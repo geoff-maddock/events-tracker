@@ -168,6 +168,37 @@ class PlayerQueueTest extends TestCase
         $this->assertFalse($items[$attended->id]['entity']['followed']);
     }
 
+    public function test_radar_queue_puts_attending_before_recommended_like_the_radar_page(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+
+        // recommended shows are sooner, so date order alone would put them first
+        $followedSoon = $this->artist();
+        $followedSoon->update(['name' => 'Zz Followed']);
+        $this->eventWith([$followedSoon], ['start_at' => now()->addDays(1)]);
+        Follow::create(['user_id' => $user->id, 'object_type' => 'entity', 'object_id' => $followedSoon->id]);
+
+        $attendedLater = $this->artist();
+        $attendedLatest = $this->artist();
+        // artists within one event are ordered by name; pin it so the order is fixed
+        $attendedLatest->update(['name' => 'Aa Attended']);
+        $later = $this->eventWith([$attendedLater], ['start_at' => now()->addDays(5)]);
+        $latest = $this->eventWith([$attendedLatest, $followedSoon], ['start_at' => now()->addDays(9)]);
+        foreach ([$later, $latest] as $event) {
+            EventResponse::create(['event_id' => $event->id, 'user_id' => $user->id, 'response_type_id' => ResponseType::ATTENDING]);
+        }
+
+        $response = $this->actingAs($user)->getJson('/player/queue?source=radar')->assertOk();
+
+        // attending in date order, then recommended; the followed artist also on an
+        // attended show is queued once, in the attending group, with that show
+        $this->assertSame(
+            [$attendedLater->id, $attendedLatest->id, $followedSoon->id],
+            array_column(array_column($response->json('items'), 'entity'), 'id')
+        );
+        $response->assertJsonPath('items.2.event.id', $latest->id);
+    }
+
     public function test_event_source_plays_a_lineup_even_after_the_event(): void
     {
         $artist = $this->artist();
