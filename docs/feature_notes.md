@@ -20,7 +20,7 @@ it keeps playing while you browse the site.
   player reaches them, and cached per link for a week (an hour if nothing was found).
 - **Playback:** SoundCloud items have play/pause, a seek bar, ±15s, and move on to the next artist
   when a track ends. Bandcamp's embed has no API, so Bandcamp items use Bandcamp's own controls and
-  only move on with next/previous. Space, ←/→ and J/L work as shortcuts, as do OS media keys.
+  only move on with next/previous; an artist with both plays SoundCloud first. Space, ←/→ and J/L work as shortcuts, as do OS media keys.
 - **Star** follows the artist (signed-in users). A reload resumes the same queue and artist.
 - Endpoints: `GET /player/queue?source=upcoming|radar|event|series|entity&filters[...]` and
   `GET /player/entities/{slug}/sources`. The CSP allows `https://w.soundcloud.com` scripts for the

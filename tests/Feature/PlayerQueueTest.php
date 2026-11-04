@@ -297,6 +297,24 @@ class PlayerQueueTest extends TestCase
         $this->getJson('/player/entities/'.$artist->slug.'/sources')->assertOk()->assertJsonCount(1, 'sources');
         $this->assertSame(1, $provider->requestCount, 'second request is served from the per-link cache');
     }
+
+    public function test_soundcloud_sources_come_before_bandcamp(): void
+    {
+        $provider = new FakePlayerProvider();
+        $this->app->instance(Provider::class, $provider);
+
+        // the Bandcamp link is older, so link order alone would play it first
+        $artist = $this->artist('https://artist.bandcamp.com/album/x');
+        $artist->links()->attach(Link::factory()->create(['url' => 'https://soundcloud.com/some-artist', 'created_at' => now()->addMinute()]));
+
+        $this->getJson('/player/entities/'.$artist->slug.'/sources')
+            ->assertOk()
+            ->assertJsonPath('sources.0.provider', 'soundcloud')
+            ->assertJsonPath('sources.1.provider', 'bandcamp');
+
+        $this->eventWith([$artist]);
+        $this->getJson('/player/queue')->assertOk()->assertJsonPath('items.0.providers', ['soundcloud', 'bandcamp']);
+    }
 }
 
 /**
@@ -319,7 +337,9 @@ class FakePlayerProvider extends Provider
     public function requestWithoutRedirects(string $url): ?string
     {
         $this->requestCount++;
-        $this->setResponse('');
+        $this->setResponse($url === 'https://artist.bandcamp.com/album/x'
+            ? '<meta property="og:video" content="https://bandcamp.com/EmbeddedPlayer/v=2/album=1/">'
+            : '');
 
         return null;
     }

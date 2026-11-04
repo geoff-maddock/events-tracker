@@ -154,7 +154,9 @@ class PlayerQueueBuilder
     }
 
     /**
-     * Playable sources for every audio link on $entity, in link order.
+     * Playable sources for every audio link on $entity: SoundCloud first, since
+     * the player can start, seek and auto-advance those, while Bandcamp's embed
+     * only plays from its own button. Link order within each provider.
      *
      * @return list<array{provider: string, url: string, src: string, title: ?string}>
      */
@@ -172,6 +174,9 @@ class PlayerQueueBuilder
                 $sources[] = $source;
             }
         }
+
+        // usort is stable, so link order holds within each provider
+        usort($sources, fn (array $a, array $b) => ($a['provider'] !== 'soundcloud') <=> ($b['provider'] !== 'soundcloud'));
 
         return $sources;
     }
@@ -273,7 +278,7 @@ class PlayerQueueBuilder
             ] : null,
             'providers' => $this->audioLinks($entity)
                 ->map(fn (Link $link) => OembedExtractor::soundcloudUrl((string) $link->url) !== null ? 'soundcloud' : 'bandcamp')
-                ->unique()->values()->all(),
+                ->unique()->sortBy(fn (string $provider) => $provider !== 'soundcloud')->values()->all(),
             'sources_url' => route('player.sources', ['entity' => $entity->slug]),
         ];
     }
