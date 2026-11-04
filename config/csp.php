@@ -26,6 +26,8 @@ return [
             "'self'", "'unsafe-inline'", "'unsafe-eval'",
             'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com',
             'https://www.googletagmanager.com', 'https://www.google-analytics.com',
+            // SoundCloud Widget API, used by the audio player (#2366)
+            'https://w.soundcloud.com',
         ],
         'style-src' => [
             "'self'", "'unsafe-inline'",

@@ -7,12 +7,22 @@ use App\Models\Entity;
 use App\Services\Player\PlayerQueueBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 /**
  * JSON endpoints behind the site-wide audio player (#2366).
  */
 class PlayerController extends Controller
 {
+    /**
+     * The pop-out player window. It reads its queue source from its own query
+     * string (the same parameters queue() takes) and fetches everything else.
+     */
+    public function show(): View
+    {
+        return view('player.show-tw');
+    }
+
     /**
      * The player queue for a source: upcoming (optionally filtered with the same
      * filters[...] as event lists), radar, or one event/series/entity.
