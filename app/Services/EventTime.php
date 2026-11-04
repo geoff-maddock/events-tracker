@@ -11,8 +11,8 @@ use DateTimeInterface;
  *
  * events.start_at / end_at / door_at are stored naive and never converted on
  * the way in, so the value is a wall-clock reading with no zone attached. The
- * model casts it with config('app.timezone'), which is 'EST' — and PHP treats
- * 'EST' as a FIXED UTC-5 offset that never observes daylight saving. Pittsburgh
+ * model casts it with config('app.timezone'), which is 'Etc/GMT+5' — and PHP treats
+ * 'Etc/GMT+5' as a FIXED UTC-5 offset that never observes daylight saving. Pittsburgh
  * does: America/New_York is UTC-4 from March to November. So a Carbon taken
  * straight off the model names an instant an hour later than intended for most
  * of the year.

@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
  *
  * Every absolute instant comes from App\Services\EventTime, never from the
  * model's cast Carbon. Discord resolves <t:unix> tags against the viewer's own
- * clock, so an instant computed in the app's fixed-offset 'EST' zone shows an
+ * clock, so an instant computed in the app's fixed-offset 'Etc/GMT+5' zone shows an
  * hour late for the eight months of the year the timezone actually observes.
  *
  * Note this does not reuse Event::getBriefFormat() or getInstagramFormat():

@@ -125,7 +125,7 @@ class DiscordEmbedBuilderTest extends TestCase
         $event = Event::factory()->create();
 
         // Not $event->start_at->timestamp. The model casts with the app's
-        // fixed-offset 'EST' zone, which names an instant an hour late
+        // fixed-offset 'Etc/GMT+5' zone, which names an instant an hour late
         // whenever daylight saving is in effect.
         $this->assertStringContainsString(
             '<t:'.EventTime::startsAt($event)->timestamp.':F>',

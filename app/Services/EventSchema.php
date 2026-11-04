@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Storage;
  * street address on file. The fallbacks are documented at each helper.
  *
  * Dates go through App\Services\EventTime rather than reading the cast Carbon
- * directly. config('app.timezone') is 'EST', a fixed UTC-5 offset that never
+ * directly. config('app.timezone') is 'Etc/GMT+5', a fixed UTC-5 offset that never
  * observes daylight saving, so a Carbon taken straight off the model names an
  * instant an hour later than intended from March to November. That is invisible
  * while a value is only formatted for display, and wrong the moment it leaves
