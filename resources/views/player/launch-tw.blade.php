@@ -6,7 +6,7 @@
     $query   array  queue parameters, e.g. ['source' => 'event', 'id' => 12]
     $mode    string 'load' (replace the queue) or 'enqueue' (add to an open player)
     $label   string visible text / accessible name
-    $variant string 'nav' | 'button' | 'icon'
+    $variant string 'nav' | 'button' | 'icon' | 'chip' (matches a page's section buttons)
 --}}
 @php
     $query = http_build_query($query ?? []);
@@ -24,6 +24,7 @@
         'nav-item-tw' => $variant === 'nav',
         'inline-flex items-center gap-2 px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors' => $variant === 'button',
         'p-2 rounded-md hover:bg-accent' => $variant === 'icon',
+        'inline-flex items-center gap-2 px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium' => $variant === 'chip',
     ])>
     <i @class(['bi bi-headphones', 'text-lg' => $variant === 'nav', 'text-xl text-muted-foreground' => $variant === 'icon']) aria-hidden="true"></i>
     <span data-player-label @class(['sr-only' => $variant === 'icon'])>{{ $label }}</span>
