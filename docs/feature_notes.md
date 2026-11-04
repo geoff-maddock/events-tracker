@@ -14,7 +14,8 @@ it keeps playing while you browse the site.
   and series pages. When the player is already open, the icon adds to its queue rather than
   replacing it.
 - **The queue** has one item per artist, in event order, from upcoming events the viewer can see,
-  capped at 50. Venue-only entities are skipped. Each artist's tracks are looked up only when the
+  capped at 50. The radar queue follows the radar page: shows you're attending first, then
+  recommended ones. Venue-only entities are skipped. Each artist's tracks are looked up only when the
   player reaches them, and cached per link for a week (an hour if nothing was found).
 - **Playback:** SoundCloud items have play/pause, a seek bar, ±15s, and move on to the next artist
   when a track ends. Bandcamp's embed has no API, so Bandcamp items use Bandcamp's own controls and
