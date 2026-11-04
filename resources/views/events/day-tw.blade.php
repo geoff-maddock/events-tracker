@@ -13,9 +13,13 @@
 
         <!-- Body -->
         <div class="p-4 flex-grow overflow-y-auto custom-scrollbar">
-            <?php $events = App\Models\Event::with([
+            <?php
+            // A multi-day view (4days-tw, addDays-tw) loads the whole window in
+            // one query and passes this day's slice in; fall back to querying
+            // this single day when the partial is rendered on its own.
+            $events = $events ?? App\Models\Event::with([
                 'series.occurrenceType',
-                'series.occurrenceWeek', 
+                'series.occurrenceWeek',
                 'series.occurrenceDay',
                 'series.visibility',
                 'visibility',
@@ -26,7 +30,8 @@
                 // only the viewer's response is shown on the card
                 'eventResponses' => fn ($q) => $q->where('user_id', auth()->id()),
                 'photos'
-            ])->starting($day->format('Y-m-d'))->get(); ?>
+            ])->starting($day->format('Y-m-d'))->get();
+            ?>
 
             @if (count($events) > 0)
             <ul class="grid gap-3">
