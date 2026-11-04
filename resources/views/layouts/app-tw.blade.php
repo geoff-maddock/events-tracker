@@ -119,6 +119,7 @@
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/embed-cache.js') }}?v={{ @filemtime(public_path('js/embed-cache.js')) }}"></script>
 	<script src="{{ asset('/js/custom.js') }}?v={{ @filemtime(public_path('js/custom.js')) }}"></script>
+	<script src="{{ asset('/js/player-launcher.js') }}?v={{ @filemtime(public_path('js/player-launcher.js')) }}"></script>
 	<script src="{{ asset('/js/password-toggle.js') }}"></script>
 	
 	@yield('scripts.footer')

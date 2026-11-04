@@ -37,6 +37,9 @@
 				<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{{ $series->name }}</h1>
 
 				<div class="flex items-center gap-2">
+					@if ($series->entities->contains->hasAudioLinks())
+						@include('player.launch-tw', ['query' => ['source' => 'series', 'id' => $series->id], 'mode' => 'enqueue', 'label' => 'Add to player', 'variant' => 'icon'])
+					@endif
 					@if ($signedIn)
 						@if ($follow = $series->followedBy($user))
 							<a data-method="post" href="{{ route('series.unfollow', ['id' => $series->id]) }}" class="p-2 rounded-md hover:bg-accent" title="You're following">

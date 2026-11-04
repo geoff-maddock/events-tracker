@@ -106,8 +106,13 @@
         }
         var filters = [];
         params.forEach(function (value, key) {
-            var match = key.match(/^filters\[([^\]]+)\]/);
-            if (match && value !== '') {
+            var match = key.match(/^filters\[([^\]]+)\](?:\[([^\]]+)\])?/);
+            if (!match || value === '') {
+                return;
+            }
+            if (match[1] === 'start_at' && (match[2] === 'start' || match[2] === 'end')) {
+                filters.push((match[2] === 'start' ? 'from ' : 'until ') + value);
+            } else {
                 filters.push(match[1].replace(/_/g, ' ') + ': ' + value);
             }
         });
@@ -219,6 +224,7 @@
                 known[item.entity.id] = i;
             });
             var firstIndex = null;
+            var added = 0;
             items.forEach(function (item) {
                 if (known[item.entity.id] !== undefined) {
                     if (firstIndex === null) {
@@ -227,6 +233,7 @@
                     return;
                 }
                 state.items.push(item);
+                added++;
                 known[item.entity.id] = state.items.length - 1;
                 if (firstIndex === null) {
                     firstIndex = state.items.length - 1;
@@ -238,8 +245,10 @@
                 setStatus('Nothing playable to add.');
             } else if (playNow || state.index < 0) {
                 playIndex(firstIndex, 1, true);
+            } else if (added === 0) {
+                setStatus('Already in the queue.');
             } else {
-                setStatus('Added to the queue.');
+                setStatus(added === 1 ? 'Added to the queue.' : 'Added ' + added + ' artists to the queue.');
             }
         });
     }

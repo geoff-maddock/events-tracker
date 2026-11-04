@@ -13,6 +13,9 @@
 
         <!-- Quick Links Navigation -->
         <div class="mt-6 flex flex-wrap justify-center gap-2">
+            @if ($attendingEvents->isNotEmpty() || $hasFollowedContent)
+                @include('player.launch-tw', ['query' => ['source' => 'radar'], 'label' => 'Play my radar'])
+            @endif
             @if ($attendingEvents->isNotEmpty())
                 <a href="#attending-events" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-accent transition-colors">
                     <i class="bi bi-calendar-check text-primary"></i>

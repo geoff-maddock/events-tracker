@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Embeds\OembedExtractor;
 use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
@@ -547,6 +548,14 @@ class Entity extends Eloquent implements HasPhotos
         }
         
         return $this->links()->where('url', 'LIKE', '%bandcamp%')->orderBy('created_at', 'ASC')->first();
+    }
+
+    /**
+     * Whether any link is a SoundCloud or Bandcamp URL the audio player can play (#2366).
+     */
+    public function hasAudioLinks(): bool
+    {
+        return $this->links->contains(fn (Link $link) => OembedExtractor::isAudioUrl((string) $link->url));
     }
 
     /**

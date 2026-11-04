@@ -366,12 +366,39 @@ class EventsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
+                // what "Play this list" hands the audio player (#2366): the user's
+                // filters plus the page's own (e.g. the tag on /events/tag/{slug})
+                'playerFilters' => self::playerFilters(array_merge($listResultSet->getFilters(), $listResultSet->getParentFilters())),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions(),
             // last, so a caller's value always wins
             $extra
         );
+    }
+
+    /**
+     * Filters with empty values dropped, so the player's query string stays short.
+     *
+     * @param array<array-key, mixed> $filters
+     *
+     * @return array<array-key, mixed>
+     */
+    private static function playerFilters(array $filters): array
+    {
+        $kept = [];
+
+        foreach ($filters as $name => $value) {
+            if (is_array($value)) {
+                $value = self::playerFilters($value);
+            }
+
+            if ($value !== null && $value !== '' && $value !== []) {
+                $kept[$name] = $value;
+            }
+        }
+
+        return $kept;
     }
 
     protected function getListControlOptions(): array

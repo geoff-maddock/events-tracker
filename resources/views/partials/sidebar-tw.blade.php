@@ -60,6 +60,9 @@
             <span>Event Calendar</span>
         </a>
 
+        <!-- Audio player (#2366) -->
+        @include('player.launch-tw', ['query' => ['source' => 'upcoming'], 'label' => 'Listen', 'variant' => 'nav'])
+
         <!-- Entity Listings -->
         <a href="{{ url('/entities') }}" class="nav-item-tw {{ Request::is('entities') && !Request::is('entities/*') ? 'nav-item-active-tw' : '' }}">
             <i class="bi bi-people text-lg"></i>
@@ -234,6 +237,11 @@
                 <i class="bi bi-calendar3 text-lg"></i>
                 <span>Event Calendar</span>
             </a>
+        </div>
+
+        <!-- Audio player (#2366) -->
+        <div class="pt-2">
+            @include('player.launch-tw', ['query' => ['source' => 'upcoming'], 'label' => 'Listen', 'variant' => 'nav'])
         </div>
 
         <!-- Entity Listings -->

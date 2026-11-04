@@ -44,6 +44,9 @@ Tags
 					@if ($tagObject->description)
 					<p class="mt-2 text-muted-foreground">{{ $tagObject->description }}</p>
 					@endif
+					<div class="mt-4">
+						@include('player.launch-tw', ['query' => ['source' => 'upcoming', 'filters' => ['tag' => $tagObject->slug]], 'label' => 'Play this tag'])
+					</div>
 				@endif
 			</div>
 

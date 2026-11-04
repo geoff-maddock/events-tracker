@@ -40,6 +40,9 @@
 				<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{{ $entity->name }}</h1>
 				
 				<div class="flex items-center gap-2">
+					@if ($entity->hasAudioLinks())
+						@include('player.launch-tw', ['query' => ['source' => 'entity', 'slug' => $entity->slug], 'mode' => 'enqueue', 'label' => 'Add to player', 'variant' => 'icon'])
+					@endif
 					@if ($signedIn)
 						@if ($follow = $entity->followedBy($user))
 						<a data-method="post" href="{!! route('entities.unfollow', ['id' => $entity->id]) !!}"

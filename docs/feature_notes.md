@@ -4,6 +4,26 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Audio player (#2366)
+A pop-out player at `/player` plays music from the artists on upcoming shows, using the SoundCloud
+and Bandcamp links on their entity pages. It opens in its own small window ("arcane-player"), so
+it keeps playing while you browse the site.
+- **Where to start it:** "Listen" in the sidebar (upcoming shows), "Play my radar" on `/radar`,
+  "Play this tag" on tag pages, "Play this list" on event lists (it passes the list's filters, so
+  `/events/tag/goth` plays goth shows), and the headphones icon ("Add to player") on event, artist
+  and series pages. When the player is already open, the icon adds to its queue rather than
+  replacing it.
+- **The queue** has one item per artist, in event order, from upcoming events the viewer can see,
+  capped at 50. Venue-only entities are skipped. Each artist's tracks are looked up only when the
+  player reaches them, and cached per link for a week (an hour if nothing was found).
+- **Playback:** SoundCloud items have play/pause, a seek bar, ±15s, and move on to the next artist
+  when a track ends. Bandcamp's embed has no API, so Bandcamp items use Bandcamp's own controls and
+  only move on with next/previous. Space, ←/→ and J/L work as shortcuts, as do OS media keys.
+- **Star** follows the artist (signed-in users). A reload resumes the same queue and artist.
+- Endpoints: `GET /player/queue?source=upcoming|radar|event|series|entity&filters[...]` and
+  `GET /player/entities/{slug}/sources`. The CSP allows `https://w.soundcloud.com` scripts for the
+  SoundCloud Widget API.
+
 ### Changing your email needs a new verification (#2321)
 A user who changes their own email on the web profile form or with `PUT /api/users/{user}` is
 unverified until they click the link sent to the new address, so they can't add or edit content
