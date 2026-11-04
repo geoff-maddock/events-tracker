@@ -10,6 +10,7 @@ use App\Models\Link;
 use App\Models\Series;
 use App\Models\User;
 use App\Services\Embeds\OembedExtractor;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
@@ -34,7 +35,10 @@ class PlayerQueueBuilder
     }
 
     /**
-     * Upcoming events visible to $user, narrowed by event-list filters.
+     * Events visible to $user. Unfiltered, that's upcoming shows only. With
+     * event-list filters (a tag page, a filtered list) it mirrors the list,
+     * which includes past events: artists on upcoming matching events first
+     * (soonest first), then artists from past ones (most recent first).
      *
      * @param array<array-key, mixed> $filters
      *
@@ -42,13 +46,19 @@ class PlayerQueueBuilder
      */
     public function upcoming(?User $user, EventFilters $eventFilters, array $filters = []): array
     {
-        $query = Event::query()->visible($user)->future();
+        $filters = $eventFilters->normalizeFilters($filters);
+        $items = [];
+        $seen = [];
+
+        $upcoming = Event::query()->visible($user)->where('events.start_at', '>=', Carbon::today()->startOfDay());
+        $this->collect($filters === [] ? $upcoming : $eventFilters->applyFilters($upcoming, $filters), $items, $seen);
 
         if ($filters !== []) {
-            $query = $eventFilters->applyFilters($query, $eventFilters->normalizeFilters($filters));
+            $past = Event::query()->visible($user)->where('events.start_at', '<', Carbon::today()->startOfDay());
+            $this->collect($eventFilters->applyFilters($past, $filters), $items, $seen, 'desc');
         }
 
-        return $this->fromEvents($query, $user);
+        return $this->finish($items, $user);
     }
 
     /**
@@ -182,16 +192,20 @@ class PlayerQueueBuilder
     }
 
     /**
-     * Append the audio entities of $events (in start order) to $items.
+     * Append the audio entities of $events (by start time, $direction) to $items.
      *
      * @param Builder<Event> $events
      * @param list<array<string, mixed>> $items
      * @param array<int, true> $seen
      */
-    protected function collect(Builder $events, array &$items, array &$seen): void
+    protected function collect(Builder $events, array &$items, array &$seen, string $direction = 'asc'): void
     {
+        if (count($items) >= self::MAX_ITEMS) {
+            return;
+        }
+
         $events = $events
-            ->reorder('events.start_at', 'asc')
+            ->reorder('events.start_at', $direction)
             ->orderBy('events.id')
             ->with(['entities' => fn (Relation $q) => $this->withAudioLinks($q)])
             ->take(self::MAX_EVENTS)
@@ -254,6 +268,7 @@ class PlayerQueueBuilder
                 'name' => $event->name,
                 'slug' => $event->slug,
                 'start_at' => $event->start_at?->toIso8601String(),
+                'past' => $event->start_at !== null && $event->start_at->lt(Carbon::today()->startOfDay()),
                 'url' => route('events.show', ['event' => $event->slug]),
             ] : null,
             'providers' => $this->audioLinks($entity)

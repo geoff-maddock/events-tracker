@@ -93,6 +93,15 @@
         return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     }
 
+    // "Sat, Nov 14 · Event name", or "Played Sat, Nov 1 · ..." for a past show
+    function describeEvent(event) {
+        var date = formatDate(event.start_at);
+        if (date && event.past) {
+            date = 'Played ' + date;
+        }
+        return [date, event.name].filter(Boolean).join(' · ');
+    }
+
     function setStatus(message) {
         el.status.textContent = message || '';
     }
@@ -116,7 +125,8 @@
                 filters.push(match[1].replace(/_/g, ' ') + ': ' + value);
             }
         });
-        return 'Upcoming shows' + (filters.length ? ' · ' + filters.join(', ') : '');
+        // a filtered queue mirrors its list, so it can include past shows
+        return filters.length ? 'Shows · ' + filters.join(', ') : 'Upcoming shows';
     }
 
     function fetchJson(url) {
@@ -266,7 +276,7 @@
             node.querySelector('.player-queue-number').textContent = String(i + 1);
             node.querySelector('.player-queue-name').textContent = item.entity.name;
             node.querySelector('.player-queue-event').textContent = item.event
-                ? [formatDate(item.event.start_at), item.event.name].filter(Boolean).join(' · ')
+                ? describeEvent(item.event)
                 : '';
             node.querySelector('.player-queue-providers').textContent = (item.providers || []).map(function (provider) {
                 return provider === 'soundcloud' ? 'SoundCloud' : 'Bandcamp';
@@ -355,7 +365,7 @@
         el.entity.href = item.entity.url;
         el.track.textContent = '';
         if (item.event) {
-            el.event.textContent = [formatDate(item.event.start_at), item.event.name].filter(Boolean).join(' · ');
+            el.event.textContent = describeEvent(item.event);
             el.event.href = item.event.url;
             el.event.parentElement.hidden = false;
         } else {

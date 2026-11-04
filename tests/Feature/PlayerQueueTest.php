@@ -140,6 +140,31 @@ class PlayerQueueTest extends TestCase
         $this->assertSame([$goth->id], $this->queueEntityIds('?filters[tag]=goth'));
     }
 
+    public function test_filtered_queue_mirrors_the_list_with_upcoming_then_recent_past(): void
+    {
+        $tag = Tag::factory()->create(['slug' => 'goth']);
+        $upcoming = $this->artist();
+        $recentPast = $this->artist();
+        $olderPast = $this->artist();
+        $untagged = $this->artist();
+
+        $this->eventWith([$olderPast], ['start_at' => now()->subMonths(6)])->tags()->attach($tag);
+        $this->eventWith([$upcoming], ['start_at' => now()->addDays(4)])->tags()->attach($tag);
+        $recentEvent = $this->eventWith([$recentPast], ['start_at' => now()->subWeek()]);
+        $recentEvent->tags()->attach($tag);
+        $this->eventWith([$untagged], ['start_at' => now()->subDays(2)]);
+
+        $response = $this->getJson('/player/queue?filters[tag]=goth')->assertOk();
+
+        $this->assertSame(
+            [$upcoming->id, $recentPast->id, $olderPast->id],
+            array_column(array_column($response->json('items'), 'entity'), 'id')
+        );
+        $response->assertJsonPath('items.0.event.past', false)
+            ->assertJsonPath('items.1.event.past', true)
+            ->assertJsonPath('items.1.event.id', $recentEvent->id);
+    }
+
     public function test_radar_requires_sign_in(): void
     {
         $this->getJson('/player/queue?source=radar')->assertStatus(401);
