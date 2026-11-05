@@ -2,8 +2,10 @@
 
 namespace App\Services\Player;
 
+use App\Filters\EntityFilters;
 use App\Filters\EventFilters;
 use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Follow;
 use App\Models\Link;
@@ -32,6 +34,9 @@ class PlayerQueueBuilder
 
     // events scanned per pass; enough to fill MAX_ITEMS on a busy listing
     public const MAX_EVENTS = 1000;
+
+    // the entity list's sort options (EntitiesController::getListControlOptions)
+    public const ENTITY_SORTS = ['entities.name', 'entity_types.name', 'entities.created_at', 'popularity_score'];
 
     public function __construct(protected OembedExtractor $extractor)
     {
@@ -171,6 +176,60 @@ class PlayerQueueBuilder
         $events = Event::query()->visible($user)->future()->where('events.series_id', $series->id);
 
         $this->collect($events, $items, $seen);
+
+        return $items;
+    }
+
+    /**
+     * The playable entities on an entity list (#2366), with the list's filters
+     * and sort: the same EntityFilters the list applies, including the page's
+     * own role, type or tag. Each comes with its next upcoming visible event.
+     *
+     * @param array<array-key, mixed> $filters
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function entities(?User $user, EntityFilters $entityFilters, array $filters = [], ?string $sort = null, ?string $direction = null): array
+    {
+        $filters = $entityFilters->normalizeFilters($filters);
+        $activeRange = is_string($filters['active_range'] ?? null) ? $filters['active_range'] : null;
+
+        $query = Entity::query()
+            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+            ->select('entities.*')
+            // like the entity list: guests never see unlisted entities
+            ->when(!$user, fn (Builder $q) => $q->where('entities.entity_status_id', '<>', EntityStatus::UNLISTED))
+            ->withPopularityScore($activeRange)
+            ->playable();
+
+        // applyFilters() adds its wheres to $query itself
+        if ($filters !== []) {
+            $entityFilters->applyFilters($query, $filters);
+        }
+
+        $entities = $query
+            ->orderBy(in_array($sort, self::ENTITY_SORTS, true) ? $sort : 'entities.name', $direction === 'desc' ? 'desc' : 'asc')
+            ->orderBy('entities.id')
+            ->with([
+                'links',
+                'roles',
+                // limit() on the relation itself, so it's one event per entity
+                'events' => fn (Relation $q) => $q
+                    ->without(['visibility', 'venue', 'entities'])
+                    ->where(Event::visibleTo($user))
+                    ->where('events.start_at', '>=', Carbon::today()->startOfDay())
+                    ->reorder('events.start_at')
+                    ->limit(1),
+            ])
+            ->take(self::MAX_ITEMS)
+            ->get();
+
+        $items = [];
+        $seen = [];
+
+        foreach ($entities as $entity) {
+            $this->push($items, $seen, $entity, $entity->events->first());
+        }
 
         return $items;
     }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Follow;
 use App\Models\Link;
@@ -176,5 +177,30 @@ class PlayerLaunchTest extends TestCase
 
         $this->get('/series/'.$series->slug)->assertOk()
             ->assertSee('href="'.$this->launchHref(['source' => 'series', 'id' => $series->id]).'"', false);
+    }
+
+    public function test_entity_lists_play_their_filtered_list_when_something_is_playable(): void
+    {
+        $this->get('/entities/role/artist')->assertOk()->assertDontSee('Play this list');
+
+        $artist = $this->entityWithLink('https://soundcloud.com/role-artist');
+        $artist->update(['entity_status_id' => EntityStatus::ACTIVE]);
+        $artist->roles()->attach(\App\Models\Role::where('name', 'Artist')->firstOrFail());
+
+        $html = $this->get('/entities/role/artist')->assertOk()->assertSee('Play this list')->getContent();
+        $this->assertMatchesRegularExpression('#data-player-query="source=entities[^"]*filters%5Brole%5D=artist#', $html);
+
+        $html = $this->get('/entities')->assertOk()->getContent();
+        $this->assertMatchesRegularExpression('#data-player-query="source=entities[^"]*filters%5Bentity_status%5D=Active[^"]*sort=entities.created_at&amp;direction=desc#', $html);
+    }
+
+    public function test_following_list_plays_who_you_follow(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $artist = $this->entityWithLink('https://soundcloud.com/followed-artist');
+        Follow::create(['user_id' => $user->id, 'object_type' => 'entity', 'object_id' => $artist->id]);
+
+        $html = $this->actingAs($user)->get('/entities/following')->assertOk()->getContent();
+        $this->assertMatchesRegularExpression('#data-player-query="source=entities[^"]*filters%5Bdisplay_type%5D=following#', $html);
     }
 }

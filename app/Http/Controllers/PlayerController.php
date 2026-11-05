@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\EntityFilters;
 use App\Filters\EventFilters;
 use App\Models\Entity;
 use App\Services\Player\PlayerQueueBuilder;
@@ -29,17 +30,20 @@ class PlayerController extends Controller
 
     /**
      * The player queue for a source: upcoming (optionally filtered with the same
-     * filters[...] as event lists), radar, attending, a venue, or one
+     * filters[...] as event lists), an entity list (entity list filters[...],
+     * sort and direction), radar, attending, a venue, or one
      * event/series/entity, a page
      * of PlayerQueueBuilder::PAGE_SIZE items from `offset`.
      */
-    public function queue(Request $request, PlayerQueueBuilder $builder, EventFilters $eventFilters): JsonResponse
+    public function queue(Request $request, PlayerQueueBuilder $builder, EventFilters $eventFilters, EntityFilters $entityFilters): JsonResponse
     {
         $validated = $request->validate([
-            'source' => ['nullable', 'string', 'in:upcoming,radar,attending,venue,event,series,entity'],
+            'source' => ['nullable', 'string', 'in:upcoming,radar,attending,venue,event,series,entity,entities'],
             'id' => ['required_if:source,event,series', 'integer'],
             'slug' => ['required_if:source,entity,venue', 'string', 'max:255'],
             'filters' => ['nullable', 'array'],
+            'sort' => ['nullable', 'string', 'max:64'],
+            'direction' => ['nullable', 'string', 'in:asc,desc'],
             'offset' => ['nullable', 'integer', 'min:0', 'max:'.PlayerQueueBuilder::MAX_ITEMS],
         ]);
 
@@ -57,12 +61,13 @@ class PlayerController extends Controller
             $source,
             $validated['id'] ?? null,
             $validated['slug'] ?? null,
-            $source === 'upcoming' ? ($validated['filters'] ?? []) : [],
+            in_array($source, ['upcoming', 'entities'], true) ? ($validated['filters'] ?? []) : [],
+            $source === 'entities' ? [$validated['sort'] ?? null, $validated['direction'] ?? null] : null,
             $user?->id,
             Carbon::today()->toDateString(),
         ]));
 
-        $items = Cache::remember($key, self::QUEUE_CACHE_SECONDS, function () use ($source, $validated, $user, $builder, $eventFilters) {
+        $items = Cache::remember($key, self::QUEUE_CACHE_SECONDS, function () use ($source, $validated, $user, $builder, $eventFilters, $entityFilters) {
             switch ($source) {
                 // guests got a 401 above
                 case 'radar':
@@ -75,6 +80,8 @@ class PlayerController extends Controller
                     return $builder->event((int) $validated['id'], $user);
                 case 'series':
                     return $builder->series((int) $validated['id'], $user);
+                case 'entities':
+                    return $builder->entities($user, $entityFilters, $validated['filters'] ?? [], $validated['sort'] ?? null, $validated['direction'] ?? null);
                 case 'entity':
                     $entity = Entity::where('slug', $validated['slug'])->first();
 

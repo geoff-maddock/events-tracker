@@ -10,7 +10,10 @@ and Bandcamp links on their entity pages. It opens in its own small window ("arc
 it keeps playing while you browse the site.
 - **Where to start it:** "Listen" in the sidebar (upcoming shows), "Play my radar" on `/radar`,
   "Play this tag" on tag pages, "Play this list" on event lists (it plays what the list shows: its
-  filters, date range, venue, or the shows you're attending; the past-events archive has none), and the headphones icon ("Add to player") on event, artist
+  filters, date range, venue, or the shows you're attending; the past-events archive has none),
+  "Play this list" on entity lists (`/entities`, role, type and tag lists, and who you follow: it
+  plays the list's playable artists with its filters and sort, each with their next show; the
+  button is hidden when nothing on the list is playable), and the headphones icon ("Add to player") on event, artist
   and series pages. When the player is already open, the icon adds to its queue rather than
   replacing it.
 - **The queue** has one item per artist, in event order, from upcoming events the viewer can see,
@@ -25,7 +28,7 @@ it keeps playing while you browse the site.
   embed has no API, so Bandcamp items only move on with next/previous; an artist with both plays
   SoundCloud first. Space and OS media keys play/pause SoundCloud items.
 - **Star** follows the artist (signed-in users). A reload resumes the same queue and artist.
-- Endpoints: `GET /player/queue?source=upcoming|radar|attending|venue|event|series|entity&filters[...]&offset=` (each queue is built once and cached for 10 minutes per viewer) and
+- Endpoints: `GET /player/queue?source=upcoming|radar|attending|venue|event|series|entity|entities&filters[...]&offset=` (`entities` also takes `sort` and `direction`) (each queue is built once and cached for 10 minutes per viewer) and
   `GET /player/entities/{slug}/sources`. The CSP allows `https://w.soundcloud.com` scripts for the
   SoundCloud Widget API.
 

@@ -29,6 +29,9 @@ Entities @include('entities.title-crumbs')
 		<i class="bi bi-plus-lg mr-2"></i>
 		Add Entity
 	</a>
+	@if (!empty($playerQuery))
+	@include('player.launch-tw', ['query' => $playerQuery, 'label' => 'Play this list'])
+	@endif
 	<a href="{!! URL::route('entities.role', ['role' => 'artist']) !!}" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-card transition-colors text-sm">
 		Artists
 	</a>

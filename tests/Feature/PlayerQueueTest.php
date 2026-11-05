@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\Follow;
@@ -356,6 +357,54 @@ class PlayerQueueTest extends TestCase
             ->assertJsonPath('items.0.event.id', $event->id);
 
         $this->getJson('/player/queue?source=entity&slug=nobody-here')->assertNotFound();
+    }
+
+    public function test_entities_source_plays_an_entity_list_with_its_filters_and_sort(): void
+    {
+        $tag = Tag::factory()->create(['slug' => 'noise', 'name' => 'noise']);
+        $zed = $this->artist('https://soundcloud.com/zed');
+        $zed->update(['name' => 'Zed', 'entity_status_id' => EntityStatus::ACTIVE]);
+        $abe = $this->artist('https://abe.bandcamp.com/');
+        $abe->update(['name' => 'Abe', 'entity_status_id' => EntityStatus::ACTIVE]);
+        $untagged = $this->artist('https://soundcloud.com/untagged');
+        $untagged->update(['entity_status_id' => EntityStatus::ACTIVE]);
+        $silent = Entity::factory()->create(['slug' => 'silent-'.Str::random(6), 'entity_status_id' => EntityStatus::ACTIVE]);
+        $venue = $this->artist('https://venue.bandcamp.com/', 'Venue');
+        $venue->update(['entity_status_id' => EntityStatus::ACTIVE]);
+
+        foreach ([$zed, $abe, $silent, $venue] as $entity) {
+            $entity->tags()->attach($tag);
+        }
+
+        $query = '?'.http_build_query(['source' => 'entities', 'filters' => ['tag' => 'noise', 'entity_status' => 'Active']]);
+        $this->assertSame([$abe->id, $zed->id], $this->queueEntityIds($query));
+
+        $query = '?'.http_build_query(['source' => 'entities', 'filters' => ['tag' => 'noise'], 'sort' => 'entities.name', 'direction' => 'desc']);
+        $this->assertSame([$zed->id, $abe->id], $this->queueEntityIds($query));
+    }
+
+    public function test_entities_source_carries_each_entitys_next_visible_show(): void
+    {
+        $artist = $this->artist('https://soundcloud.com/next-show');
+        $artist->update(['name' => 'Next Show Artist']);
+        $later = $this->eventWith([$artist], ['start_at' => now()->addDays(9)]);
+        $this->eventWith([$artist], ['start_at' => now()->addDays(4), 'visibility_id' => Visibility::VISIBILITY_PRIVATE]);
+        $this->eventWith([$artist], ['start_at' => now()->subDays(4)]);
+
+        $this->getJson('/player/queue?'.http_build_query(['source' => 'entities', 'filters' => ['name' => 'Next Show Artist']]))
+            ->assertOk()
+            ->assertJsonPath('items.0.entity.id', $artist->id)
+            ->assertJsonPath('items.0.event.id', $later->id);
+    }
+
+    public function test_entities_source_hides_unlisted_entities_from_guests_and_ignores_unknown_sorts(): void
+    {
+        $artist = $this->artist('https://soundcloud.com/unlisted-artist');
+        $artist->update(['name' => 'Unlisted Artist', 'entity_status_id' => EntityStatus::UNLISTED]);
+        $query = '?'.http_build_query(['source' => 'entities', 'filters' => ['name' => 'Unlisted Artist'], 'sort' => 'password']);
+
+        $this->assertSame([], $this->queueEntityIds($query));
+        $this->assertSame([$artist->id], $this->queueEntityIds($query, User::factory()->create()));
     }
 
     public function test_invalid_sources_are_rejected(): void

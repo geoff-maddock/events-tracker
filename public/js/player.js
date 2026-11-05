@@ -104,14 +104,32 @@
     function describeSource(query) {
         var params = new URLSearchParams(query);
         var source = params.get('source') || 'upcoming';
-        var labels = { radar: 'Your radar', event: 'Event lineup', series: 'Series', entity: 'Artist' };
+        var labels = {
+            radar: 'Your radar',
+            attending: 'Shows you\'re attending',
+            event: 'Event lineup',
+            series: 'Series',
+            entity: 'Artist',
+        };
         if (labels[source]) {
             return labels[source];
         }
+        if (source === 'venue') {
+            return 'Shows at ' + (params.get('slug') || 'a venue').replace(/-/g, ' ');
+        }
         var filters = [];
+        var following = false;
         params.forEach(function (value, key) {
             var match = key.match(/^filters\[([^\]]+)\](?:\[([^\]]+)\])?/);
             if (!match || value === '') {
+                return;
+            }
+            if (source === 'entities' && match[1] === 'display_type') {
+                following = value === 'following';
+                return;
+            }
+            // the entity list's default; saying so on every queue is noise
+            if (source === 'entities' && match[1] === 'entity_status' && value === 'Active') {
                 return;
             }
             if (match[1] === 'start_at' && (match[2] === 'start' || match[2] === 'end')) {
@@ -120,6 +138,10 @@
                 filters.push(match[1].replace(/_/g, ' ') + ': ' + value);
             }
         });
+        if (source === 'entities') {
+            var name = following ? 'Artists you follow' : 'Artists';
+            return filters.length ? name + ' · ' + filters.join(', ') : name;
+        }
         // a filtered queue mirrors its list, so it can include past shows
         return filters.length ? 'Shows · ' + filters.join(', ') : 'Upcoming shows';
     }
