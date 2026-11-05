@@ -131,4 +131,50 @@ class PlayerLaunchTest extends TestCase
             ->assertOk()
             ->assertSee('href="'.$this->launchHref(['source' => 'series', 'id' => $series->id]).'"', false);
     }
+
+    public function test_past_events_list_has_no_play_button(): void
+    {
+        $this->get('/events/past')->assertOk()->assertDontSee('Play this list');
+    }
+
+    public function test_attending_and_venue_lists_play_their_own_queues(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $this->actingAs($user)->get('/events/attending')->assertOk()
+            ->assertSee('href="'.$this->launchHref(['source' => 'attending']).'"', false);
+
+        $venue = Entity::factory()->create(['slug' => 'some-venue']);
+        $this->get('/events/venue/'.$venue->slug)->assertOk()
+            ->assertSee('href="'.$this->launchHref(['source' => 'venue', 'slug' => 'some-venue']).'"', false);
+    }
+
+    public function test_by_date_list_plays_its_date_range(): void
+    {
+        $html = $this->get('/events/by-date/2026/11/14')->assertOk()->getContent();
+
+        $this->assertStringContainsString(e(http_build_query(['filters' => ['start_at' => [
+            'start' => '2026-11-14 00:00:01',
+            'end' => '2026-11-14 23:59:59',
+        ]]])), $html);
+    }
+
+    public function test_event_whose_only_audio_is_the_venue_has_no_add_button(): void
+    {
+        $event = Event::factory()->create(['slug' => 'event-'.Str::random(8), 'start_at' => now()->addDays(2), 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $venue = $this->entityWithLink('https://venue.bandcamp.com/');
+        $venue->roles()->attach(\App\Models\Role::where('name', 'Venue')->firstOrFail());
+        $event->entities()->attach($venue);
+
+        $this->get('/events/'.$event->slug)->assertOk()->assertDontSee('aria-label="Add to player"', false);
+    }
+
+    public function test_series_with_audio_only_on_its_upcoming_lineups_offers_add_to_player(): void
+    {
+        $series = Series::factory()->create(['slug' => 'series-'.Str::random(8), 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $event = Event::factory()->create(['series_id' => $series->id, 'start_at' => now()->addDays(3), 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $event->entities()->attach($this->entityWithLink('https://soundcloud.com/lineup-artist'));
+
+        $this->get('/series/'.$series->slug)->assertOk()
+            ->assertSee('href="'.$this->launchHref(['source' => 'series', 'id' => $series->id]).'"', false);
+    }
 }

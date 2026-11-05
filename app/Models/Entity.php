@@ -559,6 +559,23 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
+     * Whether every role is Venue: a venue's Bandcamp/SoundCloud isn't the act playing.
+     */
+    public function isVenueOnly(): bool
+    {
+        return $this->roles->isNotEmpty()
+            && $this->roles->every(fn (Role $role) => strcasecmp((string) $role->name, 'Venue') === 0);
+    }
+
+    /**
+     * Whether the audio player would queue this entity from an event or series lineup.
+     */
+    public function isPlayable(): bool
+    {
+        return $this->hasAudioLinks() && !$this->isVenueOnly();
+    }
+
+    /**
      * Return the first soundcloud link.
      */
     public function getSoundcloudLinkAttribute(): ?Link

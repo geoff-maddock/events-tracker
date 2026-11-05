@@ -84,9 +84,11 @@ class EventEmbedsTest extends TestCase
         $this->getJson('/events/'.$event->slug.'/embeds')->assertOk();
         $countAfterFirst = $fake->requestCount;
 
-        // Bump updated_at to invalidate the slug-based cache key. Force a distinct
-        // timestamp since touch() within the same second would collide with the
-        // first-request cache key.
+        // Edit the event's link and bump updated_at to invalidate the slug-based
+        // cache key (a distinct timestamp, since touch() within the same second
+        // would collide with the first key). An unchanged URL would be served from
+        // the per-URL source cache, so the edit changes it.
+        $event->description = 'Stream: https://soundcloud.com/example/track-invalidate-edited';
         $event->updated_at = $event->updated_at->copy()->addSeconds(5);
         $event->save();
 

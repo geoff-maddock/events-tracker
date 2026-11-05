@@ -74,7 +74,7 @@ Route::get('popular', [\App\Http\Controllers\PagesController::class, 'popular'])
 // Site-wide audio player (#2366): the queue is metadata only; sources resolve per entity and fetch from Bandcamp/SoundCloud, so they're throttled
 Route::get('player', [\App\Http\Controllers\PlayerController::class, 'show'])->name('player.show');
 Route::get('player/queue', [\App\Http\Controllers\PlayerController::class, 'queue'])->name('player.queue')->middleware('throttle:30,1');
-Route::get('player/entities/{entity}/sources', [\App\Http\Controllers\PlayerController::class, 'sources'])->name('player.sources')->middleware('throttle:60,1');
+Route::get('player/entities/{entity}/sources', [\App\Http\Controllers\PlayerController::class, 'sources'])->name('player.sources')->middleware('throttle:120,1');
 
 // Post-signup "Getting To Know You" onboarding (issue #901)
 Route::middleware('auth')->group(function () {

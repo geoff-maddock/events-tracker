@@ -284,6 +284,11 @@ class EventsController extends Controller
             ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
                 'slug' => $slug,
                 'dateFilterDescription' => $dateFilterDescription,
+                // the page's date range, as the start_at filter (inclusive both ends)
+                'playerQuery' => self::playerQuery($listResultSet, ['start_at' => [
+                    'start' => $start_at_from->copy()->addSecond()->toDateTimeString(),
+                    'end' => $start_at_to->copy()->subSecond()->toDateTimeString(),
+                ]]),
             ]))
             ->with(compact('events'))
             ->render();
@@ -366,15 +371,33 @@ class EventsController extends Controller
                 'direction' => $listResultSet->getSortDirection(),
                 'hasFilter' => $this->hasFilter,
                 'filters' => $listResultSet->getFilters(),
-                // what "Play this list" hands the audio player (#2366): the user's
-                // filters plus the page's own (e.g. the tag on /events/tag/{slug})
-                'playerFilters' => self::playerFilters(array_merge($listResultSet->getFilters(), $listResultSet->getParentFilters())),
+                // what "Play this list" hands the audio player (#2366): by default the
+                // user's filters plus the page's own (e.g. the tag on /events/tag/{slug});
+                // lists narrowed some other way pass their own playerQuery in $extra,
+                // or null to hide the button
+                'playerQuery' => self::playerQuery($listResultSet),
             ],
             $this->getFilterOptions(),
             $this->getListControlOptions(),
             // last, so a caller's value always wins
             $extra
         );
+    }
+
+    /**
+     * The audio player queue matching a list: upcoming (then past) events under
+     * the list's filters, with $filters (e.g. a page's date range) on top.
+     *
+     * @param array<string, mixed> $filters
+     *
+     * @return array<string, mixed>
+     */
+    private static function playerQuery(ListResultSet $listResultSet, array $filters = []): array
+    {
+        return [
+            'source' => 'upcoming',
+            'filters' => self::playerFilters(array_merge($listResultSet->getFilters(), $listResultSet->getParentFilters(), $filters)),
+        ];
     }
 
     /**
@@ -976,6 +999,8 @@ class EventsController extends Controller
                 // shares events.index-tw with /events, so give it its own title
                 'pageTitle' => 'Past Events — Pittsburgh Concert & Show Archive',
                 'pageDescription' => 'Browse past concerts, club nights, and events in Pittsburgh, newest first.',
+                // the player's lists lead with upcoming shows; this archive has no match
+                'playerQuery' => null,
             ]))
             ->with(compact('events'));
     }
@@ -1008,6 +1033,7 @@ class EventsController extends Controller
                 'filterRoute' => 'events.attending',
                 'key' => 'internal_event_attending',
                 'redirect' => 'events.attending',
+                'playerQuery' => ['source' => 'attending'],
             ]))
             ->with(compact('events'))
             ->with(['type' => 'Attending']);
@@ -2065,7 +2091,13 @@ class EventsController extends Controller
             ->paginate($listResultSet->getLimit());
 
         return view('events.index-tw')
-            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
+                // same window as the query above
+                'playerQuery' => self::playerQuery($listResultSet, ['start_at' => [
+                    'start' => $cdate_yesterday->copy()->startOfDay()->addSecond()->toDateTimeString(),
+                    'end' => $cdate_tomorrow->copy()->startOfDay()->subSecond()->toDateTimeString(),
+                ]]),
+            ]))
             ->with(compact('events'))
             ->with(compact('cdate'));
     }
@@ -2114,7 +2146,9 @@ class EventsController extends Controller
             ->paginate($this->limit);
 
         return view('events.index-tw')
-            ->with($this->finishEventList($listParamSessionStore, $listResultSet))
+            ->with($this->finishEventList($listParamSessionStore, $listResultSet, extra: [
+                'playerQuery' => ['source' => 'venue', 'slug' => strtolower($slug)],
+            ]))
             ->with(compact('events'))
             ->with(compact('past_events'))
             ->with(compact('slug'));

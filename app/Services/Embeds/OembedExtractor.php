@@ -167,7 +167,7 @@ class OembedExtractor
         }
 
         foreach ($urls as $url) {
-            foreach ($this->resolveRawSources($url) as $source) {
+            foreach ($this->getRawSourcesForUrl($url) as $source) {
                 $embeds[] = $source['provider'] === 'soundcloud'
                     ? sprintf($this->config['soundcloud_layout'], $this->applySoundcloudSizeParams($source['raw']))
                     : sprintf($this->config['bandcamp_layout'], e($this->convertBandcampMetaOgVideo($source['raw'])));
@@ -181,32 +181,40 @@ class OembedExtractor
      * Playable sources for one SoundCloud or Bandcamp URL, for the audio player (#2366).
      *
      * Each source is ['provider' => 'soundcloud'|'bandcamp', 'url' => page URL,
-     * 'src' => iframe src at the medium layout, 'title' => ?string]. Results are
-     * cached per URL; a URL that resolves to nothing is cached for a shorter time
-     * so a broken link isn't fetched on every play.
+     * 'src' => iframe src at the medium layout, 'title' => ?string].
      *
      * @return list<array{provider: string, url: string, src: string, title: ?string}>
      */
     public function getSourcesForUrl(string $url): array
     {
-        $key = 'player-sources:'.sha1($url);
+        $config = $this->getLayoutConfig('medium');
+
+        return array_map(fn (array $source) => [
+            'provider' => $source['provider'],
+            'url' => $source['url'],
+            'src' => $source['provider'] === 'soundcloud' ? $source['raw'] : $source['raw'].$config['bandcamp'],
+            'title' => $source['title'],
+        ], $this->getRawSourcesForUrl($url));
+    }
+
+    /**
+     * resolveRawSources(), cached per URL and shared by the page embeds and the
+     * player, so a Bandcamp container is resolved once for both. A URL that
+     * resolves to nothing is cached for a shorter time so a broken link isn't
+     * fetched on every view.
+     *
+     * @return list<array{provider: string, url: string, raw: string, title: ?string}>
+     */
+    protected function getRawSourcesForUrl(string $url): array
+    {
+        $key = 'audio-sources:'.sha1($url);
         $cached = Cache::get($key);
 
         if (is_array($cached)) {
             return $cached;
         }
 
-        $config = $this->getLayoutConfig('medium');
-        $sources = [];
-
-        foreach ($this->resolveRawSources($url) as $source) {
-            $sources[] = [
-                'provider' => $source['provider'],
-                'url' => $source['url'],
-                'src' => $source['provider'] === 'soundcloud' ? $source['raw'] : $source['raw'].$config['bandcamp'],
-                'title' => $source['title'],
-            ];
-        }
+        $sources = $this->resolveRawSources($url);
 
         Cache::put($key, $sources, $sources === [] ? self::FAILED_SOURCES_TTL_SECONDS : self::CACHE_TTL_SECONDS);
 

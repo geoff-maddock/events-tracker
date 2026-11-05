@@ -26,6 +26,10 @@
     }
 
     var STORAGE_KEY = 'arcane-player:v2';
+    // a saved queue older than this is rebuilt rather than resumed, so it can't
+    // go on playing shows that have since passed
+    var MAX_RESUME_AGE_MS = 60 * 60 * 1000;
+    var SOURCE_RETRY_DELAY_MS = 1500;
     // start fetching the next page when this close to the end of the queue
     var PREFETCH_DISTANCE = 2;
 
@@ -152,6 +156,7 @@
                 query: state.query,
                 index: state.index,
                 nextOffset: state.nextOffset,
+                savedAt: Date.now(),
                 // sources are re-fetched (and served from the server cache) on reload
                 items: state.items.map(function (item) {
                     return { entity: item.entity, event: item.event, providers: item.providers, sources_url: item.sources_url };
@@ -165,7 +170,8 @@
     function restore() {
         try {
             var saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || 'null');
-            if (saved && saved.query === state.query && Array.isArray(saved.items) && saved.items.length) {
+            var fresh = saved && typeof saved.savedAt === 'number' && Date.now() - saved.savedAt < MAX_RESUME_AGE_MS;
+            if (fresh && saved.query === state.query && Array.isArray(saved.items) && saved.items.length) {
                 return saved;
             }
         } catch {
@@ -178,6 +184,7 @@
 
     function prepare(item) {
         item.sources = null;
+        item.pending = null;
         item.state = 'idle';
         return item;
     }
@@ -227,16 +234,17 @@
     }
 
     function replaceQueue(query, autoplay) {
-        state.query = query;
-        el.source.textContent = describeSource(query);
-        try {
-            window.history.replaceState(null, '', window.location.pathname + (query ? '?' + query : ''));
-        } catch {
-            // history unavailable
-        }
         return loadQueue(query, 0).then(function (page) {
             if (page === null) {
-                return;
+                return; // keep playing the current queue; loadQueue said what went wrong
+            }
+            // only now that the new list loaded does it become the current queue
+            state.query = query;
+            el.source.textContent = describeSource(query);
+            try {
+                window.history.replaceState(null, '', window.location.pathname + (query ? '?' + query : ''));
+            } catch {
+                // history unavailable
             }
             state.items = page.items;
             state.nextOffset = page.nextOffset;
@@ -281,8 +289,25 @@
         return state.loadingMore;
     }
 
+    // every page of a queue (an event or series can pass one page), or null on failure
+    function loadWholeQueue(query) {
+        var items = [];
+
+        function from(offset) {
+            return loadQueue(query, offset).then(function (page) {
+                if (page === null) {
+                    return items.length ? { items: items } : null;
+                }
+                items = items.concat(page.items);
+                return page.nextOffset === null ? { items: items } : from(page.nextOffset);
+            });
+        }
+
+        return from(0);
+    }
+
     function addToQueue(query, playNow) {
-        return loadQueue(query, 0).then(function (page) {
+        return loadWholeQueue(query).then(function (page) {
             if (page === null) {
                 return;
             }
@@ -348,24 +373,45 @@
         });
     }
 
+    // an artist's sources: an array (empty when they have nothing playable), or
+    // null when the lookup failed (rate limit, network); failures aren't kept, so
+    // the artist is tried again next time rather than struck out
     function ensureSources(item, i) {
         if (item.sources !== null) {
             return Promise.resolve(item.sources);
         }
+        if (item.pending) {
+            return item.pending;
+        }
         item.state = 'loading';
         refreshQueueItem(i);
-        return fetchJson(item.sources_url)
-            .then(function (data) {
-                item.sources = Array.isArray(data.sources) ? data.sources : [];
-            })
-            .catch(function () {
-                item.sources = [];
-            })
-            .then(function () {
-                item.state = item.sources.length ? 'ready' : 'unavailable';
-                refreshQueueItem(i);
-                return item.sources;
+
+        function lookup() {
+            return fetchJson(item.sources_url).then(function (data) {
+                return Array.isArray(data.sources) ? data.sources : [];
             });
+        }
+
+        item.pending = lookup()
+            .catch(function () {
+                return new Promise(function (resolve) {
+                    window.setTimeout(resolve, SOURCE_RETRY_DELAY_MS);
+                }).then(lookup);
+            })
+            .then(function (sources) {
+                item.sources = sources;
+                item.state = sources.length ? 'ready' : 'unavailable';
+                return sources;
+            }, function () {
+                item.state = 'idle';
+                return null;
+            })
+            .then(function (sources) {
+                item.pending = null;
+                refreshQueueItem(i);
+                return sources;
+            });
+        return item.pending;
     }
 
     // ---- playback ------------------------------------------------------
@@ -404,9 +450,11 @@
                 if (state.index !== target) {
                     return; // the user moved on while this was loading
                 }
-                if (!sources.length) {
+                if (sources === null || !sources.length) {
                     skipped++;
-                    setStatus('No playable tracks for ' + item.entity.name + ', skipping.');
+                    setStatus(sources === null
+                        ? 'Couldn’t load ' + item.entity.name + ' right now, skipping.'
+                        : 'No playable tracks for ' + item.entity.name + ', skipping.');
                     attempt(target + step);
                     return;
                 }
@@ -604,13 +652,24 @@
                 'X-CSRF-TOKEN': config.csrf,
             },
         }).then(function (response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
+            if (response.status === 401) {
+                // signed out since the player opened
+                config.signedIn = false;
+                updateStar(item);
+                setStatus('Sign in to follow artists.');
+                return;
             }
-            item.entity.followed = !following;
-            save();
-            updateStar(item);
-            setStatus((following ? 'Unfollowed ' : 'Following ') + item.entity.name + '.');
+            return response.json().then(function (data) {
+                // trust the server's answer, not the status code: only a JSON
+                // reply with `following` means the change was made
+                if (!response.ok || typeof data.following !== 'boolean') {
+                    throw new Error('HTTP ' + response.status);
+                }
+                item.entity.followed = data.following;
+                save();
+                updateStar(item);
+                setStatus((data.following ? 'Following ' : 'Unfollowed ') + item.entity.name + '.');
+            });
         }).catch(function () {
             setStatus('Could not update follow. Try again.');
         }).then(function () {

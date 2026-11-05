@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Filters\EventFilters;
 use App\Models\Entity;
 use App\Services\Player\PlayerQueueBuilder;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -14,6 +16,8 @@ use Illuminate\View\View;
  */
 class PlayerController extends Controller
 {
+    public const QUEUE_CACHE_SECONDS = 600;
+
     /**
      * The pop-out player window. It reads its queue source from its own query
      * string (the same parameters queue() takes) and fetches everything else.
@@ -25,15 +29,16 @@ class PlayerController extends Controller
 
     /**
      * The player queue for a source: upcoming (optionally filtered with the same
-     * filters[...] as event lists), radar, or one event/series/entity, a page
+     * filters[...] as event lists), radar, attending, a venue, or one
+     * event/series/entity, a page
      * of PlayerQueueBuilder::PAGE_SIZE items from `offset`.
      */
     public function queue(Request $request, PlayerQueueBuilder $builder, EventFilters $eventFilters): JsonResponse
     {
         $validated = $request->validate([
-            'source' => ['nullable', 'string', 'in:upcoming,radar,event,series,entity'],
+            'source' => ['nullable', 'string', 'in:upcoming,radar,attending,venue,event,series,entity'],
             'id' => ['required_if:source,event,series', 'integer'],
-            'slug' => ['required_if:source,entity', 'string', 'max:255'],
+            'slug' => ['required_if:source,entity,venue', 'string', 'max:255'],
             'filters' => ['nullable', 'array'],
             'offset' => ['nullable', 'integer', 'min:0', 'max:'.PlayerQueueBuilder::MAX_ITEMS],
         ]);
@@ -41,26 +46,43 @@ class PlayerController extends Controller
         $user = $request->user();
         $source = $validated['source'] ?? 'upcoming';
 
-        switch ($source) {
-            case 'radar':
-                if (!$user) {
-                    return response()->json(['message' => 'Sign in to play your radar.'], 401);
-                }
-                $items = $builder->radar($user);
-                break;
-            case 'event':
-                $items = $builder->event((int) $validated['id'], $user);
-                break;
-            case 'series':
-                $items = $builder->series((int) $validated['id'], $user);
-                break;
-            case 'entity':
-                $entity = Entity::where('slug', $validated['slug'])->first();
-                $items = $entity ? $builder->entity($entity, $user) : null;
-                break;
-            default:
-                $items = $builder->upcoming($user, $eventFilters, $validated['filters'] ?? []);
+        if (in_array($source, ['radar', 'attending'], true) && !$user) {
+            return response()->json(['message' => 'Sign in to play your '.$source.'.'], 401);
         }
+
+        // Built once and cached briefly, so paging through a queue doesn't rebuild it
+        // for every page and offsets stay stable between pages. Keyed by viewer
+        // (visibility differs per user) and day (upcoming/past flips at midnight).
+        $key = 'player-queue:'.sha1((string) json_encode([
+            $source,
+            $validated['id'] ?? null,
+            $validated['slug'] ?? null,
+            $source === 'upcoming' ? ($validated['filters'] ?? []) : [],
+            $user?->id,
+            Carbon::today()->toDateString(),
+        ]));
+
+        $items = Cache::remember($key, self::QUEUE_CACHE_SECONDS, function () use ($source, $validated, $user, $builder, $eventFilters) {
+            switch ($source) {
+                // guests got a 401 above
+                case 'radar':
+                    return $user ? $builder->radar($user) : null;
+                case 'attending':
+                    return $user ? $builder->attending($user) : null;
+                case 'venue':
+                    return $builder->venue((string) $validated['slug'], $user);
+                case 'event':
+                    return $builder->event((int) $validated['id'], $user);
+                case 'series':
+                    return $builder->series((int) $validated['id'], $user);
+                case 'entity':
+                    $entity = Entity::where('slug', $validated['slug'])->first();
+
+                    return $entity ? $builder->entity($entity, $user) : null;
+                default:
+                    return $builder->upcoming($user, $eventFilters, $validated['filters'] ?? []);
+            }
+        });
 
         if ($items === null) {
             return response()->json(['message' => 'Not found.'], 404);
@@ -73,7 +95,7 @@ class PlayerController extends Controller
 
         return response()->json([
             'source' => $source,
-            'items' => array_slice($items, $offset, PlayerQueueBuilder::PAGE_SIZE),
+            'items' => $builder->finish(array_slice($items, $offset, PlayerQueueBuilder::PAGE_SIZE), $user),
             'offset' => $offset,
             'next_offset' => $nextOffset < count($items) ? $nextOffset : null,
             'total' => count($items),

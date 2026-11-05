@@ -53,15 +53,54 @@ class PlayerQueueBuilder
         $items = [];
         $seen = [];
 
-        $upcoming = Event::query()->visible($user)->where('events.start_at', '>=', Carbon::today()->startOfDay());
+        $upcoming = Event::query()->visible($user)->future();
         $this->collect($filters === [] ? $upcoming : $eventFilters->applyFilters($upcoming, $filters), $items, $seen);
 
         if ($filters !== []) {
-            $past = Event::query()->visible($user)->where('events.start_at', '<', Carbon::today()->startOfDay());
-            $this->collect($eventFilters->applyFilters($past, $filters), $items, $seen, 'desc');
+            $this->collect($eventFilters->applyFilters(Event::query()->visible($user)->past(), $filters), $items, $seen, 'desc');
         }
 
-        return $this->finish($items, $user);
+        return $items;
+    }
+
+    /**
+     * Events the user is attending, like /events/attending: upcoming ones
+     * first (soonest first), then past ones (most recent first).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function attending(User $user): array
+    {
+        $ids = $user->getAttending()->pluck('events.id');
+        $items = [];
+        $seen = [];
+
+        $this->collect(Event::query()->visible($user)->future()->whereIn('events.id', $ids), $items, $seen);
+        $this->collect(Event::query()->visible($user)->past()->whereIn('events.id', $ids), $items, $seen, 'desc');
+
+        return $items;
+    }
+
+    /**
+     * Events at a venue, like /events/venue/{slug}: upcoming first, then past.
+     *
+     * @return list<array<string, mixed>>|null null when there's no such venue
+     */
+    public function venue(string $slug, ?User $user): ?array
+    {
+        $slug = strtolower($slug);
+
+        if (!Entity::where('slug', $slug)->exists()) {
+            return null;
+        }
+
+        $items = [];
+        $seen = [];
+
+        $this->collect(Event::getByVenue($slug)->visible($user)->future(), $items, $seen);
+        $this->collect(Event::getByVenue($slug)->visible($user)->past(), $items, $seen, 'desc');
+
+        return $items;
     }
 
     /**
@@ -88,7 +127,7 @@ class PlayerQueueBuilder
             $seen
         );
 
-        return $this->finish($items, $user);
+        return $items;
     }
 
     /**
@@ -104,7 +143,7 @@ class PlayerQueueBuilder
             return null;
         }
 
-        return $this->fromEvents($query, $user);
+        return $this->fromEvents($query);
     }
 
     /**
@@ -133,7 +172,7 @@ class PlayerQueueBuilder
 
         $this->collect($events, $items, $seen);
 
-        return $this->finish($items, $user);
+        return $items;
     }
 
     /**
@@ -153,7 +192,7 @@ class PlayerQueueBuilder
         $seen = [];
         $this->push($items, $seen, $entity, $nextEvent, false);
 
-        return $this->finish($items, $user);
+        return $items;
     }
 
     /**
@@ -189,14 +228,14 @@ class PlayerQueueBuilder
      *
      * @return list<array<string, mixed>>
      */
-    protected function fromEvents(Builder $events, ?User $user): array
+    protected function fromEvents(Builder $events): array
     {
         $items = [];
         $seen = [];
 
         $this->collect($events, $items, $seen);
 
-        return $this->finish($items, $user);
+        return $items;
     }
 
     /**
@@ -255,9 +294,7 @@ class PlayerQueueBuilder
         }
 
         // a venue's Bandcamp/SoundCloud isn't the act playing; keep venues that also perform
-        if ($skipVenues && $entity->roles->isNotEmpty()
-            && $entity->roles->every(fn ($role) => strcasecmp((string) $role->name, 'Venue') === 0)
-        ) {
+        if ($skipVenues && $entity->isVenueOnly()) {
             return;
         }
 
@@ -287,13 +324,14 @@ class PlayerQueueBuilder
     }
 
     /**
-     * Fill in whether $user follows each item's entity.
+     * Fill in whether $user follows each item's entity. Run on the page being
+     * returned, so a cached queue never carries one user's follows to another.
      *
      * @param list<array<string, mixed>> $items
      *
      * @return list<array<string, mixed>>
      */
-    protected function finish(array $items, ?User $user): array
+    public function finish(array $items, ?User $user): array
     {
         if (!$user || $items === []) {
             return $items;

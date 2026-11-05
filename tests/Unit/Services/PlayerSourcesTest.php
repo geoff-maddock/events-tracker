@@ -68,6 +68,18 @@ class PlayerSourcesTest extends TestCase
         $this->assertSame(['https://artist.bandcamp.com/album/missing'], $provider->fetched);
     }
 
+    public function test_page_embeds_and_the_player_share_one_lookup_per_url(): void
+    {
+        $provider = new CannedPageProvider();
+        $provider->pages['https://artist.bandcamp.com/album/x'] = '<meta property="og:video" content="https://bandcamp.com/EmbeddedPlayer/v=2/album=1/">';
+        $extractor = new OembedExtractor($provider);
+
+        $this->assertCount(1, $extractor->extractEmbedsFromUrls(['https://artist.bandcamp.com/album/x']));
+        $this->assertCount(1, $extractor->getSourcesForUrl('https://artist.bandcamp.com/album/x'));
+
+        $this->assertSame(['https://artist.bandcamp.com/album/x'], $provider->fetched);
+    }
+
     public function test_audio_urls_are_recognised(): void
     {
         $this->assertTrue(OembedExtractor::isAudioUrl('https://soundcloud.com/artist'));

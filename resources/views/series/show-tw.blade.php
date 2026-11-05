@@ -37,7 +37,7 @@
 				<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{{ $series->name }}</h1>
 
 				<div class="flex items-center gap-2">
-					@if ($series->entities->contains->hasAudioLinks())
+					@if ($playerAvailable ?? false)
 						@include('player.launch-tw', ['query' => ['source' => 'series', 'id' => $series->id], 'mode' => 'enqueue', 'label' => 'Add to player', 'variant' => 'icon'])
 					@endif
 					@if ($signedIn)

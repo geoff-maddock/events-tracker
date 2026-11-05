@@ -195,6 +195,65 @@ class PlayerQueueTest extends TestCase
         $this->getJson('/player/queue?offset=-1')->assertStatus(422);
     }
 
+    public function test_attending_source_mirrors_the_attending_list(): void
+    {
+        $this->getJson('/player/queue?source=attending')->assertStatus(401);
+
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $upcoming = $this->artist();
+        $past = $this->artist();
+        $notAttending = $this->artist();
+        foreach ([[$upcoming, 3], [$past, -3]] as [$artist, $days]) {
+            $event = $this->eventWith([$artist], ['start_at' => now()->addDays($days)]);
+            EventResponse::create(['event_id' => $event->id, 'user_id' => $user->id, 'response_type_id' => ResponseType::ATTENDING]);
+        }
+        $this->eventWith([$notAttending]);
+
+        $this->assertSame([$upcoming->id, $past->id], $this->queueEntityIds('?source=attending', $user));
+    }
+
+    public function test_venue_source_plays_the_venue_upcoming_then_past(): void
+    {
+        $venue = Entity::factory()->create(['slug' => 'the-venue']);
+        $upcoming = $this->artist();
+        $past = $this->artist();
+        $elsewhere = $this->artist();
+        $this->eventWith([$past], ['venue_id' => $venue->id, 'start_at' => now()->subWeek()]);
+        $this->eventWith([$upcoming], ['venue_id' => $venue->id, 'start_at' => now()->addWeek()]);
+        $this->eventWith([$elsewhere]);
+
+        $this->assertSame([$upcoming->id, $past->id], $this->queueEntityIds('?source=venue&slug=the-venue'));
+        $this->getJson('/player/queue?source=venue&slug=no-such-venue')->assertNotFound();
+    }
+
+    public function test_pages_of_a_queue_stay_consistent_while_events_change(): void
+    {
+        foreach (range(1, 25) as $day) {
+            $this->eventWith([$this->artist('https://soundcloud.com/artist-'.$day)], ['start_at' => now()->addDays($day + 1)]);
+        }
+
+        $first = $this->getJson('/player/queue')->assertOk();
+        $lastOfFirstPage = $first->json('items.19.entity.id');
+
+        // a new show sorting first would shift every later position if each page rebuilt the queue
+        $this->eventWith([$this->artist()], ['start_at' => now()->addHours(2)]);
+
+        $second = $this->getJson('/player/queue?offset=20')->assertOk()->assertJsonCount(5, 'items');
+        $this->assertNotContains($lastOfFirstPage, array_column(array_column($second->json('items'), 'entity'), 'id'));
+    }
+
+    public function test_cached_queue_marks_follows_for_each_viewer(): void
+    {
+        $artist = $this->artist();
+        $this->eventWith([$artist]);
+        $follower = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        Follow::create(['user_id' => $follower->id, 'object_type' => 'entity', 'object_id' => $artist->id]);
+
+        $this->actingAs($follower)->getJson('/player/queue')->assertJsonPath('items.0.entity.followed', true);
+        $this->actingAs(User::factory()->create(['user_status_id' => UserStatus::ACTIVE]))
+            ->getJson('/player/queue')->assertJsonPath('items.0.entity.followed', false);
+    }
+
     public function test_radar_requires_sign_in(): void
     {
         $this->getJson('/player/queue?source=radar')->assertStatus(401);

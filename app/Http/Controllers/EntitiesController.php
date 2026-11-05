@@ -1294,14 +1294,17 @@ class EntitiesController extends Controller
     /**
      * Mark user as following the entity.
      *
-     * @return Response|array
+     * @return Response|JsonResponse|RedirectResponse|array
      *
      * @throws \Throwable
      */
     public function follow(int $id, Request $request)
     {
-        // check if there is a logged in user
+        // check if there is a logged in user (AJAX callers like the audio player get a status, not a redirect)
         if (!$this->user) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No user is logged in.'], 401);
+            }
             flash()->error('Error', 'No user is logged in.');
 
             return back();
@@ -1309,13 +1312,19 @@ class EntitiesController extends Controller
 
         // check if the entity exists
         if (!$entity = Entity::find($id)) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No such entity'], 404);
+            }
             flash()->error('Error', 'No such entity');
 
             return back();
         }
 
-        // check if the user already follows
+        // check if the user already follows; for AJAX that's the state asked for, so it succeeds
         if ($entity->followedBy($this->user) !== null) {
+            if ($request->ajax()) {
+                return ['Message' => 'You are already following '.$entity->name, 'following' => true];
+            }
             flash()->error('Error', 'You are already following '.$entity->name);
 
             return redirect()->route('entities.show', compact('entity'));
@@ -1337,6 +1346,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the entity - '.$entity->name,
+                'following' => true,
                 'Success' => view('entities.card-tw')
                     ->with(compact('entity'))
                     ->render(),
@@ -1350,20 +1360,26 @@ class EntitiesController extends Controller
     /**
      * Mark user as unfollowing the entity.
      *
-     * @return Response|array
+     * @return Response|JsonResponse|RedirectResponse|array
      *
      * @throws \Throwable
      */
     public function unfollow(int $id, Request $request)
     {
-        // check if there is a logged in user
+        // check if there is a logged in user (AJAX callers like the audio player get a status, not a redirect)
         if (!$this->user) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No user is logged in.'], 401);
+            }
             flash()->error('Error', 'No user is logged in.');
 
             return back();
         }
 
         if (!$entity = Entity::find($id)) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No such entity'], 404);
+            }
             flash()->error('Error', 'No such entity');
 
             return back();
@@ -1379,6 +1395,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the entity - '.$entity->name,
+                'following' => false,
                 'Success' => view('entities.card-tw')
                     ->with(compact('entity'))
                     ->render(),

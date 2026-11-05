@@ -44,7 +44,7 @@
 				<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{{ $event->name }}</h1>
 							
 							<div class="flex items-center gap-2">
-								@if ($event->entities->contains->hasAudioLinks())
+								@if ($event->entities->contains->isPlayable())
 									@include('player.launch-tw', ['query' => ['source' => 'event', 'id' => $event->id], 'mode' => 'enqueue', 'label' => 'Add to player', 'variant' => 'icon'])
 								@endif
 								@if ($signedIn)

@@ -765,7 +765,17 @@ class SeriesController extends Controller
         // Embeds are deferred to an AJAX call via the playlist-tw placeholder.
         $embeds = [];
 
-        return view('series.show-tw', compact('series', 'events', 'threads', 'embeds', 'upcomingEvents', 'lineupEntities', 'festivalYear'));
+        // "Add to player" (#2366) when the series queue would have someone in it:
+        // the series' own entities, or the lineups of its upcoming events
+        $playerAvailable = $series->entities->contains->isPlayable()
+            || Entity::query()
+                ->whereHas('events', fn ($q) => $q->whereIn('events.id', $upcomingEvents->pluck('id')))
+                ->whereHas('links', fn ($q) => $q->where(fn ($w) => $w->where('url', 'like', '%soundcloud.com%')->orWhere('url', 'like', '%bandcamp.com%')))
+                ->with(['links', 'roles'])
+                ->get()
+                ->contains->isPlayable();
+
+        return view('series.show-tw', compact('series', 'events', 'threads', 'embeds', 'upcomingEvents', 'lineupEntities', 'festivalYear', 'playerAvailable'));
     }
 
     public function store(SeriesRequest $request, Series $series, TempImageStore $tempImages): RedirectResponse
