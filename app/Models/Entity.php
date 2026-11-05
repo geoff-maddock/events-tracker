@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Embeds\OembedExtractor;
 use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Str;
 use Storage;
 
@@ -215,6 +217,7 @@ class Entity extends Eloquent implements HasPhotos
     /**
      * Return a collection of entities with the passed alias.
      *
+     * @return Builder<Entity>
      **/
     public static function getByAlias(string $alias): Builder
     {
@@ -311,6 +314,79 @@ class Entity extends Eloquent implements HasPhotos
         $status = EntityStatus::where('name', '=', 'Active')->first();
 
         return $query->where('entity_status_id', '=', $status ? $status->id : null);
+    }
+
+    /**
+     * Entities the audio player would queue (#2366): those with a SoundCloud or
+     * Bandcamp link that aren't only a venue. The query form of isPlayable().
+     *
+     * @param Builder<Entity> $query
+     *
+     * @return Builder<Entity>
+     */
+    public function scopePlayable(Builder $query): Builder
+    {
+        return $query
+            ->whereHas('links', fn (Builder $q) => $q->where(function (Builder $w) {
+                $w->where('url', 'like', '%soundcloud.com%')->orWhere('url', 'like', '%bandcamp.com%');
+            }))
+            ->where(function (Builder $q) {
+                $q->doesntHave('roles')
+                    ->orWhereHas('roles', fn (Builder $r) => $r->where('name', '<>', 'Venue'));
+            });
+    }
+
+    /**
+     * Add a computed popularity_score column: follows plus events, the events
+     * counted from the start of $activeRange (all time when null).
+     *
+     * @param Builder<Entity> $query
+     * @param string|null $activeRange 1-day, 1-week, 1-month, 3-months, 1-year, 2-years or 5-years
+     *
+     * @return Builder<Entity>
+     */
+    public function scopeWithPopularityScore(Builder $query, ?string $activeRange = null): Builder
+    {
+        $fromDate = self::activeRangeStart($activeRange);
+
+        $followsSubquery = DB::table('follows')
+            ->selectRaw('follows.object_id, COUNT(*) as follows_total')
+            ->where('follows.object_type', '=', 'entity')
+            ->groupBy('follows.object_id');
+
+        $eventsSubquery = DB::table('entity_event')
+            ->join('events', 'events.id', '=', 'entity_event.event_id')
+            ->selectRaw('entity_event.entity_id, COUNT(*) as events_total')
+            ->when($fromDate, function ($subQuery) use ($fromDate) {
+                $subQuery->where('events.start_at', '>=', $fromDate);
+            })
+            ->groupBy('entity_event.entity_id');
+
+        return $query
+            ->leftJoinSub($followsSubquery, 'entity_follows', function ($join) {
+                $join->on('entity_follows.object_id', '=', 'entities.id');
+            })
+            ->leftJoinSub($eventsSubquery, 'entity_events_in_period', function ($join) {
+                $join->on('entity_events_in_period.entity_id', '=', 'entities.id');
+            })
+            ->addSelect(DB::raw('COALESCE(entity_follows.follows_total, 0) + COALESCE(entity_events_in_period.events_total, 0) as popularity_score'));
+    }
+
+    /**
+     * The start of an active_range filter value, or null for all time.
+     */
+    public static function activeRangeStart(?string $activeRange): ?Carbon
+    {
+        return match ($activeRange) {
+            '1-day' => Carbon::now()->subDay(),
+            '1-week' => Carbon::now()->subWeek(),
+            '1-month' => Carbon::now()->subMonth(),
+            '3-months' => Carbon::now()->subMonths(3),
+            '1-year' => Carbon::now()->subYear(),
+            '2-years' => Carbon::now()->subYears(2),
+            '5-years' => Carbon::now()->subYears(5),
+            default => null,
+        };
     }
 
     // /**
@@ -547,6 +623,31 @@ class Entity extends Eloquent implements HasPhotos
         }
         
         return $this->links()->where('url', 'LIKE', '%bandcamp%')->orderBy('created_at', 'ASC')->first();
+    }
+
+    /**
+     * Whether any link is a SoundCloud or Bandcamp URL the audio player can play (#2366).
+     */
+    public function hasAudioLinks(): bool
+    {
+        return $this->links->contains(fn (Link $link) => OembedExtractor::isAudioUrl((string) $link->url));
+    }
+
+    /**
+     * Whether every role is Venue: a venue's Bandcamp/SoundCloud isn't the act playing.
+     */
+    public function isVenueOnly(): bool
+    {
+        return $this->roles->isNotEmpty()
+            && $this->roles->every(fn (Role $role) => strcasecmp((string) $role->name, 'Venue') === 0);
+    }
+
+    /**
+     * Whether the audio player would queue this entity from an event or series lineup.
+     */
+    public function isPlayable(): bool
+    {
+        return $this->hasAudioLinks() && !$this->isVenueOnly();
     }
 
     /**

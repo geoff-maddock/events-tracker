@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\EntityFilters;
 use App\Http\Requests\EntityRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
+use App\Http\Response\ResultSet\ListResultSet;
 use App\Models\Activity;
 use App\Models\Action;
 use App\Models\Alias;
@@ -152,6 +153,7 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    'playerQuery' => $this->playerQuery($listResultSet),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -221,6 +223,7 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    'playerQuery' => $this->playerQuery($listResultSet, ['display_type' => 'following']),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -232,6 +235,8 @@ class EntitiesController extends Controller
 
     /**
      * Gets the base query.
+     *
+     * @return Builder<Entity>
      */
     public function getBaseQuery(): Builder
     {
@@ -289,6 +294,7 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    'playerQuery' => $this->playerQuery($listResultSet),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -349,6 +355,7 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    'playerQuery' => $this->playerQuery($listResultSet),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -414,6 +421,7 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    'playerQuery' => $this->playerQuery($listResultSet),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -563,6 +571,7 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    'playerQuery' => $this->playerQuery($listResultSet),
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -623,6 +632,8 @@ class EntitiesController extends Controller
                     'direction' => $listResultSet->getSortDirection(),
                     'hasFilter' => $this->hasFilter,
                     'filters' => $listResultSet->getFilters(),
+                    // no alias filter for the player to mirror
+                    'playerQuery' => null,
                 ],
                 $this->getFilterOptions(),
                 $this->getListControlOptions()
@@ -1294,14 +1305,17 @@ class EntitiesController extends Controller
     /**
      * Mark user as following the entity.
      *
-     * @return Response|array
+     * @return Response|JsonResponse|RedirectResponse|array
      *
      * @throws \Throwable
      */
     public function follow(int $id, Request $request)
     {
-        // check if there is a logged in user
+        // check if there is a logged in user (AJAX callers like the audio player get a status, not a redirect)
         if (!$this->user) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No user is logged in.'], 401);
+            }
             flash()->error('Error', 'No user is logged in.');
 
             return back();
@@ -1309,13 +1323,19 @@ class EntitiesController extends Controller
 
         // check if the entity exists
         if (!$entity = Entity::find($id)) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No such entity'], 404);
+            }
             flash()->error('Error', 'No such entity');
 
             return back();
         }
 
-        // check if the user already follows
+        // check if the user already follows; for AJAX that's the state asked for, so it succeeds
         if ($entity->followedBy($this->user) !== null) {
+            if ($request->ajax()) {
+                return ['Message' => 'You are already following '.$entity->name, 'following' => true];
+            }
             flash()->error('Error', 'You are already following '.$entity->name);
 
             return redirect()->route('entities.show', compact('entity'));
@@ -1337,6 +1357,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are now following the entity - '.$entity->name,
+                'following' => true,
                 'Success' => view('entities.card-tw')
                     ->with(compact('entity'))
                     ->render(),
@@ -1350,20 +1371,26 @@ class EntitiesController extends Controller
     /**
      * Mark user as unfollowing the entity.
      *
-     * @return Response|array
+     * @return Response|JsonResponse|RedirectResponse|array
      *
      * @throws \Throwable
      */
     public function unfollow(int $id, Request $request)
     {
-        // check if there is a logged in user
+        // check if there is a logged in user (AJAX callers like the audio player get a status, not a redirect)
         if (!$this->user) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No user is logged in.'], 401);
+            }
             flash()->error('Error', 'No user is logged in.');
 
             return back();
         }
 
         if (!$entity = Entity::find($id)) {
+            if ($request->ajax()) {
+                return response()->json(['Message' => 'No such entity'], 404);
+            }
             flash()->error('Error', 'No such entity');
 
             return back();
@@ -1379,6 +1406,7 @@ class EntitiesController extends Controller
         if ($request->ajax()) {
             return [
                 'Message' => 'You are no longer following the entity - '.$entity->name,
+                'following' => false,
                 'Success' => view('entities.card-tw')
                     ->with(compact('entity'))
                     ->render(),
@@ -1630,57 +1658,67 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Add a computed popularity_score select to the query.
+     * Add the computed popularity_score select (follows + events in the active range).
      *
-     * popularity_score = follows_count + events_in_period_count
+     * @param Builder<Entity> $query
      *
-     * @param Builder $query Base entity listing query.
-     * @param string|null $activeRange Optional range slug (for example: 1-day, 1-week, 1-month, 3-months, 1-year).
+     * @return Builder<Entity>
      */
     protected function addPopularityScoreToQuery(Builder $query, ?string $activeRange): Builder
     {
-        $fromDate = $this->getActiveRangeStartDate($activeRange);
-
-        $followsSubquery = DB::table('follows')
-            ->selectRaw('follows.object_id, COUNT(*) as follows_total')
-            ->where('follows.object_type', '=', 'entity')
-            ->groupBy('follows.object_id');
-
-        $eventsSubquery = DB::table('entity_event')
-            ->join('events', 'events.id', '=', 'entity_event.event_id')
-            ->selectRaw('entity_event.entity_id, COUNT(*) as events_total')
-            ->when($fromDate, function ($subQuery) use ($fromDate) {
-                $subQuery->where('events.start_at', '>=', $fromDate);
-            })
-            ->groupBy('entity_event.entity_id');
-
-        return $query
-            ->leftJoinSub($followsSubquery, 'entity_follows', function ($join) {
-                $join->on('entity_follows.object_id', '=', 'entities.id');
-            })
-            ->leftJoinSub($eventsSubquery, 'entity_events_in_period', function ($join) {
-                $join->on('entity_events_in_period.entity_id', '=', 'entities.id');
-            })
-            ->addSelect(DB::raw('COALESCE(entity_follows.follows_total, 0) + COALESCE(entity_events_in_period.events_total, 0) as popularity_score'));
+        return $query->withPopularityScore($activeRange);
     }
 
     /**
-     * Convert an active_range filter string into a Carbon range start date.
+     * The audio player queue for an entity list (#2366): the list's filters
+     * (user, default and the page's own role/type/tag) and its sort, or null
+     * when nothing on the list is playable, which hides the button.
      *
-     * @param string|null $activeRange Range slug such as 1-day, 1-week, 1-month, 3-months, 1-year, 2-years, 5-years.
+     * @param array<string, mixed> $filters extra filters the page applies itself
+     *
+     * @return array<string, mixed>|null
      */
-    protected function getActiveRangeStartDate(?string $activeRange): ?Carbon
+    protected function playerQuery(ListResultSet $listResultSet, array $filters = []): ?array
     {
-        return match ($activeRange) {
-            '1-day' => Carbon::now()->subDay(),
-            '1-week' => Carbon::now()->subWeek(),
-            '1-month' => Carbon::now()->subMonth(),
-            '3-months' => Carbon::now()->subMonths(3),
-            '1-year' => Carbon::now()->subYear(),
-            '2-years' => Carbon::now()->subYears(2),
-            '5-years' => Carbon::now()->subYears(5),
-            default => null,
-        };
+        $listed = (clone $listResultSet->getList())->reorder()->select('entities.id');
+        // the whole list, not the page paginate() left on the query
+        $listed->getQuery()->limit = null;
+        $listed->getQuery()->offset = null;
+
+        if (!Entity::query()->whereIn('entities.id', $listed)->playable()->exists()) {
+            return null;
+        }
+
+        return array_filter([
+            'source' => 'entities',
+            'filters' => self::playerFilters(array_merge($listResultSet->getFilters(), $listResultSet->getParentFilters(), $filters)),
+            'sort' => $listResultSet->getSort(),
+            'direction' => $listResultSet->getSortDirection(),
+        ], fn ($value) => $value !== '' && $value !== []);
+    }
+
+    /**
+     * Filters without empty values, so the player link stays short.
+     *
+     * @param array<array-key, mixed> $filters
+     *
+     * @return array<array-key, mixed>
+     */
+    private static function playerFilters(array $filters): array
+    {
+        $kept = [];
+
+        foreach ($filters as $name => $value) {
+            if (is_array($value)) {
+                $value = self::playerFilters($value);
+            }
+
+            if ($value !== null && $value !== '' && $value !== []) {
+                $kept[$name] = $value;
+            }
+        }
+
+        return $kept;
     }
 
     protected function getFilterOptions(): array

@@ -113,7 +113,7 @@ Tags
 		</div>
 
 		<!-- Section Jump Links -->
-		@if(count($upcomingEvents) > 0 || count($pastEvents) > 0 || count($entities) > 0 || count($series) > 0)
+		@if(count($upcomingEvents) > 0 || count($pastEvents) > 0 || count($entities) > 0 || count($series) > 0 || !empty($tagObject))
 		<div class="flex flex-wrap gap-2">
 			@if(count($upcomingEvents) > 0)
 			<a href="#upcoming-events" class="inline-flex items-center px-4 py-2 bg-card border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium">
@@ -138,6 +138,9 @@ Tags
 				<i class="bi bi-collection mr-2"></i>
 				Series
 			</a>
+			@endif
+			@if (!empty($tagObject))
+			@include('player.launch-tw', ['query' => ['source' => 'upcoming', 'filters' => ['tag' => $tagObject->slug]], 'label' => 'Play this tag', 'variant' => 'chip'])
 			@endif
 		</div>
 		@endif

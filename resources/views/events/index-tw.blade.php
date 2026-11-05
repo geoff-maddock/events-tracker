@@ -64,6 +64,9 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 		<i class="bi bi-plus-lg mr-2"></i>
 		Add Event
 	</a>
+	@if (!empty($playerQuery))
+	@include('player.launch-tw', ['query' => $playerQuery, 'label' => 'Play this list'])
+	@endif
 	<div class="ml-auto relative" id="actions-menu-container">
 		<button id="actions-menu-btn" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-accent transition-colors text-sm" aria-haspopup="true" aria-expanded="false">
 			<i class="bi bi-three-dots"></i>

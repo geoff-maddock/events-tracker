@@ -21,6 +21,9 @@ class OembedExtractor
     // 7 days — matches the browser-side embed cache TTL in public/js/embed-cache.js.
     const CACHE_TTL_SECONDS = 604800;
 
+    // A link that resolved to nothing is retried after an hour rather than a week.
+    const FAILED_SOURCES_TTL_SECONDS = 3600;
+
     protected Provider $provider;
 
     protected array $config = [];
@@ -37,13 +40,13 @@ class OembedExtractor
         $this->config = $this->getLayoutConfig();
     }
 
-    public function getLayoutConfig(): array
+    public function getLayoutConfig(?string $size = null): array
     {
         $config = [];
 
         $css = 'bgcol=333333/linkcol=0f91ff';
 
-        switch ($this->size) {
+        switch ($size ?? $this->size) {
             case "large":
                 $config["bandcamp"] = sprintf('/size=large/%s/tracklist=false/transparent=true/', $css);
                 $config["bandcamp_layout"] = '<iframe style="border: 0; width: 100%%; height: 300px;" src="%s" allowfullscreen seamless title="Bandcamp audio player"></iframe>';
@@ -164,18 +167,10 @@ class OembedExtractor
         }
 
         foreach ($urls as $url) {
-            if (str_contains($url, "soundcloud.com")) {
-                $embed = $this->getEmbedsFromSoundcloudUrl($url);
-                if ($embed !== null) {
-                    $embeds[] = $embed;
-                }
-            }
-
-            if ($bandcampUrl = self::bandcampUrl($url)) {
-                $temp = $this->getEmbedsFromBandcampUrl($bandcampUrl);
-                if ($temp !== null) {
-                    $embeds = array_merge($embeds, $temp);
-                }
+            foreach ($this->getRawSourcesForUrl($url) as $source) {
+                $embeds[] = $source['provider'] === 'soundcloud'
+                    ? sprintf($this->config['soundcloud_layout'], $this->applySoundcloudSizeParams($source['raw']))
+                    : sprintf($this->config['bandcamp_layout'], e($this->convertBandcampMetaOgVideo($source['raw'])));
             }
         }
 
@@ -183,9 +178,87 @@ class OembedExtractor
     }
 
     /**
-     * Get embed HTML from SoundCloud using oEmbed API
+     * Playable sources for one SoundCloud or Bandcamp URL, for the audio player (#2366).
+     *
+     * Each source is ['provider' => 'soundcloud'|'bandcamp', 'url' => page URL,
+     * 'src' => iframe src at the medium layout, 'title' => ?string].
+     *
+     * @return list<array{provider: string, url: string, src: string, title: ?string}>
      */
-    protected function getEmbedsFromSoundcloudUrl(string $url): ?string
+    public function getSourcesForUrl(string $url): array
+    {
+        $config = $this->getLayoutConfig('medium');
+
+        return array_map(fn (array $source) => [
+            'provider' => $source['provider'],
+            'url' => $source['url'],
+            'src' => $source['provider'] === 'soundcloud' ? $source['raw'] : $source['raw'].$config['bandcamp'],
+            'title' => $source['title'],
+        ], $this->getRawSourcesForUrl($url));
+    }
+
+    /**
+     * resolveRawSources(), cached per URL and shared by the page embeds and the
+     * player, so a Bandcamp container is resolved once for both. A URL that
+     * resolves to nothing is cached for a shorter time so a broken link isn't
+     * fetched on every view.
+     *
+     * @return list<array{provider: string, url: string, raw: string, title: ?string}>
+     */
+    protected function getRawSourcesForUrl(string $url): array
+    {
+        $key = 'audio-sources:'.sha1($url);
+        $cached = Cache::get($key);
+
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $sources = $this->resolveRawSources($url);
+
+        Cache::put($key, $sources, $sources === [] ? self::FAILED_SOURCES_TTL_SECONDS : self::CACHE_TTL_SECONDS);
+
+        return $sources;
+    }
+
+    /**
+     * Whether $url is a link the player and embeds can resolve.
+     */
+    public static function isAudioUrl(string $url): bool
+    {
+        return self::soundcloudUrl($url) !== null || self::bandcampUrl($url) !== null;
+    }
+
+    /**
+     * Unsized sources for one URL: the SoundCloud widget src from oEmbed, or the
+     * Bandcamp og:video embed URL(s), each with its page URL and title.
+     *
+     * @return list<array{provider: string, url: string, raw: string, title: ?string}>
+     */
+    protected function resolveRawSources(string $url): array
+    {
+        $sources = [];
+
+        if (str_contains($url, "soundcloud.com")) {
+            $source = $this->resolveSoundcloudSource($url);
+            if ($source !== null) {
+                $sources[] = $source;
+            }
+        }
+
+        if ($bandcampUrl = self::bandcampUrl($url)) {
+            $sources = array_merge($sources, $this->resolveBandcampSources($bandcampUrl));
+        }
+
+        return $sources;
+    }
+
+    /**
+     * Get the widget src for a SoundCloud URL using the oEmbed API
+     *
+     * @return array{provider: string, url: string, raw: string, title: ?string}|null
+     */
+    protected function resolveSoundcloudSource(string $url): ?array
     {
         $oembedUrl = 'https://soundcloud.com/oembed?' . http_build_query([
             'format'        => 'json',
@@ -207,18 +280,23 @@ class OembedExtractor
 
         $data = json_decode($response, true);
 
-        if (!isset($data['html'])) {
+        if (!is_array($data) || !isset($data['html']) || !is_string($data['html'])) {
             return null;
         }
 
-        // Extract the src URL from the returned iframe and apply our size-aware template
-        if (!preg_match('/src="([^"]+)"/', $data['html'], $matches)) {
+        // Extract the src URL from the returned iframe; only SoundCloud's own widget is embedded
+        if (!preg_match('/src="([^"]+)"/', $data['html'], $matches)
+            || !str_starts_with($matches[1], 'https://w.soundcloud.com/player/')
+        ) {
             return null;
         }
 
-        $src = $this->applySoundcloudSizeParams($matches[1]);
-
-        return sprintf($this->config['soundcloud_layout'], $src);
+        return [
+            'provider' => 'soundcloud',
+            'url' => $url,
+            'raw' => $matches[1],
+            'title' => isset($data['title']) && is_string($data['title']) ? $data['title'] : null,
+        ];
     }
 
     /**
@@ -253,7 +331,14 @@ class OembedExtractor
         return $content . $this->config["bandcamp"];
     }
 
-    protected function getEmbedsFromBandcampUrl(string $url, int $depth = 1): ?array
+    /**
+     * The og:video embed URL(s) for a Bandcamp page; an artist/label page with no
+     * og:video is treated as a container and up to CONTAINER_LIMIT of its albums
+     * and tracks are resolved instead.
+     *
+     * @return list<array{provider: string, url: string, raw: string, title: ?string}>
+     */
+    protected function resolveBandcampSources(string $url, int $depth = 1): array
     {
         // prevent infinite recursion through container pages
         if ($depth > 2) {
@@ -262,20 +347,20 @@ class OembedExtractor
 
         $this->provider->setResponse(null);
 
-        $embeds = [];
+        $sources = [];
         $containerCount = 1;
-
-        if (empty($this->config)) {
-            $this->config = $this->getLayoutConfig();
-        }
 
         // only https pages on bandcamp.com or a subdomain are fetched, and every redirect hop is re-checked
         if (($url = self::bandcampUrl($url)) && $this->requestBandcampPage($url)) {
             $content = $this->provider->query('//meta[@property="og:video"]/@content');
 
             if (null !== $content && self::bandcampUrl($content) !== null) {
-                $content = $this->convertBandcampMetaOgVideo($content);
-                $embeds[] = sprintf($this->config['bandcamp_layout'], e($content));
+                $sources[] = [
+                    'provider' => 'bandcamp',
+                    'url' => $url,
+                    'raw' => $content,
+                    'title' => $this->provider->query('//meta[@property="og:title"]/@content'),
+                ];
             } elseif (null === $content) {
                 $containerUrls = $this->getUrlsFromContainer($url, (string) $this->provider->getResponse());
 
@@ -283,9 +368,9 @@ class OembedExtractor
                     if ($containerCount > $this::CONTAINER_LIMIT) {
                         break;
                     }
-                    $temp = $this->getEmbedsFromBandcampUrl($containerUrl, $depth + 1);
+                    $temp = $this->resolveBandcampSources($containerUrl, $depth + 1);
                     if (count($temp) > 0) {
-                        $embeds = array_merge($embeds, $temp);
+                        $sources = array_merge($sources, $temp);
                         $containerCount++;
                     }
                 }
@@ -294,7 +379,36 @@ class OembedExtractor
             $this->provider->setResponse(null);
         }
 
-        return array_unique($embeds);
+        // one source per embed URL, first occurrence wins
+        $seen = [];
+
+        return array_values(array_filter($sources, function (array $source) use (&$seen): bool {
+            if (isset($seen[$source['raw']])) {
+                return false;
+            }
+
+            return $seen[$source['raw']] = true;
+        }));
+    }
+
+    /**
+     * Normalise $url to an https URL on soundcloud.com (or a subdomain), or null if it is not one.
+     */
+    public static function soundcloudUrl(string $url): ?string
+    {
+        $parts = parse_url(trim($url));
+
+        if (!is_array($parts) || !in_array(strtolower($parts['scheme'] ?? ''), ['http', 'https'], true)) {
+            return null;
+        }
+
+        $host = strtolower($parts['host'] ?? '');
+
+        if ($host !== 'soundcloud.com' && !str_ends_with($host, '.soundcloud.com')) {
+            return null;
+        }
+
+        return 'https://'.$host.($parts['path'] ?? '');
     }
 
     /**
