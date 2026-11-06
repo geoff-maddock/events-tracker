@@ -43,12 +43,13 @@
 
 			<div class="flex flex-col md:flex-row gap-3">
 				<form action="{{ route('entity-claims.approve', $claim) }}" method="POST" class="flex-1 flex gap-2"
-					data-confirm="Make {{ $claim->user->name }} the only owner of {{ $claim->entity->name }}?">
+					data-confirm="Make {{ $claim->user->name }} the only owner of {{ $claim->entity->name }}?" data-confirm-button="Yes, approve the claim">
 					@csrf
 					<x-ui.input name="review_note" placeholder="Note to claimant (optional)" maxlength="1000" />
 					<x-ui.button type="submit" variant="default">Approve</x-ui.button>
 				</form>
-				<form action="{{ route('entity-claims.deny', $claim) }}" method="POST" class="flex-1 flex gap-2">
+				<form action="{{ route('entity-claims.deny', $claim) }}" method="POST" class="flex-1 flex gap-2"
+					data-confirm="Deny {{ $claim->user->name }}'s claim to {{ $claim->entity->name }}? They will be emailed." data-confirm-button="Yes, deny the claim">
 					@csrf
 					<x-ui.input name="review_note" placeholder="Reason (optional, emailed)" maxlength="1000" />
 					<x-ui.button type="submit" variant="destructive">Deny</x-ui.button>

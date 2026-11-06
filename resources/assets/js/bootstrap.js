@@ -78,7 +78,9 @@ if (token) {
  *   it when the link also has data-method (the state-changing links, #2166).
  *
  * The message may be empty for a plain "Are you sure?". Optional attributes:
- * data-confirm-title, data-confirm-button.
+ * data-confirm-title, data-confirm-button. The button defaults to "Yes, delete it!",
+ * so anything that isn't a delete must set data-confirm-button to name its action
+ * (ConfirmMarkupTest checks this).
  */
 const confirmAction = function (source) {
     const message = source.getAttribute('data-confirm');
