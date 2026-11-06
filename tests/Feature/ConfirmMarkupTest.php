@@ -110,4 +110,27 @@ class ConfirmMarkupTest extends TestCase
         $this->actingAs($admin)->get(route('discord-targets.edit', ['discordTarget' => $target->id]))->assertOk()
             ->assertSee('data-confirm="Delete the Discord target', false);
     }
+
+    public function test_non_delete_confirms_name_their_action(): void
+    {
+        $offenders = [];
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(resource_path('views'))) as $file) {
+            if (! str_ends_with($file->getFilename(), '.blade.php')) {
+                continue;
+            }
+            // whole tags, letting "->" and "=>" inside Blade expressions through
+            preg_match_all('/<[a-zA-Z][\w.:-]*(?:[^>]|(?<=[-=])>)*>/s', (string) file_get_contents($file->getPathname()), $tags);
+            foreach ($tags[0] as $tag) {
+                if (! preg_match('/\sdata-confirm\s*=\s*"([^"]*)"/', $tag, $m) || str_contains($tag, 'data-confirm-button')) {
+                    continue;
+                }
+                // without data-confirm-button the dialog says "Yes, delete it!"
+                if (! preg_match('/delete|recover/i', $m[1])) {
+                    $offenders[] = str_replace(base_path().'/', '', $file->getPathname()).': '.$m[1];
+                }
+            }
+        }
+
+        $this->assertSame([], $offenders, 'Set data-confirm-button on confirms that are not deletes');
+    }
 }
