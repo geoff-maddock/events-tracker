@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\EntityFilters;
 use App\Filters\EventFilters;
 use App\Models\Entity;
+use App\Services\Player\PlayerPageSchema;
 use App\Services\Player\PlayerQueueBuilder;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -23,9 +24,11 @@ class PlayerController extends Controller
      * The pop-out player window. It reads its queue source from its own query
      * string (the same parameters queue() takes) and fetches everything else.
      */
-    public function show(): View
+    public function show(Request $request, PlayerPageSchema $schema): View
     {
-        return view('player.show-tw');
+        return view('player.show-tw', [
+            'meta' => $schema->describe($request->query(), $request->user()),
+        ]);
     }
 
     /**

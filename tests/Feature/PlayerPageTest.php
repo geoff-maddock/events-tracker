@@ -2,9 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Event;
+use App\Models\Photo;
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -26,7 +30,9 @@ class PlayerPageTest extends TestCase
     {
         $this->get('/player?source=upcoming&filters[tag]=goth')
             ->assertOk()
-            ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+            // public queues show in search results (personal ones don't, below)
+            ->assertDontSee('name="robots"', false)
+            ->assertSee('<link rel="canonical" href="'.e(route('player.show', ['source' => 'upcoming', 'filters' => ['tag' => 'goth']])).'">', false)
             ->assertSee('data-queue-url="'.route('player.queue').'"', false)
             ->assertSee('data-signed-in="0"', false)
             ->assertSee('https://w.soundcloud.com/player/api.js', false)
@@ -34,6 +40,76 @@ class PlayerPageTest extends TestCase
             // standalone window: no site sidebar
             ->assertDontSee('sidebar-desktop-tw', false)
             ->assertDontSee('mobile-menu-toggle-top', false);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function jsonLd(string $uri): array
+    {
+        $html = (string) $this->get($uri)->assertOk()->getContent();
+
+        $this->assertSame(1, preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $match));
+
+        return json_decode($match[1], true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    public function test_json_ld_describes_an_event_lineup_with_its_flyer(): void
+    {
+        Storage::fake('external');
+        $event = Event::factory()->create(['name' => 'Night Shift', 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $photo = (new Photo())->forceFill([
+            'name' => 'flyer.jpg',
+            'path' => 'photos/flyer.jpg',
+            'thumbnail' => 'photos/tn-flyer.jpg',
+            'caption' => 'Flyer',
+            'is_primary' => 1,
+            'is_public' => 1,
+            'is_approved' => 1,
+        ]);
+        $photo->save();
+        $event->photos()->attach($photo->id);
+        $flyer = Storage::disk('external')->url('photos/flyer.jpg');
+
+        $jsonLd = $this->jsonLd('/player?source=event&id='.$event->id.'&utm_source=x');
+
+        $this->assertSame('WebPage', $jsonLd['@type']);
+        $this->assertSame('Night Shift lineup | '.config('app.app_name').' Player', $jsonLd['name']);
+        $this->assertSame($flyer, $jsonLd['image']);
+        $this->assertStringContainsString('tracks from the lineup of Night Shift', $jsonLd['description']);
+        $this->assertSame('WebApplication', $jsonLd['mainEntity']['@type']);
+        $this->assertSame(['@type' => 'Event', 'name' => 'Night Shift', 'url' => route('events.show', $event), 'image' => $flyer], $jsonLd['about']);
+        $this->assertStringNotContainsString('utm_source', $jsonLd['url']);
+
+        $this->get('/player?source=event&id='.$event->id)
+            ->assertSee('<meta property="og:image" content="'.$flyer.'">', false);
+    }
+
+    public function test_json_ld_never_names_an_event_the_viewer_cannot_see(): void
+    {
+        $event = Event::factory()->create(['name' => 'Secret Party', 'visibility_id' => Visibility::VISIBILITY_PRIVATE]);
+
+        $jsonLd = $this->jsonLd('/player?source=event&id='.$event->id);
+
+        $this->assertArrayNotHasKey('about', $jsonLd);
+        $this->assertStringNotContainsString('Secret Party', (string) json_encode($jsonLd));
+        $this->assertSame(url(\App\Services\Player\PlayerPageSchema::DEFAULT_IMAGE), $jsonLd['image']);
+    }
+
+    public function test_json_ld_describes_a_filtered_list(): void
+    {
+        $jsonLd = $this->jsonLd('/player?source=upcoming&filters[tag]=goth');
+
+        $this->assertSame('Upcoming goth shows | '.config('app.app_name').' Player', $jsonLd['name']);
+        $this->assertStringContainsString('upcoming goth shows', $jsonLd['description']);
+        $this->assertSame(url(\App\Services\Player\PlayerPageSchema::DEFAULT_IMAGE), $jsonLd['image']);
+    }
+
+    public function test_personal_queues_stay_out_of_search_results(): void
+    {
+        $this->get('/player?source=radar')
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="noindex, follow">', false);
     }
 
     public function test_signed_in_users_can_star(): void

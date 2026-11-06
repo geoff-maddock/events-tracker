@@ -3,10 +3,24 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="robots" content="noindex, nofollow">
+	@unless ($meta['indexable'])
+	<meta name="robots" content="noindex, follow">
+	@endunless
+	<link rel="canonical" href="{{ $meta['url'] }}">
 	<meta name="theme-color" content="#0f172a"/>
 	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>Player | {{ config('app.app_name') }}</title>
+	<title>{{ $meta['title'] }}</title>
+	<meta name="description" content="{{ $meta['description'] }}">
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="{{ config('app.app_name') }}">
+	<meta property="og:title" content="{{ $meta['title'] }}">
+	<meta property="og:description" content="{{ $meta['description'] }}">
+	<meta property="og:url" content="{{ $meta['url'] }}">
+	<meta property="og:image" content="{{ $meta['image'] }}">
+	<meta name="twitter:card" content="summary_large_image">
+	<script type="application/ld+json">
+{!! json_encode($meta['jsonLd'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}
+	</script>
 
 	<script>
 		(function() {
