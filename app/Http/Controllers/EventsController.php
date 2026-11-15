@@ -270,13 +270,15 @@ class EventsController extends Controller
             ['events.start_at' => 'desc'],
         );
 
-        $events = Event::where('start_at', '>', $start_at_from)
-            ->where('start_at', '<', $start_at_to)
+        // any showing in the range counts, shown and ordered by the first one in it (#2375)
+        $events = Event::query()
+            ->occurringBetween($start_at_from->copy()->addSecond(), $start_at_to->copy()->subSecond())
+            ->withNextStart($start_at_from)
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart($start_at_from)
             ->orderBy('name', 'ASC')
             ->with(self::cardEventEagerLoad($this->user))
             ->paginate($listResultSet->getLimit());
@@ -1294,12 +1296,11 @@ class EventsController extends Controller
         [$start, $end] = CalendarRange::fromRequest($request);
 
         // get all public events
-        $events = Event::where('start_at', '>=', $start)
-            ->where('start_at', '<=', $end)
+        $events = Event::query()->occurringBetween($start, $end)
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
-            })->get();
+            })->with('showings')->get();
 
         // get all the upcoming series events; eager loads cover the visibility/type filter
         // and nextEvent(), which were one query each per series
@@ -1311,23 +1312,26 @@ class EventsController extends Controller
         });
 
         // adds events to event list
+        // one item per date in the range: a short run has several (#2375)
         foreach ($events as $event) {
-            // For calendar display: if end_at is set and is after start_at, set end to 11:59 PM on the start date
-            $calendarEnd = null;
-            if ($event->end_at && $event->end_at->gt($event->start_at)) {
-                $calendarEnd = $event->start_at->copy()->setTime(23, 59, 0);
-            } elseif ($event->end_at) {
-                $calendarEnd = $event->end_at;
+            foreach ($event->occurrencesBetween($start, $end) as $showing) {
+                // For calendar display: if end_at is set and is after start_at, set end to 11:59 PM on the start date
+                $calendarEnd = null;
+                if ($showing->end_at && $showing->end_at->gt($showing->start_at)) {
+                    $calendarEnd = $showing->start_at->copy()->setTime(23, 59, 0);
+                } elseif ($showing->end_at) {
+                    $calendarEnd = $showing->end_at;
+                }
+                $eventList[] = [
+                    'id' => 'event-'.$event->id.($showing->exists ? '-'.$showing->id : ''),
+                    'start' => $showing->start_at->format('Y-m-d H:i'),
+                    'end' => $calendarEnd ? $calendarEnd->format('Y-m-d H:i') : null,
+                    'title' => $event->name,
+                    'url' => '/events/'.$event->slug,
+                    'backgroundColor' => '#0a57ad',
+                    'description' => $event->short,
+                ];
             }
-            $eventList[] = [
-                'id' => 'event-'.$event->id,
-                'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => $calendarEnd ? $calendarEnd->format('Y-m-d H:i') : null,
-                'title' => $event->name,
-                'url' => '/events/'.$event->slug,
-                'backgroundColor' => '#0a57ad',
-                'description' => $event->short,
-            ];
         }
 
         // adds series to events list
@@ -1365,12 +1369,11 @@ class EventsController extends Controller
         [$start, $end] = CalendarRange::fromRequest($request);
 
         // get all public events
-        $events = Event::where('start_at', '>=', $start)
-            ->where('start_at', '<=', $end)
+        $events = Event::query()->occurringBetween($start, $end)
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
-            })->with('tags')->get();
+            })->with('tags', 'showings')->get();
 
         // get all the upcoming series events; eager loads cover the visibility/type filter,
         // nextEvent() and tagNames, which were one query each per series
@@ -1383,15 +1386,17 @@ class EventsController extends Controller
 
         // adds events to event list
         foreach ($events as $event) {
-            $eventList[] = [
-                'id' => 'event-'.$event->id,
-                'start' => $event->start_at->format('Y-m-d H:i'),
-                'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
-                'title' => $event->tagNames,
-                'url' => '/events/'.$event->slug,
-                'backgroundColor' => '#0a57ad',
-                'description' => $event->short,
-            ];
+            foreach ($event->occurrencesBetween($start, $end) as $showing) {
+                $eventList[] = [
+                    'id' => 'event-'.$event->id.($showing->exists ? '-'.$showing->id : ''),
+                    'start' => $showing->start_at->format('Y-m-d H:i'),
+                    'end' => $showing->end_at?->format('Y-m-d H:i'),
+                    'title' => $event->tagNames,
+                    'url' => '/events/'.$event->slug,
+                    'backgroundColor' => '#0a57ad',
+                    'description' => $event->short,
+                ];
+            }
         }
 
         // adds series to events list
@@ -2085,14 +2090,17 @@ class EventsController extends Controller
         $cdate_yesterday = $cdate->copy()->subDay();
         $cdate_tomorrow = $cdate->copy()->addDay();
 
-        $events = Event::where('events.start_at', '>', $cdate_yesterday->toDateString())
+        // from the day before's first second to the day's last, as before; any
+        // showing in it counts, shown and ordered by the first one (#2375)
+        $events = Event::query()
+            ->occurringBetween($cdate_yesterday->copy()->startOfDay()->addSecond(), $cdate_tomorrow->copy()->startOfDay()->subSecond())
+            ->withNextStart($cdate_yesterday->copy()->startOfDay())
             ->with(self::cardEventEagerLoad($this->user))
-            ->where('events.start_at', '<', $cdate_tomorrow->toDateString())
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
-            ->orderBy('events.start_at', 'ASC')
+            ->orderByNextStart($cdate_yesterday->copy()->startOfDay())
             ->orderBy('events.name', 'ASC')
             ->paginate($listResultSet->getLimit());
 
@@ -2249,16 +2257,17 @@ class EventsController extends Controller
         $today = Carbon::now()->startOfDay();
         $userId = $this->user?->id;
 
+        $weekEnd = $today->copy()->addDays(6)->subSecond();
+
         $eventsByDay = Event::query()
-            ->where('start_at', '>=', $today)
-            ->where('start_at', '<', $today->copy()->addDays(6))
+            ->occurringBetween($today, $weekEnd)
             // same rules as the Event::starting() scope the view used, plus visible()
             ->where(fn ($q) => $q->where('visibility_id', '=', 3)->when($userId !== null, fn ($q) => $q->orWhere('created_by', '=', $userId)))
             ->visible($this->user)
-            ->with('venue')
-            ->orderBy('start_at', 'ASC')
-            ->get()
-            ->groupBy(fn (Event $event) => $event->start_at->format('Y-m-d'));
+            ->with('venue', 'showings')
+            ->get();
+        // a short run appears under each of its days, with that day's time (#2375)
+        $eventsByDay = Event::groupByDay($eventsByDay, $today, $weekEnd);
 
         return view('events.indexWeek-tw', compact('eventsByDay'));
     }

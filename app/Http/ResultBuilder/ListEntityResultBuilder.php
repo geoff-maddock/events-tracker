@@ -240,7 +240,15 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
             }
         }
 
-        $this->queryBuilder->orderBy($this->appliedSortField, $this->appliedSortDirection);
+        // a query that selects each event's next date (Event::withNextStart) sorts by it
+        // in place of start_at, so a run in progress sits at its next showing (#2375)
+        $orderField = $this->appliedSortField;
+        if (in_array($orderField, ['events.start_at', 'start_at'], true)
+            && in_array('next_start_at', $this->selectedAliases(), true)) {
+            $orderField = 'next_start_at';
+        }
+
+        $this->queryBuilder->orderBy($orderField, $this->appliedSortDirection);
     }
 
     /**

@@ -1012,8 +1012,10 @@ class EntitiesController extends Controller
                 'eventType',
                 'tags',
             ])
-            ->where('start_at', '>=', Carbon::today()->startOfDay())
-            ->orderBy('start_at', 'asc')
+            // a short run stays until its last showing, placed by its next one (#2375)
+            ->occurringBetween(Carbon::today()->startOfDay())
+            ->withNextStart(Carbon::today()->startOfDay())
+            ->orderByNextStart(Carbon::today()->startOfDay())
             ->limit(16)
             ->get();
 
@@ -1022,7 +1024,7 @@ class EntitiesController extends Controller
         // (primary photo, venue, event type, tags) to avoid an N+1.
         $pastEvents = $this->entityEvents($entity)
             ->with(['eventType', 'tags', 'venue', 'photos'])
-            ->where('start_at', '<', Carbon::today()->startOfDay())
+            ->where('events.last_start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('start_at', 'desc')
             ->limit(21)
             ->get();
@@ -1550,8 +1552,8 @@ class EntitiesController extends Controller
         $upcomingEvents = $entity->events()
             ->visible(null)
             ->with(['venue', 'eventType', 'visibility'])
-            ->where('start_at', '>=', Carbon::now())
-            ->orderBy('start_at', 'ASC')
+            ->occurringBetween(Carbon::now())
+            ->orderByNextStart(Carbon::now())
             ->limit(10)
             ->get();
 
@@ -1559,7 +1561,7 @@ class EntitiesController extends Controller
         $pastEvents = $entity->events()
             ->visible(null)
             ->with(['venue'])
-            ->where('start_at', '<', Carbon::now())
+            ->where('events.last_start_at', '<', Carbon::now())
             ->orderBy('start_at', 'DESC')
             ->limit(10)
             ->get();

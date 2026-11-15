@@ -219,13 +219,13 @@
 		@php $lastDate = ''; @endphp
 		@foreach ($events as $event)
 			@php
-				$currentDate = $event->start_at->format('Y-m-d');
+				$currentDate = $event->display_start_at->format('Y-m-d');
 				$showDateBar = $currentDate !== $lastDate;
 				if ($showDateBar) {
 					$lastDate = $currentDate;
 				}
-				$isWeekend = $event->start_at->isWeekend() || $event->start_at->isFriday();
-				$dateLabel = $event->start_at->format('D, M j, Y');
+				$isWeekend = $event->display_start_at->isWeekend() || $event->display_start_at->isFriday();
+				$dateLabel = $event->display_start_at->format('D, M j, Y');
 			@endphp
 			@include('events.cell-compact-tw', [
 				'event' => $event,

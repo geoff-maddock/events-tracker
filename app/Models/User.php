@@ -586,8 +586,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
             ->where('response_types.name', '=', 'Attending')
             ->where('event_responses.user_id', '=', $this->id)
-            ->where('start_at', '>=', Carbon::today()->startOfDay())
-            ->orderBy('events.start_at', 'asc')
+            ->occurringBetween(Carbon::today()->startOfDay())
+            ->orderByNextStart(Carbon::today()->startOfDay())
             ->select('events.*')
             ->get();
 
@@ -605,9 +605,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
             ->join('response_types', 'event_responses.response_type_id', '=', 'response_types.id')
             ->where('response_types.name', '=', 'Attending')
             ->where('event_responses.user_id', '=', $this->id)
-            ->where('start_at', '>=', Carbon::today()->startOfDay())
-            ->where('start_at', '<', Carbon::tomorrow()->startOfDay())
-            ->orderBy('events.start_at', 'asc')
+            ->today()
             ->select('events.*')
             ->get();
 
@@ -970,14 +968,14 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         // get events related to the followed tags where the event 
         $tagEvents = Event::whereHas('tags', function ($query) use ($tags) {
             $query->whereIn('tags.id', $tags->pluck('id'));
-            $query->where('start_at', '>=', Carbon::now());
+            $query->where('events.last_start_at', '>=', Carbon::now());
         })->get();
 
 
         // get events related to the followed entities
         $entityEvents = Event::whereHas('entities', function ($query) use ($entities) {
             $query->whereIn('entities.id', $entities->pluck('id'));
-            $query->where('start_at', '>=', Carbon::now());
+            $query->where('events.last_start_at', '>=', Carbon::now());
         })->get();
 
         // merge the events and return unique events
@@ -1001,7 +999,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
             return Event::query()->whereRaw('1 = 0');
         }
 
-        $events = Event::query()->where('start_at', '>=', Carbon::now());
+        $events = Event::query()->occurringBetween(Carbon::now());
 
         $events->where(function ($query) use ($tagIds, $entityIds, $seriesIds) {
             $added = false;
@@ -1029,6 +1027,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
             }
         });
 
-        return $events->orderBy('events.start_at', 'asc');
+        return $events->orderByNextStart(Carbon::now());
     }
 }

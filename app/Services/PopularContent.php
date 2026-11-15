@@ -20,22 +20,26 @@ class PopularContent
     /**
      * Upcoming, uncancelled events the viewer can see, most attendees first.
      *
-     * Not via Event::future(): that scope adds orderBy('start_at') first, so
-     * an attendee ordering after it only broke ties between same-time events.
+     * Not via Event::future(): that scope orders by date first, so an attendee
+     * ordering after it only broke ties between same-time events. A short run
+     * counts until its last showing, and as before $before by its next one.
      *
      * @return Collection<int, Event>
      */
     public function events(?User $viewer, int $limit, ?Carbon $before = null): Collection
     {
         return Event::query()
-            ->where('start_at', '>=', Carbon::today()->startOfDay())
-            ->when($before, fn ($q) => $q->where('start_at', '<', $before))
+            ->when(
+                $before,
+                fn ($q) => $q->occurringBetween(Carbon::today()->startOfDay(), $before->copy()->subSecond()),
+                fn ($q) => $q->occurringBetween(Carbon::today()->startOfDay())
+            )
             ->whereNull('cancelled_at')
             ->visible($viewer)
             ->withCount('attendees')
             ->with(['venue', 'eventType', 'series'])
             ->orderByDesc('attendees_count')
-            ->orderBy('start_at')
+            ->orderByNextStart(Carbon::today()->startOfDay())
             ->limit($limit)
             ->get();
     }

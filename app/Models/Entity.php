@@ -563,8 +563,10 @@ class Entity extends Eloquent implements HasPhotos
     {
         return $this->events()->distinct()
             ->visible($viewer)
-            ->where('start_at', '>=', Carbon::now())
-            ->orderBy('start_at', 'ASC')
+            // a short run counts until its last showing, placed by its next one (#2375)
+            ->occurringBetween(Carbon::now())
+            ->withNextStart(Carbon::now())
+            ->orderByNextStart(Carbon::now())
             ->paginate($rpp);
     }
 
@@ -575,7 +577,7 @@ class Entity extends Eloquent implements HasPhotos
     {
         return $this->events()->distinct()
             ->visible($viewer)
-            ->where('start_at', '<', Carbon::now())
+            ->where('events.last_start_at', '<', Carbon::now())
             ->orderBy('start_at', 'DESC')
             ->paginate($rpp);
     }
@@ -597,7 +599,7 @@ class Entity extends Eloquent implements HasPhotos
      */
     public function todaysEvents(?User $viewer = null): Collection
     {
-        return $this->events()->visible($viewer)->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
+        return $this->events()->visible($viewer)->today()->get();
     }
 
     /**

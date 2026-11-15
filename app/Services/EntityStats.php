@@ -113,9 +113,9 @@ class EntityStats
         $summary = [
             'trackingSince' => $firstTracked ? Carbon::parse($firstTracked) : null,
             'followers' => DB::table('follows')->where('object_type', 'entity')->where('object_id', $entity->id)->count(),
-            'upcomingEvents' => DB::table('events')->whereIn('id', $eventIds)->where('start_at', '>=', $today)->count(),
+            'upcomingEvents' => DB::table('events')->whereIn('id', $eventIds)->where('last_start_at', '>=', $today)->count(),
             'upcomingResponses' => DB::table('event_responses')
-                ->whereIn('event_id', DB::table('events')->whereIn('id', $eventIds)->where('start_at', '>=', $today)->select('id'))
+                ->whereIn('event_id', DB::table('events')->whereIn('id', $eventIds)->where('last_start_at', '>=', $today)->select('id'))
                 ->count(),
             'periods' => [],
             'reach' => [],

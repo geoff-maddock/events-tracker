@@ -251,7 +251,7 @@ class PagesController extends Controller
             ->get();
 
         // Get recently added events
-        $recentEvents = Event::where('start_at', '>=', Carbon::now())
+        $recentEvents = Event::query()->occurringBetween(Carbon::now())
             ->visible($user)
             ->with(['venue', 'tags', 'entities', 'eventType'])
             ->orderBy('created_at', 'desc')
@@ -281,7 +281,7 @@ class PagesController extends Controller
         $user = $request->user();
 
         // Get popular events - upcoming events with most attendees
-        $popularEvents = Event::where('start_at', '>=', Carbon::now())
+        $popularEvents = Event::query()->occurringBetween(Carbon::now())
             ->visible($user)
             ->withCount('attendees')
             ->with(['venue', 'tags', 'entities', 'eventType'])
@@ -319,8 +319,8 @@ class PagesController extends Controller
                     ->whereHas('photos', function ($photo) {
                         $photo->where('photos.is_primary', 1);
                     })
-                    ->orderByRaw('(start_at >= CURDATE()) desc')
-                    ->orderByRaw('CASE WHEN start_at >= CURDATE() THEN start_at END asc')
+                    ->orderByRaw('(events.last_start_at >= CURDATE()) desc')
+                    ->orderByRaw('CASE WHEN events.last_start_at >= CURDATE() THEN start_at END asc')
                     ->orderBy('start_at', 'desc')
                     ->limit(1)
                     ->with('photos');

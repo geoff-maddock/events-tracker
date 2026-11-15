@@ -213,7 +213,7 @@ class Tag extends Eloquent
      */
     public function futureEvents(?User $viewer = null): Collection
     {
-        $events = $this->events()->visible($viewer)->where('start_at', '>=', Carbon::now())->orderBy('start_at', 'ASC')->get();
+        $events = $this->events()->visible($viewer)->occurringBetween(Carbon::now())->orderByNextStart(Carbon::now())->get();
 
         return $events;
     }
@@ -225,7 +225,7 @@ class Tag extends Eloquent
      */
     public function todaysEvents(?User $viewer = null): Collection
     {
-        $events = $this->events()->visible($viewer)->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())->orderBy('start_at', 'ASC')->get();
+        $events = $this->events()->visible($viewer)->today()->get();
 
         return $events;
     }

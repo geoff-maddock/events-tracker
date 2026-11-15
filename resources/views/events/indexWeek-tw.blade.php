@@ -52,9 +52,9 @@
                                         <a href="{{ route('events.show', $event->slug) }}" class="text-foreground hover:text-primary transition-colors font-medium">
                                             {{ $event->name }}
                                         </a>
-                                        @if ($event->start_at)
+                                        @if ($event->display_start_at)
                                             <div class="text-xs text-muted-foreground">
-                                                {{ $event->start_at->format('g:i A') }}
+                                                {{ $event->display_start_at->format('g:i A') }}
                                                 @if ($event->venue)
                                                     @ {{ $event->venue->name }}
                                                 @endif

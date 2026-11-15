@@ -28,6 +28,7 @@ use App\Models\User;
  * App\Models\Event.
  *
  * @property int                                                                                                       $id
+ * @property \Carbon\Carbon|null                                                                                      $display_start_at
  * @property \Carbon\Carbon|null                                                                           $last_start_at
  * @property \Illuminate\Database\Eloquent\Collection<int, EventShowing>                                               $showings
  * @property mixed                                                                                                     $created_by
@@ -497,21 +498,198 @@ class Event extends Model implements HasPhotos
     public function scopeToday(Builder $query): Builder
     {
         /* @var Builder<Event>*/
-        return $query->where('start_at', '>=', Carbon::today())->where('start_at', '<', Carbon::tomorrow())
-            ->orderBy('start_at', 'asc');
+        $today = Carbon::today();
+
+        return $query->occurringBetween($today, Carbon::tomorrow()->subSecond())->orderByNextStart($today);
     }
 
     /**
-     * Events with a start_at inside the given naive datetime bounds
-     * (inclusive), ordered earliest-first. Used by the time-window landing
-     * pages (/events/tonight, /this-weekend, /this-week).
+     * Events with a showing inside the given naive datetime bounds
+     * (inclusive), ordered by that showing, earliest first. Used by the
+     * time-window landing pages (/events/tonight, /this-weekend, /this-week).
      *
      * @param Builder<Event> $query
      */
     public function scopeBetween(Builder $query, string $start, string $end): Builder
     {
-        return $query->whereBetween('events.start_at', [$start, $end])
-            ->orderBy('events.start_at', 'asc');
+        return $query->occurringBetween($start, $end)->orderByNextStart($start);
+    }
+
+    /**
+     * Events with a date in [$start, $end] (inclusive; either end may be open):
+     * start_at itself or, for a short run, any additional showing (#2375).
+     *
+     * With only $start this is "not over yet"; with only $end, "begun by then".
+     * No ordering, so it composes: pair it with orderByNextStart().
+     *
+     * @param Builder<Event> $query
+     */
+    public function scopeOccurringBetween(
+        Builder $query,
+        \DateTimeInterface|string|null $start = null,
+        \DateTimeInterface|string|null $end = null
+    ): Builder {
+        if (null === $start && null === $end) {
+            return $query;
+        }
+
+        if (null === $end) {
+            return $query->where('events.last_start_at', '>=', $start);
+        }
+
+        if (null === $start) {
+            return $query->where('events.start_at', '<=', $end);
+        }
+
+        return $query->where(function ($dated) use ($start, $end) {
+            $dated->whereBetween('events.start_at', [$start, $end])
+                // a run that began before the window and isn't over: look at its showings
+                ->orWhere(function ($run) use ($start, $end) {
+                    $run->where('events.start_at', '<', $start)
+                        ->where('events.last_start_at', '>=', $start)
+                        ->whereExists(function ($showing) use ($start, $end) {
+                            $showing->selectRaw('1')
+                                ->from('event_showings')
+                                ->whereColumn('event_showings.event_id', 'events.id')
+                                ->whereBetween('event_showings.start_at', [$start, $end]);
+                        });
+                });
+        });
+    }
+
+    /**
+     * SQL for the first date of an event on or after a moment: start_at for a
+     * single-date event or a run that hasn't begun, otherwise the earliest
+     * later showing (start_at again once the run is over). Takes the moment
+     * as its two bindings.
+     */
+    protected static function nextStartSql(): string
+    {
+        return 'CASE WHEN events.start_at >= ? OR events.last_start_at IS NULL OR events.last_start_at <= events.start_at'
+            .' THEN events.start_at'
+            .' ELSE COALESCE((SELECT MIN(event_showings.start_at) FROM event_showings'
+            .' WHERE event_showings.event_id = events.id AND event_showings.start_at >= ?), events.start_at) END';
+    }
+
+    /**
+     * Order by each event's first date on or after $from, so a run in
+     * progress sorts by its next showing rather than its opening night.
+     *
+     * @param Builder<Event> $query
+     */
+    public function scopeOrderByNextStart(Builder $query, \DateTimeInterface|string $from, string $direction = 'asc'): Builder
+    {
+        $direction = 'desc' === strtolower($direction) ? 'desc' : 'asc';
+
+        // the selected alias when there is one: DISTINCT only orders by selected columns
+        if (in_array('next_start_at', self::selectedNames($query), true)) {
+            return $query->orderBy('next_start_at', $direction);
+        }
+
+        return $query->orderByRaw(self::nextStartSql().' '.$direction, [$from, $from]);
+    }
+
+    /**
+     * Select each event's first date on or after $from as next_start_at, which
+     * display_start_at then shows in place of start_at. Only on a query that
+     * returns whole events: a narrowed select (a subquery of ids) is left alone.
+     *
+     * @param Builder<Event> $query
+     */
+    public function scopeWithNextStart(Builder $query, \DateTimeInterface|string $from): Builder
+    {
+        if (null === $query->getQuery()->columns) {
+            $query->select('events.*');
+        } else {
+            $names = self::selectedNames($query);
+            $wholeEvents = in_array('events.*', $names, true) || in_array('*', $names, true);
+
+            if (!$wholeEvents || in_array('next_start_at', $names, true)) {
+                return $query;
+            }
+        }
+
+        return $query->selectRaw(self::nextStartSql().' as next_start_at', [$from, $from]);
+    }
+
+    /**
+     * What a query selects: plain columns as written, and "… as alias" by alias.
+     *
+     * @param Builder<Event> $query
+     *
+     * @return array<int, string>
+     */
+    protected static function selectedNames(Builder $query): array
+    {
+        $grammar = $query->getQuery()->getGrammar();
+
+        return array_map(function ($column) use ($grammar): string {
+            $sql = $column instanceof \Illuminate\Contracts\Database\Query\Expression
+                ? (string) $column->getValue($grammar)
+                : $column;
+
+            return 1 === preg_match('/\bas\s+`?(\w+)`?\s*$/i', $sql, $match) ? $match[1] : $sql;
+        }, $query->getQuery()->columns ?? []);
+    }
+
+    /**
+     * The date a list shows for the event: the one the query picked
+     * (withNextStart), else the next showing still to come, else start_at.
+     */
+    public function getDisplayStartAtAttribute(): ?Carbon
+    {
+        if (!empty($this->attributes['next_start_at'])) {
+            return Carbon::parse($this->attributes['next_start_at']);
+        }
+
+        if (!$this->isMultiDate()) {
+            return $this->start_at;
+        }
+
+        return $this->nextOccurrence()->start_at ?? $this->start_at;
+    }
+
+    /**
+     * The event's dates inside [$start, $end], earliest first.
+     *
+     * @return Collection<int, EventShowing>
+     */
+    public function occurrencesBetween(\DateTimeInterface $start, \DateTimeInterface $end): Collection
+    {
+        return $this->occurrences()
+            ->filter(fn (EventShowing $showing) => $showing->start_at->between($start, $end))
+            ->values();
+    }
+
+    /**
+     * Group events under each day in [$start, $end] they play, keyed Y-m-d and
+     * ordered by time. A short run appears under every one of its days, as a
+     * copy whose display_start_at is that day's showing.
+     *
+     * @param iterable<Event> $events
+     *
+     * @return Collection<string, Collection<int, Event>>
+     */
+    public static function groupByDay(iterable $events, \DateTimeInterface $start, \DateTimeInterface $end): Collection
+    {
+        $days = [];
+
+        foreach ($events as $event) {
+            foreach ($event->occurrencesBetween($start, $end) as $showing) {
+                $shown = $event;
+                if ($event->isMultiDate()) {
+                    // never saved: the extra attribute only steers display_start_at
+                    $shown = clone $event;
+                    $shown->setAttribute('next_start_at', $showing->start_at->format('Y-m-d H:i:s'));
+                }
+
+                $days[$showing->start_at->format('Y-m-d')][] = $shown;
+            }
+        }
+
+        return collect($days)->map(
+            fn (array $day) => collect($day)->sortBy(fn (Event $event) => $event->display_start_at?->getTimestamp())->values()
+        );
     }
 
     /**
@@ -519,8 +697,10 @@ class Event extends Model implements HasPhotos
      */
     public function scopeFuture(Builder $query): Builder
     {
-        return $query->where('start_at', '>=', Carbon::today()->startOfDay())
-            ->orderBy('start_at', 'asc');
+        // a short run stays until its last showing, placed by its next one (#2375)
+        $today = Carbon::today()->startOfDay();
+
+        return $query->occurringBetween($today)->orderByNextStart($today);
     }
 
     /**
@@ -528,8 +708,9 @@ class Event extends Model implements HasPhotos
      */
     public function scopePast(Builder $query): Builder
     {
-        return $query->where('start_at', '<', Carbon::today()->startOfDay())
-            ->orderBy('start_at', 'desc');
+        // over only once the last showing has passed
+        return $query->where('events.last_start_at', '<', Carbon::today()->startOfDay())
+            ->orderBy('events.start_at', 'desc');
     }
 
     /**
@@ -564,15 +745,16 @@ class Event extends Model implements HasPhotos
     }
 
     /**
-     * Returns visible events.
+     * Events with a date on the given day, under the day views' visibility rule.
+     *
+     * @param Builder<Event> $query
      */
     public function scopeStarting(Builder $query, ?string $date): Builder
     {
-        $cdate_yesterday = Carbon::parse($date)->subDay();
-        $cdate_tomorrow = Carbon::parse($date)->addDay();
+        $dayStart = Carbon::parse($date)->startOfDay();
 
-        return $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
-            ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00')
+        return $query->occurringBetween($dayStart, $dayStart->copy()->endOfDay())
+            ->withNextStart($dayStart)
             ->where(function ($query) {
                 $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
                 // a guest has no id: comparing created_by to null would compile to IS NULL
@@ -580,7 +762,7 @@ class Event extends Model implements HasPhotos
                     $query->orWhere('created_by', '=', Auth::id());
                 }
             })
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart($dayStart)
             ->with('visibility');
     }
 
@@ -589,7 +771,8 @@ class Event extends Model implements HasPhotos
      * [$startDate, $endDate], with the same visibility rules as
      * scopeStarting(). The day partition matches scopeStarting() exactly,
      * so a multi-day view can load the whole window in one query and group
-     * the result by day instead of issuing one query per day (N+1).
+     * the result by day (Event::groupByDay(), which also places a short run
+     * under each of its days) instead of issuing one query per day (N+1).
      *
      * @param Builder<Event> $query
      */
@@ -598,8 +781,7 @@ class Event extends Model implements HasPhotos
         $rangeStart = Carbon::parse($startDate)->startOfDay();
         $rangeEnd = Carbon::parse($endDate)->addDay()->startOfDay();
 
-        return $query->where('start_at', '>=', $rangeStart->toDateTimeString())
-            ->where('start_at', '<', $rangeEnd->toDateTimeString())
+        return $query->occurringBetween($rangeStart->toDateTimeString(), $rangeEnd->copy()->subSecond()->toDateTimeString())
             ->where(function ($query) {
                 $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
                 // a guest has no id: comparing created_by to null would compile to IS NULL
@@ -607,7 +789,7 @@ class Event extends Model implements HasPhotos
                     $query->orWhere('created_by', '=', Auth::id());
                 }
             })
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart($rangeStart)
             ->with('visibility');
     }
 
@@ -1081,6 +1263,8 @@ class Event extends Model implements HasPhotos
             'tg'.$stamp('tags'),
             'en'.$stamp('entities'),
             've'.$stamp('venue'),
+            // a run's card shows its next showing, which moves on as dates pass
+            'ds'.($this->isMultiDate() ? $this->display_start_at?->getTimestamp() : ''),
         ]);
     }
 
