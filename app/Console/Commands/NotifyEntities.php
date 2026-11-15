@@ -137,6 +137,7 @@ class NotifyEntities extends Command
                 // a short run by its next showing (#2375)
                 ->occurringBetween(Carbon::now(), Carbon::now()->addDays(90))
                 ->orderByNextStart(Carbon::now())
+                ->with('showings')
                 ->limit(10) // show up to 10 upcoming events in the reminder email
                 ->get();
 

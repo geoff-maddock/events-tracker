@@ -44,6 +44,9 @@ class InstagramEventPoster extends InstagramPoster
     // Instagram's caption length limit
     private const CAPTION_LIMIT = 2200;
 
+    // a short run's dates in the weekly carousel caption, which carries up to nine events (#2375)
+    private const WEEK_SHOWINGS_LISTED = 3;
+
     /**
      * Post a single event photo to the Instagram feed.
      */
@@ -151,6 +154,7 @@ class InstagramEventPoster extends InstagramPoster
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
             ->orderByNextStart(Carbon::now()->startOfWeek())
+            ->with('showings')
             ->limit(self::MAX_CAROUSEL_ITEMS - 1)
             ->get();
 
@@ -167,7 +171,8 @@ class InstagramEventPoster extends InstagramPoster
                 continue;
             }
 
-            $caption .= $event->getInstagramFormat()."\n\n";
+            // a short run's first few dates, so it can't crowd the other events out of the caption
+            $caption .= $event->getInstagramFormat(self::WEEK_SHOWINGS_LISTED)."\n\n";
             $included[] = $event;
         }
 
@@ -432,6 +437,7 @@ class InstagramEventPoster extends InstagramPoster
         return Event::whereIn('id', $eventIds)
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
+            ->with('showings')
             ->get()
             ->sortBy(fn (Event $event): int|false => array_search($event->id, $eventIds, true))
             ->values();
@@ -471,6 +477,7 @@ class InstagramEventPoster extends InstagramPoster
             ->withCount(['eventResponses as response_count'])
             ->orderBy('response_count', 'desc')
             ->orderByNextStart($dayStart)
+            ->with('showings')
             ->get();
 
         if ($todaysEvents->isEmpty()) {

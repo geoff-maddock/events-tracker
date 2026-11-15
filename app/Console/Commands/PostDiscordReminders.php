@@ -58,8 +58,14 @@ class PostDiscordReminders extends Command
         ]);
 
         foreach ($targets as $target) {
-            foreach ($target->effectiveReminderOffsets() as $offset) {
-                $queued += $this->remindersFor($matcher, $target, $offset, $dryRun);
+            // A short run can have a date in two windows at once (#2375); one
+            // reminder per event per target per run, the nearest date first.
+            $offsets = $target->effectiveReminderOffsets();
+            sort($offsets);
+            $reminded = [];
+
+            foreach ($offsets as $offset) {
+                $queued += $this->remindersFor($matcher, $target, $offset, $dryRun, $reminded);
             }
         }
 
@@ -75,20 +81,24 @@ class PostDiscordReminders extends Command
     }
 
     /**
-     * One target, one offset.
+     * One target, one offset. $reminded holds the ids of events already
+     * reminded about this run, and gains the ones queued here.
+     *
+     * @param  array<int, true>  $reminded
      */
     private function remindersFor(
         DiscordTargetMatcher $matcher,
         DiscordTarget $target,
         int $offset,
         bool $dryRun,
+        array &$reminded,
     ): int {
         // A whole-day window against a once-daily run: an event cannot fall
         // between two runs, and cannot be caught by two.
         $from = now()->addDays($offset)->startOfDay();
         $to = now()->addDays($offset)->endOfDay();
 
-        $events = $matcher->eventsFor($target, $from, $to)->get();
+        $events = $matcher->eventsFor($target, $from, $to)->with('showings')->get();
         $queued = 0;
 
         // Separates "the criteria matched nothing" from "the criteria matched
@@ -101,7 +111,7 @@ class PostDiscordReminders extends Command
         ]);
 
         foreach ($events as $event) {
-            if ($this->postedTooRecently($target, $event)) {
+            if (isset($reminded[$event->id]) || $this->postedTooRecently($target, $event)) {
                 continue;
             }
 
@@ -124,6 +134,7 @@ class PostDiscordReminders extends Command
                 );
             }
 
+            $reminded[$event->id] = true;
             $queued++;
         }
 

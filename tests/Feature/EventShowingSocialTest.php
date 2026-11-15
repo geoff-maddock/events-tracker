@@ -13,11 +13,13 @@ use App\Models\EventShare;
 use App\Models\EventStatus;
 use App\Models\Photo;
 use App\Models\ResponseType;
+use App\Models\SurveyCampaign;
 use App\Models\SurveyInvitation;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
 use App\Services\EventTime;
+use App\Services\FeedbackPromptService;
 use App\Services\Integrations\Discord\DiscordEmbedBuilder;
 use App\Services\Integrations\Discord\DiscordTargetMatcher;
 use Carbon\Carbon;
@@ -89,6 +91,8 @@ class EventShowingSocialTest extends TestCase
         $this->assertStringContainsString('Dates: Thu Mar 4 7PM, Sat Mar 6 2PM', $brief);
 
         $this->assertStringContainsString('Showings: Thu Mar 4 7PM, Sat Mar 6 2PM', $this->run->getInstagramFormat());
+        // the weekly carousel lists fewer, so a run can't crowd the others out
+        $this->assertStringContainsString('Showings: Thu Mar 4 7PM + 1 more', $this->run->getInstagramFormat(1));
 
         $single = $this->friday->getBriefFormat();
         $this->assertStringStartsWith('Friday March 5th 2027 | ZZ Friday Gig', $single);
@@ -100,6 +104,24 @@ class EventShowingSocialTest extends TestCase
         $last = $this->run->fresh()->getBriefFormat();
         $this->assertStringStartsWith('Saturday March 6th 2027', $last);
         $this->assertStringNotContainsString('Dates:', $last);
+    }
+
+    public function test_a_long_tweet_lists_fewer_dates_rather_than_lose_its_link(): void
+    {
+        $long = $this->event('ZZ '.str_repeat('A Very Long Play Title ', 5), '2027-03-01 20:00:00');
+        $long->syncShowings([
+            ['start_at' => '2027-03-04 19:00:00'],
+            ['start_at' => '2027-03-05 19:30:00'],
+            ['start_at' => '2027-03-06 14:00:00'],
+            ['start_at' => '2027-03-07 14:00:00'],
+            ['start_at' => '2027-03-08 19:00:00'],
+        ]);
+
+        $brief = $long->fresh()->getBriefFormat();
+
+        $this->assertStringContainsString('/events/'.$long->id, $brief);
+        $this->assertStringContainsString('Dates: Thu Mar 4 7PM', $brief);
+        $this->assertLessThanOrEqual(280, strlen($brief));
     }
 
     public function test_the_discord_embed_leads_with_the_next_showing_and_lists_the_rest(): void
@@ -171,6 +193,19 @@ class EventShowingSocialTest extends TestCase
         Queue::assertPushed(PostEventToDiscord::class, fn ($job): bool => $job->eventId === $this->run->id && '1:2027-03-06' === $job->reasonKey);
     }
 
+    public function test_a_run_in_two_reminder_windows_gets_one_reminder(): void
+    {
+        config(['discord.enabled' => true]);
+        Queue::fake();
+        // Mar 4 is a day out and Mar 6 three days out: both windows hold the run
+        DiscordTarget::factory()->matchAll()->reminders([3, 1])->create();
+
+        $this->artisan('discord:reminders')->assertSuccessful();
+
+        Queue::assertPushed(PostEventToDiscord::class, fn ($job): bool => $job->eventId === $this->run->id && '1:2027-03-04' === $job->reasonKey);
+        Queue::assertNotPushed(PostEventToDiscord::class, fn ($job): bool => $job->eventId === $this->run->id && str_starts_with($job->reasonKey, '3:'));
+    }
+
     /**
      * @return Collection<int, Event>
      */
@@ -204,6 +239,18 @@ class EventShowingSocialTest extends TestCase
         // posted after the Mar 1 showing, and Mar 4 hasn't played yet: nothing new to post
         $this->sharedOn($this->run, '2027-03-01 21:00:00');
         Carbon::setTestNow('2027-03-04 12:00:00');
+        $this->assertFalse($this->instagramDue()->contains('id', $this->run->id));
+    }
+
+    public function test_instagram_does_not_post_a_run_once_its_final_showing_has_started(): void
+    {
+        $this->sharedOn($this->run, '2027-03-03 10:00:00');
+
+        // Mar 4 has played and the 2PM finale is still to come
+        Carbon::setTestNow('2027-03-06 10:00:00');
+        $this->assertTrue($this->instagramDue()->contains('id', $this->run->id));
+
+        Carbon::setTestNow('2027-03-06 15:00:00');
         $this->assertFalse($this->instagramDue()->contains('id', $this->run->id));
     }
 
@@ -242,8 +289,34 @@ class EventShowingSocialTest extends TestCase
         $this->artisan('feedback:generate')->assertSuccessful();
         $this->assertSame(0, SurveyInvitation::where('user_id', $user->id)->count());
 
-        Carbon::setTestNow('2027-03-08 12:00:00');
+        // the last showing ends at 4PM Mar 6; with the 12-hour delay, that's 4AM Mar 7
+        config(['feedback.post_event.delay_hours' => 12]);
+        Carbon::setTestNow('2027-03-07 03:00:00');
+        $this->artisan('feedback:generate')->assertSuccessful();
+        $this->assertSame(0, SurveyInvitation::where('user_id', $user->id)->count());
+
+        Carbon::setTestNow('2027-03-07 05:00:00');
         $this->artisan('feedback:generate')->assertSuccessful();
         $this->assertSame(1, SurveyInvitation::where('user_id', $user->id)->where('subject_id', $this->run->id)->count());
+    }
+
+    public function test_the_feedback_prompt_dates_a_run_by_its_first_and_last_showing(): void
+    {
+        $date = function (Event $event): ?string {
+            $invitation = SurveyInvitation::factory()->create([
+                'survey_campaign_id' => SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE)->id,
+                'user_id' => User::factory()->create()->id,
+                'subject_type' => 'event',
+                'subject_id' => $event->id,
+            ]);
+
+            return app(FeedbackPromptService::class)->payload($invitation)['subject']['date'] ?? null;
+        };
+
+        $this->assertSame('Mon Mar 1 – Sat Mar 6, 2027', $date($this->run));
+
+        $newYear = $this->event('ZZ New Year Run', '2026-12-30 20:00:00');
+        $newYear->syncShowings([['start_at' => '2027-01-02 20:00:00']]);
+        $this->assertSame('Wed Dec 30, 2026 – Sat Jan 2, 2027', $date($newYear->fresh()));
     }
 }

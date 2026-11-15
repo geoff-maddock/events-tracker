@@ -267,39 +267,42 @@ class Event extends Model implements HasPhotos
     }
 
     /**
-     * The dates that haven't started by $from (default now), earliest first.
+     * The dates that haven't started yet, earliest first.
      *
      * @return Collection<int, EventShowing>
      */
-    public function remainingOccurrences(?\DateTimeInterface $from = null): Collection
+    public function remainingOccurrences(): Collection
     {
-        $from ??= Carbon::now();
+        $now = Carbon::now();
 
-        return $this->occurrences()->filter(fn (EventShowing $showing) => $showing->start_at->gte($from))->values();
+        return $this->occurrences()->filter(fn (EventShowing $showing) => $showing->start_at->gte($now))->values();
     }
 
     /**
-     * A short run's remaining dates as one line for a post or caption, such as
-     * "Thu Mar 4 7PM, Sat Mar 6 2:30PM + 3 more". Null for a single-date event,
-     * and for a run down to its last date, which the post already names (#2375).
+     * A short run's remaining dates for a post or caption: by default one line
+     * such as "Thu Mar 4 7PM, Sat Mar 6 2:30PM + 3 more". Null for a single-date
+     * event, and for a run down to its last date, which the post already names
+     * (#2375). Posts list every remaining date, the one they lead with included.
+     *
+     * @param (callable(EventShowing): string)|null $format one date
      */
-    public function showtimesSummary(int $limit = 10, ?\DateTimeInterface $from = null): ?string
+    public function showtimesSummary(int $limit = 10, ?callable $format = null, string $glue = ', '): ?string
     {
         if (!$this->isMultiDate()) {
             return null;
         }
 
-        $remaining = $this->remainingOccurrences($from);
+        $remaining = $this->remainingOccurrences();
         if ($remaining->count() < 2) {
             return null;
         }
 
-        $summary = $remaining->take($limit)
-            ->map(fn (EventShowing $showing) => $showing->start_at->format('D M j').' '.self::shortTime($showing->start_at))
-            ->implode(', ');
+        $format ??= fn (EventShowing $showing): string => $showing->start_at->format('D M j').' '.self::shortTime($showing->start_at);
+        $summary = $remaining->take($limit)->map($format)->implode($glue);
 
         if ($remaining->count() > $limit) {
-            $summary .= ' + '.($remaining->count() - $limit).' more';
+            // on a line of its own when the dates are one per line
+            $summary .= (str_contains($glue, "\n") ? $glue : ' ').'+ '.($remaining->count() - $limit).' more';
         }
 
         return $summary;
@@ -1467,9 +1470,17 @@ class Event extends Model implements HasPhotos
             $format .= ' '.$price;
         }
 
-        // a short run's other dates, ahead of the hashtags that fill the remaining space
-        if ($dates = $this->showtimesSummary(4)) {
-            $format .= ' | Dates: '.$dates;
+        // a short run's dates, as many as leave room for the hashtags' share
+        // and the event URL below, which must not be crowded out
+        for ($listed = 4; $listed > 0; $listed--) {
+            $dates = $this->showtimesSummary($listed);
+            if (null === $dates) {
+                break;
+            }
+            if (strlen($format.' | Dates: '.$dates) < 244) {
+                $format .= ' | Dates: '.$dates;
+                break;
+            }
         }
 
         // include the related entities
@@ -1528,8 +1539,8 @@ class Event extends Model implements HasPhotos
         return substr($format, 0, 280);
     }
 
-   // Format the event to post tp instagram
-   public function getInstagramFormat(): ?string
+   // Format the event to post tp instagram; $showingsListed caps a short run's dates
+   public function getInstagramFormat(int $showingsListed = 20): ?string
    {
         $maxLength = 2100;
 
@@ -1563,7 +1574,7 @@ class Event extends Model implements HasPhotos
        }
 
        // every date a short run has left, in the one post (#2375)
-       if ($dates = $this->showtimesSummary(20)) {
+       if ($dates = $this->showtimesSummary($showingsListed)) {
            $format .= "\nShowings: ".$dates."\n";
        }
 

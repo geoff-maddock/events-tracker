@@ -259,8 +259,10 @@ class FeedbackPromptService
             $payload['url'] = route('events.show', $subject->slug ?: $subject->getKey());
             $payload['date'] = $subject->start_at?->format('D M j, Y');
             if ($subject->isMultiDate()) {
-                // a short run: its first and last dates (#2375)
-                $payload['date'] = $subject->start_at?->format('D M j').' – '.$subject->last_start_at?->format('D M j, Y');
+                // a short run: its first and last dates (#2375), each with its
+                // year when the run crosses into a new one
+                $firstFormat = $subject->start_at?->year === $subject->last_start_at?->year ? 'D M j' : 'D M j, Y';
+                $payload['date'] = $subject->start_at?->format($firstFormat).' – '.$subject->last_start_at?->format('D M j, Y');
             }
             $payload['image'] = $subject->getPrimaryPhotoThumbnailPath();
 

@@ -217,24 +217,11 @@ class DiscordEmbedBuilder
      */
     private function showings(Event $event): ?string
     {
-        if (!$event->isMultiDate()) {
-            return null;
-        }
-
-        $remaining = $event->remainingOccurrences();
-        if ($remaining->count() < 2) {
-            return null;
-        }
-
-        $lines = $remaining->take(self::SHOWINGS_LISTED)
-            ->map(fn (EventShowing $showing): string => '<t:'.EventTime::toInstant($showing->start_at)?->timestamp.':f>')
-            ->all();
-
-        if ($remaining->count() > self::SHOWINGS_LISTED) {
-            $lines[] = '+ '.($remaining->count() - self::SHOWINGS_LISTED).' more';
-        }
-
-        return implode("\n", $lines);
+        return $event->showtimesSummary(
+            self::SHOWINGS_LISTED,
+            fn (EventShowing $showing): string => '<t:'.EventTime::toInstant($showing->start_at)?->timestamp.':f>',
+            "\n",
+        );
     }
 
     /**

@@ -117,6 +117,7 @@ class AutomateInstagramPosts extends Command
             })
             ->whereHas('eventType') // Ensure event has a type
             ->orderByNextStart($today)
+            ->with('showings')
             ->get()
             ->filter(function ($event) use ($today) {
                 // Check if event has a primary photo (required for Instagram)
@@ -164,16 +165,17 @@ class AutomateInstagramPosts extends Command
                     // Carbon 3 upgrade, where diffIn* returns fractional floats
                     $daysSinceLastShare = (int) $lastShare->posted_at->diffInDays($today, false);
                     // a short run counts down to its next showing
-                    $nextStart = $event->nextOccurrence()->start_at ?? $event->start_at;
-                    $daysUntilEvent = (int) $today->diffInDays($nextStart, false);
+                    $daysUntilEvent = (int) $today->diffInDays($event->display_start_at ?? $event->start_at, false);
                     
                     if ($daysSinceLastShare > 7 && $daysUntilEvent < 30) {
                         return true;
                     }
 
                     // Rule 3: a short run that has played a showing since its last
-                    // post, so its next showing hasn't been posted as the next one
+                    // post, so its next showing hasn't been posted as the next one;
+                    // never once the final showing has started
                     if ($daysSinceLastShare >= self::RUN_REPOST_AFTER_DAYS
+                        && null !== $event->nextOccurrence()
                         && $daysUntilEvent < 30
                         && $this->playedSince($event, $lastShare->posted_at)) {
                         Log::info("AutomateInstagramPosts: Event #{$event->id} played a showing since its last post.");
