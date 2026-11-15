@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Console\Commands\AutomateInstagramPosts;
 use App\Jobs\Discord\PostEventToDiscord;
+use App\Mail\EntityReminder;
 use App\Models\DiscordTarget;
+use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\EventShare;
@@ -19,6 +21,7 @@ use App\Services\EventTime;
 use App\Services\Integrations\Discord\DiscordEmbedBuilder;
 use App\Services\Integrations\Discord\DiscordTargetMatcher;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
@@ -202,6 +205,28 @@ class EventShowingSocialTest extends TestCase
         $this->sharedOn($this->run, '2027-03-01 21:00:00');
         Carbon::setTestNow('2027-03-04 12:00:00');
         $this->assertFalse($this->instagramDue()->contains('id', $this->run->id));
+    }
+
+    public function test_emails_show_the_next_showing_and_the_rest(): void
+    {
+        $entry = view('emails.event-update-markdown', ['event' => $this->run, 'url' => 'http://localhost/'])->render();
+        $this->assertStringContainsString('Thursday March 4th 2027', $entry);
+        $this->assertStringContainsString('Showings: Thu Mar 4 7PM, Sat Mar 6 2PM', $entry);
+
+        $reminder = (new EntityReminder(
+            'http://localhost/',
+            'Site',
+            'admin@example.com',
+            'noreply@example.com',
+            'feedback@example.com',
+            Entity::factory()->create(),
+            new EloquentCollection([$this->run, $this->friday]),
+            new EloquentCollection(),
+            new EloquentCollection(),
+        ))->to('contact@example.com')->render();
+
+        $this->assertStringContainsString('Thursday March 4th 2027 at 7:00 PM (+ more dates)', $reminder);
+        $this->assertStringContainsString('Friday March 5th 2027 at 8:00 PM', $reminder);
     }
 
     public function test_attendees_are_asked_for_feedback_after_the_last_showing(): void
