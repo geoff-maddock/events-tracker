@@ -35,8 +35,10 @@ class QueueDiscordEventPost
         }
 
         // Cheap pre-filter only. The job re-resolves targets when it runs,
-        // half an hour later, by which time the event may have changed.
-        if ($event->do_not_repost || null === $event->start_at || $event->start_at->isPast()) {
+        // half an hour later, by which time the event may have changed. A
+        // short run is announced while any showing is still to come (#2375).
+        $lastStart = $event->last_start_at ?? $event->start_at;
+        if ($event->do_not_repost || null === $lastStart || $lastStart->isPast()) {
             return;
         }
 

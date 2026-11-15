@@ -66,7 +66,10 @@ class DigestBuilder
      */
     public function weekly(User $user): Digest
     {
-        $attending = $user->getAttendingFuture()->where('start_at', '<=', Carbon::now()->addDays(self::WEEKLY_ATTENDING_DAYS));
+        // a short run by its next showing (#2375)
+        $attending = $user->getAttendingFuture()
+            ->filter(fn (Event $event) => $event->display_start_at?->lte(Carbon::now()->addDays(self::WEEKLY_ATTENDING_DAYS)) ?? false)
+            ->values();
         // nextOccurrenceDate() is never before today in New York, so this is today through day 7
         $weekEnd = Carbon::now('America/New_York')->startOfDay()->addDays(self::WEEKLY_SERIES_DAYS);
 

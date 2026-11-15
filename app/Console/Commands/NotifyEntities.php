@@ -134,9 +134,9 @@ class NotifyEntities extends Command
             // email goes to the entity's outside contact, so public events only
             $upcomingEvents = $entity->events()
                 ->visible(null)
-                ->where('start_at', '>=', Carbon::now())
-                ->where('start_at', '<=', Carbon::now()->addDays(90))
-                ->orderBy('start_at', 'ASC')
+                // a short run by its next showing (#2375)
+                ->occurringBetween(Carbon::now(), Carbon::now()->addDays(90))
+                ->orderByNextStart(Carbon::now())
                 ->limit(10) // show up to 10 upcoming events in the reminder email
                 ->get();
 

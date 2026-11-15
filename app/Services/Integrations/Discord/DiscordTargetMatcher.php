@@ -56,6 +56,9 @@ class DiscordTargetMatcher
      * The events a target wants, optionally windowed by start time. Used by
      * the reminder and digest commands, and by the admin preview.
      *
+     * A short run matches a window holding any of its dates, and sorts by its
+     * next one (#2375).
+     *
      * @return Builder<Event>
      */
     public function eventsFor(
@@ -63,22 +66,15 @@ class DiscordTargetMatcher
         ?CarbonInterface $from = null,
         ?CarbonInterface $to = null,
     ): Builder {
-        $query = $this->applyCriteria($this->baseEligible($target), $target);
-
-        if (null !== $from) {
-            $query->where('start_at', '>=', $from);
-        }
-
-        if (null !== $to) {
-            $query->where('start_at', '<=', $to);
-        }
-
-        return $query->orderBy('start_at');
+        return $this->applyCriteria($this->baseEligible($target), $target)
+            ->occurringBetween($from, $to)
+            ->orderByNextStart($from ?? now());
     }
 
     /**
      * The gate every mode shares, regardless of criteria: a public, future,
-     * live event its owner has not opted out of reposting.
+     * live event its owner has not opted out of reposting. A short run counts
+     * as future until its last showing.
      *
      * @return Builder<Event>
      */
@@ -87,7 +83,7 @@ class DiscordTargetMatcher
         $query = Event::query()
             ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
-            ->where('start_at', '>=', now())
+            ->where('events.last_start_at', '>=', now())
             // do_not_repost is shared with the Instagram integration: opting an
             // event out of reposting opts it out everywhere.
             ->where(function (Builder $q): void {

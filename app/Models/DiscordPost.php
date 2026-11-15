@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  *   create    ''                     one announcement per event per target
  *   reminder  '7'                    one per offset per event per target
+ *             '7:2027-03-04'         a short run: one per offset per date (#2375)
  *   digest    '2026-W32'             one per ISO week per target (event_id 0)
  *   manual    '3:202608071230'       user + minute, so a deliberate repost works
  *   test      ''                     one connection test row per target

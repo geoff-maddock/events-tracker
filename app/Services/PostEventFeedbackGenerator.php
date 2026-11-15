@@ -122,8 +122,9 @@ class PostEventFeedbackGenerator
     public function candidateQuery(int $campaignId, Carbon $windowStart, Carbon $windowEnd, $eventFilter = null)
     {
         // Events have no dedicated "ended at"; end_at is nullable and falls back
-        // to start_at for single-point events.
-        $eventEnd = 'COALESCE(events.end_at, events.start_at)';
+        // to start_at for single-point events. A short run ends with its last
+        // showing (#2375), so attendees are asked once, after the whole run.
+        $eventEnd = 'GREATEST(COALESCE(events.end_at, events.start_at), COALESCE(events.last_start_at, events.start_at))';
 
         $query = DB::table('event_responses')
             ->join('events', 'events.id', '=', 'event_responses.event_id')
@@ -141,11 +142,12 @@ class PostEventFeedbackGenerator
             })
             ->whereNull('survey_invitations.id')
             ->where('event_responses.response_type_id', ResponseType::ATTENDING)
-            // Indexable pre-filter. COALESCE() alone cannot use the start_at
-            // index, and without this the join full-scans event_responses.
-            // The extra day on the lower bound covers multi-day events whose
-            // end_at trails start_at.
-            ->whereBetween('events.start_at', [$windowStart->copy()->subDay(), $windowEnd])
+            // Indexable pre-filter. COALESCE() alone cannot use an index, and
+            // without this the join full-scans event_responses. last_start_at
+            // is start_at for a single-date event and the final showing of a
+            // run; the extra day on the lower bound covers multi-day events
+            // whose end_at trails it.
+            ->whereBetween('events.last_start_at', [$windowStart->copy()->subDay(), $windowEnd])
             ->whereRaw("$eventEnd >= ?", [$windowStart])
             ->whereRaw("$eventEnd <= ?", [$windowEnd])
             ->where('events.visibility_id', '!=', Visibility::VISIBILITY_CANCELLED)
