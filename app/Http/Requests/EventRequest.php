@@ -2,11 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ValidatesShowings;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Request;
 
 class EventRequest extends Request
 {
+    use ValidatesShowings;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,6 +31,8 @@ class EventRequest extends Request
         if (is_string($slug) && '' !== $slug && ctype_digit($slug[0])) {
             $this->merge(['slug' => '-'.$slug]);
         }
+
+        $this->pruneBlankShowings();
     }
 
     /**
@@ -75,7 +80,7 @@ class EventRequest extends Request
             'do_not_repost' => 'nullable|boolean',
             'soundcheck_at' => 'nullable|date',
             'cancelled_at' => 'nullable|date',
-        ];
+        ] + $this->showingRules();
     }
 
     public function messages()
@@ -103,6 +108,6 @@ class EventRequest extends Request
             'entity_list.array' => 'The entity list must be an array of entity IDs',
             'entity_list.*.integer' => 'Each entity in the entity list must be an entity ID',
             'entity_list.*.exists' => 'Each entity in the entity list must reference an existing entity',
-        ];
+        ] + $this->showingMessages();
     }
 }

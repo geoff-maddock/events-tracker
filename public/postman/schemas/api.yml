@@ -737,6 +737,27 @@ components:
           example: 2018-03-20T09:12:28Z
           format: date-time
           description: Date and time that the event starts
+        showings:
+          type: array
+          maxItems: 60
+          description: Additional dates of a short-run event. start_at is the first showing; each of these must start after it. A PUT without it removes them all; a PATCH without it leaves them alone.
+          items:
+            type: object
+            required:
+              - start_at
+            properties:
+              start_at:
+                type: string
+                format: date-time
+                example: "2018-03-21T20:00:00Z"
+              end_at:
+                type: string
+                format: date-time
+                nullable: true
+              door_at:
+                type: string
+                format: date-time
+                nullable: true
         series_id:
           type: integer
           nullable: true
@@ -853,6 +874,40 @@ components:
           example: "2018-03-20T09:12:28Z"
           format: date-time
           description: Date and time that the event starts
+        showings:
+          type: array
+          readOnly: true
+          description: Additional dates of a short-run event, earliest first. Empty for a single-date event.
+          items:
+            type: object
+            required:
+              - start_at
+            properties:
+              id:
+                type: integer
+              start_at:
+                type: string
+                format: date-time
+                example: "2018-03-21T20:00:00Z"
+              end_at:
+                type: string
+                format: date-time
+                nullable: true
+              door_at:
+                type: string
+                format: date-time
+                nullable: true
+        last_start_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Start of the final showing (start_at when there are no additional showings)
+        next_start_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+          description: Start of the next showing that has not begun, or null once every showing has passed
         series:
           $ref: "#/components/schemas/SeriesResponse"
         min_age:

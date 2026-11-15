@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ValidatesShowings;
 use Illuminate\Validation\Rule;
 
 class EventPatchRequest extends Request
 {
+    use ValidatesShowings;
+
     public function authorize(): bool
     {
         return true;
@@ -22,6 +25,8 @@ class EventPatchRequest extends Request
         if (is_string($slug) && '' !== $slug && ctype_digit($slug[0])) {
             $this->merge(['slug' => '-'.$slug]);
         }
+
+        $this->pruneBlankShowings();
     }
 
     /**
@@ -67,6 +72,6 @@ class EventPatchRequest extends Request
             'do_not_repost' => 'sometimes|nullable|boolean',
             'soundcheck_at' => 'sometimes|nullable|date',
             'cancelled_at' => 'sometimes|nullable|date',
-        ];
+        ] + $this->showingRules();
     }
 }

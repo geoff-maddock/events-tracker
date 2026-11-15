@@ -45,6 +45,17 @@ class EventResource extends JsonResource
             'door_at' => $this->door_at,
             'start_at' => $this->start_at,
             'end_at' => $this->end_at,
+            // a short run's additional dates (#2375); start_at is the first showing
+            'showings' => $this->isMultiDate()
+                ? $this->showings->map(fn ($showing) => [
+                    'id' => $showing->id,
+                    'start_at' => $showing->start_at,
+                    'end_at' => $showing->end_at,
+                    'door_at' => $showing->door_at,
+                ])->all()
+                : [],
+            'last_start_at' => $this->last_start_at ?? $this->start_at,
+            'next_start_at' => $this->nextOccurrence()?->start_at,
             'min_age' => $this->min_age,
             'age_format' => $this->age_format,
             'series' => $this->series ? new MinimalSlugResource($this->series) : null,

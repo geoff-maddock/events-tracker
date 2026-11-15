@@ -32,6 +32,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class EventsController extends Controller
@@ -540,6 +541,7 @@ class EventsController extends Controller
         $msg = '';
 
         $input = $request->validated();
+        $showings = Arr::pull($input, 'showings') ?? [];
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -560,6 +562,7 @@ class EventsController extends Controller
 
         $event->tags()->attach($syncArray);
         $event->entities()->attach($request->input('entity_list'));
+        $event->syncShowings($showings);
 
         // add to activity log
         Activity::log($event, $this->user, 1);
@@ -603,6 +606,7 @@ class EventsController extends Controller
             unset($input['created_by']);
         }
         $input['updated_by'] = $this->user->id;
+        $showings = Arr::pull($input, 'showings') ?? [];
 
         $nonNullableBooleans = $this->nonNullableBooleanEventFields();
         foreach ($this->optionalEventFields() as $field) {
@@ -623,6 +627,8 @@ class EventsController extends Controller
         }
 
         $event->fill($input)->save();
+        // a full replacement: showings left out of the body are removed
+        $event->syncShowings($showings);
 
         $event->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
         $event->entities()->sync($request->input('entity_list', []));
@@ -657,6 +663,13 @@ class EventsController extends Controller
         if (!empty($scalarInput)) {
             $scalarInput['updated_by'] = $this->user->id;
             $event->fill($scalarInput)->save();
+        }
+
+        if ($request->has('showings')) {
+            $event->syncShowings($input['showings'] ?? []);
+        } elseif ($event->wasChanged('start_at')) {
+            // a moved first date may have overtaken some of the stored showings
+            $event->syncShowings($event->showings->map->only(['start_at', 'end_at', 'door_at'])->all());
         }
 
         if ($request->has('tag_list')) {

@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Events with multiple show dates (#2375)
+A short-run event, such as a play, can carry every date it plays instead of being entered once per
+date. **Start At** stays the first showing; the event form's **Additional Showings** adds the
+others, each with its own start and optional end time (up to 60).
+- The event page lists every showing, with the next one marked and past ones struck through.
+- API: events return `showings`, `last_start_at` and `next_start_at`, and accept `showings` on
+  create and update. A PUT without `showings` removes them; a PATCH without it leaves them alone.
+- Lists, the calendar and social posts still place the event on its first date only; showing-aware
+  listings and posting follow in later changes.
+
 ### Audio player (#2366)
 A pop-out player at `/player` plays music from the artists on upcoming shows, using the SoundCloud
 and Bandcamp links on their entity pages. It opens in its own small window ("arcane-player"), so

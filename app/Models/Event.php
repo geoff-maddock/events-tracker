@@ -28,6 +28,8 @@ use App\Models\User;
  * App\Models\Event.
  *
  * @property int                                                                                                       $id
+ * @property \Carbon\Carbon|null                                                                           $last_start_at
+ * @property \Illuminate\Database\Eloquent\Collection<int, EventShowing>                                               $showings
  * @property mixed                                                                                                     $created_by
  * @property mixed                                                                                                     $start_at
  * @property Collection                                                                                                $entities
@@ -137,6 +139,9 @@ class Event extends Model implements HasPhotos
 
     const DEFAULT_LENGTH = 4;
 
+    /** The most additional showings one event can carry (#2375). */
+    const MAX_SHOWINGS = 60;
+
     public static function boot()
     {
         parent::boot();
@@ -151,6 +156,15 @@ class Event extends Model implements HasPhotos
             }
         });
         static::deleted(fn () => EventDateRange::forget());
+
+        // last_start_at follows start_at until syncShowings() says otherwise (#2375)
+        static::saving(function (Event $event) {
+            if (!$event->exists) {
+                $event->last_start_at = $event->start_at;
+            } elseif ($event->isDirty('start_at') || null === $event->last_start_at) {
+                $event->last_start_at = $event->lastShowingStart();
+            }
+        });
     }
 
     public function getRouteKeyName(): string
@@ -188,10 +202,125 @@ class Event extends Model implements HasPhotos
         'soundcheck_at' => 'datetime',
         'door_at' => 'datetime',
         'start_at' => 'datetime',
+        'last_start_at' => 'datetime',
         'end_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'do_not_repost' => 'boolean'
     ];
+
+    /**
+     * The additional dates of a short-run event, earliest first (#2375).
+     * start_at is the first showing and is not among them.
+     *
+     * @return HasMany<EventShowing, $this>
+     */
+    public function showings(): HasMany
+    {
+        return $this->hasMany(EventShowing::class)->orderBy('start_at');
+    }
+
+    /**
+     * Whether the event has dates beyond start_at. Read off last_start_at, so
+     * it costs no query for the single-date events that make up most lists.
+     */
+    public function isMultiDate(): bool
+    {
+        return null !== $this->start_at
+            && null !== $this->last_start_at
+            && $this->last_start_at->gt($this->start_at);
+    }
+
+    /**
+     * Every date the event plays, earliest first: start_at as an unsaved
+     * showing, then the additional ones.
+     *
+     * @return Collection<int, EventShowing>
+     */
+    public function occurrences(): Collection
+    {
+        $occurrences = collect();
+
+        if (null !== $this->start_at) {
+            $first = new EventShowing();
+            $first->start_at = $this->start_at;
+            $first->end_at = $this->end_at;
+            $first->door_at = $this->door_at;
+            $occurrences->push($first);
+        }
+
+        if ($this->isMultiDate()) {
+            $occurrences = $occurrences->concat($this->showings);
+        }
+
+        return $occurrences->sortBy(fn (EventShowing $showing) => $showing->start_at->getTimestamp())->values();
+    }
+
+    /**
+     * The first date that hasn't started yet, or null once the run is over.
+     */
+    public function nextOccurrence(): ?EventShowing
+    {
+        $now = Carbon::now();
+
+        return $this->occurrences()->first(fn (EventShowing $showing) => $showing->start_at->gte($now));
+    }
+
+    /**
+     * Replace the additional showings with $rows ('start_at', and optionally
+     * 'end_at' and 'door_at'), and bring last_start_at in line with them.
+     * Rows on or before start_at, and repeats of a time, are dropped.
+     *
+     * @param array<int, array<string, mixed>> $rows
+     */
+    public function syncShowings(array $rows): void
+    {
+        $showings = [];
+        foreach ($rows as $row) {
+            if (empty($row['start_at'])) {
+                continue;
+            }
+
+            $start = Carbon::parse($row['start_at']);
+            if (null !== $this->start_at && $start->lte($this->start_at)) {
+                continue;
+            }
+
+            $showings[$start->getTimestamp()] = [
+                'start_at' => $start,
+                'end_at' => empty($row['end_at']) ? null : Carbon::parse($row['end_at']),
+                'door_at' => empty($row['door_at']) ? null : Carbon::parse($row['door_at']),
+            ];
+        }
+        ksort($showings);
+
+        $this->showings()->delete();
+        $this->showings()->createMany(array_slice(array_values($showings), 0, self::MAX_SHOWINGS));
+        $this->unsetRelation('showings');
+
+        $last = $this->lastShowingStart();
+        if ($last?->getTimestamp() !== $this->last_start_at?->getTimestamp()) {
+            // not a save(): the event itself didn't change, only its derived column
+            $this->newQuery()->whereKey($this->getKey())->update(['last_start_at' => $last]);
+            $this->last_start_at = $last;
+            $this->syncOriginalAttribute('last_start_at');
+            EventDateRange::forget();
+        }
+    }
+
+    /**
+     * The start of the final showing: the latest additional one, or start_at.
+     */
+    protected function lastShowingStart(): ?Carbon
+    {
+        $latest = $this->exists ? $this->showings()->max('start_at') : null;
+        $latest = null !== $latest ? Carbon::parse($latest) : null;
+
+        if (null === $this->start_at) {
+            return $latest;
+        }
+
+        return (null !== $latest && $latest->gt($this->start_at)) ? $latest : $this->start_at->copy();
+    }
 
     /**
      * Whether $user may open this event's page or API record (#2164).

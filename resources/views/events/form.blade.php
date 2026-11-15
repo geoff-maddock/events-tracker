@@ -244,6 +244,73 @@
     </div>
 </div>
 
+{{-- Additional showings of a short run (#2375). Start At above is the first date. --}}
+@php
+    $showingRows = old('showings');
+    if (!is_array($showingRows)) {
+        $showingRows = isset($event) && $event->exists
+            ? $event->showings->map(fn ($showing) => [
+                'start_at' => $showing->start_at->format('Y-m-d\TH:i'),
+                'end_at' => $showing->end_at?->format('Y-m-d\TH:i') ?? '',
+            ])->all()
+            : [];
+    }
+    $showingRows = array_values(array_map(fn ($row) => [
+        'start_at' => is_array($row) ? (string) ($row['start_at'] ?? '') : '',
+        'end_at' => is_array($row) ? (string) ($row['end_at'] ?? '') : '',
+    ], $showingRows));
+    $showingErrors = collect($errors->get('showings'))->merge(collect($errors->get('showings.*'))->flatten())->unique();
+    $showingInputClass = 'flex h-9 w-full rounded-md border border-input bg-input px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+@endphp
+<div class="space-y-2" x-data="{ rows: {{ \Illuminate\Support\Js::from($showingRows) }}, max: {{ \App\Models\Event::MAX_SHOWINGS }} }">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+            <span class="text-sm font-medium">Additional Showings</span>
+            <p class="text-xs text-muted-foreground">
+                For a short run with more than one date, such as a play. Start At is the first showing; add the others here.
+            </p>
+        </div>
+        <button type="button"
+                class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                x-show="rows.length < max"
+                @click="rows.push({ start_at: '', end_at: '' })">
+            <i class="bi bi-plus-circle-fill"></i>
+            Add Showing
+        </button>
+    </div>
+
+    @foreach ($showingErrors as $message)
+        <p class="text-sm text-destructive">{{ $message }}</p>
+    @endforeach
+
+    <template x-for="(row, index) in rows" :key="index">
+        <div class="grid grid-cols-12 gap-4 items-end">
+            <div class="col-span-12 md:col-span-3">
+                <label class="text-sm text-muted-foreground" :for="'showing-start-' + index">Start At</label>
+                <input type="datetime-local" class="{{ $showingInputClass }}"
+                       :id="'showing-start-' + index"
+                       :name="'showings[' + index + '][start_at]'"
+                       x-model="row.start_at">
+            </div>
+            <div class="col-span-12 md:col-span-3">
+                <label class="text-sm text-muted-foreground" :for="'showing-end-' + index">End At</label>
+                <input type="datetime-local" class="{{ $showingInputClass }}"
+                       :id="'showing-end-' + index"
+                       :name="'showings[' + index + '][end_at]'"
+                       x-model="row.end_at">
+            </div>
+            <div class="col-span-12 md:col-span-3">
+                <button type="button"
+                        class="inline-flex items-center gap-1 h-9 text-sm text-muted-foreground hover:text-destructive"
+                        @click="rows.splice(index, 1)">
+                    <i class="bi bi-x-circle"></i>
+                    Remove
+                </button>
+            </div>
+        </div>
+    </template>
+</div>
+
 {{-- Pricing and Age --}}
 <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 md:col-span-4">

@@ -42,6 +42,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -1717,6 +1718,7 @@ class EventsController extends Controller
         // validated() leaves out the photo-attachment tokens and anything else
         // the form carries that isn't an event attribute
         $input = $request->validated();
+        $showings = Arr::pull($input, 'showings') ?? [];
 
         // transform the slug passed in the request
         $input['slug'] = Str::slug($request->input('slug', '-'));
@@ -1735,6 +1737,7 @@ class EventsController extends Controller
 
         $event = $event->create($input);
         $this->attachEntities($event, $request, $syncArray);
+        $event->syncShowings($showings);
 
         // Attach the image the user chose on the create form, whether or not
         // they ran it through analysis, as the primary photo.
@@ -1779,6 +1782,7 @@ class EventsController extends Controller
 
         $input = $request->validated();
         $input['updated_by'] = $this->user->id;
+        $showings = Arr::pull($input, 'showings') ?? [];
 
         // The Owner select may reassign created_by (an event's owner can transfer it),
         // but an empty value (coerced to null by ConvertEmptyStringsToNull) must not
@@ -1788,6 +1792,8 @@ class EventsController extends Controller
         }
 
         $event->fill($input)->save();
+        // the form always sends its showings, so none means they were all removed
+        $event->syncShowings($showings);
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, auth()->user());
