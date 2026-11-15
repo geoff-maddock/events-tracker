@@ -14,6 +14,11 @@
     $variant = $variant ?? 'button';
     $label = $label ?? 'Listen';
 @endphp
+{{-- This partial sits in the global sidebar (partials/sidebar-tw), so it renders on
+     every page. If the player route is ever unavailable (e.g. a stale route cache
+     during a deploy, EVENTREPO-Z6), a bare route('player.show') would 500 every page.
+     Guard it so a missing route degrades to simply hiding the link instead. --}}
+@if (Route::has('player.show'))
 <a href="{{ route('player.show') }}{{ $query !== '' ? '?'.$query : '' }}"
     target="arcane-player"
     data-player-launch
@@ -29,3 +34,4 @@
     <i @class(['bi bi-headphones', 'text-lg' => $variant === 'nav', 'text-xl text-muted-foreground' => $variant === 'icon']) aria-hidden="true"></i>
     <span data-player-label @class(['sr-only' => $variant === 'icon'])>{{ $label }}</span>
 </a>
+@endif
