@@ -217,7 +217,7 @@ class PlayerQueueBuilder
                 'events' => fn (Relation $q) => $q
                     ->without(['visibility', 'venue', 'entities'])
                     ->where(Event::visibleTo($user))
-                    ->where('events.start_at', '>=', Carbon::today()->startOfDay())
+                    ->where('events.last_start_at', '>=', Carbon::today()->startOfDay())
                     ->reorder('events.start_at')
                     ->limit(1),
             ])

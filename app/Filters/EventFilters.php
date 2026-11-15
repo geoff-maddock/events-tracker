@@ -155,13 +155,16 @@ class EventFilters extends QueryFilter
                 return $this->builder;
             }
         
-            if (isset($value['start']) && $start = $value['start']) {
+            // any of the event's dates counts, so a short run matches on each
+            // showing and stays in an "upcoming" list until its last one (#2375)
+            $bound = fn (string $key) => isset($value[$key]) && is_string($value[$key]) && '' !== $value[$key] ? $value[$key] : null;
+            $start = $bound('start');
+            $end = $bound('end');
 
-                $this->builder->where('start_at', '>=', $start);
-            }
-
-            if (isset($value['end']) && $end = $value['end']) {
-                $this->builder->where('start_at', '<=', $end);
+            $this->builder->scopes(['occurringBetween' => [$start, $end]]);
+            if (null !== $start) {
+                // shown, and sorted, by its first date on or after the start
+                $this->builder->scopes(['withNextStart' => [$start]]);
             }
 
             return $this->builder;

@@ -23,7 +23,7 @@ class EventDateRange
     {
         $bounds = Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function (): array {
             $row = Event::query()
-                ->selectRaw('MIN(start_at) as min_start, MAX(start_at) as max_start')
+                ->selectRaw('MIN(start_at) as min_start, MAX(COALESCE(last_start_at, start_at)) as max_start')
                 ->toBase()
                 ->first();
 

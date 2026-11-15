@@ -6,6 +6,7 @@ use App\Filters\AudienceFilter;
 use App\Filters\EventFilters;
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\EventShowing;
 use App\Models\EventType;
 use App\Models\Series;
 use App\Models\Tag;
@@ -130,16 +131,17 @@ class CalendarController extends Controller
     }
 
     /**
-     * FullCalendar's item for an event, coloured by its type.
+     * FullCalendar's item for one date of an event, coloured by its type. A
+     * short run gets an item per showing (#2375).
      *
      * @return array<string, mixed>
      */
-    private function eventItem(Event $event): array
+    private function eventItem(Event $event, EventShowing $showing): array
     {
         return [
-            'id' => 'event-'.$event->id,
-            'start' => $event->start_at->format('Y-m-d H:i'),
-            'end' => ($event->end_time !== null) ? $event->end_time->format('Y-m-d H:i') : null,
+            'id' => 'event-'.$event->id.($showing->exists ? '-'.$showing->id : ''),
+            'start' => $showing->start_at->format('Y-m-d H:i'),
+            'end' => $showing->end_at?->format('Y-m-d H:i'),
             'title' => $event->name,
             'url' => '/events/'.$event->slug,
             'backgroundColor' => $event->eventType->backgroundColor(),
@@ -365,8 +367,8 @@ class CalendarController extends Controller
         $this->applyEventOnlyFeedFilters($eventsQuery, $filters);
 
         // events in the requested range, with filters applied
-        $events = $eventsQuery->whereBetween('events.start_at', [$rangeStart, $rangeEnd])
-            ->with('eventType', 'visibility')
+        $events = $eventsQuery->occurringBetween($rangeStart, $rangeEnd)
+            ->with('eventType', 'visibility', 'showings')
             ->get();
 
         // eager-load upcomingEvent so Series::nextEvent() uses the loaded relation
@@ -376,7 +378,8 @@ class CalendarController extends Controller
         $this->applySeriesOnlyFeedFilters($seriesQuery, $filters);
 
         return response()->json(array_merge(
-            $events->map(fn (Event $event) => $this->eventItem($event))->all(),
+            $events->flatMap(fn (Event $event) => $event->occurrencesBetween($rangeStart, $rangeEnd)
+                ->map(fn (EventShowing $showing) => $this->eventItem($event, $showing)))->all(),
             // the next scheduled instance of each series that falls in the range
             $this->seriesItems($this->shownSeries($seriesQuery->get()), $rangeStart, $rangeEnd)
         ));

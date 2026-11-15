@@ -4,7 +4,9 @@
 	// Load the whole 4-day window in a single query and group by day, so each
 	// day-tw partial doesn't issue its own query (N+1, EVENTREPO-Z4).
 	$windowStart = \Carbon\Carbon::parse($date);
-	$eventsByDay = App\Models\Event::with([
+	// a short run appears under each of its days, with that day's time (#2375)
+	$eventsByDay = App\Models\Event::groupByDay(App\Models\Event::with([
+		'showings',
 		'series.occurrenceType',
 		'series.occurrenceWeek',
 		'series.occurrenceDay',
@@ -18,8 +20,7 @@
 		'eventResponses' => fn ($q) => $q->where('user_id', auth()->id()),
 		'photos'
 	])->startingBetween($windowStart->format('Y-m-d'), $windowStart->copy()->addDay(3)->format('Y-m-d'))
-		->get()
-		->groupBy(fn ($event) => $event->start_at->format('Y-m-d'));
+		->get(), $windowStart->copy()->startOfDay(), $windowStart->copy()->addDay(3)->endOfDay());
 	?>
 	@for ($offset = 0; $offset < 4; $offset++)
 	<?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>

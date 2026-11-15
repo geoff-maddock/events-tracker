@@ -4,7 +4,7 @@
     <div class="relative overflow-hidden">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{!! $event->start_at->format('l F jS Y') !!} - {{ e($event->name) }} @ {{ e($event->venue ? $event->venue->name : '') }}"
+            data-title="{!! $event->display_start_at->format('l F jS Y') !!} - {{ e($event->name) }} @ {{ e($event->venue ? $event->venue->name : '') }}"
             data-lightbox="{{ $primary->path }}"
             aria-label="View photo for {{ $event->name }}">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
@@ -89,12 +89,15 @@
             <!-- Date & Time -->
             <div class="flex items-center gap-2">
                 <i class="bi bi-calendar3"></i>
-                <a href="/events/by-date/{!! $event->start_at->format('Y') !!}/{!! $event->start_at->format('m') !!}/{!! $event->start_at->format('d') !!}" class="hover:text-primary">
-                    {{ $event->start_at->format('l, F j, Y') }} at {{ $event->start_at->format('g:i A') }}
-                    @if ($event->end_at)
+                <a href="/events/by-date/{!! $event->display_start_at->format('Y') !!}/{!! $event->display_start_at->format('m') !!}/{!! $event->display_start_at->format('d') !!}" class="hover:text-primary">
+                    {{ $event->display_start_at->format('l, F j, Y') }} at {{ $event->display_start_at->format('g:i A') }}
+                    @if ($event->end_at && !$event->isMultiDate())
                     - {{ $event->end_at->format('g:i A') }}
                     @endif
                 </a>
+                @if ($event->isMultiDate())
+                <a href="/events/{{ $event->slug }}" class="text-xs text-muted-foreground hover:text-primary whitespace-nowrap" title="This event has more than one date">+ more dates</a>
+                @endif
             </div>
 
             <!-- Venue -->

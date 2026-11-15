@@ -11,8 +11,15 @@ others, each with its own start and optional end time (up to 60).
 - The event page lists every showing, with the next one marked and past ones struck through.
 - API: events return `showings`, `last_start_at` and `next_start_at`, and accept `showings` on
   create and update. A PUT without `showings` removes them; a PATCH without it leaves them alone.
-- Lists, the calendar and social posts still place the event on its first date only; showing-aware
-  listings and posting follow in later changes.
+- **Lists:** the event stays in upcoming lists until its last showing, placed and dated by its next
+  one, with a "+ more dates" link. It matches a date filter, a by-date page, tonight / this weekend
+  and an entity's or tag's upcoming events on any of its dates, and moves to past lists only once
+  the run is over.
+- **Calendars and day views:** one calendar item per showing; the home page's day columns and the
+  week view list it under each day it plays, with that day's time.
+- API: `filters[start_at]` and `/api/events/by-date` match on any showing; `start_at` in the
+  response is still the first date.
+- Social posts, digests and feeds still use the first date; that follows in a later change.
 
 ### Audio player (#2366)
 A pop-out player at `/player` plays music from the artists on upcoming shows, using the SoundCloud

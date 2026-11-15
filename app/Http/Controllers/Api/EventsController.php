@@ -400,13 +400,14 @@ class EventsController extends Controller
             ->setDefaultSort(['events.start_at' => 'desc'])
             ->listResultSetFactory();
 
-        $events = Event::where('start_at', '>', $start_at_from)
-            ->where('start_at', '<', $start_at_to)
+        // any showing in the range counts, ordered by the first one in it (#2375)
+        $events = Event::query()
+            ->occurringBetween($start_at_from->copy()->addSecond(), $start_at_to->copy()->subSecond())
             ->where(function ($query) {
                 /* @phpstan-ignore-next-line */
                 $query->visible($this->user);
             })
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart($start_at_from)
             ->orderBy('name', 'ASC')
             ->with(self::BY_DATE_EAGER_LOAD)
             ->with(['attendees' => function ($q) {

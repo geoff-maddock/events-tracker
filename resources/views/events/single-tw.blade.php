@@ -3,14 +3,14 @@
     <div class="flex-shrink-0">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
+            data-title="{!! $event->display_start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
             data-lightbox="{{ $primary->path }}"
             class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
             <img src="{{ Storage::disk('external')->url($primary->getStoragePath()) }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
-            data-title="{!! $event->start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
+            data-title="{!! $event->display_start_at->format('l F jS Y') !!} <a href='/events/{{ $event->slug }}'>{{ e($event->name) }}</a> @ <a href='/entities/{{ $event->venue ? $event->venue->slug : '' }}'>{{ e($event->venue ? $event->venue->name : '') }}</a>"
             data-lightbox="/images/event-placeholder.png"
             class="block aspect-square w-20 sm:w-24 md:w-28 rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-card flex items-center justify-center">
             <i class="bi bi-calendar-event text-4xl text-muted-foreground/40"></i>
@@ -29,10 +29,13 @@
                 @endif
                 
                 <!-- Date -->
-                <a href='/events/by-date/{!! $event->start_at->format('Y') !!}/{!! $event->start_at->format('m') !!}/{!! $event->start_at->format('d') !!}'
+                <a href='/events/by-date/{!! $event->display_start_at->format('Y') !!}/{!! $event->display_start_at->format('m') !!}/{!! $event->display_start_at->format('d') !!}'
                    class="text-sm text-primary hover:text-primary/90 font-medium">
-                    {!! $event->start_at->format('D F jS Y') !!}
+                    {!! $event->display_start_at->format('D F jS Y') !!}
                 </a>
+                @if ($event->isMultiDate())
+                <a href="/events/{{ $event->slug }}" class="text-xs text-muted-foreground hover:text-primary whitespace-nowrap" title="This event has more than one date">+ more dates</a>
+                @endif
             </div>
 
             <!-- Actions -->
@@ -98,10 +101,10 @@
 
         <!-- Time & Price -->
         <div class="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-2">
-            @if ($event->start_at)
+            @if ($event->display_start_at)
             <span class="flex items-center gap-1">
                 <i class="bi bi-clock"></i>
-                {{ $event->start_at->format('g:i A') }}
+                {{ $event->display_start_at->format('g:i A') }}
             </span>
             @endif
             
