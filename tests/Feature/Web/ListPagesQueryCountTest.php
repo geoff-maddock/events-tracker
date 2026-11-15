@@ -145,14 +145,15 @@ class ListPagesQueryCountTest extends TestCase
         $log = DB::getQueryLog();
         DB::disableQueryLog();
 
-        // scopeStartingBetween() is the only query combining `start_at` >= and <
-        // with a visibility filter; before #Z4 it ran once per day (N+1).
+        // scopeStartingBetween() is the only query combining a `start_at` window
+        // (which also looks at a run's showings, #2375) with a visibility filter;
+        // before #Z4 it ran once per day (N+1).
         $windowQueries = array_filter($log, function ($entry) {
             $sql = $entry['query'];
 
             return str_contains($sql, 'from `events`')
-                && str_contains($sql, '`start_at` >=')
-                && str_contains($sql, '`start_at` <')
+                && str_contains($sql, '`events`.`start_at` between')
+                && str_contains($sql, '`event_showings`.`start_at` between')
                 && str_contains($sql, '`visibility_id`');
         });
 
