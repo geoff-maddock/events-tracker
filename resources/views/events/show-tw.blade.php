@@ -316,6 +316,8 @@
 									</a>
 								</div>
 
+								@include('events.showtimes-tw', ['event' => $event])
+
 								<!-- Venue -->
 								@if (!empty($event->venue_id))
 								<div class="flex items-center text-sm text-muted-foreground">
