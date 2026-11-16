@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Entity;
 use App\Models\Event;
+use App\Models\EventShowing;
 use App\Models\Location;
 use Illuminate\Support\Facades\Storage;
 
@@ -52,13 +53,54 @@ class EventSchema
     public const DEFAULT_IMAGE_PATH = '/images/arcane-city-promo.jpg';
 
     /**
+     * Upcoming showings of a short run given a subEvent each on its own page
+     * (#2375), the same cap SeriesSchema's subEvents work under in practice.
+     */
+    public const SUBEVENT_LIMIT = 10;
+
+    /**
      * A standalone Event document, for a page whose subject is one event.
      *
      * @return array<string, mixed>
      */
     public static function document(Event $event, int $performerLimit = self::DETAIL_PERFORMER_LIMIT): array
     {
-        return ['@context' => self::CONTEXT] + self::forEvent($event, $performerLimit);
+        $document = ['@context' => self::CONTEXT] + self::forEvent($event, $performerLimit);
+
+        if ([] !== ($subEvents = self::showingSubEvents($event))) {
+            $document['subEvent'] = $subEvents;
+        }
+
+        return $document;
+    }
+
+    /**
+     * A short run's upcoming dates as Event nodes (#2375): the run's own node
+     * with each showing's dates, since a subEvent Google indexes is held to
+     * the same recommended fields. Empty for a single-date event.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function showingSubEvents(Event $event): array
+    {
+        if (!$event->isMultiDate()) {
+            return [];
+        }
+
+        $showings = $event->remainingOccurrences()->take(self::SUBEVENT_LIMIT);
+        if ($showings->isEmpty()) {
+            return [];
+        }
+
+        $base = self::forEvent($event, self::LISTING_PERFORMER_LIMIT);
+
+        return $showings->map(function (EventShowing $showing) use ($base): array {
+            $node = $base;
+            $node['startDate'] = EventTime::occurrenceStartsAt($showing)?->toAtomString();
+            $node['endDate'] = EventTime::occurrenceEndsAt($showing)?->toAtomString();
+
+            return $node;
+        })->values()->all();
     }
 
     /**
@@ -92,7 +134,8 @@ class EventSchema
             $node['startDate'] = $startDate->toAtomString();
         }
 
-        if ($endDate = EventTime::endsAt($event)) {
+        // a short run spans its first showing to the end of its last (#2375)
+        if ($endDate = EventTime::lastEndsAt($event)) {
             $node['endDate'] = $endDate->toAtomString();
         }
 
@@ -169,7 +212,13 @@ class EventSchema
         }
 
         if ($startsAt = EventTime::startsAt($event)) {
-            $sentence .= ' on '.$startsAt->format('l, F j, Y');
+            $lastStartsAt = $event->isMultiDate() ? EventTime::toInstant($event->last_start_at) : null;
+
+            $sentence .= null === $lastStartsAt
+                ? ' on '.$startsAt->format('l, F j, Y')
+                // a short run: its first and last dates, each with its year across New Year
+                : ' from '.$startsAt->format($startsAt->year === $lastStartsAt->year ? 'l, F j' : 'l, F j, Y')
+                    .' to '.$lastStartsAt->format('l, F j, Y');
         }
 
         return $sentence.'.';

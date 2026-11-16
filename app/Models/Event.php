@@ -1361,10 +1361,16 @@ class Event extends Model implements HasPhotos
         $this->attributes['slug'] = $value;
     }
 
-    public function getGoogleCalendarLink(): ?string
+    /**
+     * An "add to Google Calendar" link for one date of the event, from
+     * occurrences(): by default start_at, the date the page leads with (#2375).
+     */
+    public function getGoogleCalendarLink(?EventShowing $occurrence = null): ?string
     {
-        $start = Carbon::parse($this->start_at)->format('Ymd\THis');
-        $end = Carbon::parse($this->start_at)->format('Ymd\THis');
+        $startAt = $occurrence->start_at ?? $this->start_at;
+        $start = Carbon::parse($startAt)->format('Ymd\THis');
+        // an additional showing's own end when it has one; otherwise a zero-length slot, as before
+        $end = Carbon::parse($occurrence->end_at ?? $startAt)->format('Ymd\THis');
 
         // name, description and venue are user text, so every value is URL-encoded;
         // dates is only digits/T and Google expects a literal slash between them
@@ -1405,7 +1411,10 @@ class Event extends Model implements HasPhotos
             $format .= $this->venue->name ?? 'No venue specified';
         }
 
-        $format .= ' on '.$this->start_at->format('D F jS');
+        // a short run: its first and last dates (#2375)
+        $format .= $this->isMultiDate()
+            ? ' from '.$this->start_at->format('D F jS').' to '.$this->last_start_at?->format('D F jS')
+            : ' on '.$this->start_at->format('D F jS');
 
         return $format;
     }

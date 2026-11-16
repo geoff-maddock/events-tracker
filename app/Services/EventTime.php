@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Models\EventShowing;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 
@@ -81,5 +82,35 @@ class EventTime
     {
         return self::toInstant($event->end_at)
             ?? self::startsAt($event)?->addHours(Event::DEFAULT_LENGTH);
+    }
+
+    /**
+     * One date of an event, from Event::occurrences(): start_at itself or an
+     * additional showing (#2375).
+     */
+    public static function occurrenceStartsAt(EventShowing $occurrence): ?CarbonImmutable
+    {
+        return self::toInstant($occurrence->start_at);
+    }
+
+    /**
+     * That date's end_at when set, otherwise its start plus
+     * Event::DEFAULT_LENGTH hours, as endsAt() does for the event.
+     */
+    public static function occurrenceEndsAt(EventShowing $occurrence): ?CarbonImmutable
+    {
+        return self::toInstant($occurrence->end_at)
+            ?? self::occurrenceStartsAt($occurrence)?->addHours(Event::DEFAULT_LENGTH);
+    }
+
+    /**
+     * When the event is over: the end of its last date. The same as endsAt()
+     * for an event without additional showings.
+     */
+    public static function lastEndsAt(Event $event): ?CarbonImmutable
+    {
+        $last = $event->occurrences()->last();
+
+        return null === $last ? null : self::occurrenceEndsAt($last);
     }
 }

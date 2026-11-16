@@ -219,7 +219,8 @@ class EventsController extends Controller
         // triggers its own query while rendering the feed (EVENTREPO-T5).
         /* @phpstan-ignore-next-line */
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue', 'promoter.contacts', 'photos')
+            // showings: a short run's dates each become a VEVENT (#2375)
+            ->with('visibility', 'venue', 'promoter.contacts', 'photos', 'showings')
             ->paginate($listResultSet->getLimit());
 
         // create a calendar object
@@ -2611,7 +2612,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue', 'showings')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -2643,7 +2644,7 @@ class EventsController extends Controller
         // Eager-load the relations the iCal builder reads per event (venue,
         // promoter + its contacts, and photos for getPrimaryPhoto()) to avoid
         // an N+1 entities lookup while rendering the feed (EVENTREPO-T6).
-        $events->loadMissing(['venue', 'promoter.contacts', 'photos']);
+        $events->loadMissing(['venue', 'promoter.contacts', 'photos', 'showings']);
 
         // create a calendar object for the user
         $calendar = $iCalBuilder->buildCalendar('arcane-city-interested-ical.ics', $events);
