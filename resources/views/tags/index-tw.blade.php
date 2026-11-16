@@ -44,26 +44,28 @@
 	<!-- Filter Panel -->
 	<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
 		<form method="GET" action="{{ url('/tags') }}" class="flex flex-col gap-4">
-			<div>
-				<label for="filter_search" class="block text-sm font-medium text-muted-foreground mb-1">Search tags by name</label>
-				<input type="text"
-					name="search"
-					id="filter_search"
-					value="{{ $search ?? '' }}"
-					placeholder="Tag name..."
-					class="form-input-tw">
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+				<div class="min-w-0">
+					<label for="filter_search" class="block text-sm font-medium text-muted-foreground mb-1">Search tags by name</label>
+					<input type="text"
+						name="search"
+						id="filter_search"
+						value="{{ $search ?? '' }}"
+						placeholder="Tag name..."
+						class="form-input-tw">
+				</div>
+				@auth
+				<!-- Display Type Filter -->
+				<div class="min-w-0">
+					<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
+					<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
+						@foreach($displayTypes as $value => $label)
+						<option value="{{ $value }}" {{ ($filters['display_type'] ?? 'all') === $value ? 'selected' : '' }}>{{ $label }}</option>
+						@endforeach
+					</select>
+				</div>
+				@endauth
 			</div>
-			@auth
-			<!-- Display Type Filter -->
-			<div>
-				<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
-				<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
-					@foreach($displayTypes as $value => $label)
-					<option value="{{ $value }}" {{ ($filters['display_type'] ?? 'all') === $value ? 'selected' : '' }}>{{ $label }}</option>
-					@endforeach
-				</select>
-			</div>
-			@endauth
 			<div class="flex gap-2">
 				<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 					Apply
