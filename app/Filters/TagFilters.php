@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class TagFilters extends QueryFilter
 {
@@ -48,5 +49,30 @@ class TagFilters extends QueryFilter
         } else {
             return $this->builder;
         }
+    }
+
+    /**
+     * Narrow to the tags the signed-in user follows or created (or doesn't); a no-op for guests.
+     */
+    public function display_type(?string $value = null): Builder
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return $this->builder;
+        }
+
+        $followedByUser = fn ($q) => $q->where('follows.object_type', '=', 'tag')
+            ->where('follows.user_id', '=', $user->id);
+
+        return match ($value) {
+            'following' => $this->builder->whereHas('follows', $followedByUser),
+            'not_following' => $this->builder->whereDoesntHave('follows', $followedByUser),
+            'created' => $this->builder->where('tags.created_by', '=', $user->id),
+            // older tags have no creator, and those weren't created by this user either
+            'not_created' => $this->builder->where(fn ($q) => $q->whereNull('tags.created_by')
+                ->orWhere('tags.created_by', '!=', $user->id)),
+            default => $this->builder,
+        };
     }
 }

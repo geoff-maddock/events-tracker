@@ -13,6 +13,11 @@
 			@if(!empty($search))
 			<input type="hidden" name="search" value="{{ $search }}">
 			@endif
+			@foreach($filters ?? [] as $name => $value)
+			@if(is_scalar($value) && $value !== '')
+			<input type="hidden" name="filters[{{ $name }}]" value="{{ $value }}">
+			@endif
+			@endforeach
 			<select name="limit" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[120px] min-w-0">
 				@foreach($limitOptions as $value => $label)
 				<option value="{{ $value }}" {{ ($limit ?? 25) == $value ? 'selected' : '' }}>{{ $label }}</option>
