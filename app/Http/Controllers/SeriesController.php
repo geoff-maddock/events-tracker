@@ -671,7 +671,7 @@ class SeriesController extends Controller
      */
     private function eventCardEagerLoad(): array
     {
-        $eager = ['venue.photos', 'venue.locations', 'eventType', 'visibility', 'tags', 'photos', 'entities.roles', 'series.photos', 'threads'];
+        $eager = ['venue.photos', 'venue.locations', 'eventType', 'visibility', 'tags', 'photos', 'entities.roles', 'series.photos', 'threads', 'showings'];
         if ($this->user) {
             $eager['eventResponses'] = function ($query) {
                 $query->where('user_id', $this->user->id)->with('responseType');
@@ -727,10 +727,11 @@ class SeriesController extends Controller
         // Past Events & Archive grid: only events that have already started.
         // Uses the same now() boundary as $upcomingEvents below (not
         // Event::past()'s start-of-today) so no event falls between the two.
+        // A short run is past once its last showing has started (#2375).
         $events = Event::where('series_id', $series->id)
             ->with($eventEager)
             ->visible($this->user)
-            ->where('start_at', '<', now())
+            ->where('events.last_start_at', '<', now())
             ->orderBy('start_at', 'DESC')
             ->paginate($this->childLimit);
 
@@ -741,8 +742,9 @@ class SeriesController extends Controller
         $upcomingEvents = Event::where('series_id', $series->id)
             ->with($eventEager)
             ->visible($this->user)
-            ->where('start_at', '>=', now())
-            ->orderBy('start_at', 'asc')
+            // a short run until its last showing, by its next one (#2375)
+            ->occurringBetween(now())
+            ->orderByNextStart(now())
             ->get();
 
         // Edition year (next upcoming event, else most recent past event) —

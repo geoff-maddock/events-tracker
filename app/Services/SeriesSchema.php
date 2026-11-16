@@ -89,7 +89,8 @@ class SeriesSchema
         if ($startDate = self::startDate($series, $instance)) {
             $node['startDate'] = $startDate->toAtomString();
 
-            $endDate = $instance ? EventTime::endsAt($instance) : EventTime::toInstant($series->end_at);
+            // a short-run instance ends with its last showing (#2375)
+            $endDate = $instance ? EventTime::lastEndsAt($instance) : EventTime::toInstant($series->end_at);
             $node['endDate'] = ($endDate ?? $startDate->addHours(Event::DEFAULT_LENGTH))->toAtomString();
         }
 
@@ -312,9 +313,10 @@ class SeriesSchema
         $subEvents = [];
 
         foreach ($events as $event) {
-            $start = EventTime::startsAt($event);
+            // a short run stays until its last showing has started (#2375)
+            $lastStart = EventTime::toInstant($event->last_start_at ?? $event->start_at);
 
-            if (null === $start || $start->isPast()) {
+            if (null === $lastStart || $lastStart->isPast()) {
                 continue;
             }
 

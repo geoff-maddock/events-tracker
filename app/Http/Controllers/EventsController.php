@@ -159,6 +159,8 @@ class EventsController extends Controller
                 'entities.roles',
                 'photos',
                 'threads',
+                // a short run's dates, for its JSON-LD (#2375)
+                'showings',
                 'eventResponses.responseType',
                 'attendees' => function ($q) {
                     $q->where('response_type_id', 1);
@@ -455,9 +457,11 @@ class EventsController extends Controller
         // to a query per event (per entity, for links) unless these are loaded. Four extra eager
         // loads per page, constant in the number of events, against ~150 N+1 queries on a full page.
         // venue.photos/series.photos feed EventSchema's image fallback for an event with no flyer.
+        // showings: a short run's dates, read by its JSON-LD endDate and display date (#2375).
         $eager = [
             'visibility', 'venue.locations', 'venue.links', 'venue.photos', 'eventType', 'tags', 'photos',
             'entities', 'entities.roles', 'entities.links', 'promoter.links', 'series.photos', 'threads',
+            'showings',
         ];
 
         if ($user) {

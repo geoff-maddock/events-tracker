@@ -104,13 +104,15 @@ class EventTime
     }
 
     /**
-     * When the event is over: the end of its last date. The same as endsAt()
-     * for an event without additional showings.
+     * When the event is over: the latest end of any of its dates, since an
+     * opening night can run past a later showing's start. The same as
+     * endsAt() for an event without additional showings.
      */
     public static function lastEndsAt(Event $event): ?CarbonImmutable
     {
-        $last = $event->occurrences()->last();
-
-        return null === $last ? null : self::occurrenceEndsAt($last);
+        return $event->occurrences()
+            ->map(fn (EventShowing $occurrence): ?CarbonImmutable => self::occurrenceEndsAt($occurrence))
+            ->filter()
+            ->max();
     }
 }

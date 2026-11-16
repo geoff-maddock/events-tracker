@@ -64,6 +64,9 @@ class ICalBuilder
                 $oldestTime = $event->updated_at;
             }
 
+            // what every date of the event shares, worked out once
+            $details = $this->details($event, $uniqueId);
+
             // One VEVENT per date: a short run's showings each get their own
             // (#2375). The first date keeps the event's UID, so the entry a
             // subscribed calendar already has stays the same item; each later
@@ -71,7 +74,7 @@ class ICalBuilder
             foreach ($event->occurrences() as $occurrence) {
                 $uid = $occurrence->start_at->equalTo($event->start_at)
                     ? $uniqueId
-                    : $uniqueId.'#'.$occurrence->start_at->format('Ymd\THi');
+                    : $uniqueId.'#'.$occurrence->start_at->format('Ymd\THis');
 
                 // EventTime reinterprets the naive stored wall-clock value in
                 // America/New_York, and falls back to a 4-hour duration when the
@@ -84,7 +87,7 @@ class ICalBuilder
                     $latestTime = $end->getDateTime();
                 }
 
-                $vEvents[] = $this->vEvent($event, new UniqueIdentifier($uid), new TimeSpan($start, $end), $uniqueId);
+                $vEvents[] = $this->vEvent(new UniqueIdentifier($uid), new TimeSpan($start, $end), $details);
             }
         }
 
@@ -115,69 +118,76 @@ class ICalBuilder
     }
 
     /**
-     * One VEVENT: a date of $event, with the event's details.
+     * The parts of a VEVENT that are the same for every date of $event.
+     *
+     * @return array{summary: string, description: string, updated: DateTime, url: Uri, location: Location|null, organizer: Organizer|null, attachment: Attachment|null}
      */
-    private function vEvent(Event $event, UniqueIdentifier $uniqueIdentifier, TimeSpan $occurrence, string $eventUrl): iCalEvent
+    private function details(Event $event, string $eventUrl): array
+    {
+        // set up the venue location
+        $location = $event->venue?->name ? new Location($event->venue->name) : null;
+
+        // the promoter's first contact with an email address is the organizer
+        $organizer = null;
+        foreach ($event->promoter->contacts ?? [] as $contact) {
+            if ($contact->email) {
+                $organizer = new Organizer(
+                    new EmailAddress($contact->email),
+                    $event->promoter->name,
+                    new Uri($eventUrl),
+                    new EmailAddress($contact->email)
+                );
+
+                break;
+            }
+        }
+
+        // the primary image as a url attachment
+        $attachment = null;
+        $photo = $event->getPrimaryPhoto();
+        if ($photo) {
+            $attachment = new Attachment(
+                new Uri(Storage::disk('external')->url($photo->getStoragePath())),
+                'image/jpeg'
+            );
+        }
+
+        return [
+            'summary' => (string) $event->name,
+            'description' => $event->description ? $event->description : '',
+            'updated' => new DateTime($event->updated_at, true),
+            'url' => new Uri($event->primary_link ? $event->primary_link : $eventUrl),
+            'location' => $location,
+            'organizer' => $organizer,
+            'attachment' => $attachment,
+        ];
+    }
+
+    /**
+     * One VEVENT: a date of an event, with the details from details().
+     *
+     * @param array{summary: string, description: string, updated: DateTime, url: Uri, location: Location|null, organizer: Organizer|null, attachment: Attachment|null} $details
+     */
+    private function vEvent(UniqueIdentifier $uniqueIdentifier, TimeSpan $occurrence, array $details): iCalEvent
     {
         $vEvent = new iCalEvent($uniqueIdentifier);
 
         $vEvent->setOccurrence($occurrence)
-            ->setSummary($event->name)
-            ->setDescription($event->description ? $event->description : '');
+            ->setSummary($details['summary'])
+            ->setDescription($details['description'])
+            ->setUrl($details['url']);
+        $vEvent->touch($details['updated']);
 
-        // convert $event->updated_at to timestamp
-        $updated = new DateTime($event->updated_at, true);
-        $vEvent->touch($updated);
-
-        // set the url
-        $url = $event->primary_link ? $event->primary_link : $eventUrl;
-        $url = new Uri($url);
-        $vEvent->setUrl($url);
-
-        // set up the venue location
-        // get the name for the venue or set to empty
-        $venue = $event->venue ? $event->venue->name : '';
-
-        // set the location
-        if ($venue) {
-            $vEvent->setLocation(new Location($venue));
+        if ($details['location']) {
+            $vEvent->setLocation($details['location']);
         }
 
-        // get the promoter to set organizer
-        if ($event->promoter) {
-            // check for contacts on the promoter
-            if ($event->promoter->contacts->count() > 0) {
-
-                // cycle through all contacts to find one with an email address
-                foreach ($event->promoter->contacts as $contact) {
-                    if ($contact->email) {
-
-                        $organizer = new Organizer(
-                            new EmailAddress($contact->email),
-                            $event->promoter->name,
-                            new Uri($eventUrl),
-                            new EmailAddress($contact->email)
-                        );
-
-                        $vEvent->setOrganizer($organizer);
-
-                        break;
-                    }
-                }
-            }
+        if ($details['organizer']) {
+            $vEvent->setOrganizer($details['organizer']);
         }
 
-        // add the primary image as a url attachment
-        $photo = $event->getPrimaryPhoto();
-        if ($photo) {
-            $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
-
-            $urlAttachment = new Attachment(
-                new Uri($imageUrl),
-                'image/jpeg'
-            );
-
-            $vEvent->addAttachment($urlAttachment);
+        if ($details['attachment']) {
+            $vEvent->addAttachment($details['attachment']);
         }
 
         return $vEvent;

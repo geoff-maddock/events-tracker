@@ -696,6 +696,8 @@ class EntitiesController extends Controller
                 'photos',
                 'entities.roles',
                 'entities.links',
+                // a short run's dates, for its JSON-LD (#2375)
+                'showings',
                 'eventStatus',
                 'visibility',
             ])
@@ -1007,6 +1009,8 @@ class EntitiesController extends Controller
                 'photos',
                 'entities.roles',
                 'entities.links',
+                // a short run's dates, for its JSON-LD (#2375)
+                'showings',
                 'eventStatus',
                 'visibility',
                 'eventType',

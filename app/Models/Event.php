@@ -344,16 +344,42 @@ class Event extends Model implements HasPhotos
         }
         ksort($showings);
 
+        $showings = array_slice(array_values($showings), 0, self::MAX_SHOWINGS);
+        $fingerprint = fn (iterable $rows): array => collect($rows)
+            ->map(fn ($row) => implode('|', array_map(
+                fn ($value) => null === $value ? '' : Carbon::parse($value)->format('Y-m-d H:i:s'),
+                [$row['start_at'], $row['end_at'], $row['door_at']]
+            )))
+            ->values()
+            ->all();
+        $changed = $fingerprint($this->showings()->get(['start_at', 'end_at', 'door_at'])) !== $fingerprint($showings);
+
         $this->showings()->delete();
-        $this->showings()->createMany(array_slice(array_values($showings), 0, self::MAX_SHOWINGS));
+        $this->showings()->createMany($showings);
         $this->unsetRelation('showings');
+
+        $columns = [];
+        if ($changed && $this->exists) {
+            // a calendar feed's change stamp is the event's updated_at, so moving
+            // a showing has to move it too, even when nothing else was edited
+            $columns['updated_at'] = $this->freshTimestamp();
+        }
 
         $last = $this->lastShowingStart();
         if ($last?->getTimestamp() !== $this->last_start_at?->getTimestamp()) {
-            // not a save(): the event itself didn't change, only its derived column
-            $this->newQuery()->whereKey($this->getKey())->update(['last_start_at' => $last]);
-            $this->last_start_at = $last;
-            $this->syncOriginalAttribute('last_start_at');
+            $columns['last_start_at'] = $last;
+        }
+
+        if ([] !== $columns) {
+            // not a save(): the event itself didn't change, only these columns
+            $this->newQuery()->whereKey($this->getKey())->update($columns);
+            foreach ($columns as $column => $value) {
+                $this->setAttribute($column, $value);
+                $this->syncOriginalAttribute($column);
+            }
+        }
+
+        if (array_key_exists('last_start_at', $columns)) {
             EventDateRange::forget();
         }
     }
@@ -1367,9 +1393,11 @@ class Event extends Model implements HasPhotos
      */
     public function getGoogleCalendarLink(?EventShowing $occurrence = null): ?string
     {
+        // the opening date carries the event's own end_at, so every link reads the same way
+        $occurrence ??= $this->occurrences()->first();
         $startAt = $occurrence->start_at ?? $this->start_at;
         $start = Carbon::parse($startAt)->format('Ymd\THis');
-        // an additional showing's own end when it has one; otherwise a zero-length slot, as before
+        // the date's own end when it has one; otherwise a zero-length slot, as before
         $end = Carbon::parse($occurrence->end_at ?? $startAt)->format('Ymd\THis');
 
         // name, description and venue are user text, so every value is URL-encoded;
@@ -1411,10 +1439,13 @@ class Event extends Model implements HasPhotos
             $format .= $this->venue->name ?? 'No venue specified';
         }
 
-        // a short run: its first and last dates (#2375)
-        $format .= $this->isMultiDate()
-            ? ' from '.$this->start_at->format('D F jS').' to '.$this->last_start_at?->format('D F jS')
-            : ' on '.$this->start_at->format('D F jS');
+        // a short run: its first and last dates (#2375), with years across New Year
+        if ($this->isMultiDate() && null !== $this->last_start_at) {
+            $dateFormat = $this->start_at->year === $this->last_start_at->year ? 'D F jS' : 'D F jS Y';
+            $format .= ' from '.$this->start_at->format($dateFormat).' to '.$this->last_start_at->format($dateFormat);
+        } else {
+            $format .= ' on '.$this->start_at->format('D F jS');
+        }
 
         return $format;
     }
