@@ -159,6 +159,8 @@ class EventsController extends Controller
                 'entities.roles',
                 'photos',
                 'threads',
+                // a short run's dates, for its JSON-LD (#2375)
+                'showings',
                 'eventResponses.responseType',
                 'attendees' => function ($q) {
                     $q->where('response_type_id', 1);
@@ -219,7 +221,8 @@ class EventsController extends Controller
         // triggers its own query while rendering the feed (EVENTREPO-T5).
         /* @phpstan-ignore-next-line */
         $events = $query->visible($this->user)
-            ->with('visibility', 'venue', 'promoter.contacts', 'photos')
+            // showings: a short run's dates each become a VEVENT (#2375)
+            ->with('visibility', 'venue', 'promoter.contacts', 'photos', 'showings')
             ->paginate($listResultSet->getLimit());
 
         // create a calendar object
@@ -454,9 +457,11 @@ class EventsController extends Controller
         // to a query per event (per entity, for links) unless these are loaded. Four extra eager
         // loads per page, constant in the number of events, against ~150 N+1 queries on a full page.
         // venue.photos/series.photos feed EventSchema's image fallback for an event with no flyer.
+        // showings: a short run's dates, read by its JSON-LD endDate and display date (#2375).
         $eager = [
             'visibility', 'venue.locations', 'venue.links', 'venue.photos', 'eventType', 'tags', 'photos',
             'entities', 'entities.roles', 'entities.links', 'promoter.links', 'series.photos', 'threads',
+            'showings',
         ];
 
         if ($user) {
@@ -2611,7 +2616,7 @@ class EventsController extends Controller
 
         // get the events
         $events = $query
-            ->with('visibility', 'venue')
+            ->with('visibility', 'venue', 'showings')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
@@ -2643,7 +2648,7 @@ class EventsController extends Controller
         // Eager-load the relations the iCal builder reads per event (venue,
         // promoter + its contacts, and photos for getPrimaryPhoto()) to avoid
         // an N+1 entities lookup while rendering the feed (EVENTREPO-T6).
-        $events->loadMissing(['venue', 'promoter.contacts', 'photos']);
+        $events->loadMissing(['venue', 'promoter.contacts', 'photos', 'showings']);
 
         // create a calendar object for the user
         $calendar = $iCalBuilder->buildCalendar('arcane-city-interested-ical.ics', $events);

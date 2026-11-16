@@ -773,6 +773,8 @@ class UsersController extends Controller
         $events = $user->getAttendingFuture()
             ->filter(fn (Event $event) => $event->isVisibleTo($this->user))
             ->take(self::DEFAULT_SHOW_COUNT);
+        // a short run's dates each become a VEVENT (#2375)
+        $events->loadMissing('showings');
 
         // create a calendar object
         $calendar = $iCalBuilder->buildCalendar($this->user->getFullNameAttribute().' Calendar', $events);

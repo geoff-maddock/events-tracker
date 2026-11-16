@@ -19,7 +19,7 @@ class RssFeed
     {
         // shared by every reader, so public events only (the key changed when that filter was added)
         return Cache::remember('rss-feed-public', 7200, function () {
-            $events = Event::future()->visible(null)->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType', 'series')->get();
+            $events = Event::future()->visible(null)->orderBy('start_at', 'desc')->take(config('event.rss_size'))->with('eventType', 'series', 'showings')->get();
 
             return $this->buildRssData($events);
         });
@@ -36,6 +36,7 @@ class RssFeed
                 ->visible(null)
                 ->orderBy('start_at', 'desc')
                 ->take(config('event.rss_size'))
+                ->with('showings')
                 ->get();
 
             return $this->buildRssData($events);
@@ -60,11 +61,17 @@ class RssFeed
 
         foreach ($events as $event) {
             /** @var \App\Models\Event $event */
+            // a short run by its next date, with the rest after it (#2375)
+            $when = ($event->display_start_at ?? $event->start_at)->format('l F jS Y');
+            if (null !== ($dates = $event->showtimesSummary())) {
+                $when .= '<br>Showings: '.e($dates);
+            }
+
             $item = new Item();
             $item
         ->title($event->name)
-        ->description($event->start_at->format('l F jS Y').'<br>'.$event->description)
-        ->contentEncoded('<div>'.$event->start_at->format('l F jS Y').'<br>'.$event->description.'</div>')
+        ->description($when.'<br>'.$event->description)
+        ->contentEncoded('<div>'.$when.'<br>'.$event->description.'</div>')
         ->url(route('events.show', $event->id))
         ->pubDate($event->created_at->timestamp)
         ->guid((string) $event->id, true)

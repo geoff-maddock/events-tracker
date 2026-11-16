@@ -14,6 +14,7 @@ use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Attachment;
 use Eluceo\iCal\Domain\Entity\TimeZone;
+use App\Models\Event;
 use App\Services\EventTime;
 use DateTimeZone as PhpDateTimeZone;
 use Storage;
@@ -57,89 +58,37 @@ class ICalBuilder
         foreach ($events as $event) {
             // use the route for the event as the unique id
             $uniqueId = route('events.show', ['event' => $event]);
-            
-            // set up unique ID
-            $uniqueIdentifier = new UniqueIdentifier($uniqueId);
 
-            $vEvent = new iCalEvent($uniqueIdentifier);
-
-            // set up occurrence
-            // EventTime reinterprets the naive stored wall-clock value in
-            // America/New_York, and falls back to a 4-hour duration when the
-            // event has no end_at.
-            $start = new DateTime(EventTime::startsAt($event), true);
-            $end = new DateTime(EventTime::endsAt($event), true);
-
-            $occurrence = new TimeSpan($start, $end);
-
-            // update oldest and latest times
+            // update oldest time
             if ($event->updated_at < $oldestTime) {
                 $oldestTime = $event->updated_at;
             }
-            if ($start->getDateTime() > $latestTime) {
-                $latestTime = $end->getDateTime();
-            }
 
-            $vEvent->setOccurrence($occurrence)
-                ->setSummary($event->name)
-                ->setDescription($event->description ? $event->description : '');
+            // what every date of the event shares, worked out once
+            $details = $this->details($event, $uniqueId);
 
-            // convert $event->updated_at to timestamp
-            $updated = new DateTime($event->updated_at, true);
-            $vEvent->touch($updated);
+            // One VEVENT per date: a short run's showings each get their own
+            // (#2375). The first date keeps the event's UID, so the entry a
+            // subscribed calendar already has stays the same item; each later
+            // showing's UID adds its start, which is stable across edits.
+            foreach ($event->occurrences() as $occurrence) {
+                $uid = $occurrence->start_at->equalTo($event->start_at)
+                    ? $uniqueId
+                    : $uniqueId.'#'.$occurrence->start_at->format('Ymd\THis');
 
-            // set the url
-            $url = $event->primary_link ? $event->primary_link : $uniqueId;
-            $url = new Uri($url);
-            $vEvent->setUrl($url);
+                // EventTime reinterprets the naive stored wall-clock value in
+                // America/New_York, and falls back to a 4-hour duration when the
+                // date has no end_at.
+                $start = new DateTime(EventTime::occurrenceStartsAt($occurrence), true);
+                $end = new DateTime(EventTime::occurrenceEndsAt($occurrence), true);
 
-            // set up the venue location
-            // get the name for the venue or set to empty
-            $venue = $event->venue ? $event->venue->name : '';
-
-            // set the location
-            if ($venue) {
-                $vEvent->setLocation(new Location($venue));
-            }
-
-            // get the promoter to set organizer
-            if ($event->promoter) {
-                // check for contacts on the promoter
-                if ($event->promoter->contacts->count() > 0) {
-
-                    // cycle through all contacts to find one with an email address
-                    foreach ($event->promoter->contacts as $contact) {
-                        if ($contact->email) {
-                           
-                            $organizer = new Organizer(
-                                new EmailAddress($contact->email),
-                                $event->promoter->name,
-                                new Uri($uniqueId),
-                                new EmailAddress($contact->email)
-                            );
-        
-                            $vEvent->setOrganizer($organizer);
-
-                            break;
-                        }
-                    }
+                // update latest time
+                if ($start->getDateTime() > $latestTime) {
+                    $latestTime = $end->getDateTime();
                 }
+
+                $vEvents[] = $this->vEvent(new UniqueIdentifier($uid), new TimeSpan($start, $end), $details);
             }
-
-            // add the primary image as a url attachment
-            $photo = $event->getPrimaryPhoto();
-            if ($photo) {
-                $imageUrl = Storage::disk('external')->url($photo->getStoragePath());
-
-                $urlAttachment = new Attachment(
-                    new Uri($imageUrl),
-                    'image/jpeg'
-                );
-
-                $vEvent->addAttachment($urlAttachment);
-            }
-
-            $vEvents[] = $vEvent;
         }
 
         // move the oldest time back 1 month
@@ -166,5 +115,81 @@ class ICalBuilder
         header('Content-Disposition: attachment; filename="'.$calendarName.'"');
 
         return $calendarComponent;
+    }
+
+    /**
+     * The parts of a VEVENT that are the same for every date of $event.
+     *
+     * @return array{summary: string, description: string, updated: DateTime, url: Uri, location: Location|null, organizer: Organizer|null, attachment: Attachment|null}
+     */
+    private function details(Event $event, string $eventUrl): array
+    {
+        // set up the venue location
+        $location = $event->venue?->name ? new Location($event->venue->name) : null;
+
+        // the promoter's first contact with an email address is the organizer
+        $organizer = null;
+        foreach ($event->promoter->contacts ?? [] as $contact) {
+            if ($contact->email) {
+                $organizer = new Organizer(
+                    new EmailAddress($contact->email),
+                    $event->promoter->name,
+                    new Uri($eventUrl),
+                    new EmailAddress($contact->email)
+                );
+
+                break;
+            }
+        }
+
+        // the primary image as a url attachment
+        $attachment = null;
+        $photo = $event->getPrimaryPhoto();
+        if ($photo) {
+            $attachment = new Attachment(
+                new Uri(Storage::disk('external')->url($photo->getStoragePath())),
+                'image/jpeg'
+            );
+        }
+
+        return [
+            'summary' => (string) $event->name,
+            'description' => $event->description ? $event->description : '',
+            'updated' => new DateTime($event->updated_at, true),
+            'url' => new Uri($event->primary_link ? $event->primary_link : $eventUrl),
+            'location' => $location,
+            'organizer' => $organizer,
+            'attachment' => $attachment,
+        ];
+    }
+
+    /**
+     * One VEVENT: a date of an event, with the details from details().
+     *
+     * @param array{summary: string, description: string, updated: DateTime, url: Uri, location: Location|null, organizer: Organizer|null, attachment: Attachment|null} $details
+     */
+    private function vEvent(UniqueIdentifier $uniqueIdentifier, TimeSpan $occurrence, array $details): iCalEvent
+    {
+        $vEvent = new iCalEvent($uniqueIdentifier);
+
+        $vEvent->setOccurrence($occurrence)
+            ->setSummary($details['summary'])
+            ->setDescription($details['description'])
+            ->setUrl($details['url']);
+        $vEvent->touch($details['updated']);
+
+        if ($details['location']) {
+            $vEvent->setLocation($details['location']);
+        }
+
+        if ($details['organizer']) {
+            $vEvent->setOrganizer($details['organizer']);
+        }
+
+        if ($details['attachment']) {
+            $vEvent->addAttachment($details['attachment']);
+        }
+
+        return $vEvent;
     }
 }

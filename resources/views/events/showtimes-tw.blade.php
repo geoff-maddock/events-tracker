@@ -23,6 +23,11 @@
 			@if ($isNext)
 			<span class="ml-1 text-xs font-normal uppercase tracking-wide">Next</span>
 			@endif
+			@unless ($isPast)
+			<a href="{{ $event->getGoogleCalendarLink($occurrence) }}" target="_blank" rel="nofollow" class="ml-1 hover:text-foreground" title="Add this showing to Google Calendar" aria-label="Add {{ $occurrence->start_at->format('D, M jS') }} to Google Calendar">
+				<i class="bi bi-calendar-plus"></i>
+			</a>
+			@endunless
 		</li>
 		@endforeach
 	</ul>

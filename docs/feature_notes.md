@@ -28,7 +28,11 @@ others, each with its own start and optional end time (up to 60).
 - **Emails:** daily and weekly digests, entity reminders and invites show the next date; digest
   entries list the remaining showings.
 - **Feedback:** attendees are asked for feedback after the last showing, not the first.
-- JSON-LD, iCal and RSS still use the first date; that follows in a later change.
+- **Outbound data:** an event page's JSON-LD spans the first showing to the end of the last and
+  lists up to 10 upcoming showings as `subEvent`s. iCal exports carry one VEVENT per showing (the
+  first date keeps the event's UID). The RSS item shows the next date and the remaining showings.
+  The page title gives the first and last dates, and each upcoming showing on the event page has its
+  own Google Calendar link.
 
 ### Audio player (#2366)
 A pop-out player at `/player` plays music from the artists on upcoming shows, using the SoundCloud

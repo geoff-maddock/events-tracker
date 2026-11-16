@@ -67,6 +67,24 @@ You can apply filters to routes using the following:
 - A tag is created only when no id or slug matches. Sending an existing tag's name never creates a duplicate.
 - `PUT /api/events/{event}` with `tag_list` is a full sync (a missing key detaches all tags); `PATCH` only syncs when `tag_list` is present.
 
+### Events with Several Dates
+
+A short-run event (a play, a festival weekend) keeps its first date in `start_at` and its other dates in `showings`. An event with one date has an empty `showings`.
+
+```
+POST /api/events
+{ "name": "...", "start_at": "2027-03-01 20:00:00",
+  "showings": [
+    { "start_at": "2027-03-04 19:00:00" },
+    { "start_at": "2027-03-06 14:00:00", "end_at": "2027-03-06 16:00:00", "door_at": "2027-03-06 13:30:00" }
+  ] }
+```
+
+- Each showing must start after `start_at`, no two may share a start, and there can be at most 60.
+- `PUT` replaces the showings with what it sends (none removes them all); `PATCH` only touches them when `showings` is present.
+- Responses carry `showings`, `last_start_at` (the final date's start) and `next_start_at` (the first date still to come, else `start_at`).
+- `filters[start_at]` and `/api/events/by-date/...` match an event on any of its dates, and sorting by `events.start_at` with a start filter orders by each event's next date in range.
+
 ### Attaching Photos by URL
 
 `POST /api/events/{id}/photos` (and the entity / series equivalents) take a multipart `file` upload. Each has a sibling that accepts a public https URL instead, for callers that cannot hold the bytes themselves (browser automation blocked by CORS, sandboxed agents, importers):
