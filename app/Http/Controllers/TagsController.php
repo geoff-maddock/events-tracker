@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\TagFilters;
 use App\Http\Requests\TagRequest;
 use App\Models\Action;
 use App\Models\Activity;
@@ -23,6 +24,17 @@ use Illuminate\View\View;
 
 class TagsController extends Controller
 {
+    /**
+     * Options for the signed-in user's "Display Type" filter on the tag grid.
+     */
+    public const DISPLAY_TYPES = [
+        'all' => 'All Tags',
+        'following' => 'Tags Followed',
+        'not_following' => 'Tags Not Followed',
+        'created' => 'Tags Created',
+        'not_created' => 'Tags Not Created',
+    ];
+
     protected Tag $tag;
 
     protected string $prefix;
@@ -168,18 +180,29 @@ class TagsController extends Controller
 
         $search = $request->input('search', '');
 
-        $tags = Tag::query()
+        $tagFilters = new TagFilters($request);
+        $filters = $request->input('filters', []);
+        $filters = $tagFilters->normalizeFilters(is_array($filters) ? $filters : []);
+
+        $query = Tag::query()
             ->when(!empty($search), fn ($q) => $q->where('name', 'like', '%'.$search.'%'))
             ->withGridThumbnail()
             ->when($sort === 'events_count', fn ($q) => $q->withCount(['events' => fn ($e) => $e->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)]))
-            ->orderBy($sort, $direction)
+            ->orderBy($sort, $direction);
+
+        $tags = $tagFilters->applyFilters($query, $filters)
             ->paginate($limit)
-            ->appends(['search' => $search, 'sort' => $sort, 'direction' => $direction, 'limit' => $limit]);
+            ->appends(['search' => $search, 'filters' => $filters, 'sort' => $sort, 'direction' => $direction, 'limit' => $limit]);
+
+        $displayType = $filters['display_type'] ?? 'all';
+        $hasDisplayType = $this->user && $displayType !== 'all' && isset(self::DISPLAY_TYPES[$displayType]);
 
         return [
             'tags' => $tags,
             'search' => $search,
-            'hasFilter' => !empty($search),
+            'filters' => $filters,
+            'displayTypes' => self::DISPLAY_TYPES,
+            'hasFilter' => !empty($search) || $hasDisplayType,
             'sort' => $sort,
             'direction' => $direction,
             'limit' => $limit,

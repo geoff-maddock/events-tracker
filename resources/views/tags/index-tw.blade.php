@@ -53,6 +53,17 @@
 					placeholder="Tag name..."
 					class="form-input-tw">
 			</div>
+			@auth
+			<!-- Display Type Filter -->
+			<div>
+				<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
+				<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
+					@foreach($displayTypes as $value => $label)
+					<option value="{{ $value }}" {{ ($filters['display_type'] ?? 'all') === $value ? 'selected' : '' }}>{{ $label }}</option>
+					@endforeach
+				</select>
+			</div>
+			@endauth
 			<div class="flex gap-2">
 				<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 					Apply
