@@ -12,7 +12,7 @@ We'd love for you to be more involved! You can log in, add your upcoming events,
 Here are the upcoming events we have listed for you:
 
 @foreach ($upcomingEvents as $event)
-- [{{ $event->name }}]({{ $url }}events/{{ $event->slug }}) — {{ $event->start_at->format('l F jS Y \a\t g:i A') }}@if ($event->venue_id) at {{ $event->venue->name }}@endif
+- [{{ $event->name }}]({{ $url }}events/{{ $event->slug }}) — {{ $event->display_start_at->format('l F jS Y \a\t g:i A') }}{{ $event->showtimesSummary() ? ' (+ more dates)' : '' }}@if ($event->venue_id) at {{ $event->venue->name }}@endif
 @endforeach
 
 @else

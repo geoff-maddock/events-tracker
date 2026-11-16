@@ -4,6 +4,7 @@ namespace App\Services\Integrations\Discord;
 
 use App\Models\DiscordTarget;
 use App\Models\Event;
+use App\Models\EventShowing;
 use App\Models\Tag;
 use App\Services\EventTime;
 use Carbon\CarbonInterface;
@@ -46,6 +47,12 @@ class DiscordEmbedBuilder
 
     private const HEADLINE_MINIMAL = 2;
 
+    /** A short run's dates listed in one announcement (#2375). */
+    private const SHOWINGS_LISTED = 10;
+
+    /** A short run's dates on one roundup line. */
+    private const DIGEST_DATES_LISTED = 3;
+
     /**
      * A single-event announcement, reminder, or manual post.
      *
@@ -75,7 +82,7 @@ class DiscordEmbedBuilder
                 'Upcoming events · '.$from->format('M j').'–'.$to->format('M j'),
                 'title'
             ),
-            'description' => $this->digestDescription($events, (int) $this->limit('description')),
+            'description' => $this->digestDescription($events, (int) $this->limit('description'), $from, $to),
             'color' => $this->color($target),
             'footer' => ['text' => $this->clamp(config('app.app_name').' · '.rtrim((string) config('app.url'), '/'), 'footer')],
         ];
@@ -125,7 +132,7 @@ class DiscordEmbedBuilder
             $embed['image'] = ['url' => $image];
         }
 
-        if (null !== ($startsAt = EventTime::startsAt($event))) {
+        if (null !== ($startsAt = EventTime::toInstant($this->next($event)?->start_at))) {
             $embed['timestamp'] = $startsAt->toIso8601String();
         }
 
@@ -149,17 +156,23 @@ class DiscordEmbedBuilder
     private function fields(Event $event): array
     {
         $fields = [];
+        // a short run's next date; its other dates follow under Showings (#2375)
+        $next = $this->next($event);
 
-        if (null !== ($startsAt = EventTime::startsAt($event))) {
+        if (null !== ($startsAt = EventTime::toInstant($next?->start_at))) {
             // Discord renders <t:unix:F> in each viewer's own timezone, which
             // beats baking one timezone's string into the message.
             $when = '<t:'.$startsAt->timestamp.':F>';
 
-            if (null !== ($doorsAt = EventTime::doorsAt($event))) {
+            if (null !== ($doorsAt = EventTime::toInstant($next?->door_at))) {
                 $when .= "\nDoors <t:".$doorsAt->timestamp.':t>';
             }
 
             $fields[] = $this->field('When', $when);
+        }
+
+        if (null !== ($showings = $this->showings($event))) {
+            $fields[] = $this->field('Showings', $showings);
         }
 
         if (null !== $event->venue) {
@@ -183,6 +196,32 @@ class DiscordEmbedBuilder
         }
 
         return array_slice(array_filter($fields), 0, (int) $this->limit('fields'));
+    }
+
+    /**
+     * The date a post leads with: a short run's next showing, otherwise
+     * start_at (also once a run is over).
+     */
+    private function next(Event $event): ?EventShowing
+    {
+        if ($event->isMultiDate() && null !== ($next = $event->nextOccurrence())) {
+            return $next;
+        }
+
+        return $event->occurrences()->first();
+    }
+
+    /**
+     * Every date a short run has left, one per line. Null for a single-date
+     * event and for a run down to its last date, which When already shows.
+     */
+    private function showings(Event $event): ?string
+    {
+        return $event->showtimesSummary(
+            self::SHOWINGS_LISTED,
+            fn (EventShowing $showing): string => '<t:'.EventTime::toInstant($showing->start_at)?->timestamp.':f>',
+            "\n",
+        );
     }
 
     /**
@@ -247,7 +286,7 @@ class DiscordEmbedBuilder
      *
      * @param  Collection<int, Event>  $events
      */
-    private function digestDescription(Collection $events, int $limit): string
+    private function digestDescription(Collection $events, int $limit, CarbonInterface $from, CarbonInterface $to): string
     {
         $summary = (int) config('discord.digest.summary_length', 140);
         $tags = (int) config('discord.digest.tag_limit', 4);
@@ -270,7 +309,7 @@ class DiscordEmbedBuilder
 
         foreach ($levels as [$summaryLength, $tagLimit, $headline]) {
             $entries = $events->map(
-                fn (Event $event): string => $this->digestEntry($event, $summaryLength, $tagLimit, $headline)
+                fn (Event $event): string => $this->digestEntry($event, $summaryLength, $tagLimit, $headline, $from, $to)
             )->all();
 
             $joined = implode("\n\n", $entries);
@@ -293,15 +332,21 @@ class DiscordEmbedBuilder
      * That keeps a 25-event roundup scannable: the headlines still read as a
      * list, with the detail underneath rather than competing with them.
      */
-    private function digestEntry(Event $event, int $summaryLength, int $tagLimit, int $headline = self::HEADLINE_FULL): string
-    {
+    private function digestEntry(
+        Event $event,
+        int $summaryLength,
+        int $tagLimit,
+        int $headline = self::HEADLINE_FULL,
+        ?CarbonInterface $from = null,
+        ?CarbonInterface $to = null,
+    ): string {
         $line = $headline === self::HEADLINE_FULL
             ? '**['.$this->escapeMarkdown($event->name).']('.route('events.show', $event).')**'
             // shorter link text, and the id URL (/events/123) instead of the name-length slug
             : '**['.$this->escapeMarkdown(Str::limit((string) $event->name, $headline === self::HEADLINE_COMPACT ? 60 : 40, '…')).']('.route('events.show', $event->id).')**';
 
-        if (null !== ($startsAt = EventTime::startsAt($event))) {
-            $line .= ' — <t:'.$startsAt->timestamp.':D>';
+        if (null !== ($dates = $this->digestDates($event, $from, $to))) {
+            $line .= ' — '.$dates;
         }
 
         if ($headline !== self::HEADLINE_MINIMAL && null !== $event->venue) {
@@ -319,6 +364,35 @@ class DiscordEmbedBuilder
 
         if ([] !== $detail) {
             $line .= "\n-# ".implode(' · ', $detail);
+        }
+
+        return $line;
+    }
+
+    /**
+     * The roundup's date for an event: each date a short run plays inside the
+     * window, so one entry covers the run (#2375), else start_at.
+     */
+    private function digestDates(Event $event, ?CarbonInterface $from, ?CarbonInterface $to): ?string
+    {
+        $dates = $event->isMultiDate() && null !== $from && null !== $to
+            ? $event->occurrencesBetween($from, $to)
+            : collect();
+
+        if ($dates->isEmpty()) {
+            $dates = $event->occurrences()->take(1);
+        }
+
+        if ($dates->isEmpty()) {
+            return null;
+        }
+
+        $line = $dates->take(self::DIGEST_DATES_LISTED)
+            ->map(fn (EventShowing $showing): string => '<t:'.EventTime::toInstant($showing->start_at)?->timestamp.':D>')
+            ->implode(', ');
+
+        if ($dates->count() > self::DIGEST_DATES_LISTED) {
+            $line .= ' + '.($dates->count() - self::DIGEST_DATES_LISTED).' more';
         }
 
         return $line;

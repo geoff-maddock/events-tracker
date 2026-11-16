@@ -43,9 +43,9 @@ We wanted to share a summary of the activity related to your profile on {{ $url 
 Here are the upcoming events associated with your listing:
 
 @foreach ($upcomingEvents as $event)
-### {{ $event->start_at->format('l, F jS Y') }}
+### {{ $event->display_start_at->format('l, F jS Y') }}
 **[{{ $event->name }}]({{ $url }}events/{{ $event->slug }})**
-{{ $event->start_at->format('g:i A') }}@if ($event->end_time) – {{ $event->end_time->format('g:i A') }}@endif
+{{ $event->display_start_at->format('g:i A') }}@if ($event->end_time) – {{ $event->end_time->format('g:i A') }}@endif
 @if ($event->venue)
 at [{{ $event->venue->name }}]({{ $url }}entities/{{ $event->venue->slug }})
 @endif

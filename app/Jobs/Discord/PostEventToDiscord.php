@@ -89,7 +89,7 @@ class PostEventToDiscord implements ShouldBeUnique, ShouldQueue
 
         $this->markRunning();
 
-        $event = Event::with(['tags', 'venue', 'eventType', 'photos'])->find($this->eventId);
+        $event = Event::with(['tags', 'venue', 'eventType', 'photos', 'showings'])->find($this->eventId);
 
         if (null === $event) {
             // Deleted between dispatch and delivery. Nothing to announce.

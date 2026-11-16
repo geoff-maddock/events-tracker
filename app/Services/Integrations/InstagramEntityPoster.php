@@ -38,8 +38,10 @@ class InstagramEntityPoster extends InstagramPoster
         $futureEvents = $entity->events()
             ->distinct()
             ->visible(null)
-            ->where('start_at', '>=', Carbon::now())
-            ->orderBy('start_at', 'ASC')
+            // a short run until its last showing, by its next one (#2375)
+            ->occurringBetween(Carbon::now())
+            ->withNextStart(Carbon::now())
+            ->orderByNextStart(Carbon::now())
             ->limit(self::MAX_EVENT_PHOTOS)
             ->get();
 

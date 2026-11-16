@@ -42,6 +42,13 @@ class AutomateInstagramPosts extends Command
     public const RETRY_AFTER_HOURS = 6;
 
     /**
+     * A short run is posted again once one of its showings has played, so each
+     * date gets its turn as the next one (#2375), but no sooner than this many
+     * days after its last post, so nightly showings don't mean nightly posts.
+     */
+    public const RUN_REPOST_AFTER_DAYS = 2;
+
+    /**
      * Execute the console command.
      *
      * @return int
@@ -102,13 +109,15 @@ class AutomateInstagramPosts extends Command
         // Get all public events that haven't been posted yet or need a reminder post
         // Exclude events with do_not_repost flag set
         $events = Event::where('visibility_id', \App\Models\Visibility::VISIBILITY_PUBLIC)
-            ->where('start_at', '>=', $today) // Only future events
+            // only future events; a short run until its last showing, by its next one (#2375)
+            ->occurringBetween($today)
             ->where(function ($query) {
                 $query->where('do_not_repost', false)
                     ->orWhereNull('do_not_repost');
             })
             ->whereHas('eventType') // Ensure event has a type
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart($today)
+            ->with('showings')
             ->get()
             ->filter(function ($event) use ($today) {
                 // Check if event has a primary photo (required for Instagram)
@@ -155,9 +164,21 @@ class AutomateInstagramPosts extends Command
                     // (int) keeps Carbon 2's truncated-integer semantics after the
                     // Carbon 3 upgrade, where diffIn* returns fractional floats
                     $daysSinceLastShare = (int) $lastShare->posted_at->diffInDays($today, false);
-                    $daysUntilEvent = (int) $today->diffInDays($event->start_at, false);
+                    // a short run counts down to its next showing
+                    $daysUntilEvent = (int) $today->diffInDays($event->display_start_at ?? $event->start_at, false);
                     
                     if ($daysSinceLastShare > 7 && $daysUntilEvent < 30) {
+                        return true;
+                    }
+
+                    // Rule 3: a short run that has played a showing since its last
+                    // post, so its next showing hasn't been posted as the next one;
+                    // never once the final showing has started
+                    if ($daysSinceLastShare >= self::RUN_REPOST_AFTER_DAYS
+                        && null !== $event->nextOccurrence()
+                        && $daysUntilEvent < 30
+                        && $this->playedSince($event, $lastShare->posted_at)) {
+                        Log::info("AutomateInstagramPosts: Event #{$event->id} played a showing since its last post.");
                         return true;
                     }
                 }
@@ -166,6 +187,22 @@ class AutomateInstagramPosts extends Command
             });
 
         return $events;
+    }
+
+    /**
+     * Whether a short run has had a showing start between $since and now.
+     */
+    protected function playedSince(Event $event, Carbon $since): bool
+    {
+        if (!$event->isMultiDate()) {
+            return false;
+        }
+
+        $now = Carbon::now();
+
+        return $event->occurrences()->contains(
+            fn ($showing) => $showing->start_at->gt($since) && $showing->start_at->lt($now)
+        );
     }
 
     /**

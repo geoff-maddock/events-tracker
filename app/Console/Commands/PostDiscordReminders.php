@@ -7,6 +7,7 @@ use App\Models\DiscordPost;
 use App\Models\DiscordTarget;
 use App\Models\Event;
 use App\Services\Integrations\Discord\DiscordTargetMatcher;
+use Carbon\CarbonInterface;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -57,8 +58,14 @@ class PostDiscordReminders extends Command
         ]);
 
         foreach ($targets as $target) {
-            foreach ($target->effectiveReminderOffsets() as $offset) {
-                $queued += $this->remindersFor($matcher, $target, $offset, $dryRun);
+            // A short run can have a date in two windows at once (#2375); one
+            // reminder per event per target per run, the nearest date first.
+            $offsets = $target->effectiveReminderOffsets();
+            sort($offsets);
+            $reminded = [];
+
+            foreach ($offsets as $offset) {
+                $queued += $this->remindersFor($matcher, $target, $offset, $dryRun, $reminded);
             }
         }
 
@@ -74,20 +81,24 @@ class PostDiscordReminders extends Command
     }
 
     /**
-     * One target, one offset.
+     * One target, one offset. $reminded holds the ids of events already
+     * reminded about this run, and gains the ones queued here.
+     *
+     * @param  array<int, true>  $reminded
      */
     private function remindersFor(
         DiscordTargetMatcher $matcher,
         DiscordTarget $target,
         int $offset,
         bool $dryRun,
+        array &$reminded,
     ): int {
         // A whole-day window against a once-daily run: an event cannot fall
         // between two runs, and cannot be caught by two.
         $from = now()->addDays($offset)->startOfDay();
         $to = now()->addDays($offset)->endOfDay();
 
-        $events = $matcher->eventsFor($target, $from, $to)->get();
+        $events = $matcher->eventsFor($target, $from, $to)->with('showings')->get();
         $queued = 0;
 
         // Separates "the criteria matched nothing" from "the criteria matched
@@ -100,7 +111,7 @@ class PostDiscordReminders extends Command
         ]);
 
         foreach ($events as $event) {
-            if ($this->postedTooRecently($target, $event)) {
+            if (isset($reminded[$event->id]) || $this->postedTooRecently($target, $event)) {
                 continue;
             }
 
@@ -113,16 +124,17 @@ class PostDiscordReminders extends Command
             ));
 
             if (! $dryRun) {
-                // The ledger's unique index on (target, event, 'reminder', offset)
+                // The ledger's unique index on (target, event, 'reminder', key)
                 // makes a re-run within the same day a no-op.
                 PostEventToDiscord::dispatch(
                     $event->id,
                     DiscordPost::REASON_REMINDER,
                     [$target->id],
-                    (string) $offset,
+                    $this->reasonKey($event, $offset, $from, $to),
                 );
             }
 
+            $reminded[$event->id] = true;
             $queued++;
         }
 
@@ -130,9 +142,26 @@ class PostDiscordReminders extends Command
     }
 
     /**
+     * The offset alone for a single-date event. A short run is reminded about
+     * each date it plays (#2375), so its key adds the date in this window:
+     * '7:2027-03-04'.
+     */
+    private function reasonKey(Event $event, int $offset, CarbonInterface $from, CarbonInterface $to): string
+    {
+        if (! $event->isMultiDate()) {
+            return (string) $offset;
+        }
+
+        $showing = $event->occurrencesBetween($from, $to)->first();
+
+        return $offset.':'.($showing->start_at ?? $from)->format('Y-m-d');
+    }
+
+    /**
      * Suppress a reminder that would land on top of a recent post for the same
      * event — an event added at T-8d would otherwise be announced, then
-     * reminded about the following day.
+     * reminded about the following day. It also spaces out a short run's
+     * reminders, so showings on consecutive nights don't each get one.
      */
     private function postedTooRecently(DiscordTarget $target, Event $event): bool
     {

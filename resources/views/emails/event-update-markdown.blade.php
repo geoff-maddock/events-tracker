@@ -1,21 +1,24 @@
 @if ($event->cancelled_at)
-# {!! $event->start_at->format('l F jS Y') !!}
+# {!! $event->display_start_at->format('l F jS Y') !!}
 ## ~~{{ $event->name }}~~ **CANCELLED**
-**{!! $event->start_at->format('g:i A') !!}**  
+**{!! $event->display_start_at->format('g:i A') !!}**  
 [Link]({{ $url }}events/{{$event->id }})
 
 *This event was cancelled on {{ $event->cancelled_at->format('F jS Y') }}.*
 
 ***
 @else
-# {!! $event->start_at->format('l F jS Y') !!}
+# {!! $event->display_start_at->format('l F jS Y') !!}
 @if ($photo = $event->getPrimaryPhoto())
 <img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">  
 
 @endif
 ## {{ $event->name }}  
-**{!! $event->start_at->format('g:i A') !!}{!! $event->end_time ? ' until '.$event->end_time->format('g:i A') : '' !!}**  
+**{!! $event->display_start_at->format('g:i A') !!}{!! $event->end_time ? ' until '.$event->end_time->format('g:i A') : '' !!}**  
 {{ $event->short ? '*'.$event->short.'*' : '' }}
+@if ($dates = $event->showtimesSummary())
+Showings: {{ $dates }}  
+@endif
 [Link]({{ $url }}events/{{$event->id }}) 
 
 @if (!empty($event->series_id))

@@ -44,6 +44,9 @@ class InstagramEventPoster extends InstagramPoster
     // Instagram's caption length limit
     private const CAPTION_LIMIT = 2200;
 
+    // a short run's dates in the weekly carousel caption, which carries up to nine events (#2375)
+    private const WEEK_SHOWINGS_LISTED = 3;
+
     /**
      * Post a single event photo to the Instagram feed.
      */
@@ -144,12 +147,14 @@ class InstagramEventPoster extends InstagramPoster
     {
         $this->assertCredentials();
 
-        // the cover takes one of the carousel's slots
-        $events = Event::where('start_at', '>=', Carbon::now()->startOfWeek())
-            ->where('start_at', '<=', Carbon::now()->endOfWeek())
+        // the cover takes one of the carousel's slots; a short run is in any
+        // week it plays (#2375)
+        $events = Event::query()
+            ->occurringBetween(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek())
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart(Carbon::now()->startOfWeek())
+            ->with('showings')
             ->limit(self::MAX_CAROUSEL_ITEMS - 1)
             ->get();
 
@@ -166,7 +171,8 @@ class InstagramEventPoster extends InstagramPoster
                 continue;
             }
 
-            $caption .= $event->getInstagramFormat()."\n\n";
+            // a short run's first few dates, so it can't crowd the other events out of the caption
+            $caption .= $event->getInstagramFormat(self::WEEK_SHOWINGS_LISTED)."\n\n";
             $included[] = $event;
         }
 
@@ -242,13 +248,15 @@ class InstagramEventPoster extends InstagramPoster
 
         $sundayEnd = $fridayStart->copy()->next(Carbon::SUNDAY)->endOfDay();
 
-        $ids = Event::where('start_at', '>=', $fridayStart)
-            ->where('start_at', '<=', $sundayEnd)
+        // a short run playing that weekend is one story, placed by its first
+        // showing there (#2375)
+        $ids = Event::query()
+            ->occurringBetween($fridayStart, $sundayEnd)
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
             // the photo getPrimaryPhoto() uses
             ->whereHas('photos', fn ($query) => $query->where('photos.is_primary', '=', 1))
-            ->orderBy('start_at', 'asc')
+            ->orderByNextStart($fridayStart)
             ->orderBy('id', 'asc')
             ->pluck('id')
             ->map(fn ($id): int => (int) $id)
@@ -329,12 +337,13 @@ class InstagramEventPoster extends InstagramPoster
     public function tagEventIds(Tag $tag): array
     {
         $ids = $tag->events()
-            ->where('events.start_at', '>=', Carbon::now())
+            // a short run until its last showing, by its next one (#2375)
+            ->occurringBetween(Carbon::now())
             ->where('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('events.cancelled_at')
             // the photo getPrimaryPhoto() uses
             ->whereHas('photos', fn ($query) => $query->where('photos.is_primary', '=', 1))
-            ->orderBy('events.start_at', 'asc')
+            ->orderByNextStart(Carbon::now())
             ->orderBy('events.id', 'asc')
             ->pluck('events.id')
             ->map(fn ($id): int => (int) $id)
@@ -403,7 +412,9 @@ class InstagramEventPoster extends InstagramPoster
         $footer = "\n\nMore at ".route('tags.show', $tag->slug);
 
         foreach ($events as $event) {
-            $line = "\n".$event->start_at->format('D M j').' - '.$event->name.($event->venue ? ' @ '.$event->venue->name : '');
+            // a short run by its next date, and that it has more (#2375)
+            $more = null !== $event->showtimesSummary() ? ' (+ more dates)' : '';
+            $line = "\n".$event->display_start_at?->format('D M j').' - '.$event->name.($event->venue ? ' @ '.$event->venue->name : '').$more;
 
             if (strlen(urlencode($caption.$line.$footer)) > self::CAPTION_LIMIT) {
                 break;
@@ -426,6 +437,7 @@ class InstagramEventPoster extends InstagramPoster
         return Event::whereIn('id', $eventIds)
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
+            ->with('showings')
             ->get()
             ->sortBy(fn (Event $event): int|false => array_search($event->id, $eventIds, true))
             ->values();
@@ -457,13 +469,15 @@ class InstagramEventPoster extends InstagramPoster
 
         // Fetch all of today's events ranked by number of attending responses,
         // excluding cancelled and non-public events.
-        $todaysEvents = Event::where('start_at', '>=', $dayStart)
-            ->where('start_at', '<=', $dayEnd)
+        // a short run with a showing today is in today's preview (#2375)
+        $todaysEvents = Event::query()
+            ->occurringBetween($dayStart, $dayEnd)
             ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
             ->whereNull('cancelled_at')
             ->withCount(['eventResponses as response_count'])
             ->orderBy('response_count', 'desc')
-            ->orderBy('start_at', 'asc')
+            ->orderByNextStart($dayStart)
+            ->with('showings')
             ->get();
 
         if ($todaysEvents->isEmpty()) {
@@ -473,7 +487,7 @@ class InstagramEventPoster extends InstagramPoster
         // Response count decides which events make the cut; start time decides
         // the order they go out in.
         $selectedEvents = $todaysEvents->take(self::PREVIEW_STORY_LIMIT)
-            ->sortBy('start_at')
+            ->sortBy(fn (Event $event) => $event->occurrencesBetween($dayStart, $dayEnd)->first()?->start_at->getTimestamp())
             ->values();
 
         $posted = 0;

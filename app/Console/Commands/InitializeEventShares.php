@@ -47,9 +47,10 @@ class InitializeEventShares extends Command
 
         // Get all public future events
         $events = Event::where('visibility_id', Visibility::VISIBILITY_PUBLIC)
-            ->where('start_at', '>=', $today)
+            // a short run until its last showing (#2375)
+            ->occurringBetween($today)
             ->whereHas('eventType')
-            ->orderBy('start_at', 'ASC')
+            ->orderByNextStart($today)
             ->get();
 
         if ($events->isEmpty()) {

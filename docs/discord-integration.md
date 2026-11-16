@@ -57,6 +57,11 @@ Two safeguards:
 The `discord_posts` ledger has a unique index on `(target, event, 'reminder', offset)`,
 so a re-run within the same day is a no-op.
 
+An event with additional showings (#2375) is reminded about each date it plays: its
+`reason_key` is the offset plus the date (`7:2027-03-04`), and `reminder_min_gap_hours`
+keeps showings on consecutive nights from each getting one. Every post about such an
+event leads with its next showing and lists the others.
+
 ### Digest
 
 ```bash

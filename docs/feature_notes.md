@@ -19,7 +19,16 @@ others, each with its own start and optional end time (up to 60).
   week view list it under each day it plays, with that day's time.
 - API: `filters[start_at]` and `/api/events/by-date` match on any showing; `start_at` in the
   response is still the first date.
-- Social posts, digests and feeds still use the first date; that follows in a later change.
+- **Social posts:** a run is promoted in one post that leads with its next date and lists the
+  rest (tweets, Instagram captions, Discord embeds; a Discord roundup gives it one line with its
+  dates that week). It is announced on Discord while any showing is still to come, gets a Discord
+  reminder for each date (spaced by `reminder_min_gap_hours`), and Instagram auto-posting picks it
+  up again once a showing has played, at most every 2 days. The weekly carousel, weekend and today
+  stories, tag posts and entity reminder emails include it on any of its dates.
+- **Emails:** daily and weekly digests, entity reminders and invites show the next date; digest
+  entries list the remaining showings.
+- **Feedback:** attendees are asked for feedback after the last showing, not the first.
+- JSON-LD, iCal and RSS still use the first date; that follows in a later change.
 
 ### Audio player (#2366)
 A pop-out player at `/player` plays music from the artists on upcoming shows, using the SoundCloud

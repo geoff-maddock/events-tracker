@@ -16,11 +16,11 @@
     <?php $month = '';?>
 	@foreach ($events as $event)
 
-		@if ($month != $event->start_at->format('F'))
-            @php $month = $event->start_at->format('F') @endphp
+		@if ($month != $event->display_start_at->format('F'))
+            @php $month = $event->display_start_at->format('F') @endphp
 		@endif
 
-		{!! $event->start_at->format('l F jS Y') !!} <br>
+		{!! $event->display_start_at->format('l F jS Y') !!} <br>
 		<h4>{{ $event->name }}</h4>
 
 		@if (!empty($event->series_id))
@@ -38,8 +38,8 @@
 			no venue specified
 		@endif
 
-		@if ($event->start_at)
-			at {{ $event->start_at->format('g:i A') }}
+		@if ($event->display_start_at)
+			at {{ $event->display_start_at->format('g:i A') }}
 		@endif
 
 		@if ($event->door_price)

@@ -267,6 +267,56 @@ class Event extends Model implements HasPhotos
     }
 
     /**
+     * The dates that haven't started yet, earliest first.
+     *
+     * @return Collection<int, EventShowing>
+     */
+    public function remainingOccurrences(): Collection
+    {
+        $now = Carbon::now();
+
+        return $this->occurrences()->filter(fn (EventShowing $showing) => $showing->start_at->gte($now))->values();
+    }
+
+    /**
+     * A short run's remaining dates for a post or caption: by default one line
+     * such as "Thu Mar 4 7PM, Sat Mar 6 2:30PM + 3 more". Null for a single-date
+     * event, and for a run down to its last date, which the post already names
+     * (#2375). Posts list every remaining date, the one they lead with included.
+     *
+     * @param (callable(EventShowing): string)|null $format one date
+     */
+    public function showtimesSummary(int $limit = 10, ?callable $format = null, string $glue = ', '): ?string
+    {
+        if (!$this->isMultiDate()) {
+            return null;
+        }
+
+        $remaining = $this->remainingOccurrences();
+        if ($remaining->count() < 2) {
+            return null;
+        }
+
+        $format ??= fn (EventShowing $showing): string => $showing->start_at->format('D M j').' '.self::shortTime($showing->start_at);
+        $summary = $remaining->take($limit)->map($format)->implode($glue);
+
+        if ($remaining->count() > $limit) {
+            // on a line of its own when the dates are one per line
+            $summary .= (str_contains($glue, "\n") ? $glue : ' ').'+ '.($remaining->count() - $limit).' more';
+        }
+
+        return $summary;
+    }
+
+    /**
+     * "7PM", or "7:30PM" when the minutes matter.
+     */
+    public static function shortTime(\DateTimeInterface $time): string
+    {
+        return '00' === $time->format('i') ? $time->format('gA') : $time->format('g:iA');
+    }
+
+    /**
      * Replace the additional showings with $rows ('start_at', and optionally
      * 'end_at' and 'door_at'), and bring last_start_at in line with them.
      * Rows on or before start_at, and repeats of a time, are dropped.
@@ -1392,8 +1442,11 @@ class Event extends Model implements HasPhotos
         // max length 280 chars
         // URLs count as 23 chars
 
+        // a short run leads with its next date (#2375)
+        $start = $this->display_start_at ?? $this->start_at;
+
         // add the date and name - always include this
-        $format = $this->start_at->format('l F jS Y').' | '.$this->name;
+        $format = $start->format('l F jS Y').' | '.$this->name;
 
         // if part of a series, include the series
         if (!empty($this->series_id)) {
@@ -1410,13 +1463,24 @@ class Event extends Model implements HasPhotos
         }
 
         // include the start time
-        if ($this->start_at) {
-            $format .= ' at '.$this->start_at->format('gA');
-        }
+        $format .= ' at '.$start->format('gA');
 
         // include the door price ("Free" for 0)
         if ($price = $this->doorPriceLabel()) {
             $format .= ' '.$price;
+        }
+
+        // a short run's dates, as many as leave room for the hashtags' share
+        // and the event URL below, which must not be crowded out
+        for ($listed = 4; $listed > 0; $listed--) {
+            $dates = $this->showtimesSummary($listed);
+            if (null === $dates) {
+                break;
+            }
+            if (strlen($format.' | Dates: '.$dates) < 244) {
+                $format .= ' | Dates: '.$dates;
+                break;
+            }
         }
 
         // include the related entities
@@ -1475,14 +1539,17 @@ class Event extends Model implements HasPhotos
         return substr($format, 0, 280);
     }
 
-   // Format the event to post tp instagram
-   public function getInstagramFormat(): ?string
+   // Format the event to post tp instagram; $showingsListed caps a short run's dates
+   public function getInstagramFormat(int $showingsListed = 20): ?string
    {
         $maxLength = 2100;
 
+       // a short run leads with its next date (#2375)
+       $start = $this->display_start_at ?? $this->start_at;
+
        // no max length
        // add the date and name - always include this
-       $format = $this->start_at->format('l F jS Y').' | '.$this->name;
+       $format = $start->format('l F jS Y').' | '.$this->name;
 
        // if part of a series, include the series
        if (!empty($this->series_id)) {
@@ -1499,15 +1566,17 @@ class Event extends Model implements HasPhotos
        }
 
        // include the start time
-       if ($this->start_at) {
-           $format .= ' at '.$this->start_at->format('gA');
-       }
+       $format .= ' at '.$start->format('gA');
 
        // include the door price ("Free" for 0)
        if ($price = $this->doorPriceLabel()) {
            $format .= ' '.$price;
        }
 
+       // every date a short run has left, in the one post (#2375)
+       if ($dates = $this->showtimesSummary($showingsListed)) {
+           $format .= "\nShowings: ".$dates."\n";
+       }
 
        // include the short description
        $format .= ' '.$this->short;
