@@ -251,6 +251,64 @@
 
 		</div>
 		@endif
+
+		<!-- Recently Performs With / At, Recently Tagged (trial sections: events in the last two years) -->
+		@if ((!empty($recentlyPerformsWith) && $recentlyPerformsWith->isNotEmpty()) || (!empty($recentlyPerformsAt) && $recentlyPerformsAt->isNotEmpty()) || (!empty($recentlyTagged) && $recentlyTagged->isNotEmpty()))
+		<div class="grid grid-cols-1 gap-6">
+
+			@if (!empty($recentlyPerformsWith) && $recentlyPerformsWith->isNotEmpty())
+			<div class="rounded-lg border border-border bg-card shadow p-6">
+				<h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
+					<i class="bi bi-people"></i>
+					Recently Performs With
+				</h2>
+				<p class="text-sm text-muted-foreground mb-4">Events in the last two years</p>
+				<div class="flex flex-wrap gap-2">
+					@foreach ($recentlyPerformsWith as $coPerformer)
+						<x-entity-badge :entity="$coPerformer" />
+					@endforeach
+				</div>
+			</div>
+			@endif
+
+			@if (!empty($recentlyPerformsAt) && $recentlyPerformsAt->isNotEmpty())
+			<div class="rounded-lg border border-border bg-card shadow p-6">
+				<h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
+					<i class="bi bi-geo-alt"></i>
+					Recently Performs At
+				</h2>
+				<p class="text-sm text-muted-foreground mb-4">Events in the last two years</p>
+				<div class="flex flex-wrap gap-2">
+					@foreach ($recentlyPerformsAt as $venue)
+						<x-entity-badge :entity="$venue" />
+					@endforeach
+				</div>
+			</div>
+			@endif
+
+			@if (!empty($recentlyTagged) && $recentlyTagged->isNotEmpty())
+			@php
+				$ownTagIds = $entity->tags->pluck('id');
+			@endphp
+			<div class="rounded-lg border border-border bg-card shadow p-6">
+				<h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
+					<i class="bi bi-tags"></i>
+					Recently Tagged
+				</h2>
+				<p class="text-sm text-muted-foreground mb-4">Tags on events in the last two years, with how many events carry each. Highlighted ones are also among {{ $entity->name }}'s own tags.</p>
+				<div class="flex flex-wrap gap-2">
+					@foreach ($recentlyTagged as $tag)
+						<span class="inline-flex items-center gap-1">
+							<x-tag-badge :tag="$tag" context="events" :variant="$ownTagIds->contains($tag->id) ? 'primary' : 'secondary'" />
+							<span class="text-xs text-muted-foreground" title="{{ $tag->frequency }} {{ Str::plural('event', (int) $tag->frequency) }}">{{ $tag->frequency }}</span>
+						</span>
+					@endforeach
+				</div>
+			</div>
+			@endif
+
+		</div>
+		@endif
 	</div>
 
 	<!-- Sidebar -->

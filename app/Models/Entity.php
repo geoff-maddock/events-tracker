@@ -684,8 +684,114 @@ class Entity extends Eloquent implements HasPhotos
     public function getFrequentlyPerformsWith(int $limit = 10, ?User $viewer = null): Collection
     {
         // only events $viewer may see (public only with no viewer, e.g. emails to contacts)
-        $eventIds = $this->events()->visible($viewer)->pluck('events.id');
+        return $this->rankCoPerformers($this->events()->visible($viewer)->pluck('events.id'), $limit);
+    }
 
+    /**
+     * Like getFrequentlyPerformsWith(), but only counting events that happened
+     * in the last two years.
+     *
+     * @return Collection<int, Entity>
+     */
+    public function getRecentlyPerformsWith(int $limit = 10, ?User $viewer = null): Collection
+    {
+        return $this->rankCoPerformers($this->recentEventIds($viewer), $limit);
+    }
+
+    /**
+     * Get a ranked list of venues that this entity frequently performs at
+     * (venues of events the entity is related to).
+     *
+     * @return Collection<int, Entity>
+     */
+    public function getFrequentlyPerformsAt(int $limit = 10, ?User $viewer = null): Collection
+    {
+        // only events $viewer may see (public only with no viewer, e.g. emails to contacts)
+        return $this->rankVenues($this->events()->visible($viewer)->pluck('events.id'), $limit);
+    }
+
+    /**
+     * Like getFrequentlyPerformsAt(), but only counting events that happened
+     * in the last two years.
+     *
+     * @return Collection<int, Entity>
+     */
+    public function getRecentlyPerformsAt(int $limit = 10, ?User $viewer = null): Collection
+    {
+        return $this->rankVenues($this->recentEventIds($viewer), $limit);
+    }
+
+    /**
+     * Tags on the events this entity was part of (or, for a venue, hosted) in
+     * the last two years, ranked by how many of those events carry each one.
+     * Each tag has a `frequency` attribute with that count.
+     *
+     * @return Collection<int, Tag>
+     */
+    public function getRecentlyTagged(int $limit = 20, ?User $viewer = null): Collection
+    {
+        $eventIds = Event::query()
+            ->where(function ($query) {
+                $query->whereHas('entities', fn ($q) => $q->where('entities.id', $this->id))
+                    ->orWhere('events.venue_id', $this->id);
+            })
+            ->where(Event::visibleTo($viewer))
+            ->where(fn ($q) => $this->happenedRecently($q))
+            ->pluck('events.id');
+
+        if ($eventIds->isEmpty()) {
+            return new Collection();
+        }
+
+        return Tag::query()
+            ->select('tags.*')
+            ->selectRaw('COUNT(event_tag.event_id) as frequency')
+            ->join('event_tag', 'tags.id', '=', 'event_tag.tag_id')
+            ->whereIn('event_tag.event_id', $eventIds)
+            ->groupBy('tags.id')
+            ->orderByDesc('frequency')
+            ->orderBy('tags.name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Ids of the entity's events, visible to $viewer, that happened in the last two years.
+     *
+     * @return SupportCollection<int, int>
+     */
+    private function recentEventIds(?User $viewer): SupportCollection
+    {
+        return $this->events()
+            ->visible($viewer)
+            ->where(fn ($q) => $this->happenedRecently($q))
+            ->pluck('events.id');
+    }
+
+    /**
+     * Constrain an events query to ones that have started and had a date in
+     * the last two years (a multi-date run counts until its last showing).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<*>|\Illuminate\Database\Query\Builder $query
+     */
+    private function happenedRecently($query): void
+    {
+        $query->where('events.start_at', '<=', Carbon::now())
+            ->where(function ($q) {
+                $since = Carbon::now()->subYears(2);
+                $q->where('events.start_at', '>=', $since)
+                    ->orWhere('events.last_start_at', '>=', $since);
+            });
+    }
+
+    /**
+     * Other non-venue entities on the given events, ranked by how many they share.
+     *
+     * @param SupportCollection<int, int> $eventIds
+     * @return Collection<int, Entity>
+     */
+    private function rankCoPerformers(SupportCollection $eventIds, int $limit): Collection
+    {
         if ($eventIds->isEmpty()) {
             return new Collection();
         }
@@ -709,16 +815,13 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * Get a ranked list of venues that this entity frequently performs at
-     * (venues of events the entity is related to).
+     * Venues of the given events, ranked by how many of them they hosted.
      *
+     * @param SupportCollection<int, int> $eventIds
      * @return Collection<int, Entity>
      */
-    public function getFrequentlyPerformsAt(int $limit = 10, ?User $viewer = null): Collection
+    private function rankVenues(SupportCollection $eventIds, int $limit): Collection
     {
-        // only events $viewer may see (public only with no viewer, e.g. emails to contacts)
-        $eventIds = $this->events()->visible($viewer)->pluck('events.id');
-
         if ($eventIds->isEmpty()) {
             return new Collection();
         }
@@ -728,6 +831,8 @@ class Entity extends Eloquent implements HasPhotos
             ->selectRaw('COUNT(events.id) as frequency')
             ->join('events', 'entities.id', '=', 'events.venue_id')
             ->whereIn('events.id', $eventIds)
+            // a space that is also on its own events' lineups isn't "performing at" itself
+            ->where('entities.id', '!=', $this->id)
             ->groupBy('entities.id')
             ->orderByDesc('frequency')
             ->limit($limit)

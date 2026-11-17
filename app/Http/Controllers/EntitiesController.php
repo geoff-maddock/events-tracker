@@ -1035,7 +1035,13 @@ class EntitiesController extends Controller
 
         [$frequentlyPerformsWith, $frequentlyPerformsAt] = $this->frequentCollaborators($entity);
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
+        // trial sections: the same rankings over the last two years, plus the tags on those events
+        $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
+        $recentlyPerformsWith = $entity->getRecentlyPerformsWith(10, $this->user);
+        $recentlyPerformsAt = $isVenueOrShop ? null : $entity->getRecentlyPerformsAt(10, $this->user);
+        $recentlyTagged = $entity->getRecentlyTagged(20, $this->user);
+
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt', 'recentlyPerformsWith', 'recentlyPerformsAt', 'recentlyTagged'));
     }
 
     /**
