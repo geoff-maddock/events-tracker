@@ -7,6 +7,18 @@ use Illuminate\Support\Facades\Auth;
 
 class EventFilters extends QueryFilter
 {
+    /**
+     * The signed-in user's "Display Type" options, as filter value => label.
+     */
+    public const DISPLAY_TYPES = [
+        'all' => 'All Events',
+        'recommended' => 'Recommended Events',
+        'attending' => 'Events Attending',
+        'not_attending' => 'Events Not Attending',
+        'created' => 'Events Created',
+        'not_created' => 'Events Not Created',
+    ];
+
     public function id(?string $value = null): Builder
     {
         if (isset($value)) {
@@ -299,6 +311,10 @@ class EventFilters extends QueryFilter
                     ->where('response_types.name', '=', 'Attending')
                     ->where('event_responses.user_id', '=', $user->id);
             });
+        }
+
+        if ($value === 'recommended') {
+            return $this->builder->scopes(['recommendedFor' => [$user]]);
         }
 
         if ($value === 'created') {

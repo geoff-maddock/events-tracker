@@ -92,7 +92,7 @@
 		@include('events.filters.audience-badges')
 		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			{{ ['attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
+			{{ \App\Filters\EventFilters::DISPLAY_TYPES[$filters['display_type']] ?? $filters['display_type'] }}
 		</span>
 		@endif
 	</div>
@@ -178,11 +178,9 @@
 		<div class="min-w-0">
 			<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
 			<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
-				<option value="all" {{ ($filters['display_type'] ?? 'all') === 'all' ? 'selected' : '' }}>All Events</option>
-				<option value="attending" {{ ($filters['display_type'] ?? '') === 'attending' ? 'selected' : '' }}>Events Attending</option>
-				<option value="not_attending" {{ ($filters['display_type'] ?? '') === 'not_attending' ? 'selected' : '' }}>Events Not Attending</option>
-				<option value="created" {{ ($filters['display_type'] ?? '') === 'created' ? 'selected' : '' }}>Events Created</option>
-				<option value="not_created" {{ ($filters['display_type'] ?? '') === 'not_created' ? 'selected' : '' }}>Events Not Created</option>
+				@foreach(\App\Filters\EventFilters::DISPLAY_TYPES as $value => $label)
+				<option value="{{ $value }}" {{ ($filters['display_type'] ?? 'all') === $value ? 'selected' : '' }}>{{ $label }}</option>
+				@endforeach
 			</select>
 		</div>
 		@endauth

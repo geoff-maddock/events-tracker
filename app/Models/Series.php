@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecommendedByFollows;
 use App\Contracts\HasPhotos;
 use Carbon\Carbon;
 use DateTime;
@@ -128,6 +129,7 @@ use App\Filters\SeriesFilters;
 class Series extends Eloquent implements HasPhotos
 {
     use HasFactory;
+    use RecommendedByFollows;
 
     protected $attributes = [
         'hold_date' => false,
@@ -308,6 +310,15 @@ class Series extends Eloquent implements HasPhotos
 
         return $query->where('start_at', '>', $cdate_yesterday->toDateString().' 23:59:59')
                     ->where('start_at', '<', $cdate_tomorrow->toDateString().' 00:00:00');
+    }
+
+    /**
+     * @param Builder<static>  $match
+     * @param array<int, int> $seriesIds
+     */
+    protected function orInFollowedSeries(Builder $match, array $seriesIds): void
+    {
+        $match->orWhereIn('series.id', $seriesIds);
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Filters\EventFilters;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventType;
+use App\Models\Follow;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
@@ -371,6 +372,55 @@ class EventFiltersTest extends TestCase
 
         $this->assertGreaterThanOrEqual(1, $results->count());
         $this->assertTrue($results->pluck('id')->contains($owned->id));
+    }
+
+    public function test_display_type_recommended_matches_followed_tags_entities_and_series(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $tag = Tag::factory()->create();
+        $entity = Entity::factory()->create();
+        $series = Series::factory()->create();
+
+        $byTag = Event::factory()->create();
+        $byTag->tags()->attach($tag);
+        $byEntity = Event::factory()->create();
+        $byEntity->entities()->attach($entity);
+        $bySeries = Event::factory()->create(['series_id' => $series->id]);
+        $unrelated = Event::factory()->create();
+
+        Follow::create(['object_id' => $tag->id, 'object_type' => 'tag', 'user_id' => $user->id]);
+        Follow::create(['object_id' => $entity->id, 'object_type' => 'entity', 'user_id' => $user->id]);
+        Follow::create(['object_id' => $series->id, 'object_type' => 'series', 'user_id' => $user->id]);
+        $this->actingAs($user);
+
+        $ids = $this->applyFilters(['display_type' => 'recommended'])->pluck('events.id');
+
+        $this->assertEqualsCanonicalizing([$byTag->id, $byEntity->id, $bySeries->id], $ids->all());
+        $this->assertNotContains($unrelated->id, $ids);
+    }
+
+    public function test_display_type_recommended_ignores_a_follow_of_a_deleted_series(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $series = Series::factory()->create();
+        $orphaned = Event::factory()->create(['series_id' => $series->id]);
+        Follow::create(['object_id' => $series->id, 'object_type' => 'series', 'user_id' => $user->id]);
+
+        // a hard delete leaves both the follow and the event's series_id behind
+        $series->delete();
+        $this->actingAs($user);
+
+        $ids = $this->applyFilters(['display_type' => 'recommended'])->pluck('events.id');
+
+        $this->assertNotContains($orphaned->id, $ids);
+    }
+
+    public function test_display_type_recommended_is_empty_when_following_nothing(): void
+    {
+        Event::factory()->count(2)->create();
+        $this->actingAs(User::factory()->create(['user_status_id' => UserStatus::ACTIVE]));
+
+        $this->assertSame(0, $this->applyFilters(['display_type' => 'recommended'])->count());
     }
 
     public function test_display_type_all_is_passthrough(): void

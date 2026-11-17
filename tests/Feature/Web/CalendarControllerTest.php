@@ -4,7 +4,11 @@ namespace Tests\Feature\Web;
 
 use App\Models\Event;
 use App\Models\EventType;
+use App\Models\Follow;
 use App\Models\Series;
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -135,6 +139,36 @@ class CalendarControllerTest extends TestCase
 
         $this->assertTrue($ids->contains('event-'.$inSeries->id));
         $this->assertFalse($ids->contains('event-'.$other->id));
+    }
+
+    public function test_feed_applies_the_recommended_display_type(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $tag = Tag::factory()->create();
+        Follow::create(['object_id' => $tag->id, 'object_type' => 'tag', 'user_id' => $user->id]);
+
+        $recommended = $this->publicEvent(['start_at' => now()->addDays(3)]);
+        $recommended->tags()->attach($tag);
+        $other = $this->publicEvent(['start_at' => now()->addDays(3)]);
+
+        $ids = collect($this->actingAs($user)->getJson($this->feedUrl('filters[display_type]=recommended'))->assertOk()->json())->pluck('id');
+
+        $this->assertTrue($ids->contains('event-'.$recommended->id));
+        $this->assertFalse($ids->contains('event-'.$other->id));
+    }
+
+    public function test_calendar_page_shows_the_display_type_options_and_badge(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+
+        $html = $this->actingAs($user)->get('/calendar?filters[display_type]=recommended')
+            ->assertOk()
+            ->assertSee('Events Not Created')
+            ->getContent();
+
+        $this->assertMatchesRegularExpression('#<option value="recommended"\s+selected>Recommended Events</option>#', $html);
+        // the active-filter badge
+        $this->assertMatchesRegularExpression('#<span[^>]*>\s*Recommended Events\s*</span>#', $html);
     }
 
     public function test_calendar_page_shows_the_new_filter_fields(): void

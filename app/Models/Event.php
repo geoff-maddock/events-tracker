@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecommendedByFollows;
 use App\Services\EventDateRange;
 use App\Services\PriceLabel;
 use App\Contracts\HasPhotos;
@@ -137,6 +138,7 @@ class Event extends Model implements HasPhotos
 {
     use Notifiable;
     use HasFactory;
+    use RecommendedByFollows;
 
     const DEFAULT_LENGTH = 4;
 
@@ -777,6 +779,18 @@ class Event extends Model implements HasPhotos
         $today = Carbon::today()->startOfDay();
 
         return $query->occurringBetween($today)->orderByNextStart($today);
+    }
+
+    /**
+     * Events in one of the user's followed series; through the series table, so a
+     * follow of a deleted series (whose events keep its id) matches nothing.
+     *
+     * @param Builder<static>  $match
+     * @param array<int, int> $seriesIds
+     */
+    protected function orInFollowedSeries(Builder $match, array $seriesIds): void
+    {
+        $match->orWhereHas('series', fn ($q) => $q->whereIn('series.id', $seriesIds));
     }
 
     /**

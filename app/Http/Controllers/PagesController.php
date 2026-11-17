@@ -259,9 +259,7 @@ class PagesController extends Controller
             ->get();
 
         // Check if user has followed content for showing recommendations section
-        $hasFollowedContent = $user->getTagsFollowing()->isNotEmpty()
-            || $user->getEntitiesFollowing()->isNotEmpty()
-            || $user->getSeriesFollowing()->isNotEmpty();
+        $hasFollowedContent = $user->recommendationFollows() !== null;
 
         return view('pages.radar-tw', compact(
             'attendingEvents',
