@@ -6,7 +6,7 @@ jobs:
   # Only deploy a commit whose CI ("PHP Composer") run on main passed (#2181).
   ci-check:
     name: Require green CI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
     steps:
@@ -25,7 +25,7 @@ jobs:
   build:
     name: Build Prod
     needs: ci-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: executing remote ssh commands using password
         # pinned to v1.2.5 by commit, so a moved tag can't change what runs with prod credentials
