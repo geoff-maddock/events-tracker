@@ -145,6 +145,9 @@ class Event extends Model implements HasPhotos
     /** The most additional showings one event can carry (#2375). */
     const MAX_SHOWINGS = 60;
 
+    /** Leads cardFingerprint(); bump when the events/card-tw markup changes. */
+    const CARD_MARKUP_VERSION = 2;
+
     public static function boot()
     {
         parent::boot();
@@ -1330,6 +1333,9 @@ class Event extends Model implements HasPhotos
      * event's own timestamp, e.g. attaching a photo via the BelongsToMany pivot.
      * Only already-loaded relations are inspected, so this adds no queries when
      * the caller has eager-loaded them (the entity show controller does).
+     *
+     * CARD_MARKUP_VERSION leads the key: bump it when events/card-tw changes
+     * structure, or guests keep getting the old cached markup for up to 6 hours.
      */
     public function cardFingerprint(): string
     {
@@ -1347,6 +1353,7 @@ class Event extends Model implements HasPhotos
         };
 
         return implode('|', [
+            'v'.self::CARD_MARKUP_VERSION,
             $this->id,
             $this->updated_at?->getTimestamp() ?? '0',
             'ph'.$stamp('photos'),

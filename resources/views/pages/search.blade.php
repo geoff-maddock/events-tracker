@@ -88,7 +88,7 @@
 					Upcoming
 					<span class="badge-tw bg-muted text-foreground text-xs">{{ $upcomingEvents->count() }}</span>
 				</h3>
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				<div class="event-grid-tw [--event-grid-gap:1rem]">
 					@foreach($upcomingEvents as $event)
 					@include('events.card-tw', ['event' => $event])
 					@php unset($event); @endphp
@@ -106,7 +106,7 @@
 					<span class="badge-tw bg-muted text-foreground text-xs">{{ $pastEvents->count() }}</span>
 				</h3>
 				@endif
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				<div class="event-grid-tw [--event-grid-gap:1rem]">
 					@foreach($pastEvents as $event)
 					@include('events.card-tw', ['event' => $event])
 					@php unset($event); @endphp

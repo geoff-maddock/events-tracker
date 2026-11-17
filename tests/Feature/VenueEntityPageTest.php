@@ -312,10 +312,21 @@ class VenueEntityPageTest extends TestCase
         $response = $this->get('/entities/' . $venue->slug);
 
         $response->assertOk();
-        // The section sits in a column that is full-width below lg, half the
-        // viewport at lg, and 2/3 from xl up — so the column count dips back
-        // to 1 at lg where the sidebar halves the available width.
-        $response->assertSee('grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 min-[1536px]:grid-cols-3 min-[1920px]:grid-cols-4', false);
+        // event-grid-tw sizes columns from the section's own width and the card
+        // count (auto-fit, max 4), and the card's layout wrapper lets a lone wide
+        // card switch to its horizontal layout.
+        $response->assertSee('class="event-grid-tw mb-6"', false);
+        $response->assertSee('class="event-card-layout-tw"', false);
+        $response->assertDontSee('lg:grid-cols-1 xl:grid-cols-2', false);
+    }
+
+    public function test_card_fingerprint_leads_with_markup_version(): void
+    {
+        $event = Event::factory()->create();
+
+        // Guests get the card from a fragment cache keyed on this fingerprint, so
+        // the markup version must be in it for card markup changes to bust the cache.
+        $this->assertStringStartsWith('v'.Event::CARD_MARKUP_VERSION.'|'.$event->id.'|', $event->cardFingerprint());
     }
 
     public function test_upcoming_events_date_filter_is_removed(): void
