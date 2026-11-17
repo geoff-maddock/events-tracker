@@ -1,7 +1,8 @@
 <!-- Event Card Component -->
 <article class="event-card-tw group {{ $event->visibility->name === 'Cancelled' ? 'opacity-50' : '' }}" id="event-card-{{ $event->id }}">
+<div class="event-card-layout-tw">
     <!-- Event Image -->
-    <div class="relative overflow-hidden">
+    <div class="event-card-media-tw relative overflow-hidden">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
             data-title="{!! $event->display_start_at->format('l F jS Y') !!} - {{ e($event->name) }} @ {{ e($event->venue ? $event->venue->name : '') }}"
@@ -237,4 +238,5 @@
         @endif
     </div>
 
+</div>
 </article>

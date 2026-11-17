@@ -228,6 +228,67 @@
     @apply bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-200 flex flex-col;
     content-visibility: auto;
     contain-intrinsic-height: auto 560px;
+    /* The card's layout follows its own width (see the @container rule below), so the
+       same partial works in any grid. Grid items stretch, so the inline-size
+       containment never collapses a card. */
+    container: event-card / inline-size;
+  }
+
+  /* Wrapper inside the card: stacked (image on top) by default. */
+  .event-card-layout-tw {
+    @apply flex flex-col flex-auto;
+  }
+
+  /* Wide cards (a lone card, or two side by side in a wide section) go horizontal:
+     image on the left, details on the right. Otherwise a card filling the row would
+     show a square image as tall as the section is wide. The image fills the card's
+     height, but never less than a square at the column width. */
+  @container event-card (min-width: 36rem) {
+    .event-card-layout-tw {
+      display: grid;
+      grid-template-columns: min(40%, 20rem) minmax(0, 1fr);
+      grid-template-rows: 1fr auto auto;
+    }
+
+    .event-card-layout-tw > * {
+      grid-column: 2;
+    }
+
+    .event-card-layout-tw > .event-card-media-tw {
+      grid-column: 1;
+      grid-row: 1 / -1;
+    }
+
+    .event-card-media-tw > a {
+      display: block;
+      height: 100%;
+    }
+
+    .event-card-media-tw > a > img,
+    .event-card-media-tw > a > div {
+      height: 100%;
+    }
+  }
+
+  /* Grid of event cards whose column count follows the number of cards and the
+     section's own width, not the viewport: auto-fit drops empty tracks, so one card
+     fills the row, two split it, three take thirds, and four or more stop at
+     --event-grid-max-cols. Columns never go narrower than --event-grid-min; when
+     that no longer fits, the grid drops a column (down to one on a phone).
+     Override the variables per grid, e.g. class="event-grid-tw [--event-grid-gap:1rem]". */
+  .event-grid-tw {
+    --event-grid-gap: 1.5rem;
+    --event-grid-min: 17rem;
+    --event-grid-max-cols: 4;
+    display: grid;
+    gap: var(--event-grid-gap);
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(
+        min(100%, max(var(--event-grid-min), (100% - (var(--event-grid-max-cols) - 1) * var(--event-grid-gap)) / var(--event-grid-max-cols))),
+        1fr
+      )
+    );
   }
 
   /* Entity card specific styles */

@@ -73,7 +73,7 @@
 	{!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+<div class="event-grid-tw">
 	@foreach ($events as $event)
 	@include('events.card-tw', ['event' => $event])
 	@endforeach

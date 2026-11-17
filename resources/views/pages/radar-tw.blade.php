@@ -49,7 +49,7 @@
                 <i class="bi bi-calendar-check text-primary"></i>
                 Events You're Attending
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="event-grid-tw">
                 @foreach ($attendingEvents as $event)
                     @include('events.card-tw', ['event' => $event])
                 @endforeach
@@ -68,7 +68,7 @@
                 Based on entities, tags, and series you follow
             </p>
             @if ($recommendedEvents->isNotEmpty())
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div class="event-grid-tw">
                     @foreach ($recommendedEvents as $event)
                         @include('events.card-tw', ['event' => $event])
                     @endforeach
@@ -118,7 +118,7 @@
             Discover the latest events added to {{ config('app.app_name') }}
         </p>
         @if ($recentEvents->isNotEmpty())
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="event-grid-tw">
                 @foreach ($recentEvents as $event)
                     @include('events.card-tw', ['event' => $event])
                 @endforeach

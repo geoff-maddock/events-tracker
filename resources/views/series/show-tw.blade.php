@@ -360,7 +360,7 @@
 	{{-- Same event cards as an entity's Upcoming Events, cached for guests only
 	     (the card has per-user attend/edit buttons). This section is full-width,
 	     so it uses the archive grid's column counts below. --}}
-	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+	<div class="event-grid-tw">
 		@foreach ($upcomingEvents as $event)
 			@guest
 				{!! Cache::remember('event-card-tw:'.$event->cardFingerprint(), now()->addHours(6), fn () => view('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])->render()) !!}
@@ -391,7 +391,7 @@
 		@endif
 
 		<!-- Events Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-6">
+		<div class="event-grid-tw mb-6">
 			@foreach ($events as $event)
 				@include('events.card-tw', ['event' => $event, 'series' =>null, 'entity' => null])
 			@endforeach

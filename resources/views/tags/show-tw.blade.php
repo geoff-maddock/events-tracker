@@ -182,7 +182,7 @@ Tags
 						View all
 					</a>
 				</div>
-				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
+				<div class="event-grid-tw">
 					@foreach ($upcomingEvents->take(16) as $event)
 					@include('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])
 					@endforeach
@@ -199,7 +199,7 @@ Tags
 						View all
 					</a>
 				</div>
-				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
+				<div class="event-grid-tw">
 					@foreach ($pastEvents->take(8) as $event)
 					@include('events.card-tw', ['event' => $event, 'series' => null, 'entity' => null])
 					@endforeach
