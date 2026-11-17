@@ -216,70 +216,35 @@
 		@include('embeds.playlist-tw', ['entity' => $entity, 'event' => null, 'series' => null, 'embeds' => $embeds ?? []])
 		@endif
 
-		<!-- Frequently Performs With / At -->
-		@if ((!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty()) || (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty()))
+		<!-- Performs With / At (last two years, else all time), Recently Tagged -->
+		@if ((!empty($performsWith) && $performsWith->isNotEmpty()) || (!empty($performsAt) && $performsAt->isNotEmpty()) || (!empty($recentlyTagged) && $recentlyTagged->isNotEmpty()))
 		{{-- Full-width stacked cards, matching the Description box width --}}
 		<div class="grid grid-cols-1 gap-6">
 
-			@if (!empty($frequentlyPerformsWith) && $frequentlyPerformsWith->isNotEmpty())
+			@if (!empty($performsWith) && $performsWith->isNotEmpty())
 			<div class="rounded-lg border border-border bg-card shadow p-6">
-				<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+				<h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
 					<i class="bi bi-people"></i>
-					Frequently Performs With
+					Performs With
 				</h2>
+				<p class="text-sm text-muted-foreground mb-4">{{ $performsWithIsRecent ? 'Most often in the last two years' : 'Most often, all time' }}</p>
 				<div class="flex flex-wrap gap-2">
-					@foreach ($frequentlyPerformsWith as $coPerformer)
+					@foreach ($performsWith as $coPerformer)
 						<x-entity-badge :entity="$coPerformer" />
 					@endforeach
 				</div>
 			</div>
 			@endif
 
-			@if (!empty($frequentlyPerformsAt) && $frequentlyPerformsAt->isNotEmpty())
-			<div class="rounded-lg border border-border bg-card shadow p-6">
-				<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-					<i class="bi bi-geo-alt"></i>
-					Frequently Performs At
-				</h2>
-				<div class="flex flex-wrap gap-2">
-					@foreach ($frequentlyPerformsAt as $venue)
-						<x-entity-badge :entity="$venue" />
-					@endforeach
-				</div>
-			</div>
-			@endif
-
-		</div>
-		@endif
-
-		<!-- Recently Performs With / At, Recently Tagged (trial sections: events in the last two years) -->
-		@if ((!empty($recentlyPerformsWith) && $recentlyPerformsWith->isNotEmpty()) || (!empty($recentlyPerformsAt) && $recentlyPerformsAt->isNotEmpty()) || (!empty($recentlyTagged) && $recentlyTagged->isNotEmpty()))
-		<div class="grid grid-cols-1 gap-6">
-
-			@if (!empty($recentlyPerformsWith) && $recentlyPerformsWith->isNotEmpty())
-			<div class="rounded-lg border border-border bg-card shadow p-6">
-				<h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
-					<i class="bi bi-people"></i>
-					Recently Performs With
-				</h2>
-				<p class="text-sm text-muted-foreground mb-4">Events in the last two years</p>
-				<div class="flex flex-wrap gap-2">
-					@foreach ($recentlyPerformsWith as $coPerformer)
-						<x-entity-badge :entity="$coPerformer" />
-					@endforeach
-				</div>
-			</div>
-			@endif
-
-			@if (!empty($recentlyPerformsAt) && $recentlyPerformsAt->isNotEmpty())
+			@if (!empty($performsAt) && $performsAt->isNotEmpty())
 			<div class="rounded-lg border border-border bg-card shadow p-6">
 				<h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
 					<i class="bi bi-geo-alt"></i>
-					Recently Performs At
+					Performs At
 				</h2>
-				<p class="text-sm text-muted-foreground mb-4">Events in the last two years</p>
+				<p class="text-sm text-muted-foreground mb-4">{{ $performsAtIsRecent ? 'Most often in the last two years' : 'Most often, all time' }}</p>
 				<div class="flex flex-wrap gap-2">
-					@foreach ($recentlyPerformsAt as $venue)
+					@foreach ($performsAt as $venue)
 						<x-entity-badge :entity="$venue" />
 					@endforeach
 				</div>
@@ -295,12 +260,14 @@
 					<i class="bi bi-tags"></i>
 					Recently Tagged
 				</h2>
-				<p class="text-sm text-muted-foreground mb-4">Tags on events in the last two years, with how many events carry each. Highlighted ones are also among {{ $entity->name }}'s own tags.</p>
+				<p class="text-sm text-muted-foreground mb-4">Most common tags on events in the last two years</p>
 				<div class="flex flex-wrap gap-2">
 					@foreach ($recentlyTagged as $tag)
 						<span class="inline-flex items-center gap-1">
-							<x-tag-badge :tag="$tag" context="events" :variant="$ownTagIds->contains($tag->id) ? 'primary' : 'secondary'" />
-							<span class="text-xs text-muted-foreground" title="{{ $tag->frequency }} {{ Str::plural('event', (int) $tag->frequency) }}">{{ $tag->frequency }}</span>
+							<x-tag-badge :tag="$tag" context="events" />
+							<span class="text-xs text-muted-foreground" title="{{ $tag->frequency }} {{ Str::plural('event', (int) $tag->frequency) }}{{ $ownTagIds->contains($tag->id) ? ', also one of ' . $entity->name . '\'s own tags' : '' }}">
+								{{ $tag->frequency }}@if ($ownTagIds->contains($tag->id))<i class="bi bi-check2 ml-0.5" aria-label="also one of {{ $entity->name }}'s own tags"></i>@endif
+							</span>
 						</span>
 					@endforeach
 				</div>

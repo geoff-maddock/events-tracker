@@ -116,22 +116,38 @@ class EntityRecentSectionsTest extends TestCase
         $this->assertSame([$tag->id], $artist->getRecentlyTagged(20, $creator)->pluck('id')->all());
     }
 
-    public function test_entity_page_shows_the_recent_sections(): void
+    public function test_entity_page_ranks_performances_over_the_last_two_years(): void
     {
         $artist = $this->entity('Zz Page Artist');
         $friend = $this->entity('Zz Page Friend');
         $venue = $this->entity('Zz Page Venue');
         $tag = Tag::factory()->create(['name' => 'zz-page-tag']);
+        $artist->tags()->attach($tag);
 
-        // a single event: the recent sections don't wait for the "frequently" threshold
+        // a single event is enough: there's no minimum event count
         $this->event($venue, [$artist, $friend], [$tag], now()->subMonth());
 
         $this->get('/entities/'.$artist->slug)
             ->assertOk()
-            ->assertSee('Recently Performs With')
-            ->assertSee('Recently Performs At')
-            ->assertSee('Recently Tagged')
-            ->assertSee('Zz Page Friend')
-            ->assertSee('zz-page-tag');
+            ->assertSeeInOrder(['Performs With', 'Most often in the last two years', 'Zz Page Friend'])
+            ->assertSeeInOrder(['Performs At', 'Most often in the last two years', 'Zz Page Venue'])
+            ->assertSeeInOrder(['Recently Tagged', 'zz-page-tag', "also one of Zz Page Artist's own tags"], false)
+            ->assertDontSee('Frequently Performs');
+    }
+
+    public function test_entity_page_falls_back_to_all_time_without_recent_events(): void
+    {
+        $artist = $this->entity('Zz Dormant Artist');
+        $friend = $this->entity('Zz Dormant Friend');
+        $venue = $this->entity('Zz Dormant Venue');
+        $tag = Tag::factory()->create(['name' => 'zz-dormant-tag']);
+
+        $this->event($venue, [$artist, $friend], [$tag], now()->subYears(5));
+
+        $this->get('/entities/'.$artist->slug)
+            ->assertOk()
+            ->assertSeeInOrder(['Performs With', 'Most often, all time', 'Zz Dormant Friend'])
+            ->assertSeeInOrder(['Performs At', 'Most often, all time', 'Zz Dormant Venue'])
+            ->assertDontSee('Most common tags on events');
     }
 }
