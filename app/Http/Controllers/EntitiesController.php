@@ -951,24 +951,31 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Who the entity frequently performs with, and where (not for venues and
-     * shops); only computed once it has more than two events.
+     * Who the entity performs with, and where (not for venues and shops):
+     * ranked over the last two years, falling back to all time when there's
+     * nothing recent. Each comes with whether it is the recent ranking.
      *
-     * @return array{0: \Illuminate\Database\Eloquent\Collection<int, Entity>|null, 1: \Illuminate\Database\Eloquent\Collection<int, Entity>|null}
+     * @return array{with: \Illuminate\Database\Eloquent\Collection<int, Entity>, withIsRecent: bool, at: \Illuminate\Database\Eloquent\Collection<int, Entity>|null, atIsRecent: bool}
      */
-    private function frequentCollaborators(Entity $entity): array
+    private function performanceRankings(Entity $entity): array
     {
-        // a lightweight count, regardless of the upcoming-events window
-        if ($entity->events()->limit(3)->count() <= 2) {
-            return [null, null];
+        $with = $entity->getRecentlyPerformsWith(10, $this->user);
+        $withIsRecent = $with->isNotEmpty();
+        if (!$withIsRecent) {
+            $with = $entity->getFrequentlyPerformsWith(10, $this->user);
         }
 
-        $isVenueOrShop = $entity->hasRole('Venue') || $entity->hasRole('Shop');
+        if ($entity->hasRole('Venue') || $entity->hasRole('Shop')) {
+            return ['with' => $with, 'withIsRecent' => $withIsRecent, 'at' => null, 'atIsRecent' => false];
+        }
 
-        return [
-            $entity->getFrequentlyPerformsWith(10, $this->user),
-            $isVenueOrShop ? null : $entity->getFrequentlyPerformsAt(10, $this->user),
-        ];
+        $at = $entity->getRecentlyPerformsAt(10, $this->user);
+        $atIsRecent = $at->isNotEmpty();
+        if (!$atIsRecent) {
+            $at = $entity->getFrequentlyPerformsAt(10, $this->user);
+        }
+
+        return ['with' => $with, 'withIsRecent' => $withIsRecent, 'at' => $at, 'atIsRecent' => $atIsRecent];
     }
 
     /**
@@ -1033,9 +1040,16 @@ class EntitiesController extends Controller
             ->limit(21)
             ->get();
 
-        [$frequentlyPerformsWith, $frequentlyPerformsAt] = $this->frequentCollaborators($entity);
+        [
+            'with' => $performsWith,
+            'withIsRecent' => $performsWithIsRecent,
+            'at' => $performsAt,
+            'atIsRecent' => $performsAtIsRecent,
+        ] = $this->performanceRankings($entity);
 
-        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'frequentlyPerformsWith', 'frequentlyPerformsAt'));
+        $recentlyTagged = $entity->getRecentlyTagged(10, $this->user);
+
+        return view('entities.show-tw', compact('entity', 'threads', 'embeds', 'tracks', 'relatedEvents', 'pastEvents', 'performsWith', 'performsWithIsRecent', 'performsAt', 'performsAtIsRecent', 'recentlyTagged'));
     }
 
     /**
