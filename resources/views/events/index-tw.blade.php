@@ -155,7 +155,7 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 		@include('events.filters.audience-badges')
 		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
 		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			{{ ['attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
+			{{ ['recommended' => 'Recommended Events', 'attending' => 'Events Attending', 'not_attending' => 'Events Not Attending', 'created' => 'Events Created', 'not_created' => 'Events Not Created'][$filters['display_type']] ?? $filters['display_type'] }}
 		</span>
 		@endif
 	</div>
@@ -242,6 +242,7 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 			<label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
 			<select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
 				<option value="all" {{ ($filters['display_type'] ?? 'all') === 'all' ? 'selected' : '' }}>All Events</option>
+				<option value="recommended" {{ ($filters['display_type'] ?? '') === 'recommended' ? 'selected' : '' }}>Recommended Events</option>
 				<option value="attending" {{ ($filters['display_type'] ?? '') === 'attending' ? 'selected' : '' }}>Events Attending</option>
 				<option value="not_attending" {{ ($filters['display_type'] ?? '') === 'not_attending' ? 'selected' : '' }}>Events Not Attending</option>
 				<option value="created" {{ ($filters['display_type'] ?? '') === 'created' ? 'selected' : '' }}>Events Created</option>

@@ -4,7 +4,11 @@ namespace Tests\Feature\Web;
 
 use App\Models\Event;
 use App\Models\EventType;
+use App\Models\Follow;
 use App\Models\Series;
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -134,6 +138,22 @@ class CalendarControllerTest extends TestCase
         $ids = collect($this->getJson($this->feedUrl('filters[series]=zz-feed-series'))->assertOk()->json())->pluck('id');
 
         $this->assertTrue($ids->contains('event-'.$inSeries->id));
+        $this->assertFalse($ids->contains('event-'.$other->id));
+    }
+
+    public function test_feed_applies_the_recommended_display_type(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $tag = Tag::factory()->create();
+        Follow::create(['object_id' => $tag->id, 'object_type' => 'tag', 'user_id' => $user->id]);
+
+        $recommended = $this->publicEvent(['start_at' => now()->addDays(3)]);
+        $recommended->tags()->attach($tag);
+        $other = $this->publicEvent(['start_at' => now()->addDays(3)]);
+
+        $ids = collect($this->actingAs($user)->getJson($this->feedUrl('filters[display_type]=recommended'))->assertOk()->json())->pluck('id');
+
+        $this->assertTrue($ids->contains('event-'.$recommended->id));
         $this->assertFalse($ids->contains('event-'.$other->id));
     }
 

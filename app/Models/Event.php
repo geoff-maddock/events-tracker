@@ -780,6 +780,36 @@ class Event extends Model implements HasPhotos
     }
 
     /**
+     * Events recommended to $user: tagged with a tag they follow, featuring an
+     * entity they follow, or in a series they follow. Matches nothing when they
+     * follow none of those. No date limit or ordering, so it composes.
+     *
+     * @param Builder<Event> $query
+     */
+    public function scopeRecommendedFor(Builder $query, User $user): Builder
+    {
+        $tagIds = $user->followedIds('tag');
+        $entityIds = $user->followedIds('entity');
+        $seriesIds = $user->followedIds('series');
+
+        if (!$tagIds && !$entityIds && !$seriesIds) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where(function ($match) use ($tagIds, $entityIds, $seriesIds) {
+            if ($tagIds) {
+                $match->orWhereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds));
+            }
+            if ($entityIds) {
+                $match->orWhereHas('entities', fn ($q) => $q->whereIn('entities.id', $entityIds));
+            }
+            if ($seriesIds) {
+                $match->orWhereIn('events.series_id', $seriesIds);
+            }
+        });
+    }
+
+    /**
      * @param Builder<Event> $query
      */
     public function scopePast(Builder $query): Builder

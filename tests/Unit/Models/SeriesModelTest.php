@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Entity;
+use App\Models\Follow;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
@@ -110,5 +112,35 @@ class SeriesModelTest extends TestCase
         $results = Series::getByTag($tag->slug)->get();
 
         $this->assertTrue($results->contains('id', $series->id));
+    }
+
+    public function test_recommended_for_matches_followed_series_and_series_with_followed_tags_or_entities(): void
+    {
+        $user = User::factory()->create();
+        $tag = Tag::factory()->create();
+        $entity = Entity::factory()->create();
+
+        $followed = Series::factory()->create();
+        $byTag = Series::factory()->create();
+        $byTag->tags()->attach($tag->id);
+        $byEntity = Series::factory()->create();
+        $byEntity->entities()->attach($entity->id);
+        $unrelated = Series::factory()->create();
+
+        Follow::create(['object_id' => $followed->id, 'object_type' => 'series', 'user_id' => $user->id]);
+        Follow::create(['object_id' => $tag->id, 'object_type' => 'tag', 'user_id' => $user->id]);
+        Follow::create(['object_id' => $entity->id, 'object_type' => 'entity', 'user_id' => $user->id]);
+
+        $ids = Series::query()->recommendedFor($user)->pluck('series.id');
+
+        $this->assertEqualsCanonicalizing([$followed->id, $byTag->id, $byEntity->id], $ids->all());
+        $this->assertNotContains($unrelated->id, $ids);
+    }
+
+    public function test_recommended_for_matches_nothing_when_following_nothing(): void
+    {
+        Series::factory()->create();
+
+        $this->assertSame(0, Series::query()->recommendedFor(User::factory()->create())->count());
     }
 }

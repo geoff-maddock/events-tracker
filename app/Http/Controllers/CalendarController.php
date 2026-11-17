@@ -284,6 +284,7 @@ class CalendarController extends Controller
         match ($filters['display_type']) {
             'attending' => $query->whereIn('events.id', $attended),
             'not_attending' => $query->whereNotIn('events.id', $attended),
+            'recommended' => $query->recommendedFor($this->user),
             'created' => $query->where('events.created_by', '=', $userId),
             'not_created' => $query->where('events.created_by', '!=', $userId),
             default => null,
@@ -292,7 +293,8 @@ class CalendarController extends Controller
 
     /**
      * A series filter keeps that series' own occurrences; series for the
-     * "attending" display type are the ones the viewer follows.
+     * "attending" display type are the ones the viewer follows, and for
+     * "recommended" the ones matching the viewer's followed series, tags or entities.
      *
      * @param \Illuminate\Database\Eloquent\Builder<Series> $query
      * @param array<string, mixed> $filters
@@ -305,6 +307,10 @@ class CalendarController extends Controller
 
         if (($filters['display_type'] ?? null) === 'attending' && $this->user) {
             $query->whereIn('series.id', $this->user->getSeriesFollowing()->modelKeys());
+        }
+
+        if (($filters['display_type'] ?? null) === 'recommended' && $this->user) {
+            $query->recommendedFor($this->user);
         }
     }
 

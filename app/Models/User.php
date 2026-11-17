@@ -991,42 +991,8 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getRecommendedEvents(): Builder
     {
-        $tagIds = $this->getTagsFollowing()->pluck('id');
-        $entityIds = $this->getEntitiesFollowing()->pluck('id');
-        $seriesIds = $this->getSeriesFollowing()->pluck('id');
+        $now = Carbon::now();
 
-        if ($tagIds->isEmpty() && $entityIds->isEmpty() && $seriesIds->isEmpty()) {
-            return Event::query()->whereRaw('1 = 0');
-        }
-
-        $events = Event::query()->occurringBetween(Carbon::now());
-
-        $events->where(function ($query) use ($tagIds, $entityIds, $seriesIds) {
-            $added = false;
-            if ($tagIds->isNotEmpty()) {
-                $query->whereHas('tags', function ($q) use ($tagIds) {
-                    $q->whereIn('tags.id', $tagIds);
-                });
-                $added = true;
-            }
-
-            if ($entityIds->isNotEmpty()) {
-                $method = $added ? 'orWhereHas' : 'whereHas';
-                $query->{$method}('entities', function ($q) use ($entityIds) {
-                    $q->whereIn('entities.id', $entityIds);
-                });
-                $added = true;
-            }
-
-            if ($seriesIds->isNotEmpty()) {
-                if ($added) {
-                    $query->orWhereIn('series_id', $seriesIds);
-                } else {
-                    $query->whereIn('series_id', $seriesIds);
-                }
-            }
-        });
-
-        return $events->orderByNextStart(Carbon::now());
+        return Event::query()->occurringBetween($now)->recommendedFor($this)->orderByNextStart($now);
     }
 }

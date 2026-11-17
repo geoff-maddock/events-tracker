@@ -301,6 +301,10 @@ class EventFilters extends QueryFilter
             });
         }
 
+        if ($value === 'recommended') {
+            return $this->builder->scopes(['recommendedFor' => [$user]]);
+        }
+
         if ($value === 'created') {
             return $this->builder->where('events.created_by', '=', $user->id);
         }
