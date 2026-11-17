@@ -430,6 +430,23 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * The followed ids that recommendations draw on, by object type, or null when
+     * the user follows no tag, entity or series. See RecommendedByFollows.
+     *
+     * @return array{tag: array<int, int>, entity: array<int, int>, series: array<int, int>}|null
+     */
+    public function recommendationFollows(): ?array
+    {
+        $followed = [
+            'tag' => $this->followedIds('tag'),
+            'entity' => $this->followedIds('entity'),
+            'series' => $this->followedIds('series'),
+        ];
+
+        return array_filter($followed) ? $followed : null;
+    }
+
+    /**
      * A user can follow many objects.
      */
     public function follows(): HasMany

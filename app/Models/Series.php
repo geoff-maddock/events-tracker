@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecommendedByFollows;
 use App\Contracts\HasPhotos;
 use Carbon\Carbon;
 use DateTime;
@@ -128,6 +129,7 @@ use App\Filters\SeriesFilters;
 class Series extends Eloquent implements HasPhotos
 {
     use HasFactory;
+    use RecommendedByFollows;
 
     protected $attributes = [
         'hold_date' => false,
@@ -311,32 +313,12 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
-     * Series recommended to $user, by the same rule as Event::recommendedFor():
-     * one they follow, or one carrying a tag or entity they follow.
-     *
-     * @param Builder<Series> $query
+     * @param Builder<static>  $match
+     * @param array<int, int> $seriesIds
      */
-    public function scopeRecommendedFor(Builder $query, User $user): Builder
+    protected function orInFollowedSeries(Builder $match, array $seriesIds): void
     {
-        $tagIds = $user->followedIds('tag');
-        $entityIds = $user->followedIds('entity');
-        $seriesIds = $user->followedIds('series');
-
-        if (!$tagIds && !$entityIds && !$seriesIds) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where(function ($match) use ($tagIds, $entityIds, $seriesIds) {
-            if ($seriesIds) {
-                $match->orWhereIn('series.id', $seriesIds);
-            }
-            if ($tagIds) {
-                $match->orWhereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds));
-            }
-            if ($entityIds) {
-                $match->orWhereHas('entities', fn ($q) => $q->whereIn('entities.id', $entityIds));
-            }
-        });
+        $match->orWhereIn('series.id', $seriesIds);
     }
 
     /**

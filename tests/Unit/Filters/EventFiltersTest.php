@@ -399,6 +399,22 @@ class EventFiltersTest extends TestCase
         $this->assertNotContains($unrelated->id, $ids);
     }
 
+    public function test_display_type_recommended_ignores_a_follow_of_a_deleted_series(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $series = Series::factory()->create();
+        $orphaned = Event::factory()->create(['series_id' => $series->id]);
+        Follow::create(['object_id' => $series->id, 'object_type' => 'series', 'user_id' => $user->id]);
+
+        // a hard delete leaves both the follow and the event's series_id behind
+        $series->delete();
+        $this->actingAs($user);
+
+        $ids = $this->applyFilters(['display_type' => 'recommended'])->pluck('events.id');
+
+        $this->assertNotContains($orphaned->id, $ids);
+    }
+
     public function test_display_type_recommended_is_empty_when_following_nothing(): void
     {
         Event::factory()->count(2)->create();

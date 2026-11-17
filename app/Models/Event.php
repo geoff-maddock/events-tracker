@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecommendedByFollows;
 use App\Services\EventDateRange;
 use App\Services\PriceLabel;
 use App\Contracts\HasPhotos;
@@ -137,6 +138,7 @@ class Event extends Model implements HasPhotos
 {
     use Notifiable;
     use HasFactory;
+    use RecommendedByFollows;
 
     const DEFAULT_LENGTH = 4;
 
@@ -780,33 +782,15 @@ class Event extends Model implements HasPhotos
     }
 
     /**
-     * Events recommended to $user: tagged with a tag they follow, featuring an
-     * entity they follow, or in a series they follow. Matches nothing when they
-     * follow none of those. No date limit or ordering, so it composes.
+     * Events in one of the user's followed series; through the series table, so a
+     * follow of a deleted series (whose events keep its id) matches nothing.
      *
-     * @param Builder<Event> $query
+     * @param Builder<static>  $match
+     * @param array<int, int> $seriesIds
      */
-    public function scopeRecommendedFor(Builder $query, User $user): Builder
+    protected function orInFollowedSeries(Builder $match, array $seriesIds): void
     {
-        $tagIds = $user->followedIds('tag');
-        $entityIds = $user->followedIds('entity');
-        $seriesIds = $user->followedIds('series');
-
-        if (!$tagIds && !$entityIds && !$seriesIds) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where(function ($match) use ($tagIds, $entityIds, $seriesIds) {
-            if ($tagIds) {
-                $match->orWhereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds));
-            }
-            if ($entityIds) {
-                $match->orWhereHas('entities', fn ($q) => $q->whereIn('entities.id', $entityIds));
-            }
-            if ($seriesIds) {
-                $match->orWhereIn('events.series_id', $seriesIds);
-            }
-        });
+        $match->orWhereHas('series', fn ($q) => $q->whereIn('series.id', $seriesIds));
     }
 
     /**

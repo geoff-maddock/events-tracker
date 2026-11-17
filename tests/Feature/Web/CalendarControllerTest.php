@@ -157,6 +157,20 @@ class CalendarControllerTest extends TestCase
         $this->assertFalse($ids->contains('event-'.$other->id));
     }
 
+    public function test_calendar_page_shows_the_display_type_options_and_badge(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+
+        $html = $this->actingAs($user)->get('/calendar?filters[display_type]=recommended')
+            ->assertOk()
+            ->assertSee('Events Not Created')
+            ->getContent();
+
+        $this->assertMatchesRegularExpression('#<option value="recommended"\s+selected>Recommended Events</option>#', $html);
+        // the active-filter badge
+        $this->assertMatchesRegularExpression('#<span[^>]*>\s*Recommended Events\s*</span>#', $html);
+    }
+
     public function test_calendar_page_shows_the_new_filter_fields(): void
     {
         $this->get('/calendar?filters[age]=21_plus')

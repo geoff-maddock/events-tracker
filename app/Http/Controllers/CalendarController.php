@@ -306,7 +306,7 @@ class CalendarController extends Controller
         }
 
         if (($filters['display_type'] ?? null) === 'attending' && $this->user) {
-            $query->whereIn('series.id', $this->user->getSeriesFollowing()->modelKeys());
+            $query->whereIn('series.id', $this->user->followedIds('series'));
         }
 
         if (($filters['display_type'] ?? null) === 'recommended' && $this->user) {
