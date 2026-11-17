@@ -433,15 +433,22 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      * The followed ids that recommendations draw on, by object type, or null when
      * the user follows no tag, entity or series. See RecommendedByFollows.
      *
+     * Read fresh in one query (not through the once()-cached followedIds()), so a
+     * follow made earlier on the same User instance is always counted.
+     *
      * @return array{tag: array<int, int>, entity: array<int, int>, series: array<int, int>}|null
      */
     public function recommendationFollows(): ?array
     {
-        $followed = [
-            'tag' => $this->followedIds('tag'),
-            'entity' => $this->followedIds('entity'),
-            'series' => $this->followedIds('series'),
-        ];
+        $followed = ['tag' => [], 'entity' => [], 'series' => []];
+
+        $rows = $this->follows()->toBase()
+            ->whereIn('object_type', array_keys($followed))
+            ->get(['object_type', 'object_id']);
+
+        foreach ($rows as $row) {
+            $followed[$row->object_type][] = (int) $row->object_id;
+        }
 
         return array_filter($followed) ? $followed : null;
     }
