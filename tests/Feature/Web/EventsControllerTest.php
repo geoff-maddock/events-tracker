@@ -99,6 +99,25 @@ class EventsControllerTest extends TestCase
         $this->actingAs($user)->get('/events/create')->assertOk();
     }
 
+    /**
+     * The "events on this date" warning lists names fetched from the API,
+     * so it has to build text nodes, not an HTML string.
+     */
+    public function test_date_warning_renders_event_names_as_text(): void
+    {
+        $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $event = Event::factory()->create(['created_by' => $user->id]);
+
+        $pages = ['/events/create', '/events/'.$event->slug.'/edit'];
+
+        foreach ($pages as $page) {
+            $this->actingAs($user)->get($page)
+                ->assertOk()
+                ->assertSee('link.textContent = e.name', false)
+                ->assertDontSee('list.innerHTML', false);
+        }
+    }
+
     public function test_edit_form_requires_auth(): void
     {
         $event = Event::factory()->create();
