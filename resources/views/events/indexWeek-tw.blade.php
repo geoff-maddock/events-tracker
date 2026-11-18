@@ -55,8 +55,8 @@
                                         @if ($event->display_start_at)
                                             <div class="text-xs text-muted-foreground">
                                                 {{ $event->display_start_at->format('g:i A') }}
-                                                @if ($event->venue)
-                                                    @ {{ $event->venue->name }}
+                                                @if ($event->venueLabel())
+                                                    @ {{ $event->venueLabel() }}
                                                 @endif
                                             </div>
                                         @endif
@@ -86,9 +86,9 @@
                                         <a href="{{ route('series.show', $s) }}" class="text-foreground hover:text-primary transition-colors">
                                             {{ $s->name }}
                                         </a>
-                                        @if ($s->venue)
+                                        @if ($s->venueLabel())
                                             <div class="text-xs text-muted-foreground">
-                                                @ {{ $s->venue->name }}
+                                                @ {{ $s->venueLabel() }}
                                             </div>
                                         @endif
                                     </li>

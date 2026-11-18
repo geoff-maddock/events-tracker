@@ -193,8 +193,8 @@ class SeriesSchema
 
         $sentence = $series->name;
 
-        if ($series->venue) {
-            $sentence .= ' at '.$series->venue->name;
+        if ($series->venueLabel()) {
+            $sentence .= ' at '.$series->venueLabel();
         }
 
         $repeat = trim((string) $series->occurrence_repeat);

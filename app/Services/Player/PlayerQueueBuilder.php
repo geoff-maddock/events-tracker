@@ -5,7 +5,6 @@ namespace App\Services\Player;
 use App\Filters\EntityFilters;
 use App\Filters\EventFilters;
 use App\Models\Entity;
-use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Follow;
 use App\Models\Link;
@@ -197,8 +196,6 @@ class PlayerQueueBuilder
         $query = Entity::query()
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
-            // like the entity list: guests never see unlisted entities
-            ->when(!$user, fn (Builder $q) => $q->where('entities.entity_status_id', '<>', EntityStatus::UNLISTED))
             ->withPopularityScore($activeRange)
             ->playable();
 

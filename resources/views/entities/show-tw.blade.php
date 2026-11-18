@@ -577,7 +577,7 @@
      cached for everyone. Key fingerprints the event + its rendered relations
      (see Event::cardFingerprint) so any edit busts it. --}}
 <div class="mt-6 mb-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-	{!! Cache::remember('past-events-grid:'.$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
+	{!! Cache::remember('past-events-grid:'.(auth()->user()?->isAdmin() ? 'admin:' : '').$entity->id.':'.($entity->updated_at?->getTimestamp() ?? '0').':'.md5($pastEvents->map->cardFingerprint()->implode('|')), now()->addHours(6), fn () => view('events.past-events-grid-card-tw', ['pastEvents' => $pastEvents, 'entity' => $entity])->render()) !!}
 </div>
 @endif
 

@@ -16,8 +16,8 @@
 {!! $event->start_at->format('m/d') !!} {{ $event->name }}
 
 
-@if ($event->venue)
-at {{ $event->venue->name  }}
+@if ($event->venueLabel())
+at {{ $event->venueLabel() }}
 @endif
 
 

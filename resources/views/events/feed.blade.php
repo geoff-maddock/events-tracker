@@ -22,9 +22,9 @@
 <br>
 {{ $event->eventType->name }}
 
-@if ($event->venue)
-<br>{{ $event->venue->name ?? 'No venue specified' }}
-@if ($event->venue->getPrimaryLocationAddress() )
+@if ($event->venueLabel())
+<br>{{ $event->venueLabel() }}
+@if ($event->venue?->getPrimaryLocationAddress())
 {{ $event->venue->getPrimaryLocationAddress() }}
 @endif
 @else

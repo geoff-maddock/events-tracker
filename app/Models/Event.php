@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\RecommendedByFollows;
+use App\Models\Concerns\RefersToEntities;
 use App\Services\EventDateRange;
 use App\Services\PriceLabel;
 use App\Contracts\HasPhotos;
@@ -139,6 +140,7 @@ class Event extends Model implements HasPhotos
     use Notifiable;
     use HasFactory;
     use RecommendedByFollows;
+    use RefersToEntities;
 
     const DEFAULT_LENGTH = 4;
 
@@ -1455,9 +1457,9 @@ class Event extends Model implements HasPhotos
         $format = $this->name;
 
         // include the location of the event
-        if ($this->venue) {
+        if ($this->venueLabel()) {
             $format .= ' at ';
-            $format .= $this->venue->name ?? 'No venue specified';
+            $format .= $this->venueLabel();
         }
 
         // a short run: its first and last dates (#2375), with years across New Year
@@ -1476,9 +1478,9 @@ class Event extends Model implements HasPhotos
         $format = $this->start_at->format('D F jS').' '.$this->name;
 
         // include the location of the event
-        if ($this->venue) {
+        if ($this->venueLabel()) {
             $format .= ' at ';
-            $format .= $this->venue->name ?? 'No venue specified';
+            $format .= $this->venueLabel();
         }
 
         return $format;
@@ -1489,9 +1491,9 @@ class Event extends Model implements HasPhotos
         $format = $this->start_at->format('l F jS Y').' '.$this->name;
 
         // include the location of the event
-        if ($this->venue) {
+        if ($this->venueLabel()) {
             $format .= ' at ';
-            $format .= $this->venue->name ?? 'No venue specified';
+            $format .= $this->venueLabel();
         }
 
         return $format;
@@ -1518,9 +1520,9 @@ class Event extends Model implements HasPhotos
         $format .= ' '.$this->eventType->name;
 
         // include the location of the event
-        if ($this->venue) {
+        if ($this->venueLabel()) {
             $format .= ' at ';
-            $format .= $this->venue->name ?? 'No venue specified';
+            $format .= $this->venueLabel();
         }
 
         // include the start time
@@ -1621,9 +1623,9 @@ class Event extends Model implements HasPhotos
        $format .= ' '.$this->eventType->name;
 
        // include the location of the event
-       if ($this->venue) {
+       if ($this->venueLabel()) {
            $format .= ' at ';
-           $format .= $this->venue->name ?? 'No venue specified';
+           $format .= $this->venueLabel();
        }
 
        // include the start time

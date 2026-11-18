@@ -126,6 +126,11 @@
                 </a>
                 @endif
             </div>
+            @elseif ($series->venueLabel())
+            <div class="flex items-center gap-2">
+                <i class="bi bi-geo-alt"></i>
+                <span>{{ $series->venueLabel() }}</span>
+            </div>
             @endif
 
             <!-- Cancelled Date -->

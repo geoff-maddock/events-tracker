@@ -933,7 +933,7 @@ class SeriesController extends Controller
             unset($input['created_by']);
         }
 
-        $series->fill($input)->save();
+        $series->fill($series->keepHiddenEntityRefs($input))->save();
 
         $tagArray = $request->input('tag_list', []);
         $tags = Tag::resolveList($tagArray, $this->user);
@@ -943,7 +943,7 @@ class SeriesController extends Controller
         }
 
         $series->tags()->sync($syncArray);
-        $series->entities()->sync($request->input('entity_list', []));
+        $series->syncEntities($request->input('entity_list', []));
 
         // add to activity log
         Activity::log($series, $this->user, 2);

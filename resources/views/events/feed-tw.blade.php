@@ -49,11 +49,11 @@
                         @endif
                     </div>
 
-                    @if ($event->venue)
+                    @if ($event->venueLabel())
                         <div class="text-sm text-muted-foreground mt-2">
                             <i class="bi bi-geo-alt mr-1"></i>
-                            {{ $event->venue->name ?? 'No venue specified' }}
-                            @if ($event->venue->getPrimaryLocationAddress())
+                            {{ $event->venueLabel() }}
+                            @if ($event->venue?->getPrimaryLocationAddress())
                                 - {{ $event->venue->getPrimaryLocationAddress() }}
                             @endif
                         </div>

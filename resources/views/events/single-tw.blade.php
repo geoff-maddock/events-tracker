@@ -97,6 +97,11 @@
                 {{ $event->venue->name }}
             </a>
         </div>
+        @elseif ($event->venueLabel())
+        <div class="text-sm sm:text-base text-muted-foreground mb-2 break-words">
+            <span class="text-muted-foreground/70">@</span>
+            {{ $event->venueLabel() }}
+        </div>
         @endif
 
         <!-- Time & Price -->

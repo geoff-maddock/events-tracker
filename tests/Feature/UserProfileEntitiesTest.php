@@ -62,8 +62,14 @@ class UserProfileEntitiesTest extends TestCase
             ->assertSee('Zz Active Collective')
             ->assertDontSee('Zz Unlisted Collective');
 
-        // the user sees all of their own
+        // unlisted is for admins only, so not even the user who created it
         $this->actingAs($user)->get("/users/{$user->id}")->assertOk()
+            ->assertSee('Zz Active Collective')
+            ->assertDontSee('Zz Unlisted Collective');
+
+        $admin = $this->user();
+        $admin->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
+        $this->actingAs($admin)->get("/users/{$user->id}")->assertOk()
             ->assertSee('Zz Unlisted Collective');
     }
 

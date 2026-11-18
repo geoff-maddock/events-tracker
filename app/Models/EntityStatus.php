@@ -39,6 +39,30 @@ class EntityStatus extends Eloquent
     ];
 
     /**
+     * Validation rules limiting which status the user may give an entity.
+     * Unlisted hides the entity from everyone but admins, so only they set it.
+     *
+     * @return array<int, \Illuminate\Validation\Rules\NotIn>
+     */
+    public static function assignableRule(?User $user): array
+    {
+        return $user?->isAdmin() ? [] : [\Illuminate\Validation\Rule::notIn([self::UNLISTED])];
+    }
+
+    /**
+     * The statuses the user may choose in the entity form, as id => name.
+     *
+     * @return array<int, string>
+     */
+    public static function formOptionsFor(?User $user): array
+    {
+        return self::orderBy('name', 'ASC')
+            ->when(!$user?->isAdmin(), fn ($query) => $query->whereKeyNot(self::UNLISTED))
+            ->pluck('name', 'id')
+            ->all();
+    }
+
+    /**
      * An event status can have many events.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

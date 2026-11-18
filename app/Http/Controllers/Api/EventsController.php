@@ -627,12 +627,12 @@ class EventsController extends Controller
             }
         }
 
-        $event->fill($input)->save();
+        $event->fill($event->keepHiddenEntityRefs($input))->save();
         // a full replacement: showings left out of the body are removed
         $event->syncShowings($showings);
 
         $event->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
-        $event->entities()->sync($request->input('entity_list', []));
+        $event->syncEntities($request->input('entity_list', []));
 
         Activity::log($event, $this->user, 2);
         EventUpdated::dispatch($event);
@@ -663,7 +663,7 @@ class EventsController extends Controller
         $scalarInput = array_intersect_key($input, array_flip($event->getFillable()));
         if (!empty($scalarInput)) {
             $scalarInput['updated_by'] = $this->user->id;
-            $event->fill($scalarInput)->save();
+            $event->fill($event->keepHiddenEntityRefs($scalarInput))->save();
         }
 
         if ($request->has('showings')) {
@@ -678,7 +678,7 @@ class EventsController extends Controller
         }
 
         if ($request->has('entity_list')) {
-            $event->entities()->sync((array) $request->input('entity_list', []));
+            $event->syncEntities((array) $request->input('entity_list', []));
         }
 
         Activity::log($event, $this->user, 2);

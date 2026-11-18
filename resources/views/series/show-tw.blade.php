@@ -226,17 +226,22 @@
 					@endif
 
 					<!-- Promoter -->
-					@if (!empty($series->promoter_id))
+					@if ($series->promoter)
 						<div class="flex items-center text-sm text-gray-500">
 							<i class="bi bi-megaphone mr-2 h-4 w-4"></i>
 							<a href="/entities/{{ $series->promoter->slug }}" class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline-offset-2 hover:underline">
 								{{ $series->promoter->name }}
 							</a>
 						</div>
+					@elseif ($series->promoterLabel())
+						<div class="flex items-center text-sm text-gray-500">
+							<i class="bi bi-megaphone mr-2 h-4 w-4"></i>
+							<span>{{ $series->promoterLabel() }}</span>
+						</div>
 					@endif
 
 					<!-- Venue -->
-					@if (!empty($series->venue_id))
+					@if ($series->venue)
 						<div class="flex items-center text-sm text-gray-500">
 							<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
 							<a href="/entities/{{ $series->venue->slug }}" class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline-offset-2 hover:underline">
@@ -245,6 +250,11 @@
 							@if ($series->venue->getPrimaryLocationAddress() != "")
 								<span class="text-xs ml-2">{{ $series->venue->getPrimaryLocationAddress() }}</span>
 							@endif
+						</div>
+					@elseif ($series->venueLabel())
+						<div class="flex items-center text-sm text-gray-500">
+							<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
+							<span>{{ $series->venueLabel() }}</span>
 						</div>
 					@endif
 				</div>

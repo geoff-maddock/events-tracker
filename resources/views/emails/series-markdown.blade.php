@@ -10,8 +10,8 @@
     {{ $series->description }}
 @endif
 
-{{ $series->eventType->name }} at  @if (!empty($series->venue_id))[{{ $series->venue->name }}]({{ $url }}entities/{{$series->venue->slug }})  
-@if ($series->venue->getPrimaryLocationAddress()){{ $series->venue->getPrimaryLocationAddress() }} @endif @else no venue specified @endif 
+{{ $series->eventType->name }} at  @if ($series->venue)[{{ $series->venue->name }}]({{ $url }}entities/{{ $series->venue->slug }})  
+@if ($series->venue->getPrimaryLocationAddress()){{ $series->venue->getPrimaryLocationAddress() }} @endif @elseif ($series->venueLabel()){{ $series->venueLabel() }} @else no venue specified @endif 
 
 @unless ($series->entities->isEmpty())
 **Related Entities:**

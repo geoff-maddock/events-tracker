@@ -207,8 +207,8 @@ class EventSchema
 
         $sentence = $event->name;
 
-        if ($event->venue) {
-            $sentence .= ' at '.$event->venue->name;
+        if ($event->venueLabel()) {
+            $sentence .= ' at '.$event->venueLabel();
         }
 
         if ($startsAt = EventTime::startsAt($event)) {

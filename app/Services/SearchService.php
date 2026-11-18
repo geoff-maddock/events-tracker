@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Http\Controllers\EventsController;
 use App\Models\Entity;
-use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\SearchLog;
 use App\Models\Series;
@@ -175,7 +174,6 @@ class SearchService
 
         $query = Entity::query()
             ->with(Entity::CARD_EAGER_LOAD)
-            ->where('entity_status_id', '<>', EntityStatus::UNLISTED)
             ->where(function (Builder $q) use ($keyword, $useFulltext) {
                 if ($useFulltext) {
                     $q->whereRaw(
@@ -289,8 +287,7 @@ class SearchService
         }
 
         if (in_array('entities', $types, true)) {
-            $q = Entity::query()->select('id', 'name', 'slug', 'short')
-                ->where('entity_status_id', '<>', EntityStatus::UNLISTED);
+            $q = Entity::query()->select('id', 'name', 'slug', 'short');
             $this->applyTextMatch($q, 'entities', ['name', 'short', 'description'], $keyword, $useFulltext);
             if ($useFulltext) {
                 $q->orderByRaw('MATCH(entities.name, entities.short, entities.description) AGAINST (?) DESC', [$keyword]);

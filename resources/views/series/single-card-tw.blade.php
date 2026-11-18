@@ -43,6 +43,11 @@
                 {{ $series->venue->name }}
             </a>
         </div>
+        @elseif ($series->venueLabel())
+        <div class="text-sm text-muted-foreground mb-2 break-words line-clamp-1">
+            <span class="text-muted-foreground/70">@</span>
+            {{ $series->venueLabel() }}
+        </div>
         @endif
 
         <!-- Time -->

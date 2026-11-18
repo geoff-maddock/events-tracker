@@ -4,6 +4,20 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Unlisted entities are admin-only everywhere
+The Unlisted entity status is now applied in one place, for every page, list, feed and API
+response: only admins (the `admin` and `super_admin` groups) see an unlisted entity.
+- Its page, role page (`/venue/{slug}` and so on), API endpoints, locations, links and contacts
+  return 404 to everyone else, and it is left out of lists whatever filter is used.
+- An event or series that has it as venue or promoter still shows the name, as plain text with
+  no link, map or address. The API returns `null` for that `venue` / `promoter`.
+- Someone who cannot see it cannot remove it by editing the event or series: an empty venue or
+  promoter keeps the existing one, and it stays in the related entities. Choosing a different
+  venue or promoter replaces it.
+- Only admins can set the status to Unlisted.
+- Entity option lists in forms and filters are refreshed whenever an entity is saved or deleted,
+  including through the API (#2394).
+
 ### Pusher broadcasting removed (#2412)
 Creating or updating an event no longer broadcasts over Pusher, and the browser no longer loads
 Echo or the Pusher client. The feature was switched off on production and its only effect was an

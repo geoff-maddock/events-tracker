@@ -6,8 +6,8 @@
 @endsection
 
 @section('google.event.json')
-@if (config('app.spider_blacklist') !== null && $event->venue !== null)
-@if (strtolower($event->venue->name) !== strtolower(config('app.spider_blacklist')))
+@if (config('app.spider_blacklist') !== null && $event->venueLabel() !== null)
+@if (strtolower($event->venueLabel()) !== strtolower(config('app.spider_blacklist')))
 @include('events.google-event-json')
 @endif
 @else
@@ -161,7 +161,7 @@
 						srcset="{{ Storage::disk('external')->url($photo->getStorageLarge()) }} 1200w, {{ $primaryPhotoUrl }} 2000w"
 						sizes="(min-width: 1280px) 66vw, (min-width: 1024px) 50vw, 100vw"
 						@endif
-						alt="{{ $event->name }} @ {{ $event->venue ? $event->venue->name : '' }}"
+						alt="{{ $event->name }} @ {{ $event->venueLabel() ?? '' }}"
 						class="object-contain w-full max-h-[600px] cursor-pointer hover:opacity-90 transition-opacity"
 						fetchpriority="high">
 				</a>
@@ -285,12 +285,17 @@
 										</a>
 									</span>
 
-									@if (!empty($event->promoter_id))
+									@if ($event->promoter)
 									<span>
 										<span class="mx-1 text-muted-foreground">by</span>
 										<a href="/entities/{{$event->promoter->slug }}" class="text-muted-foreground font-bold hover:text-foreground transition-colors underline-offset-2 hover:underline">
 											{{ $event->promoter->name }}
 										</a>
+									</span>
+									@elseif ($event->promoterLabel())
+									<span>
+										<span class="mx-1 text-muted-foreground">by</span>
+										<span class="text-muted-foreground font-bold">{{ $event->promoterLabel() }}</span>
 									</span>
 									@endif
 
@@ -319,7 +324,7 @@
 								@include('events.showtimes-tw', ['event' => $event])
 
 								<!-- Venue -->
-								@if (!empty($event->venue_id))
+								@if ($event->venue)
 								<div class="flex items-center text-sm text-muted-foreground">
 									<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
 									<a href="/entities/{{$event->venue->slug }}" class="hover:text-foreground transition-colors underline-offset-2 hover:underline">
@@ -334,6 +339,11 @@
 									<i class="bi bi-map text-muted-foreground"></i>
 								</a>
 								@endif
+							</div>
+							@elseif ($event->venueLabel())
+							<div class="flex items-center text-sm text-muted-foreground">
+								<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
+								<span>{{ $event->venueLabel() }}</span>
 							</div>
 							@endif
 

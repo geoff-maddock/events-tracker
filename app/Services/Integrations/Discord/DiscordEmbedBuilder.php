@@ -349,8 +349,8 @@ class DiscordEmbedBuilder
             $line .= ' — '.$dates;
         }
 
-        if ($headline !== self::HEADLINE_MINIMAL && null !== $event->venue) {
-            $line .= ' · '.$this->escapeMarkdown($event->venue->name);
+        if ($headline !== self::HEADLINE_MINIMAL && null !== $event->venueLabel()) {
+            $line .= ' · '.$this->escapeMarkdown($event->venueLabel());
         }
 
         if ($headline === self::HEADLINE_FULL && null !== ($price = $this->price($event))) {

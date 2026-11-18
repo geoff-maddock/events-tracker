@@ -82,9 +82,9 @@
                                     {{ $pastEvent->eventType->name }}
                                 </div>
                             @endif
-                            @if ($pastEvent->venue)
+                            @if ($pastEvent->venueLabel())
                                 <div class="text-xs opacity-70 line-clamp-1">
-                                    {{ $pastEvent->venue->name }}
+                                    {{ $pastEvent->venueLabel() }}
                                 </div>
                             @endif
                             @if ($pastEvent->tags->count() > 0)

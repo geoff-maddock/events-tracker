@@ -5,7 +5,7 @@
     <div class="event-card-media-tw relative overflow-hidden">
         @if ($primary = $event->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{!! $event->display_start_at->format('l F jS Y') !!} - {{ e($event->name) }} @ {{ e($event->venue ? $event->venue->name : '') }}"
+            data-title="{!! $event->display_start_at->format('l F jS Y') !!} - {{ e($event->name) }} @ {{ e($event->venueLabel() ?? '') }}"
             data-lightbox="{{ $primary->path }}"
             aria-label="View photo for {{ $event->name }}">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
@@ -114,6 +114,11 @@
                     <i class="bi bi-box-arrow-up-right text-xs" aria-hidden="true"></i>
                 </a>
                 @endif
+            </div>
+            @elseif ($event->venueLabel())
+            <div class="flex items-center gap-2">
+                <i class="bi bi-geo-alt"></i>
+                <span>{{ $event->venueLabel() }}</span>
             </div>
             @endif
 
