@@ -1758,8 +1758,7 @@ class EventsController extends Controller
         // add to activity log
         Activity::log($event, $this->user, 1);
 
-        // TODO figure out why this is failing after Laravel 9 upgrade - doesnt seem to be doing anything, so no big deal..
-        // dispatch notifications that the event was created
+        // let listeners know the event was created
         EventCreated::dispatch($event);
 
         flash()->success('Success', 'Your event has been created');

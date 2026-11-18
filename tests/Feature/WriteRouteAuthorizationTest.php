@@ -42,7 +42,6 @@ class WriteRouteAuthorizationTest extends TestCase
             'POST api/user/send-password-reset-email',
             'POST blogs/all',
             'POST blogs/filter',
-            'POST broadcasting/auth',
             'POST categories/filter',
             'POST csp-report',
             // signed-URL unsubscribe and preferences (#2103): the signature is the credential
