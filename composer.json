@@ -11,7 +11,6 @@
 		"php": "^8.2",
 		"laravel/framework": "^12.61",
 		"suin/php-rss-writer": "^1.5",
-		"pusher/pusher-php-server": "^7.0",
 		"eluceo/ical": "^2.14.0",
 		"symfony/mailgun-mailer": "^7.0",
 		"symfony/http-client": "^7.0",

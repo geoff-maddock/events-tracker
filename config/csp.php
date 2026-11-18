@@ -45,8 +45,6 @@ return [
             "'self'",
             // GA4 also sends hits to www.google.com
             'https://www.google-analytics.com', 'https://*.google-analytics.com', 'https://www.googletagmanager.com', 'https://www.google.com',
-            // CSP wildcards may only lead the host, so ws-*.pusher.com must be *.pusher.com
-            'wss://*.pusher.com', 'https://*.pusher.com',
         ],
         'frame-src' => [
             'https://bandcamp.com', 'https://w.soundcloud.com',

@@ -13,11 +13,6 @@ use Illuminate\Queue\SerializesModels;
  * before most events have a flyer — the common flow is create, then upload —
  * and an announcement without an image is easy to scroll past.
  *
- * Deliberately NOT a ShouldBroadcast event, unlike EventCreated/EventUpdated:
- * those carry a "TODO figure out why this is failing after Laravel 9 upgrade"
- * at EventsController.php:2069, and a new trigger should not be built on
- * something the team believes is broken.
- *
  * A Photo model observer would not work here: photos attach through
  * $event->addPhoto() on a belongsToMany, so there is no model event to hook
  * without introducing a pivot model.

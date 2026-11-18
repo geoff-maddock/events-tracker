@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Pusher broadcasting removed (#2412)
+Creating or updating an event no longer broadcasts over Pusher, and the browser no longer loads
+Echo or the Pusher client. The feature was switched off on production and its only effect was an
+"Event Updated" popup. `EventCreated` and `EventUpdated` are still dispatched for their listeners
+(Discord posts and so on). The `PUSHER_*` and `BROADCAST_DRIVER` lines can be deleted from `.env`.
+A replacement, if one is wanted, is tracked in #2417.
+
 ### Events with multiple show dates (#2375)
 A short-run event, such as a play, can carry every date it plays instead of being entered once per
 date. **Start At** stays the first showing; the event form's **Additional Showings** adds the
