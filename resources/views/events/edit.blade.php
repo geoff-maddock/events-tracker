@@ -170,13 +170,22 @@ function checkEventsOnDate(year, month, day, excludeSlug) {
                 warning.classList.add('hidden');
                 return;
             }
-            list.innerHTML = events.map(e => {
+            // Names come from the API as plain text: build nodes rather than HTML.
+            list.replaceChildren(...events.map(e => {
                 const venue = e.venue ? ` @ ${e.venue.name}` : '';
                 const time = e.start_at
                     ? new Date(e.start_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
                     : '';
-                return `<li><a href="/events/${e.slug}" target="_blank" class="underline hover:no-underline">${e.name}</a>${venue}${time ? ' &mdash; ' + time : ''}</li>`;
-            }).join('');
+                const link = document.createElement('a');
+                link.href = '/events/' + encodeURIComponent(e.slug);
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.className = 'underline hover:no-underline';
+                link.textContent = e.name;
+                const item = document.createElement('li');
+                item.append(link, venue + (time ? ' \u2014 ' + time : ''));
+                return item;
+            }));
             warning.classList.remove('hidden');
         })
         .catch(() => warning.classList.add('hidden'));
