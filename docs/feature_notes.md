@@ -21,6 +21,12 @@ response: only admins (the `admin` and `super_admin` groups) see an unlisted ent
 - Entity option lists in forms and filters are refreshed whenever an entity is saved or deleted,
   including through the API (#2394).
 
+### Faster image URLs (#2387)
+Public URLs for files on Spaces are now built directly instead of through the AWS SDK, which took
+about a millisecond per image; a list page asks for dozens. The URLs are unchanged, including the
+encoding of spaces and brackets in older file names. Set `DIGITALOCEAN_SPACES_URL` to serve files
+from the Spaces CDN endpoint or a custom domain; left unset, the bucket's own host is used.
+
 ### Pusher broadcasting removed (#2412)
 Creating or updating an event no longer broadcasts over Pusher, and the browser no longer loads
 Echo or the Pusher client. The feature was switched off on production and its only effect was an

@@ -55,13 +55,22 @@ return [
             'url' => env('AWS_URL'),
         ],
         'external' => [
-            'driver' => 's3',
+            // an s3 disk whose public URLs are built without the AWS SDK (App\Services\Storage\SpacesAdapter)
+            'driver' => 'spaces',
             'key' => env('DIGITALOCEAN_SPACES_KEY'),
             'secret' => env('DIGITALOCEAN_SPACES_SECRET'),
             'endpoint' => env('DIGITALOCEAN_SPACES_ENDPOINT'),
             'region' => env('DIGITALOCEAN_SPACES_REGION'),
             'bucket' => env('DIGITALOCEAN_SPACES_BUCKET'),
             'root' => env('DIGITALOCEAN_SPACES_ROOT'),
+            // Base of public file URLs. Defaults to the bucket's own host under the
+            // endpoint (https://<bucket>.<region>.digitaloceanspaces.com); set it to
+            // the Spaces CDN endpoint or a custom domain to serve files from there.
+            'url' => env('DIGITALOCEAN_SPACES_URL') ?: (
+                env('DIGITALOCEAN_SPACES_BUCKET') && preg_match('#^https?://#', (string) env('DIGITALOCEAN_SPACES_ENDPOINT'))
+                    ? preg_replace('#^(https?://)#', '$1'.env('DIGITALOCEAN_SPACES_BUCKET').'.', rtrim((string) env('DIGITALOCEAN_SPACES_ENDPOINT'), '/'))
+                    : null
+            ),
             // Send a long-lived Cache-Control header with every uploaded object.
             // Photo filenames are content-addressed (timestamped/unique), so cached
             // copies never go stale. Fixes Lighthouse "Use efficient cache lifetimes"

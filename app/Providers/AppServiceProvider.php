@@ -13,11 +13,13 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\SessionStore\ListParameterStore;
+use App\Services\Storage\SpacesAdapter;
 use Illuminate\Session\Store;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
@@ -46,6 +48,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // the "spaces" driver: Laravel's own s3 disk, with URLs built by SpacesAdapter
+        Storage::extend('spaces', function ($app, array $config) {
+            $s3 = $app->make('filesystem')->createS3Driver($config);
+
+            return new SpacesAdapter($s3->getDriver(), $s3->getAdapter(), $s3->getConfig(), $s3->getClient());
+        });
+
         // Clamp the resolved pagination page so a hostile ?page value can't
         // blow up range()/URL generation. Replicates Laravel's default
         // resolver (valid int >= 1, else 1) and adds the upper bound.
