@@ -171,7 +171,7 @@
     <div class="px-4 py-3 border-t border-border flex items-center justify-between">
         <div class="flex items-center gap-2">
             <!-- Edit Button -->
-            @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
+            @if ($signedIn && $user->can('update', $series))
             <a href="{{ route('series.edit', ['series' => $series->slug]) }}"
                 class="text-muted-foreground hover:text-primary transition-colors"
                 title="Edit this series">
@@ -180,7 +180,7 @@
             @endif
 
             <!-- Create Occurrence Button -->
-            @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
+            @if ($signedIn && $user->can('update', $series))
             <a href="{{ route('series.createOccurrence', ['id' => $series->id]) }}"
                 class="text-muted-foreground hover:text-primary transition-colors"
                 title="Create next occurrence">

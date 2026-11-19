@@ -834,7 +834,7 @@ class SeriesController extends Controller
 
     public function edit(Series $series): View|RedirectResponse
     {
-        if (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $series)) {
             Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this series.', 'level' => 'error']);
 
             return redirect()->route('series.show', compact('series'));
@@ -923,7 +923,7 @@ class SeriesController extends Controller
     {
         $msg = '';
 
-        if (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $series)) {
             return $this->unauthorized($request);
         }
 
@@ -995,9 +995,7 @@ class SeriesController extends Controller
         if ($series = Series::find($id)) {
 
             // only the series owner (or an admin) may add photos
-            if (!$series->ownedBy($this->user)
-                && !$this->user->hasGroup('admin')
-                && !$this->user->hasGroup('super_admin')) {
+            if ($this->user->cannot('update', $series)) {
                 abort(403);
             }
 

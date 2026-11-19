@@ -4,6 +4,14 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One edit rule for events and series (#2395)
+Editing an event or series is allowed for its owner and for admins (the `admin` and
+`super_admin` groups), through `EventPolicy::update` and `SeriesPolicy::update`.
+- The API's `PUT` and `PATCH` for events and series now let admins edit other users' records,
+  as the web forms already did. They used to return 403 for anyone but the owner.
+- Edit links, the event actions menu and the photo upload box on event and series pages are
+  now shown to `admin` users too; they were only shown to the owner and `super_admin`.
+
 ### Unlisted entities are admin-only everywhere
 The Unlisted entity status is now applied in one place, for every page, list, feed and API
 response: only admins (the `admin` and `super_admin` groups) see an unlisted entity.

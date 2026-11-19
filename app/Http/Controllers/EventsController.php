@@ -1772,7 +1772,7 @@ class EventsController extends Controller
     {
         $this->middleware('auth');
 
-        if (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $event)) {
             Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this event.', 'level' => 'error']);
 
             return redirect()->route('events.show', compact('event'));
@@ -1785,7 +1785,7 @@ class EventsController extends Controller
     {
         $msg = '';
 
-        if (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $event)) {
             return $this->unauthorized($request);
         }
 
@@ -1869,7 +1869,7 @@ class EventsController extends Controller
         }
 
         // owner or admin only, matching the Instagram share rule
-        if ((int) $event->created_by !== $this->user->id && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $event)) {
             flash()->error('Error', 'You are not authorized to tweet this event.');
 
             return back();
@@ -2297,9 +2297,7 @@ class EventsController extends Controller
         if ($event = Event::find($id)) {
 
             // only the event owner (or an admin) may add photos
-            if (!$event->ownedBy($this->user)
-                && !$this->user->hasGroup('admin')
-                && !$this->user->hasGroup('super_admin')) {
+            if ($this->user->cannot('update', $event)) {
                 abort(403);
             }
 
@@ -2410,9 +2408,7 @@ class EventsController extends Controller
         }
 
         // only the event owner (or an admin) may spin up its discussion thread
-        if ($event->created_by !== $this->user->id
-            && !$this->user->hasGroup('admin')
-            && !$this->user->hasGroup('super_admin')) {
+        if ($this->user->cannot('update', $event)) {
             flash()->error('Unauthorized', 'Only the user who created this event or an admin can create a thread for it. You can still start a thread about this event from the Forum menu.');
 
             return redirect()->route('events.show', ['event' => $event->id]);

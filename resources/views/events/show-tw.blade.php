@@ -69,7 +69,7 @@
 
 									<div id="event-actions-menu" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
 										<div class="py-1" role="menu" aria-orientation="vertical">
-											@if ($user && $event->user && (Auth::user()->id == $event->user->id || $user->hasGroup('super_admin')))
+											@if ($user && $user->can('update', $event))
 												<a href="{!! route('events.edit', ['event' => $event->id]) !!}" class="block px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" role="menuitem">
 													<i class="bi bi-pencil mr-2"></i>Edit Event
 												</a>
@@ -413,7 +413,7 @@
 					</div>
 
 					<!-- Photo Upload -->
-					@if ($user && (Auth::user()->id == $event->user?->id || $user->hasGroup('super_admin') ))
+					@if ($user && $user->can('update', $event))
 					<div class="rounded-lg border border-border bg-card shadow p-2 pt-2 space-y-4">
 						<form action="/events/{{ $event->id }}/photos" class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors" id="myDropzone" method="POST">
 							<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -435,7 +435,7 @@
 
 @section('scripts.footer')
 
-@if ($user && (Auth::user()->id === $event->user?->id || $user->hasGroup('super_admin') ))
+@if ($user && $user->can('update', $event))
 <script>
 $(document).ready(function(){
 	const fireAlert = function(options) {
