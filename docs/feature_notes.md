@@ -4,6 +4,19 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Monitoring for the scheduler, the queue and the Instagram token (#2399)
+Nothing reported a stopped scheduler or queue worker; digests and posts could stop for days.
+- `GET /up` answers 200 when the app and database are up and 503 otherwise, for an external
+  uptime check. It starts no session.
+- A new `monitor:check` command runs every 15 minutes and reports to Sentry when a queued job
+  has waited 45 minutes (the worker is stopped or stuck), or when the Facebook/Instagram page
+  token is invalid or within 14 days of expiring. Each problem is reported at most every 6 hours.
+- That command checks in to one Sentry cron monitor, `scheduler-heartbeat`, so Sentry raises
+  an issue when cron or the scheduler stops.
+- A scheduled command that exits with an error code is reported to Sentry.
+- `discord:digest` no longer starts while the previous hour's run is still going.
+- Set-up steps and the full list are in `docs/deployment_notes.md`, "Monitoring".
+
 ### Fewer embed requests on list pages (#2389)
 List cards used to make one request each, at page load, to look for a player.
 - A card leaves the player placeholder out, and makes no request, when nothing on the event,

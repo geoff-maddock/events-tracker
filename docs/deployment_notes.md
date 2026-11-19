@@ -378,6 +378,39 @@ Scheduled commands inherit the timezone set per-task in the Kernel (most use
 
 Some scheduled commands queue jobs rather than doing the work inline, so they also
 need the queue worker above to be running.
+
+## Monitoring (#2399)
+
+What tells you something has stopped, and what you have to set up once.
+
+| Failure | How it is noticed |
+| --- | --- |
+| Site or database down | `GET /up` returns 503 (or nothing). Needs an external uptime check, see below. |
+| Cron or the scheduler stopped | `monitor:check` runs every 15 minutes and checks in to the Sentry cron monitor `scheduler-heartbeat`. Missed check-ins raise a Sentry issue. |
+| A scheduled command failed | An exception is reported to Sentry as usual. A non-zero exit without one is reported as `MonitoringAlert: Scheduled command failed ...`. |
+| Queue worker stopped or stuck | `monitor:check` reports `Queue is not being worked` when a due job has waited `MONITOR_QUEUE_MAX_WAIT_MINUTES` (default 45). |
+| A queued job failed | The worker reports the exception to Sentry; the row is in `failed_jobs` (`php artisan queue:failed`). |
+| Facebook/Instagram token expiring | `monitor:check` asks the Graph API once a day and reports when the page token is invalid or within `MONITOR_TOKEN_WARN_DAYS` (default 14) of expiry. |
+
+All of the Sentry reports need `SENTRY_DSN` set, and the same problem is reported again
+only after `MONITOR_REPEAT_HOURS` (default 6). Run `php artisan monitor:check` by hand to
+see what it finds.
+
+One-time setup:
+
+1. **Uptime check.** Point an external service (UptimeRobot, Better Stack, Sentry Uptime)
+   at `https://<site>/up`, alerting on anything but 200. The route uses no session and
+   makes one trivial database query.
+2. **Sentry cron monitor.** Nothing to create: the first check-in from production creates
+   `scheduler-heartbeat` with its schedule. Open it under Crons in Sentry and confirm who
+   is notified. It is the only cron monitor the app uses.
+
+Not covered: mail delivery. A send that throws is reported like any error, but mail that is
+accepted and never arrives is not noticed; the weekly `adminTest` email is still the only
+end-to-end check.
+
+Database backups are made on the server by `automysqlbackup`, outside the app; nothing here
+checks that they ran.
 ## Email unsubscribe and SES bounce handling (#2103)
 
 Bulk mail (weekly/daily digests, follower and forum alerts, entity contact mail) carries

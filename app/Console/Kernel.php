@@ -10,6 +10,7 @@ use App\Console\Commands\CleanupExports;
 use App\Console\Commands\CreateSeriesEvents;
 use App\Console\Commands\GenerateFeedbackInvitations;
 use App\Console\Commands\InitializeEventShares;
+use App\Console\Commands\MonitorCheck;
 use App\Console\Commands\Notify;
 use App\Console\Commands\NotifyEntities;
 use App\Console\Commands\NotifyWeekly;
@@ -17,7 +18,7 @@ use App\Console\Commands\PostDiscordDigest;
 use App\Console\Commands\PostDiscordReminders;
 use App\Console\Commands\PruneTempImages;
 use App\Console\Commands\UserCleanup;
-use App\Models\User;
+use App\Exceptions\MonitoringAlert;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -44,6 +45,7 @@ class Kernel extends ConsoleKernel
         PostDiscordReminders::class,
         PostDiscordDigest::class,
         RollupEntityStats::class,
+        MonitorCheck::class,
     ];
 
     /**
@@ -119,7 +121,27 @@ class Kernel extends ConsoleKernel
         // Hourly, but each run serves only the targets whose configured digest
         // day and hour match — per-target scheduling from one cron entry, so
         // adding a channel never means editing this file.
-        $schedule->command('discord:digest')->hourly()->timezone('America/New_York');
+        $schedule->command('discord:digest')->hourly()->timezone('America/New_York')
+            // a slow run must not still be posting when the next hour's starts
+            ->withoutOverlapping(55);
+
+        // MONITORING (#2399)
+        // Reports a stalled queue or an expiring Instagram token. Its Sentry
+        // cron monitor is the heartbeat for the scheduler as a whole: if cron
+        // or schedule:run stops, the check-ins stop and Sentry raises an issue.
+        $schedule->command('monitor:check')
+            ->everyFifteenMinutes()
+            ->sentryMonitor('scheduler-heartbeat', checkInMargin: 10, maxRuntime: 5, failureIssueThreshold: 2);
+
+        // A command that exits non-zero without throwing is otherwise silent
+        // (cron sends the output to /dev/null).
+        foreach ($schedule->events() as $event) {
+            $event->onFailure(function () use ($event) {
+                report(new MonitoringAlert(
+                    'Scheduled command failed (exit code '.($event->exitCode ?? 'unknown').'): '.$event->getSummaryForDisplay()
+                ));
+            });
+        }
     }
 
     /**
