@@ -13,6 +13,7 @@ use App\Models\Thread;
 use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\SessionStore\ListParameterStore;
+use App\Services\Storage\SpacesAdapter;
 use Illuminate\Session\Store;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
@@ -124,6 +125,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // the "spaces" driver: Laravel's own s3 disk, with URLs built by SpacesAdapter.
+        // Registered here, not in boot(), so the disk works from any provider's boot().
+        $this->callAfterResolving('filesystem', function ($filesystem) {
+            $filesystem->extend('spaces', function ($app, array $config) use ($filesystem) {
+                $s3 = $filesystem->createS3Driver($config);
+
+                return new SpacesAdapter($s3->getDriver(), $s3->getAdapter(), $s3->getConfig(), $s3->getClient());
+            });
+        });
+
         $this->app->bind(
             'Illuminate\Contracts\Auth\Registrar',
             'App\Services\Registrar'
