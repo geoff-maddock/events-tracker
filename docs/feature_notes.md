@@ -14,6 +14,11 @@ A more detailed description of new features and changes to the application.
 - `text-destructive` uses its own colour token (`--destructive-text`), so error text and the
   "Cancelled" badge meet 4.5:1 contrast in both themes. Buttons keep the `--destructive` fill.
   `text-success` is new, for status messages.
+### Faster series next dates (#2388)
+A series' next scheduled date is now worked out without stepping through every week or month
+since it was founded, and once per series per request. The dates are unchanged. In the API, a
+series with no upcoming event now has `next_start_at: null` when it has no schedule or is
+cancelled; it used to get a worked-out date.
 
 ### Unlisted entities are admin-only everywhere
 The Unlisted entity status is now applied in one place, for every page, list, feed and API
