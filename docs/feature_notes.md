@@ -11,6 +11,21 @@ Editing an event or series is allowed for its owner and for admins (the `admin` 
   as the web forms already did. They used to return 403 for anyone but the owner.
 - Edit links, the event actions menu and the photo upload box on event and series pages are
   now shown to `admin` users too; they were only shown to the owner and `super_admin`.
+### Session messages shown on every page, readable error text (#2396)
+- A message a redirect leaves in the session (`->with('error', ...)` or `->with('status', ...)`),
+  such as "Your session expired. Please try again.", is now shown at the top of whichever page
+  the user lands on. It was only shown on the sign-in pages. The markup is
+  `partials/session-messages`.
+- Elements marked `x-cloak` (the search dropdown, some menus and modals) stay hidden until
+  Alpine starts, on every page; the rule is now in the global stylesheet.
+- `text-destructive` uses its own colour token (`--destructive-text`), so error text and the
+  "Cancelled" badge meet 4.5:1 contrast in both themes. Buttons keep the `--destructive` fill.
+  `text-success` is new, for status messages.
+### Faster series next dates (#2388)
+A series' next scheduled date is now worked out without stepping through every week or month
+since it was founded, and once per series per request. The dates are unchanged. In the API, a
+series with no upcoming event now has `next_start_at: null` when it has no schedule or is
+cancelled; it used to get a worked-out date.
 
 ### Unlisted entities are admin-only everywhere
 The Unlisted entity status is now applied in one place, for every page, list, feed and API
