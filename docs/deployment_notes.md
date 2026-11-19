@@ -208,7 +208,7 @@ Pull requests and pushes to `main` run `.github/workflows/php.yml`:
 - `composer validate`
 - `config:cache`, `route:cache` and `view:cache`, as production runs them, then cleared
 - ESLint (`npm run lint`) and the Vite production build (`npm run build`)
-- PHPStan (Larastan, level 3, with `phpstan-baseline.neon`)
+- PHPStan (Larastan, level 5, with `phpstan-baseline.neon`)
 - the PHPUnit suite against a MySQL 8 service container (migrate + seed first)
 
 The deploy (`build-prod.yml`) only runs for a commit whose `php.yml` run passed.
