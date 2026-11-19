@@ -14,7 +14,6 @@ Nothing reported a stopped scheduler or queue worker; digests and posts could st
 - That command checks in to one Sentry cron monitor, `scheduler-heartbeat`, so Sentry raises
   an issue when cron or the scheduler stops.
 - A scheduled command that exits with an error code is reported to Sentry.
-- `discord:digest` no longer starts while the previous hour's run is still going.
 - Set-up steps and the full list are in `docs/deployment_notes.md`, "Monitoring".
 
 ### Fewer embed requests on list pages (#2389)

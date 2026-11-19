@@ -73,6 +73,18 @@ class MonitoringTest extends TestCase
         Exceptions::assertNothingReported();
     }
 
+    public function test_a_job_left_reserved_by_a_dead_worker_is_reported(): void
+    {
+        Exceptions::fake();
+        // retry_after is 21 minutes: offered again 69 minutes ago
+        $this->queueJob(now()->subMinutes(95)->getTimestamp(), now()->subMinutes(90)->getTimestamp());
+
+        $this->artisan('monitor:check')->assertSuccessful();
+
+        Exceptions::assertReported(fn (MonitoringAlert $e) => str_contains($e->getMessage(), '1 job(s) waiting')
+            && str_contains($e->getMessage(), '69 minutes'));
+    }
+
     public function test_the_queue_check_is_skipped_for_other_drivers(): void
     {
         Exceptions::fake();
@@ -113,6 +125,36 @@ class MonitoringTest extends TestCase
         $this->artisan('monitor:check')->assertSuccessful();
 
         Exceptions::assertReported(fn (MonitoringAlert $e) => str_contains($e->getMessage(), 'no longer valid'));
+    }
+
+    /**
+     * A dead token can't look itself up, so the Graph API answers with an
+     * error and no data.
+     */
+    public function test_a_token_the_graph_api_rejects_is_reported(): void
+    {
+        Exceptions::fake();
+        config(['app.facebook_system_page_access_token' => 'secret-token-value']);
+        Http::fake(['graph.facebook.com/*' => Http::response(['error' => ['type' => 'OAuthException', 'code' => 190]], 400)]);
+
+        $this->artisan('monitor:check')->assertSuccessful();
+        $this->artisan('monitor:check')->assertSuccessful();
+
+        Http::assertSentCount(1);
+        Exceptions::assertReportedCount(1);
+        Exceptions::assertReported(fn (MonitoringAlert $e) => str_contains($e->getMessage(), 'no longer valid'));
+    }
+
+    public function test_the_token_is_not_sent_in_the_url(): void
+    {
+        config(['app.facebook_system_page_access_token' => 'secret-token-value']);
+        Http::fake(['graph.facebook.com/*' => Http::response(['data' => ['is_valid' => true, 'expires_at' => 0]])]);
+
+        $this->artisan('monitor:check')->assertSuccessful();
+
+        Http::assertSent(fn ($request) => !str_contains($request->url(), 'secret-token-value')
+            && $request['input_token'] === 'secret-token-value'
+            && $request['method'] === 'GET');
     }
 
     public function test_a_valid_token_is_not_reported(): void

@@ -121,9 +121,9 @@ class Kernel extends ConsoleKernel
         // Hourly, but each run serves only the targets whose configured digest
         // day and hour match — per-target scheduling from one cron entry, so
         // adding a channel never means editing this file.
-        $schedule->command('discord:digest')->hourly()->timezone('America/New_York')
-            // a slow run must not still be posting when the next hour's starts
-            ->withoutOverlapping(55);
+        // No withoutOverlapping: a skipped hour would drop that hour's targets
+        // for the week, and the ledger already makes a second post a no-op.
+        $schedule->command('discord:digest')->hourly()->timezone('America/New_York');
 
         // MONITORING (#2399)
         // Reports a stalled queue or an expiring Instagram token. Its Sentry
@@ -137,9 +137,12 @@ class Kernel extends ConsoleKernel
         // (cron sends the output to /dev/null).
         foreach ($schedule->events() as $event) {
             $event->onFailure(function () use ($event) {
-                report(new MonitoringAlert(
-                    'Scheduled command failed (exit code '.($event->exitCode ?? 'unknown').'): '.$event->getSummaryForDisplay()
-                ));
+                $command = $event->getSummaryForDisplay();
+
+                MonitoringAlert::send(
+                    'scheduled:'.$command,
+                    'Scheduled command failed (exit code '.($event->exitCode ?? 'unknown').'): '.$command
+                );
             });
         }
     }

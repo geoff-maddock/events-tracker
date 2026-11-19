@@ -7,10 +7,13 @@ namespace App\Services\Integrations;
  */
 class Instagram
 {
+    /** The Graph API version every call uses. Versions are retired about two years after release. */
+    public const API_VERSION = 'v23.0';
+
     protected string $userAccessToken;
     protected string $pageAccessToken;
     protected int $pageId;
-    protected string $apiVersion = "v23.0";
+    protected string $apiVersion = self::API_VERSION;
     protected int $igUserId = 17841406067178184;
     protected string $mediaType = "IMAGE";
     protected string $endPoint;
@@ -23,7 +26,7 @@ class Instagram
         $this->userAccessToken = config('app.facebook_system_user_access_token');
         $this->pageAccessToken = config('app.facebook_system_page_access_token');
         $this->pageId = 665944966869026;
-        $this->apiVersion = "v23.0";
+        $this->apiVersion = self::API_VERSION;
         $this->igUserId = 17841406067178184;
         $this->mediaType = "IMAGE";
         $this->endPoint ="https://graph.facebook.com/".$this->apiVersion."/";

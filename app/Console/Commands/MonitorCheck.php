@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Exceptions\MonitoringAlert;
+use App\Services\Integrations\Instagram;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -22,8 +23,6 @@ class MonitorCheck extends Command
     protected $signature = 'monitor:check';
 
     protected $description = 'Report a stalled queue or an expiring Facebook/Instagram token';
-
-    private const GRAPH_VERSION = 'v23.0';
 
     public function handle(): int
     {
@@ -48,24 +47,36 @@ class MonitorCheck extends Command
         }
 
         $table = config('queue.connections.database.table', 'jobs');
-        $oldest = DB::table($table)->whereNull('reserved_at')->min('available_at');
+        $now = now()->getTimestamp();
+        $retryAfter = (int) config('queue.connections.database.retry_after', 90);
 
-        if ($oldest === null) {
+        $due = DB::table($table)->whereNull('reserved_at')->where('available_at', '<=', $now);
+        // A job whose worker died stays reserved; the queue offers it again
+        // once retry_after has passed, so from then on it is waiting too.
+        $abandoned = DB::table($table)->whereNotNull('reserved_at')->where('reserved_at', '<=', $now - $retryAfter);
+
+        $dueSince = $due->min('available_at');
+        $abandonedSince = $abandoned->min('reserved_at');
+
+        $since = collect([$dueSince, $abandonedSince === null ? null : (int) $abandonedSince + $retryAfter])
+            ->filter(fn ($timestamp) => $timestamp !== null)
+            ->min();
+
+        if ($since === null) {
             $this->line('Queue: nothing waiting.');
 
             return;
         }
 
-        $waitMinutes = (int) floor((now()->getTimestamp() - (int) $oldest) / 60);
-        $limit = (int) config('monitoring.queue_max_wait_minutes');
+        $waitMinutes = (int) floor(($now - (int) $since) / 60);
 
-        if ($waitMinutes < $limit) {
+        if ($waitMinutes < (int) config('monitoring.queue_max_wait_minutes')) {
             $this->line("Queue: oldest job has waited {$waitMinutes} min.");
 
             return;
         }
 
-        $waiting = DB::table($table)->whereNull('reserved_at')->where('available_at', '<=', now()->getTimestamp())->count();
+        $waiting = $due->count() + $abandoned->count();
 
         $this->raise(
             'queue',
@@ -93,12 +104,15 @@ class MonitorCheck extends Command
         }
 
         try {
-            $data = Http::timeout(15)
-                ->get('https://graph.facebook.com/'.self::GRAPH_VERSION.'/debug_token', [
+            // A form POST with method=GET, which the Graph API treats as a GET:
+            // a query string would put the token in Sentry's request breadcrumbs.
+            $answer = Http::asForm()->timeout(15)
+                ->post('https://graph.facebook.com/'.Instagram::API_VERSION.'/debug_token', [
+                    'method' => 'GET',
                     'input_token' => $token,
                     'access_token' => $token,
                 ])
-                ->json('data');
+                ->json();
         } catch (Throwable $e) {
             // a network blip isn't worth an alert; ask again on the next run
             Cache::forget('monitor-check:token-checked');
@@ -106,6 +120,19 @@ class MonitorCheck extends Command
 
             return;
         }
+
+        // A dead token can't look itself up: the answer is an error, not is_valid=false.
+        if (is_array($answer) && is_array($answer['error'] ?? null)) {
+            $code = (int) ($answer['error']['code'] ?? 0);
+
+            $this->raise('token', $code === 190
+                ? 'The Facebook/Instagram page token is no longer valid. Instagram posting will fail until it is replaced.'
+                : 'The Facebook/Instagram page token could not be checked: the Graph API answered with error code '.$code.'.');
+
+            return;
+        }
+
+        $data = is_array($answer) ? ($answer['data'] ?? null) : null;
 
         if (!is_array($data)) {
             Cache::forget('monitor-check:token-checked');
@@ -149,7 +176,7 @@ class MonitorCheck extends Command
         $this->warn($message);
 
         if (Cache::add('monitor-check:alerted:'.$key, 1, now()->addHours((int) config('monitoring.repeat_hours')))) {
-            report(new MonitoringAlert($message));
+            MonitoringAlert::send($key, $message);
         }
     }
 }
