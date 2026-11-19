@@ -72,6 +72,11 @@ class SeriesNextOccurrenceTest extends TestCase
             }
         }
 
+        // every weekday, for one week of the month
+        foreach ([2, 3, 4, 5] as $day) {
+            $schedules["monthly week 2 day $day"] = ['Monthly', 2, $day];
+        }
+
         return $schedules;
     }
 
@@ -157,5 +162,33 @@ class SeriesNextOccurrenceTest extends TestCase
 
         $this->assertSame('2026-11-19 21:00', $series->cycleFromFoundedAt()->format('Y-m-d H:i'));
         $this->assertLessThanOrEqual(3, $series->steps);
+    }
+
+    public function test_planned_start_is_empty_without_a_schedule_or_once_cancelled(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-19 15:00:00', 'UTC'));
+
+        $weekly = $this->series('Weekly', null, 6, '2020-01-03 21:00:00');
+        $weekly->setRelation('upcomingEvent', null);
+        $this->assertSame('2026-11-20', $weekly->nextPlannedStartAt()?->format('Y-m-d'));
+
+        $unscheduled = $this->series('No Schedule', null, null, '2020-01-03 21:00:00');
+        $unscheduled->setRelation('upcomingEvent', null);
+        $this->assertNull($unscheduled->nextPlannedStartAt());
+
+        $cancelled = $this->series('Weekly', null, 6, '2020-01-03 21:00:00');
+        $cancelled->setRelation('upcomingEvent', null);
+        $cancelled->setAttribute('cancelled_at', '2026-10-01 00:00:00');
+        $this->assertNull($cancelled->nextPlannedStartAt());
+    }
+
+    public function test_a_series_without_an_occurrence_type_still_gets_a_date(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-19 15:00:00', 'UTC'));
+
+        $series = $this->series('Weekly', null, null, '2027-01-02 20:00:00');
+        $series->setRelation('occurrenceType', null);
+
+        $this->assertSame('2027-01-02 20:00', $series->cycleFromFoundedAt()->format('Y-m-d H:i'));
     }
 }

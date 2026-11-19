@@ -266,9 +266,6 @@ class Series extends Eloquent implements HasPhotos
      *
      * @var array<string, string>
      */
-    /** @var array{string, Carbon}|null the remembered result of cycleFromFoundedAt(), with what it was worked out from */
-    private ?array $nextCycleDate = null;
-
     protected $casts = [
         'founded_at' => 'datetime',
         'soundcheck_at' => 'datetime',
@@ -277,6 +274,9 @@ class Series extends Eloquent implements HasPhotos
         'end_at' => 'datetime',
         'cancelled_at' => 'datetime'
     ];
+
+    /** @var array{string, Carbon}|null the remembered result of cycleFromFoundedAt(), with what it was worked out from */
+    private ?array $nextCycleDate = null;
 
      /**
      * @param Builder<Event> $query 
@@ -907,8 +907,8 @@ class Series extends Eloquent implements HasPhotos
             return $this->nextEvent()->start_at;
         }
 
-        // a series with no schedule has no next date to work out
-        if ('No Schedule' === $this->occurrenceType?->name) {
+        // a series with no schedule, or a cancelled one, has no next date to work out
+        if ('No Schedule' === $this->occurrenceType?->name || null !== $this->cancelled_at) {
             return null;
         }
 
@@ -942,7 +942,7 @@ class Series extends Eloquent implements HasPhotos
             $this->attributes['created_at'] ?? '',
             $this->occurrence_week_id,
             $this->occurrence_day_id,
-            $this->occurrenceType->name,
+            $this->occurrenceType?->name,
         ]);
 
         if ($this->nextCycleDate === null || $this->nextCycleDate[0] !== $key) {
