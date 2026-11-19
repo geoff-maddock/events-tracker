@@ -329,7 +329,7 @@
 		</div>
 
 		<!-- Photo Upload -->
-		@if ($user && (Auth::user()->id == $series?->user?->id || $user->hasGroup('super_admin')))
+		@if ($user && $user->can('update', $series))
 		<div class="rounded-lg border border-dark-border bg-card shadow p-2 pt-2 space-y-4">
 			<form action="/series/{{ $series->id }}/photos" class="dropzone border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 transition-colors" id="myDropzone" method="POST">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -426,7 +426,7 @@
 
 @section('scripts.footer')
 
-@if ($user && (Auth::user()->id === $series?->user?->id || $user->hasGroup('super_admin')))
+@if ($user && $user->can('update', $series))
 <script>
 $(document).ready(function(){
 	// Wait for Dropzone to be available

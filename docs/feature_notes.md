@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One edit rule for events and series (#2395)
+Editing an event or series is allowed for its owner and for admins (the `admin` and
+`super_admin` groups), through `EventPolicy::update` and `SeriesPolicy::update`.
+- The API's `PUT` and `PATCH` for events and series now let admins edit other users' records,
+  as the web forms already did. They used to return 403 for anyone but the owner.
+- Edit links, the event actions menu and the photo upload box on event and series pages are
+  now shown to `admin` users too; they were only shown to the owner and `super_admin`.
 ### Session messages shown on every page, readable error text (#2396)
 - A message a redirect leaves in the session (`->with('error', ...)` or `->with('status', ...)`),
   such as "Your session expired. Please try again.", is now shown at the top of whichever page

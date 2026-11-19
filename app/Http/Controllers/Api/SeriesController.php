@@ -281,7 +281,7 @@ class SeriesController extends Controller
      */
     public function update(Series $series, SeriesRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if (!$series->ownedBy($this->user)) {
+        if ($this->user->cannot('update', $series)) {
             return $this->unauthorized($request);
         }
 
@@ -316,7 +316,7 @@ class SeriesController extends Controller
      */
     public function patch(Series $series, SeriesPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if (!$series->ownedBy($this->user)) {
+        if ($this->user->cannot('update', $series)) {
             return $this->unauthorized($request);
         }
 
@@ -464,8 +464,7 @@ class SeriesController extends Controller
      */
     private function denyUnlessCanAddPhoto(Series $series): ?JsonResponse
     {
-        if (!$this->user
-            || (!$series->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+        if (!$this->user || $this->user->cannot('update', $series)) {
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 

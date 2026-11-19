@@ -595,7 +595,7 @@ class EventsController extends Controller
     {
         $this->user = $request->user();
 
-        if (!$event->ownedBy($this->user)) {
+        if ($this->user->cannot('update', $event)) {
             return $this->unauthorized($request);
         }
 
@@ -648,7 +648,7 @@ class EventsController extends Controller
     {
         $this->user = $request->user();
 
-        if (!$event->ownedBy($this->user)) {
+        if ($this->user->cannot('update', $event)) {
             return $this->unauthorized($request);
         }
 
@@ -900,8 +900,7 @@ class EventsController extends Controller
      */
     private function denyUnlessCanAddPhoto(Event $event): ?JsonResponse
     {
-        if (!$this->user
-            || (!$event->ownedBy($this->user) && !$this->user->hasGroup('admin') && !$this->user->hasGroup('super_admin'))) {
+        if (!$this->user || $this->user->cannot('update', $event)) {
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 

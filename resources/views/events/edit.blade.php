@@ -34,7 +34,7 @@
 				</form>
 
 				<!-- Delete Button -->
-				@if ($user && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
+				@if ($user && $user->can('delete', $event))
 				<div class="mt-6 pt-6 border-t border-border">
 					<form method="POST" action="{{ route('events.destroy', $event->id) }}" data-confirm="Are you sure you want to delete this event? This action cannot be undone.">
 						@csrf

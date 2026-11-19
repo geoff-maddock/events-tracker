@@ -194,7 +194,7 @@
     <div class="px-4 py-3 border-t border-border flex items-center justify-between">
         <div class="flex items-center gap-2">
             <!-- Edit Button -->
-            @if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
+            @if ($signedIn && $user->can('update', $event))
             <a href="{{ route('events.edit', ['event' => $event->slug]) }}"
                 class="p-2 rounded text-muted-foreground hover:text-primary transition-colors"
                 title="Edit {{ $event->name }}"

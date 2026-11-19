@@ -108,7 +108,7 @@
 
         <!-- Actions (visible on hover) -->
         <div class="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-border opacity-0 group-hover:opacity-100 transition-opacity">
-            @if ($signedIn && ($series->ownedBy($user) || $user->hasGroup('super_admin')))
+            @if ($signedIn && $user->can('update', $series))
             <a href="{!! route('series.edit', ['series' => $series->slug]) !!}"
                 class="text-muted-foreground hover:text-primary transition-colors"
                 title="Edit this series">

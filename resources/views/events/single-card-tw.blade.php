@@ -143,7 +143,7 @@
 
         <!-- Actions (visible on hover) -->
         <div class="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-border opacity-0 group-hover:opacity-100 transition-opacity">
-            @if ($signedIn && ($event->ownedBy($user) || $user->hasGroup('super_admin')))
+            @if ($signedIn && $user->can('update', $event))
             <a href="{!! route('events.edit', ['event' => $event->slug]) !!}"
                 class="text-muted-foreground hover:text-primary transition-colors"
                 title="Edit this event">
