@@ -5,12 +5,14 @@ return array(
     // so local/.env setups using either name resolve correctly.
     'dsn' => env('SENTRY_DSN', env('SENTRY_LARAVEL_DSN')),
 
-    // capture release as git sha
-    // 'release' => trim(exec('git log --pretty="%h" -n1 HEAD')),
+    // The deployed commit. bin/deploy sets SENTRY_RELEASE when it caches the
+    // config, so each error is tagged with the deploy that was live.
+    'release' => env('SENTRY_RELEASE'),
 
-    // Capture bindings on SQL queries
+    // Query values (email addresses, tokens in where clauses) are not sent
+    // with errors unless this is turned on to chase a specific problem.
     'breadcrumbs' => [
-        'sql_bindings' => true,
+        'sql_bindings' => (bool) env('SENTRY_SQL_BINDINGS', false),
     ],
 
     // Capture default user context

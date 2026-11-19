@@ -229,20 +229,35 @@ npm run lint && npm run build
 
 ## Deploying to production
 
-`.github/workflows/build-prod.yml` (**Actions → Build Prod → Run workflow**) deploys `main`. It first checks that the **PHP Composer** CI run for that exact commit passed, and refuses to deploy otherwise. On the server it runs these steps, which are also the checklist for a manual deploy:
+On the server, one command deploys the latest `main`:
 
 ```bash
 cd /var/www/events-tracker
-rm -f bootstrap/cache/*.php                 # first: stale caches can fatal artisan, and a leftover manifest can block the pull
-git checkout main && git pull
-composer install --no-dev --optimize-autoloader --no-interaction   # always: lockfile changes need it
-php artisan migrate --force                 # additive migrations ship with the code that needs them
-npm ci && npm run build
-php artisan config:cache && php artisan route:cache && php artisan view:cache
-php artisan queue:restart                   # the supervised worker keeps old code until restarted
+bin/deploy
 ```
 
-Only cache config and routes on **production**. On the dev checkout, a cached config makes PHPUnit ignore `.env.testing`. The test suite refuses to run in that case, and `php artisan config:clear && php artisan route:clear` fixes it.
+`bin/deploy` runs these steps in order and stops at the first one that fails:
+
+1. Removes `bootstrap/cache/*.php`. A stale cached config can stop every artisan command.
+2. `git checkout main && git pull --ff-only`.
+3. `composer install --no-dev --optimize-autoloader`. Always: a lockfile change that isn't installed is an outage.
+4. `php artisan migrate --force`.
+5. `npm ci && npm run build`.
+6. `config:cache`, `route:cache`, `view:cache`, with `SENTRY_RELEASE` set to the deployed commit so Sentry tags each error with it.
+7. `php artisan queue:restart`. The worker keeps old code in memory until restarted.
+8. Requests `/up` and the home page (from `APP_URL`, or `DEPLOY_CHECK_URL` if set) and fails unless both answer 200.
+
+There is no rollback and no maintenance mode. If a step fails, the message names it; fix the
+cause and run `bin/deploy` again. A pull on its own is not a deploy: without steps 3 to 7 the
+site runs new code with old dependencies, old cached routes and config, and an old worker.
+
+The script refuses to run unless `.env` has `APP_ENV=production`. On the dev checkout a cached
+config makes PHPUnit ignore `.env.testing`; the test suite refuses to run in that case, and
+`php artisan config:clear && php artisan route:clear` fixes it.
+
+`.github/workflows/build-prod.yml` (**Actions → Build Prod → Run workflow**) runs the same
+script over SSH. It first checks that the **PHP Composer** CI run for that exact commit passed,
+and passes the commit to `bin/deploy`, which stops after the pull if `main` has moved.
 
 ## Environments:  Dev, Testing, Production
 * Dev environment notes
