@@ -63,14 +63,9 @@ return [
             'region' => env('DIGITALOCEAN_SPACES_REGION'),
             'bucket' => env('DIGITALOCEAN_SPACES_BUCKET'),
             'root' => env('DIGITALOCEAN_SPACES_ROOT'),
-            // Base of public file URLs. Defaults to the bucket's own host under the
-            // endpoint (https://<bucket>.<region>.digitaloceanspaces.com); set it to
-            // the Spaces CDN endpoint or a custom domain to serve files from there.
-            'url' => env('DIGITALOCEAN_SPACES_URL') ?: (
-                env('DIGITALOCEAN_SPACES_BUCKET') && preg_match('#^https?://#', (string) env('DIGITALOCEAN_SPACES_ENDPOINT'))
-                    ? preg_replace('#^(https?://)#', '$1'.env('DIGITALOCEAN_SPACES_BUCKET').'.', rtrim((string) env('DIGITALOCEAN_SPACES_ENDPOINT'), '/'))
-                    : null
-            ),
+            // Base of public file URLs: the Spaces CDN endpoint or a custom domain.
+            // Left unset, SpacesAdapter uses the bucket's own host under the endpoint.
+            'url' => env('DIGITALOCEAN_SPACES_URL'),
             // Send a long-lived Cache-Control header with every uploaded object.
             // Photo filenames are content-addressed (timestamped/unique), so cached
             // copies never go stale. Fixes Lighthouse "Use efficient cache lifetimes"
