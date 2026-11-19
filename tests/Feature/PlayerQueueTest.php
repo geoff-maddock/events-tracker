@@ -397,14 +397,18 @@ class PlayerQueueTest extends TestCase
             ->assertJsonPath('items.0.event.id', $later->id);
     }
 
-    public function test_entities_source_hides_unlisted_entities_from_guests_and_ignores_unknown_sorts(): void
+    public function test_entities_source_hides_unlisted_entities_from_non_admins_and_ignores_unknown_sorts(): void
     {
         $artist = $this->artist('https://soundcloud.com/unlisted-artist');
         $artist->update(['name' => 'Unlisted Artist', 'entity_status_id' => EntityStatus::UNLISTED]);
         $query = '?'.http_build_query(['source' => 'entities', 'filters' => ['name' => 'Unlisted Artist'], 'sort' => 'password']);
 
+        $admin = User::factory()->create();
+        $admin->groups()->attach(\App\Models\Group::firstOrCreate(['name' => 'admin'])->id);
+
         $this->assertSame([], $this->queueEntityIds($query));
-        $this->assertSame([$artist->id], $this->queueEntityIds($query, User::factory()->create()));
+        $this->assertSame([], $this->queueEntityIds($query, User::factory()->create()));
+        $this->assertSame([$artist->id], $this->queueEntityIds($query, $admin));
     }
 
     public function test_invalid_sources_are_rejected(): void

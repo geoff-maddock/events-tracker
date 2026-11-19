@@ -4,7 +4,7 @@
     <div class="relative overflow-hidden">
         @if ($primary = $series->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{{ $series->occurrenceType->name }} {{ $series->occurrence_repeat }} - {{ $series->name }} @ {{ $series->venue ? $series->venue->name : '' }}"
+            data-title="{{ $series->occurrenceType->name }} {{ $series->occurrence_repeat }} - {{ $series->name }} @ {{ $series->venueLabel() ?? '' }}"
             data-lightbox="{{ $primary->path }}">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
                 alt="{{ $series->name }}"
@@ -125,6 +125,11 @@
                     <i class="bi bi-box-arrow-up-right text-xs"></i>
                 </a>
                 @endif
+            </div>
+            @elseif ($series->venueLabel())
+            <div class="flex items-center gap-2">
+                <i class="bi bi-geo-alt"></i>
+                <span>{{ $series->venueLabel() }}</span>
             </div>
             @endif
 

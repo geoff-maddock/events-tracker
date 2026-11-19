@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\Embeds\OembedExtractor;
 use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
+use App\Models\Scopes\UnlistedEntityScope;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -134,6 +135,13 @@ class Entity extends Eloquent implements HasPhotos
     {
         parent::boot();
 
+        // unlisted entities are for admins only, wherever entities are queried
+        static::addGlobalScope(new UnlistedEntityScope());
+
+        // the cached form and filter option lists name entities
+        static::saved(fn () => self::forgetOptionCaches());
+        static::deleted(fn () => self::forgetOptionCaches());
+
         // Discord targets filtering on it as an entity, venue or promoter (#2240)
         static::deleted(fn (Entity $entity) => DiscordTargetCriterion::forgetSubject($entity));
 
@@ -153,7 +161,7 @@ class Entity extends Eloquent implements HasPhotos
      */
     public static function getPromoterFilterOptions(): array
     {
-        return Cache::remember('filter-opts-promoters-slug', 3600, fn () => self::whereHas('roles', function ($q) {
+        return Cache::remember(self::optionCacheKey('filter-opts-promoters-slug'), 3600, fn () => self::whereHas('roles', function ($q) {
             $q->where('name', '=', 'Promoter');
         })->orderBy('name', 'ASC')->pluck('name', 'slug')->all());
     }
@@ -304,6 +312,92 @@ class Entity extends Eloquent implements HasPhotos
         $type = EntityType::where('name', '=', $type)->first();
 
         return $query->where('entity_type_id', '=', $type->id);
+    }
+
+    /**
+     * Cache keys of the entity option lists used by forms and filters.
+     */
+    private const OPTION_CACHE_KEYS = [
+        'form-opts-venues',
+        'form-opts-promoters',
+        'form-opts-entities-active',
+        'form-opts-entities-all',
+        'filter-opts-venues-slug',
+        'filter-opts-promoters-slug',
+        'filter-opts-entities-slug',
+        'filter-opts-venues-name',
+        'filter-opts-entities-name',
+    ];
+
+    /**
+     * Every entity, unlisted ones included, whoever is asking. For code that
+     * maintains the data; anything shown to a user goes through the default scope.
+     *
+     * @return Builder<Entity>
+     */
+    public static function withUnlisted(): Builder
+    {
+        return static::withoutGlobalScope(UnlistedEntityScope::class);
+    }
+
+    /**
+     * Whether the user may see this entity at all.
+     */
+    public function isVisibleTo(?User $user): bool
+    {
+        return EntityStatus::UNLISTED !== (int) $this->entity_status_id || (bool) $user?->isAdmin();
+    }
+
+    /**
+     * The ids among those given that the current viewer cannot see.
+     *
+     * @param array<int, int|string|null> $ids
+     *
+     * @return array<int, int>
+     */
+    public static function hiddenIds(array $ids): array
+    {
+        $ids = array_filter($ids);
+
+        if ([] === $ids || UnlistedEntityScope::viewerSeesUnlisted()) {
+            return [];
+        }
+
+        return static::withUnlisted()
+            ->whereIn('id', $ids)
+            ->where('entity_status_id', EntityStatus::UNLISTED)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+    }
+
+    /**
+     * An entity's name by id, whether or not the viewer can see the entity. The
+     * name of an unlisted venue or promoter still shows on its events.
+     */
+    public static function publicName(int|string|null $id): ?string
+    {
+        return $id ? static::withUnlisted()->whereKey($id)->value('name') : null;
+    }
+
+    /**
+     * The cache key for an entity option list. Admins get their own copy,
+     * because theirs includes unlisted entities.
+     */
+    public static function optionCacheKey(string $key): string
+    {
+        return UnlistedEntityScope::viewerSeesUnlisted() ? $key.':admin' : $key;
+    }
+
+    /**
+     * Drop the cached entity option lists, for both kinds of viewer.
+     */
+    public static function forgetOptionCaches(): void
+    {
+        foreach (self::OPTION_CACHE_KEYS as $key) {
+            Cache::forget($key);
+            Cache::forget($key.':admin');
+        }
     }
 
     /**
@@ -1425,7 +1519,7 @@ class Entity extends Eloquent implements HasPhotos
         if ($this->futureEvents()->total() > 0) {
             $event = $this->futureEvents()->items()[0];
             $start = $event->start_at->format('m/d');
-            $format .= ' Next: '.$start.' '.$event->name.' at '.$event->venue->name;
+            $format .= ' Next: '.$start.' '.$event->name.' at '.($event->venueLabel() ?? 'No venue specified');
         }
 
         // only return the first 280 chars
@@ -1526,7 +1620,7 @@ class Entity extends Eloquent implements HasPhotos
             $format .= "\n\nUpcoming Events:";
             foreach ($events as $event) {
                 $start = $event->start_at->format('m/d');
-                $format .= "\n\n".$start." ".$event->name." at ".$event->venue->name;
+                $format .= "\n\n".$start." ".$event->name." at ".($event->venueLabel() ?? 'No venue specified');
             }
      }
 

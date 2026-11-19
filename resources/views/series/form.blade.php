@@ -209,6 +209,12 @@
                         {{ $name }}
                     </option>
                 @endforeach
+                {{-- an unlisted venue is not among the options, but stays on the series --}}
+                @if (isset($series) && $series->venue_id && !isset($venueOptions[$series->venue_id]) && $series->venueLabel())
+                    <option value="{{ $series->venue_id }}" {{ old('venue_id', $series->venue_id) == $series->venue_id ? 'selected' : '' }}>
+                        {{ $series->venueLabel() }}
+                    </option>
+                @endif
             </x-ui.select>
         </x-ui.form-group>
     </div>
@@ -230,6 +236,12 @@
                         {{ $name }}
                     </option>
                 @endforeach
+                {{-- an unlisted promoter is not among the options, but stays on the series --}}
+                @if (isset($series) && $series->promoter_id && !isset($promoterOptions[$series->promoter_id]) && $series->promoterLabel())
+                    <option value="{{ $series->promoter_id }}" {{ old('promoter_id', $series->promoter_id) == $series->promoter_id ? 'selected' : '' }}>
+                        {{ $series->promoterLabel() }}
+                    </option>
+                @endif
             </x-ui.select>
         </x-ui.form-group>
     </div>

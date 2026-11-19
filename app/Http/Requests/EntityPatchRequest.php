@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\EntityStatus;
 use Illuminate\Validation\Rule;
 
 class EntityPatchRequest extends Request
@@ -31,7 +32,8 @@ class EntityPatchRequest extends Request
             'short' => ['sometimes', 'required', 'max:255'],
             'description' => ['sometimes', 'required'],
             'entity_type_id' => ['sometimes', 'required'],
-            'entity_status_id' => ['sometimes', 'required'],
+            // only an admin may make an entity unlisted: nobody else could see it afterwards
+            'entity_status_id' => ['sometimes', 'required', ...EntityStatus::assignableRule($this->user())],
             'started_at' => ['sometimes', 'nullable', 'date', 'after_or_equal:1971-01-01', 'before_or_equal:2037-12-31'],
             'facebook_username' => ['sometimes', 'nullable', 'string', 'max:64'],
             'instagram_username' => ['sometimes', 'nullable', 'string', 'max:64'],

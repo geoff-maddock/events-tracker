@@ -175,12 +175,11 @@ class DiscordEmbedBuilder
             $fields[] = $this->field('Showings', $showings);
         }
 
-        if (null !== $event->venue) {
-            $fields[] = $this->field(
-                'Where',
-                '['.$event->venue->name.']('.route('entities.show', $event->venue).')',
-                inline: true,
-            );
+        // a public channel: an unlisted venue is named but never linked, whoever queued the post
+        if (null !== ($venue = $event->publicVenue())) {
+            $fields[] = $this->field('Where', '['.$venue->name.']('.route('entities.show', $venue).')', inline: true);
+        } elseif (null !== $event->venueLabel()) {
+            $fields[] = $this->field('Where', $this->escapeMarkdown($event->venueLabel()), inline: true);
         }
 
         if (null !== ($price = $this->price($event))) {
@@ -349,8 +348,8 @@ class DiscordEmbedBuilder
             $line .= ' — '.$dates;
         }
 
-        if ($headline !== self::HEADLINE_MINIMAL && null !== $event->venue) {
-            $line .= ' · '.$this->escapeMarkdown($event->venue->name);
+        if ($headline !== self::HEADLINE_MINIMAL && null !== $event->venueLabel()) {
+            $line .= ' · '.$this->escapeMarkdown($event->venueLabel());
         }
 
         if ($headline === self::HEADLINE_FULL && null !== ($price = $this->price($event))) {

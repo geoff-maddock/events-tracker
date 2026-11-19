@@ -300,10 +300,10 @@ class SeriesController extends Controller
             }
         }
 
-        $series->fill($input)->save();
+        $series->fill($series->keepHiddenEntityRefs($input))->save();
 
         $series->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
-        $series->entities()->sync($request->input('entity_list', []));
+        $series->syncEntities($request->input('entity_list', []));
 
         Activity::log($series, $this->user, 2);
 
@@ -331,7 +331,7 @@ class SeriesController extends Controller
         $scalarInput = array_intersect_key($input, array_flip($series->getFillable()));
         if (!empty($scalarInput)) {
             $scalarInput['updated_by'] = $this->user->id;
-            $series->fill($scalarInput)->save();
+            $series->fill($series->keepHiddenEntityRefs($scalarInput))->save();
         }
 
         if ($request->has('tag_list')) {
@@ -339,7 +339,7 @@ class SeriesController extends Controller
         }
 
         if ($request->has('entity_list')) {
-            $series->entities()->sync((array) $request->input('entity_list', []));
+            $series->syncEntities((array) $request->input('entity_list', []));
         }
 
         Activity::log($series, $this->user, 2);

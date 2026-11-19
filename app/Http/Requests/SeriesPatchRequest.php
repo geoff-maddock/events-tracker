@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\VisibleEntity;
 use Illuminate\Validation\Rule;
 
 class SeriesPatchRequest extends Request
@@ -46,8 +47,8 @@ class SeriesPatchRequest extends Request
             'occurrence_week_id' => ['sometimes', 'nullable'],
             'occurrence_day_id' => ['sometimes', 'nullable'],
             'description' => 'sometimes|nullable|string',
-            'venue_id' => 'sometimes|nullable|integer|exists:entities,id',
-            'promoter_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'venue_id' => ['sometimes', 'nullable', 'integer', VisibleEntity::for($this->route('series'))],
+            'promoter_id' => ['sometimes', 'nullable', 'integer', VisibleEntity::for($this->route('series'))],
             'founded_at' => 'sometimes|nullable|date',
             'cancelled_at' => 'sometimes|nullable|date',
             'soundcheck_at' => 'sometimes|nullable|date',
@@ -61,7 +62,7 @@ class SeriesPatchRequest extends Request
             'twitter_username' => 'sometimes|nullable|string|max:64',
             'created_by' => 'sometimes|nullable|integer|exists:users,id',
             'entity_list' => 'sometimes|nullable|array',
-            'entity_list.*' => 'integer|exists:entities,id',
+            'entity_list.*' => ['integer', VisibleEntity::for($this->route('series'))],
         ];
     }
 }

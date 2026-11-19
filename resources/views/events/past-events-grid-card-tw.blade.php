@@ -55,7 +55,7 @@
                             @if ($primary = $pastEvent->getPrimaryPhoto())
                                 <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
                                    data-lightbox="past-events-grid"
-                                   data-title="{{ $pastEvent->name }} @ {{ $pastEvent->venue ? $pastEvent->venue->name : '' }}">
+                                   data-title="{{ $pastEvent->name }} @ {{ $pastEvent->venueLabel() ?? '' }}">
                                     <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
                                          alt="{{ $pastEvent->name }}"
                                          class="w-full h-full object-cover transition-transform duration-300"
@@ -82,9 +82,9 @@
                                     {{ $pastEvent->eventType->name }}
                                 </div>
                             @endif
-                            @if ($pastEvent->venue)
+                            @if ($pastEvent->venueLabel())
                                 <div class="text-xs opacity-70 line-clamp-1">
-                                    {{ $pastEvent->venue->name }}
+                                    {{ $pastEvent->venueLabel() }}
                                 </div>
                             @endif
                             @if ($pastEvent->tags->count() > 0)

@@ -25,8 +25,8 @@ Showings: {{ $dates }}
 [{{ $event->series->name }}]({{ $url }}series/{{ strtolower($event->series->slug) }}) series  
 @endif
 
-{{ $event->eventType->name }} at  @if (!empty($event->venue_id))[{{ $event->venue->name }}]({{ $url }}entities/{{$event->venue->slug }})  
-@if ($event->venue->getPrimaryLocationAddress()){{ $event->venue->getPrimaryLocationAddress() }} @endif @else no venue specified @endif 
+{{ $event->eventType->name }} at  @if ($event->publicVenue())[{{ $event->venue->name }}]({{ $url }}entities/{{ $event->venue->slug }})  
+@if ($event->venue->getPrimaryLocationAddress()){{ $event->venue->getPrimaryLocationAddress() }} @endif @elseif ($event->venueLabel()){{ $event->venueLabel() }} @else no venue specified @endif 
 @if ($event->door_price)${{ number_format($event->door_price,0) }}@endif 
 @if ($event->min_age){{ $event->age_format }}@endif 
 @if ($link = $event->primary_link)[Primary Link]({{ $link }})@endif  @if ($ticket = $event->ticket_link)[Buy Ticket]({{ $event->getTicketTrackingLink() }})@endif  

@@ -206,7 +206,7 @@ class OnboardingController extends Controller
             'name' => $event->name,
             'subtitle' => trim(collect([
                 $event->start_at?->format('M j'),
-                $event->venue?->name,
+                $event->venueLabel(),
             ])->filter()->implode(' · ')) ?: null,
         ])->all();
     }

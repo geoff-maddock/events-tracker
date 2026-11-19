@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Location extends Eloquent
 {
+    protected static function booted(): void
+    {
+        // hidden along with an unlisted entity it belongs to
+        static::addGlobalScope('listedEntity', \App\Models\Scopes\UnlistedEntityScope::following('entity_id'));
+    }
+
     use HasFactory;
 
     protected $fillable = [

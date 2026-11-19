@@ -128,8 +128,9 @@ class CreateSeriesEvents extends Command
                 ]);
 
                 // Sync entities
-                if ($s->entities->count() > 0) {
-                    $entityIds = $s->entities->pluck('id')->toArray();
+                // every related entity, unlisted ones included: this runs with no user
+                $entityIds = $s->entities()->withoutGlobalScopes()->pluck('entities.id')->all();
+                if ([] !== $entityIds) {
                     $event->entities()->sync($entityIds);
                 }
 

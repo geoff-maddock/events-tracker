@@ -101,6 +101,7 @@ use Illuminate\Support\Str;
 class Thread extends Eloquent
 {
     use HasFactory;
+    use \App\Models\Concerns\SyncsEntities;
 
     public static function boot()
     {

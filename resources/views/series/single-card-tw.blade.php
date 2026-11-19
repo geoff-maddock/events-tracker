@@ -3,14 +3,14 @@
     <div class="flex-shrink-0 w-full">
         @if ($primary = $series->getPrimaryPhoto())
         <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
-            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
+            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venueLabel() ?? '' }}</a>"
             data-lightbox="{{ $primary->path }}"
             class="block aspect-square w-full rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors">
             <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}" alt="{{ $series->name }}" loading="lazy" class="w-full h-full object-cover">
         </a>
         @else
         <a href="/images/event-placeholder.png"
-            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venue ? $series->venue->name : '' }}</a>"
+            data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venueLabel() ?? '' }}</a>"
             data-lightbox="/images/event-placeholder.png"
             class="block aspect-square w-full rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors bg-muted flex items-center justify-center">
             <i class="bi bi-collection text-5xl text-muted-foreground/40"></i>
@@ -42,6 +42,11 @@
             <a href='/entities/{{ $series->venue->slug }}' class="hover:text-primary transition-colors">
                 {{ $series->venue->name }}
             </a>
+        </div>
+        @elseif ($series->venueLabel())
+        <div class="text-sm text-muted-foreground mb-2 break-words line-clamp-1">
+            <span class="text-muted-foreground/70">@</span>
+            {{ $series->venueLabel() }}
         </div>
         @endif
 

@@ -40,6 +40,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Link extends Model
 {
+    protected static function booted(): void
+    {
+        // hidden along with an unlisted entity it belongs to
+        static::addGlobalScope('listedEntity', \App\Models\Scopes\UnlistedEntityScope::following('id', 'entity_link.link_id'));
+    }
+
     use HasFactory;
 
     /**

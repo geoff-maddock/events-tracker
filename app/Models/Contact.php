@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Contact extends Model
 {
+    protected static function booted(): void
+    {
+        // hidden along with an unlisted entity it belongs to
+        static::addGlobalScope('listedEntity', \App\Models\Scopes\UnlistedEntityScope::following('id', 'contact_entity.contact_id'));
+    }
+
     /**
      * The database table used by the model.
      *

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\VisibleEntity;
 use App\Http\Requests\Concerns\ValidatesShowings;
 use Illuminate\Validation\Rule;
 
@@ -60,11 +61,11 @@ class EventPatchRequest extends Request
             // IDs so a bad body returns 422 rather than a raw SQL error on the
             // entity_id integer column (EVENTREPO-XV).
             'entity_list' => ['sometimes', 'nullable', 'array'],
-            'entity_list.*' => ['integer', 'exists:entities,id'],
+            'entity_list.*' => ['integer', VisibleEntity::for($this->route('event'))],
             'created_by' => 'sometimes|nullable|integer|exists:users,id',
             'description' => 'sometimes|nullable|string',
-            'venue_id' => 'sometimes|nullable|integer|exists:entities,id',
-            'promoter_id' => 'sometimes|nullable|integer|exists:entities,id',
+            'venue_id' => ['sometimes', 'nullable', 'integer', VisibleEntity::for($this->route('event'))],
+            'promoter_id' => ['sometimes', 'nullable', 'integer', VisibleEntity::for($this->route('event'))],
             'series_id' => 'sometimes|nullable|integer|exists:series,id',
             'event_status_id' => 'sometimes|nullable|integer|exists:event_statuses,id',
             'min_age' => 'sometimes|nullable|integer|min:0|max:99',

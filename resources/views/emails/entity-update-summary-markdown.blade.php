@@ -46,8 +46,10 @@ Here are the upcoming events associated with your listing:
 ### {{ $event->display_start_at->format('l, F jS Y') }}
 **[{{ $event->name }}]({{ $url }}events/{{ $event->slug }})**
 {{ $event->display_start_at->format('g:i A') }}@if ($event->end_time) – {{ $event->end_time->format('g:i A') }}@endif
-@if ($event->venue)
+@if ($event->publicVenue())
 at [{{ $event->venue->name }}]({{ $url }}entities/{{ $event->venue->slug }})
+@elseif ($event->venueLabel())
+at {{ $event->venueLabel() }}
 @endif
 @if ($event->short)
 *{{ $event->short }}*
@@ -70,7 +72,7 @@ No upcoming events are currently listed for {{ $entity->name }}. We'd love to se
 Here is a summary of recent past events:
 
 @foreach ($pastEvents as $event)
-- **{{ $event->start_at->format('M j, Y') }}** – [{{ $event->name }}]({{ $url }}events/{{ $event->slug }})@if ($event->venue) at {{ $event->venue->name }}@endif
+- **{{ $event->start_at->format('M j, Y') }}** – [{{ $event->name }}]({{ $url }}events/{{ $event->slug }})@if ($event->venueLabel()) at {{ $event->venueLabel() }}@endif
 
 @endforeach
 

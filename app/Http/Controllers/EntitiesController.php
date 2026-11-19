@@ -113,8 +113,6 @@ class EntitiesController extends Controller
         $baseQuery = Entity::query()
             ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
             ->select('entities.*')
-            // guests never see unlisted entities
-            ->when(!isset($this->user), fn ($q) => $q->where('entity_status_id', '<>', EntityStatus::UNLISTED))
             ->with(Entity::CARD_EAGER_LOAD)
             ->withCount('follows');
 
@@ -777,14 +775,8 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, Action::CREATE);
 
-        Cache::forget('form-opts-venues');
-        Cache::forget('form-opts-promoters');
-        Cache::forget('form-opts-entities-active');
-        Cache::forget('filter-opts-venues-slug');
-        Cache::forget('filter-opts-promoters-slug');
-        Cache::forget('filter-opts-entities-slug');
-        Cache::forget('filter-opts-venues-name');
-        Cache::forget('filter-opts-entities-name');
+        // roles are synced after the save, so the option lists are dropped again here
+        Entity::forgetOptionCaches();
 
         flash()->success('Success', 'Your entity has been created');
         return redirect()->route('entities.show', compact('entity'));
@@ -812,7 +804,8 @@ class EntitiesController extends Controller
         $baseSlug = Str::slug($validated['name']);
         $slug = $baseSlug !== '' ? $baseSlug : 'entity';
         $i = 1;
-        while (Entity::where('slug', $slug)->exists()) {
+        // unlisted entities hold their slugs too
+        while (Entity::withUnlisted()->where('slug', $slug)->exists()) {
             $slug = $baseSlug.'-'.$i++;
         }
 
@@ -843,14 +836,8 @@ class EntitiesController extends Controller
 
         Activity::log($entity, $this->user, Action::CREATE);
 
-        Cache::forget('form-opts-venues');
-        Cache::forget('form-opts-promoters');
-        Cache::forget('form-opts-entities-active');
-        Cache::forget('filter-opts-venues-slug');
-        Cache::forget('filter-opts-promoters-slug');
-        Cache::forget('filter-opts-entities-slug');
-        Cache::forget('filter-opts-venues-name');
-        Cache::forget('filter-opts-entities-name');
+        // roles are synced after the save, so the option lists are dropped again here
+        Entity::forgetOptionCaches();
 
         return response()->json([
             'id' => $entity->id,
@@ -985,9 +972,8 @@ class EntitiesController extends Controller
     {
         app('redirect')->setIntendedUrl(url()->current());
 
-        // if the user is not a logged in admin, do not show unlisted entities
-        if ($entity->entity_status_id == EntityStatus::UNLISTED && (!isset($this->user) || !$this->user->hasGroup('super_admin'))) {
-
+        // the binding already hides unlisted entities from non-admins; this guards other ways in
+        if (!$entity->isVisibleTo($this->user)) {
             abort(404);
         }
 
@@ -1253,14 +1239,8 @@ class EntitiesController extends Controller
         // add to activity log
         Activity::log($entity, $this->user, Action::UPDATE);
 
-        Cache::forget('form-opts-venues');
-        Cache::forget('form-opts-promoters');
-        Cache::forget('form-opts-entities-active');
-        Cache::forget('filter-opts-venues-slug');
-        Cache::forget('filter-opts-promoters-slug');
-        Cache::forget('filter-opts-entities-slug');
-        Cache::forget('filter-opts-venues-name');
-        Cache::forget('filter-opts-entities-name');
+        // roles are synced after the save, so the option lists are dropped again here
+        Entity::forgetOptionCaches();
 
         // flash this message
         flash()->success('Success', $msg);
@@ -1755,7 +1735,7 @@ class EntitiesController extends Controller
     {
         return [
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityStatusOptions' => EntityStatus::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'entityStatusOptions' => EntityStatus::formOptionsFor($this->user),
             'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
             'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),

@@ -394,7 +394,7 @@ class PostsController extends Controller
         }
 
         $post->tags()->sync($syncArray);
-        $post->entities()->sync($request->input('entity_list', []));
+        $post->syncEntities($request->input('entity_list', []));
 
         // add to activity log
         Activity::log($post, $this->user, 2);

@@ -414,7 +414,7 @@ class InstagramEventPoster extends InstagramPoster
         foreach ($events as $event) {
             // a short run by its next date, and that it has more (#2375)
             $more = null !== $event->showtimesSummary() ? ' (+ more dates)' : '';
-            $line = "\n".$event->display_start_at?->format('D M j').' - '.$event->name.($event->venue ? ' @ '.$event->venue->name : '').$more;
+            $line = "\n".$event->display_start_at?->format('D M j').' - '.$event->name.($event->venueLabel() ? ' @ '.$event->venueLabel() : '').$more;
 
             if (strlen(urlencode($caption.$line.$footer)) > self::CAPTION_LIMIT) {
                 break;

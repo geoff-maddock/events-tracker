@@ -800,7 +800,7 @@ class ThreadsController extends Controller
         }
 
         $thread->tags()->sync($syncArray);
-        $thread->entities()->sync($request->input('entity_list', []));
+        $thread->syncEntities($request->input('entity_list', []));
         $thread->series()->sync($request->input('series_list', []));
 
         // add to activity log

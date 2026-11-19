@@ -256,7 +256,7 @@ class PostsController extends Controller
         $post->fill($input)->save();
 
         $post->tags()->sync($this->resolveTagIds($request->input('tag_list', []), $request->user()));
-        $post->entities()->sync($request->input('entity_list', []));
+        $post->syncEntities($request->input('entity_list', []));
 
         Activity::log($post, $this->user, 2);
 
@@ -285,7 +285,7 @@ class PostsController extends Controller
         }
 
         if ($request->has('entity_list')) {
-            $post->entities()->sync((array) $request->input('entity_list', []));
+            $post->syncEntities((array) $request->input('entity_list', []));
         }
 
         Activity::log($post, $this->user, 2);

@@ -121,6 +121,12 @@
                         {{ $name }}
                     </option>
                 @endforeach
+                {{-- an unlisted promoter is not among the options, but stays on the event --}}
+                @if (isset($event) && $event->promoter_id && !isset($promoterOptions[$event->promoter_id]) && $event->promoterLabel())
+                    <option value="{{ $event->promoter_id }}" {{ old('promoter_id', $event->promoter_id) == $event->promoter_id ? 'selected' : '' }}>
+                        {{ $event->promoterLabel() }}
+                    </option>
+                @endif
             </x-ui.select>
         </x-ui.form-group>
         <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">
@@ -151,6 +157,12 @@
                         {{ $name }}
                     </option>
                 @endforeach
+                {{-- an unlisted venue is not among the options, but stays on the event --}}
+                @if (isset($event) && $event->venue_id && !isset($venueOptions[$event->venue_id]) && $event->venueLabel())
+                    <option value="{{ $event->venue_id }}" {{ old('venue_id', $event->venue_id) == $event->venue_id ? 'selected' : '' }}>
+                        {{ $event->venueLabel() }}
+                    </option>
+                @endif
             </x-ui.select>
         </x-ui.form-group>
         <div class="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1">

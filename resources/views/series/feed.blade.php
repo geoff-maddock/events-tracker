@@ -19,9 +19,9 @@
 		<br>
 		{{ $s->eventType->name }}
 
-		@if ($s->venue)
-		<br>{{ $s->venue->name ?? 'No venue specified' }}
-			@if ($s->venue->getPrimaryLocationAddress() )
+		@if ($s->venueLabel())
+		<br>{{ $s->venueLabel() }}
+			@if ($s->venue?->getPrimaryLocationAddress())
 				{{ $s->venue->getPrimaryLocationAddress() }}
 			@endif
 		@else

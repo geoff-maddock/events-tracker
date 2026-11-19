@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\RecommendedByFollows;
+use App\Models\Concerns\RefersToEntities;
 use App\Contracts\HasPhotos;
 use Carbon\Carbon;
 use DateTime;
@@ -130,6 +131,7 @@ class Series extends Eloquent implements HasPhotos
 {
     use HasFactory;
     use RecommendedByFollows;
+    use RefersToEntities;
 
     protected $attributes = [
         'hold_date' => false,
@@ -1128,9 +1130,9 @@ class Series extends Eloquent implements HasPhotos
         }
 
         // include the location of the event
-        if ($this->venue) {
+        if ($this->venueLabel()) {
             $format .= ' at ';
-            $format .= $this->venue->name ?? 'No venue specified';
+            $format .= $this->venueLabel();
         }
 
         return $format;
@@ -1196,8 +1198,8 @@ class Series extends Eloquent implements HasPhotos
             }
         }
 
-        if ($this->venue) {
-            $clauses[] = 'at '.($this->venue->name ?? 'No venue specified');
+        if ($this->venueLabel()) {
+            $clauses[] = 'at '.$this->venueLabel();
         }
 
         if (!empty($clauses)) {

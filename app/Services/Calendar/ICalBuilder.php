@@ -125,7 +125,7 @@ class ICalBuilder
     private function details(Event $event, string $eventUrl): array
     {
         // set up the venue location
-        $location = $event->venue?->name ? new Location($event->venue->name) : null;
+        $location = $event->venueLabel() ? new Location($event->venueLabel()) : null;
 
         // the promoter's first contact with an email address is the organizer
         $organizer = null;
