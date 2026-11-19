@@ -1,20 +1,31 @@
+@php
+    // start_at (and so the display_start_at accessor) is nullable — an event
+    // can be saved without a date. Resolve it once and guard every format()
+    // so a dateless event doesn't crash the follower notification render with
+    // "Call to a member function format() on null" (EVENTREPO-ZR).
+    $displayStart = $event->display_start_at;
+@endphp
 @if ($event->cancelled_at)
-# {!! $event->display_start_at->format('l F jS Y') !!}
+# {!! $displayStart?->format('l F jS Y') ?? 'Date to be announced' !!}
 ## ~~{{ $event->name }}~~ **CANCELLED**
-**{!! $event->display_start_at->format('g:i A') !!}**  
+@if ($displayStart)
+**{!! $displayStart->format('g:i A') !!}**  
+@endif
 [Link]({{ $url }}events/{{$event->id }})
 
 *This event was cancelled on {{ $event->cancelled_at->format('F jS Y') }}.*
 
 ***
 @else
-# {!! $event->display_start_at->format('l F jS Y') !!}
+# {!! $displayStart?->format('l F jS Y') ?? 'Date to be announced' !!}
 @if ($photo = $event->getPrimaryPhoto())
 <img src="{{ Storage::disk('external')->url($photo->getStoragePath()) }}">  
 
 @endif
 ## {{ $event->name }}  
-**{!! $event->display_start_at->format('g:i A') !!}{!! $event->end_time ? ' until '.$event->end_time->format('g:i A') : '' !!}**  
+@if ($displayStart)
+**{!! $displayStart->format('g:i A') !!}{!! $event->end_time ? ' until '.$event->end_time->format('g:i A') : '' !!}**  
+@endif
 {{ $event->short ? '*'.$event->short.'*' : '' }}
 @if ($dates = $event->showtimesSummary())
 Showings: {{ $dates }}  

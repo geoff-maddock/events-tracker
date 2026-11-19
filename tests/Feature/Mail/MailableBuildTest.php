@@ -149,6 +149,27 @@ class MailableBuildTest extends TestCase
         $this->assertStringContainsString($tag->name, $mailable->subject);
     }
 
+    // an event can be saved without a date; start_at (and so display_start_at)
+    // is null, and the subject + template used to call ->format() on it and
+    // throw "Call to a member function format() on null" (EVENTREPO-ZR)
+    public function test_following_update_builds_and_renders_for_a_dateless_event(): void
+    {
+        $user = User::factory()->create();
+        $event = Event::factory()->create(['start_at' => null, 'name' => 'ZZ Dateless Event']);
+        $tag = Tag::factory()->create();
+
+        $mailable = new FollowingUpdate(self::URL, self::SITE, self::ADMIN, self::REPLY, $user, $event, $tag);
+
+        // build() evaluates the subject, which formats start_at
+        $this->assertBuilt($mailable, 'emails.following-update-markdown');
+        $this->assertStringContainsString($tag->name, $mailable->subject);
+
+        // render() formats display_start_at in the event-update partial
+        $html = $mailable->render();
+        $this->assertStringContainsString('ZZ Dateless Event', $html);
+        $this->assertStringContainsString('Date to be announced', $html);
+    }
+
     public function test_following_thread_update_builds(): void
     {
         $user = User::factory()->create();
