@@ -275,6 +275,9 @@ class Series extends Eloquent implements HasPhotos
         'cancelled_at' => 'datetime'
     ];
 
+    /** @var array{string, Carbon}|null the remembered result of cycleFromFoundedAt(), with what it was worked out from */
+    private ?array $nextCycleDate = null;
+
      /**
      * @param Builder<Event> $query 
      */
@@ -904,6 +907,11 @@ class Series extends Eloquent implements HasPhotos
             return $this->nextEvent()->start_at;
         }
 
+        // a series with no schedule, or a cancelled one, has no next date to work out
+        if ('No Schedule' === $this->occurrenceType?->name || null !== $this->cancelled_at) {
+            return null;
+        }
+
         return $this->cycleFromFoundedAt();
     }
 
@@ -917,20 +925,70 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
-     * Cycles forward from the founding date to the most recent date.
+     * The next date on this series' schedule, today or later: the founding date (or
+     * the created date) moved forward a period at a time until it reaches today in
+     * New York.
+     *
+     * Remembered per model for as long as the day and the schedule stay the same.
+     * Each call gets its own copy, since callers add to the date they are given.
      */
     public function cycleFromFoundedAt(): ?Carbon
     {
-        // local founded at
-        $start = $this->founded_at;
+        $today = Carbon::now('America/New_York')->startOfDay();
 
-        // if no founded date, assume created at date
-        if (!$start) {
-            $start = $this->created_at;
+        $key = implode('|', [
+            $today->getTimestamp(),
+            $this->attributes['founded_at'] ?? '',
+            $this->attributes['created_at'] ?? '',
+            $this->occurrence_week_id,
+            $this->occurrence_day_id,
+            $this->occurrenceType?->name,
+        ]);
+
+        if ($this->nextCycleDate === null || $this->nextCycleDate[0] !== $key) {
+            $this->nextCycleDate = [$key, $this->cycleFromFoundedAtTo($today)];
         }
+
+        return $this->nextCycleDate[1]->copy();
+    }
+
+    /**
+     * Steps with cycleForward(), as before, but only for the last step or two: the
+     * steps in between are skipped where skipping cannot change where they land (#2388).
+     */
+    private function cycleFromFoundedAtTo(Carbon $today): Carbon
+    {
+        // if no founded date, assume created at date
+        $start = $this->founded_at ?: $this->created_at;
         $next = $start;
 
-        while ($next < Carbon::now('America/New_York')->startOfDay()) {
+        if ($next < $today) {
+            $type = $this->occurrenceType->name;
+
+            if (in_array($type, ['Monthly', 'Bimonthly'], true)) {
+                // the first step leaves the founding date for the schedule's day of the month
+                $next = $this->cycleForward($next);
+
+                // from there every step lands on that day of the following month, so go
+                // straight to today's month. "Last of the month" (week 5) dates can fall
+                // on the 29th to 31st, where a step can skip a month: those are stepped.
+                if ($next < $today && in_array((int) $this->occurrence_week_id, [1, 2, 3, 4], true) && in_array((int) $this->occurrence_day_id, [1, 2, 3, 4, 5, 6, 7], true)) {
+                    $next = Carbon::parse($today)->setTimezone($next->getTimezone());
+                    $next->nthOfMonth($this->occurrence_week_id, $this->occurrence_day_id - 1);
+                }
+            } elseif ($type !== 'Yearly') {
+                // weekly and daily steps are a fixed length: stop one short and let the
+                // loop below take the last one
+                $days = in_array($type, ['Weekly', 'Biweekly'], true) ? 7 : 1;
+                $periods = intdiv($today->getTimestamp() - $next->getTimestamp(), $days * 86400) - 1;
+
+                if ($periods > 0) {
+                    $next = Carbon::parse($next)->addDays($periods * $days);
+                }
+            }
+        }
+
+        while ($next < $today) {
             $next = $this->cycleForward($next);
         }
 
