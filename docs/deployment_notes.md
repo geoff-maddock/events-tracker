@@ -205,10 +205,19 @@ npm run build
 ## CI and Testing
 
 Pull requests and pushes to `main` run `.github/workflows/php.yml`:
-- `composer validate`, `composer audit` and `npm audit --audit-level=high`
+- `composer validate`
+- `config:cache`, `route:cache` and `view:cache`, as production runs them, then cleared
 - ESLint (`npm run lint`) and the Vite production build (`npm run build`)
 - PHPStan (Larastan, level 3, with `phpstan-baseline.neon`)
 - the PHPUnit suite against a MySQL 8 service container (migrate + seed first)
+
+The deploy (`build-prod.yml`) only runs for a commit whose `php.yml` run passed.
+
+The dependency audits (`composer audit` and the npm audit in `.github/scripts/npm-audit.mjs`)
+are a separate workflow, `.github/workflows/audit.yml`. It runs every day, on pull requests
+that change a dependency file, and on demand from the Actions tab. It does not block a deploy:
+a failed daily run is the notice that an advisory was published, and GitHub emails it to
+whoever last changed that workflow file.
 
 Run parts of CI manually:
 

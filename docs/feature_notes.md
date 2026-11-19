@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### CI: audits in their own daily job, production caches built in CI (#2400)
+- `composer audit` and the npm audit moved out of the test job into `.github/workflows/audit.yml`,
+  which runs daily and on pull requests that change a dependency file. A newly published advisory
+  no longer stops the tests or blocks a deploy; the failed daily run is the notice.
+- CI builds `config:cache`, `route:cache` and `view:cache` before the tests, so a config or
+  Blade file that only breaks under the production caches fails in the pull request.
+- A new push to a pull request cancels the run it replaces.
+- CI and `.nvmrc` use Node 24, the version production runs.
+- Coverage is no longer collected on pushes to `main`; it was never uploaded.
+
 ### Monitoring for the scheduler, the queue and the Instagram token (#2399)
 Nothing reported a stopped scheduler or queue worker; digests and posts could stop for days.
 - `GET /up` answers 200 when the app and database are up and 503 otherwise, for an external

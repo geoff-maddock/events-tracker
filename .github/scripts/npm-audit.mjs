@@ -4,12 +4,8 @@
 // Only add an advisory that has no patched release, with the reason; remove it once a fix ships.
 import { execFileSync } from 'node:child_process';
 
-const IGNORED = {
-    // picomatch <=4.0.7 ReDoS via single-branch repeated extglobs; no patched version yet.
-    // Only reached through build tooling (vite, laravel-vite-plugin, tinyglobby), which match
-    // globs from our own config, not untrusted input, and none of it ships to the browser.
-    'GHSA-fc5q-39xc-vjpf': 'picomatch, no fix released',
-};
+// Example entry:  'GHSA-xxxx-xxxx-xxxx': 'package, no fix released',
+const IGNORED = {};
 
 const GATED = new Set(['high', 'critical']);
 

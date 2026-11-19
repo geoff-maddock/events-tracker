@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
 
+# A new push to a pull request cancels the run it replaces. Runs on main are
+# never cancelled: the deploy looks up the result for the exact commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   # runs alongside the test job instead of before it
   phpstan:
@@ -67,8 +73,7 @@ jobs:
         with:
           php-version: 8.4
           extensions: intl #optional
-          # coverage is only reported for pushes to main; it slows the suite by about 30%
-          coverage: ${{ github.event_name == 'push' && 'pcov' || 'none' }}
+          coverage: none
           ini-values: "post_max_size=256M" #optional
 
       - name: Check PHP Version
@@ -83,23 +88,19 @@ jobs:
       - name: Install dependencies
         run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      # Fails the build on any unignored advisory; known-abandoned packages are reported, not gated.
-      - name: Composer security audit
-        run: composer audit --abandoned=report
+      # The dependency audits run in their own workflow (audit.yml), so a newly
+      # published advisory doesn't stop the tests or block a deploy.
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          # the version production runs
+          node-version: 24
           cache: npm
 
       # npm ci installs exactly what package-lock.json pins (and fails if it is out of date)
       - name: Install NPM Dependencies
         run: npm ci
-
-      # Fails on any high/critical advisory not ignored in the script (for unpatched ones only).
-      - name: NPM security audit
-        run: node .github/scripts/npm-audit.mjs
 
       - name: Lint JS
         run: npm run lint
@@ -120,6 +121,17 @@ jobs:
       - name: Create symlink
         run: php artisan storage:link
 
+      # Production runs with these three caches and nothing else did, so a
+      # closure in a config file or a Blade file that doesn't compile first
+      # failed during a deploy. Cleared again straight away: a cached config
+      # would make the tests ignore phpunit.xml.
+      - name: Build the production caches
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize:clear
+
       - name: Run test suite
         env:
           APP_URL: http://localhost
@@ -134,10 +146,4 @@ jobs:
           DB_PASSWORD: db-password
         # RefreshDatabase builds and seeds each process's own test database
         # (event-repo-db-name_test_N), so there is no separate migrate/seed step.
-        # Coverage (pcov) is only collected for pushes to main.
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            php artisan test --parallel --processes=4 --coverage-text --coverage-clover=coverage.xml
-          else
-            php artisan test --parallel --processes=4
-          fi
+        run: php artisan test --parallel --processes=4
