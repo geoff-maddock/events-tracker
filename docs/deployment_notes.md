@@ -437,6 +437,7 @@ What tells you something has stopped, and what you have to set up once.
 | Cron or the scheduler stopped | `monitor:check` runs every 15 minutes and checks in to the Sentry cron monitor `scheduler-heartbeat`. Missed check-ins raise a Sentry issue. |
 | A scheduled command failed | An exception is reported to Sentry as usual. A non-zero exit without one is reported as `MonitoringAlert: Scheduled command failed ...`. |
 | Queue worker stopped or stuck | `monitor:check` reports `Queue is not being worked` when a due job has waited `MONITOR_QUEUE_MAX_WAIT_MINUTES` (default 45). |
+| `QUEUE_DRIVER` lost from `.env` | `monitor:check` reports `The queue driver is "sync" in production`: jobs would be running inside web requests. |
 | A queued job failed | The worker reports the exception to Sentry; the row is in `failed_jobs` (`php artisan queue:failed`). |
 | Facebook/Instagram token expiring | `monitor:check` asks the Graph API once a day and reports when the page token is invalid or within `MONITOR_TOKEN_WARN_DAYS` (default 14) of expiry. |
 

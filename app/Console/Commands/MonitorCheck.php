@@ -41,6 +41,14 @@ class MonitorCheck extends Command
     private function checkQueue(): void
     {
         if (config('queue.default') !== 'database') {
+            // The fallback when QUEUE_DRIVER is lost from .env. Nothing breaks
+            // visibly: Instagram and Discord posts just run inside web requests.
+            if (config('queue.default') === 'sync' && app()->environment('production')) {
+                $this->raise('queue-driver', 'The queue driver is "sync" in production: queued jobs run inside web requests. Set QUEUE_DRIVER=database in .env and rebuild the config cache.');
+
+                return;
+            }
+
             $this->line('Queue: not the database driver, skipped.');
 
             return;

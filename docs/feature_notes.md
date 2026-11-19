@@ -4,6 +4,17 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### `.env.example` lists every setting; a sync queue in production is reported (#2403)
+- `.env.example` was missing 49 of the settings `config/` reads, including the Spaces keys photo
+  uploads need, the Instagram tokens, the Sentry DSN, the session settings and the captcha keys
+  registration requires. It now lists all of them, grouped, with optional ones commented out
+  beside their default. `SHIELD_USER` / `SHIELD_PASSWORD`, which nothing reads, are gone.
+- The example's `MAIL_MAILER` is now `log`, so a new install writes mail to the log until a real
+  mailer is configured, instead of failing against placeholder SES credentials.
+- A test fails when `config/` reads a setting the example lacks, when the example has one nothing
+  reads, or when `env()` is called outside `config/`.
+- `monitor:check` reports when the queue driver is `sync` in production, which is what a lost
+  `QUEUE_DRIVER` falls back to.
 ### One schema dump, and a command to compare a database with a fresh install (#2402)
 - `database/schema/` held two dumps and Laravel only ever loaded the older one, which had been
   edited by hand. There is now one, `mysql-schema.sql`, generated from a database built the old
