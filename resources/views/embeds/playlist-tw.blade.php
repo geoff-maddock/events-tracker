@@ -45,7 +45,7 @@
             }
         @endphp
         @if ($expectedEmbedCount > 0)
-        <div id="playlist-events-{{ $event->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/events/{{ $event->id }}/load-embeds" data-slug="{{ $event->slug }}" data-resource-type="events" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
+        <div id="playlist-events-{{ $event->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/events/{{ $event->id }}/load-embeds" data-slug="{{ $event->slug }}" data-resource-type="events" data-endpoint="embeds" data-version="{{ \App\Services\Embeds\OembedExtractor::versionFor($event) }}" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
                 <h2 class="text-xl font-semibold">Audio</h2>
@@ -74,7 +74,7 @@
             }
         @endphp
         @if ($expectedEmbedCount > 0)
-        <div id="playlist-entities-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/entities/{{ $entity->id }}/load-embeds" data-slug="{{ $entity->slug }}" data-resource-type="entities" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
+        <div id="playlist-entities-{{ $entity->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/entities/{{ $entity->id }}/load-embeds" data-slug="{{ $entity->slug }}" data-resource-type="entities" data-endpoint="embeds" data-version="{{ \App\Services\Embeds\OembedExtractor::versionFor($entity) }}" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
                 <h2 class="text-xl font-semibold">Audio</h2>
@@ -110,7 +110,7 @@
             }
         @endphp
         @if ($expectedEmbedCount > 0)
-        <div id="playlist-series-{{ $series->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/series/{{ $series->id }}/load-embeds" data-slug="{{ $series->slug }}" data-resource-type="series" data-endpoint="embeds" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
+        <div id="playlist-series-{{ $series->id}}" class="playlist-id rounded-lg border bg-card shadow p-6" data-url="/series/{{ $series->id }}/load-embeds" data-slug="{{ $series->slug }}" data-resource-type="series" data-endpoint="embeds" data-version="{{ \App\Services\Embeds\OembedExtractor::versionFor($series) }}" style="min-height: {{ 80 + $expectedEmbedCount * 148 }}px;">
             <div class="flex items-center gap-2 mb-4">
                 <i class="bi bi-music-note-beamed text-lg"></i>
                 <h2 class="text-xl font-semibold">Audio</h2>

@@ -148,7 +148,7 @@ class TagsController extends Controller
         $events = Event::whereHas('tags', $taggedWith)->visible($this->user)
             ->orderBy('start_at', 'DESC')
             ->orderBy('name', 'ASC')
-            ->with('visibility', 'venue', 'tags', 'entities', 'series', 'eventType', 'threads')
+            ->with('visibility', 'venue', 'tags', 'entities.links', 'series', 'eventType', 'threads')
             ->simplePaginate($this->limit);
 
         $entities = Entity::whereHas('tags', $taggedWith)->active()

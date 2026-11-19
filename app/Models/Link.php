@@ -40,6 +40,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Link extends Model
 {
+    /**
+     * Saving, deleting, attaching or detaching a link touches its entities, so
+     * anything keyed on an entity's updated_at (the embed caches) sees the change.
+     *
+     * @var list<string>
+     */
+    protected $touches = ['entities'];
+
     protected static function booted(): void
     {
         // hidden along with an unlisted entity it belongs to

@@ -71,9 +71,8 @@ class OembedExtractor
      */
     public function getEmbedsForEntity(Entity $entity, string $size = "medium"): array
     {
-        return Cache::remember(
-            $this->embedsCacheKey('entity', $entity->slug ?? (string) $entity->id, $this->size, $entity->updated_at?->timestamp),
-            self::CACHE_TTL_SECONDS,
+        return $this->rememberEmbeds(
+            $this->embedsCacheKey('entity', $entity->slug ?? (string) $entity->id, $this->size, self::versionFor($entity)),
             function () use ($entity, $size): array {
                 $urls = [];
 
@@ -94,15 +93,12 @@ class OembedExtractor
      */
     public function getEmbedsForEvent(Event $event, string $size = "medium"): array
     {
-        return Cache::remember(
-            $this->embedsCacheKey('event', $event->slug ?? (string) $event->id, $this->size, $event->updated_at?->timestamp),
-            self::CACHE_TTL_SECONDS,
+        return $this->rememberEmbeds(
+            $this->embedsCacheKey('event', $event->slug ?? (string) $event->id, $this->size, self::versionFor($event)),
             function () use ($event, $size): array {
                 $body = $event->description ?? '';
 
-                $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
-                preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
-                $urls = $result[0];
+                $urls = self::urlsIn($body);
 
                 foreach ($event->entities as $entity) {
                     foreach ($entity->links as $link) {
@@ -123,15 +119,12 @@ class OembedExtractor
      */
     public function getEmbedsForSeries(Series $series, string $size = "medium"): array
     {
-        return Cache::remember(
-            $this->embedsCacheKey('series', $series->slug ?? (string) $series->id, $this->size, $series->updated_at?->timestamp),
-            self::CACHE_TTL_SECONDS,
+        return $this->rememberEmbeds(
+            $this->embedsCacheKey('series', $series->slug ?? (string) $series->id, $this->size, self::versionFor($series)),
             function () use ($series, $size): array {
                 $body = $series->description ?? '';
 
-                $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
-                preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
-                $urls = $result[0];
+                $urls = self::urlsIn($body);
 
                 foreach ($series->entities as $entity) {
                     foreach ($entity->links as $link) {
@@ -145,6 +138,88 @@ class OembedExtractor
                 return $this->extractEmbedsFromUrls($urls, $size);
             }
         );
+    }
+
+    /**
+     * A number that changes whenever the embeds for this record could: when it is
+     * saved, when an entity is added to or removed from it, or when one of those
+     * entities is saved (adding, changing or removing a link touches its entities).
+     * The server cache key and the browser cache both carry it, so neither keeps a
+     * stale answer, including "no embeds".
+     */
+    public static function versionFor(Entity|Event|Series $model): int
+    {
+        $parts = [$model->updated_at?->getTimestamp() ?? 0];
+
+        if (!$model instanceof Entity) {
+            foreach ($model->entities->sortBy('id') as $entity) {
+                $parts[] = $entity->id.':'.($entity->updated_at?->getTimestamp() ?? 0);
+            }
+        }
+
+        return count($parts) === 1 ? $parts[0] : crc32(implode('|', $parts));
+    }
+
+    /**
+     * Whether this record has anything that could become a player: a SoundCloud or
+     * Bandcamp URL in its description or among its entities' links. A list card
+     * leaves out its player placeholder, and the request it would make, when not.
+     *
+     * Reads only what is already loaded, so a page of cards adds no queries; when
+     * the links are not loaded the answer is "maybe" (true).
+     */
+    public static function mayHaveEmbeds(Entity|Event|Series $model): bool
+    {
+        // the same test resolveRawSources() applies before it fetches anything
+        $resolvable = fn (string $url): bool => str_contains($url, 'soundcloud.com') || self::bandcampUrl($url) !== null;
+        $anyLink = fn (Entity $entity): bool => !$entity->relationLoaded('links')
+            || $entity->links->contains(fn ($link) => $resolvable((string) $link->url));
+
+        if ($model instanceof Entity) {
+            return $anyLink($model);
+        }
+
+        foreach (self::urlsIn($model->description ?? '') as $url) {
+            if ($resolvable($url)) {
+                return true;
+            }
+        }
+
+        return !$model->relationLoaded('entities') || $model->entities->contains($anyLink);
+    }
+
+    /**
+     * The URLs in a description.
+     *
+     * @return list<string>
+     */
+    protected static function urlsIn(string $body): array
+    {
+        $regex = "/\b(?:(?:https|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+        preg_match_all($regex, $body, $result, PREG_PATTERN_ORDER);
+
+        return $result[0];
+    }
+
+    /**
+     * Cache::remember(), except that an empty result is kept for an hour, not a
+     * week: it can come from a provider that did not answer, and should be retried.
+     *
+     * @param \Closure(): array<int, string> $resolve
+     * @return array<int, string>
+     */
+    protected function rememberEmbeds(string $key, \Closure $resolve): array
+    {
+        $cached = Cache::get($key);
+
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $embeds = $resolve();
+        Cache::put($key, $embeds, $embeds === [] ? self::FAILED_SOURCES_TTL_SECONDS : self::CACHE_TTL_SECONDS);
+
+        return $embeds;
     }
 
     /**

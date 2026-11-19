@@ -8,6 +8,9 @@
 var EmbedCache = (function () {
     var CACHE_KEY_PREFIX = 'embed_cache_';
     var DEFAULT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+    // "No embeds" is remembered for an hour only, like the server: it can be a
+    // provider that did not answer, and should be asked again
+    var EMPTY_TTL_MS = 60 * 60 * 1000;
 
     /**
      * Generate a cache key for a specific resource
@@ -36,9 +39,11 @@ var EmbedCache = (function () {
      * @param {string} resourceType - 'events', 'entities', or 'series'
      * @param {string} slug - The slug of the resource
      * @param {string} endpoint - 'embeds' or 'minimal-embeds' (default: 'minimal-embeds')
+     * @param {string} [version] - The record's version, from the placeholder's data-version.
+     *   An entry stored under a different version is stale: the record was saved since.
      * @returns {Array|null} Array of embed HTML strings or null if not cached/expired
      */
-    function get(resourceType, slug, endpoint) {
+    function get(resourceType, slug, endpoint, version) {
         endpoint = endpoint || 'minimal-embeds';
 
         try {
@@ -51,7 +56,9 @@ var EmbedCache = (function () {
 
             var cachedItem = JSON.parse(cached);
 
-            if (isValid(cachedItem)) {
+            var sameVersion = !version || String(cachedItem.version) === String(version);
+
+            if (isValid(cachedItem) && sameVersion) {
                 return cachedItem.data;
             }
 
@@ -70,18 +77,20 @@ var EmbedCache = (function () {
      * @param {string} slug - The slug of the resource
      * @param {Array} data - Array of embed HTML strings
      * @param {string} endpoint - 'embeds' or 'minimal-embeds' (default: 'minimal-embeds')
-     * @param {number} ttlMs - Time to live in milliseconds (default: 7 days)
+     * @param {number} ttlMs - Time to live in milliseconds (default: 7 days, or 1 hour for an empty result)
+     * @param {string} [version] - The record's version, stored with the entry
      */
-    function set(resourceType, slug, data, endpoint, ttlMs) {
+    function set(resourceType, slug, data, endpoint, ttlMs, version) {
         endpoint = endpoint || 'minimal-embeds';
-        ttlMs = ttlMs || DEFAULT_TTL_MS;
+        ttlMs = ttlMs || (data && data.length > 0 ? DEFAULT_TTL_MS : EMPTY_TTL_MS);
 
         try {
             var key = getCacheKey(resourceType, slug, endpoint);
             var cachedItem = {
                 data: data,
                 timestamp: Date.now(),
-                ttl: ttlMs
+                ttl: ttlMs,
+                version: version ? String(version) : null
             };
 
             localStorage.setItem(key, JSON.stringify(cachedItem));
@@ -173,6 +182,7 @@ var EmbedLoader = (function () {
      * @param {Object} options - Options for loading embeds
      * @param {string} options.endpoint - 'embeds' or 'minimal-embeds' (default: 'minimal-embeds')
      * @param {boolean} options.forceRefresh - Skip cache and fetch fresh data (default: false)
+     * @param {string} options.version - The record's version (data-version); a cached result from another version is not used
      * @param {Function} options.onSuccess - Callback when embeds are loaded successfully
      * @param {Function} options.onError - Callback when there's an error loading embeds
      * @returns {Promise} Promise that resolves with the embed data
@@ -181,13 +191,14 @@ var EmbedLoader = (function () {
         options = options || {};
         var endpoint = options.endpoint || 'minimal-embeds';
         var forceRefresh = options.forceRefresh || false;
+        var version = options.version || null;
         var onSuccess = options.onSuccess || function () { };
         var onError = options.onError || function () { };
 
         return new Promise(function (resolve, reject) {
             // Try cache first (unless force refresh is requested)
             if (!forceRefresh) {
-                var cachedEmbeds = EmbedCache.get(resourceType, slug, endpoint);
+                var cachedEmbeds = EmbedCache.get(resourceType, slug, endpoint, version);
                 if (cachedEmbeds !== null) {
                     onSuccess(cachedEmbeds);
                     resolve(cachedEmbeds);
@@ -206,9 +217,11 @@ var EmbedLoader = (function () {
             }).done(function (response) {
                 var embedsData = response.data || [];
 
-                // Only cache if there is data to cache
-                if (embedsData.length > 0) {
-                    EmbedCache.set(resourceType, slug, embedsData, endpoint);
+                // An empty result is cached too (for a shorter time), so a card with
+                // nothing to play does not ask again on every page view. Only with a
+                // version, though: without one, nothing would tell us it had gone stale.
+                if (embedsData.length > 0 || version) {
+                    EmbedCache.set(resourceType, slug, embedsData, endpoint, null, version);
                 }
 
                 onSuccess(embedsData);
