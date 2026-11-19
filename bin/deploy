@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+#
+# Deploys the current main to this checkout. Run it on the production server,
+# from anywhere:
+#
+#     bin/deploy              deploy the latest main
+#     bin/deploy <commit>     deploy only if main is at exactly that commit
+#
+# It is the one list of deploy steps: .github/workflows/build-prod.yml runs
+# this same script. It refuses to run anywhere but production, because the
+# caches it builds make PHPUnit ignore phpunit.xml on a dev checkout.
+#
+# There is no rollback. A step that fails stops the deploy where it is and
+# says which step; fix the cause and run it again.
+
+set -euo pipefail
+
+# group-writable files, so www-data (web, scheduler, worker) can still write them
+umask 002
+
+step() {
+    printf '\n==> %s\n' "$1"
+}
+
+fail() {
+    printf '\nDEPLOY FAILED: %s\n' "$1" >&2
+    exit 1
+}
+
+env_value() {
+    # the value of one key in .env, without surrounding quotes
+    grep -E "^$1=" .env | tail -n 1 | cut -d= -f2- | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/"
+}
+
+check_url() {
+    local url="$1"
+    local status
+
+    status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 --retry 3 --retry-delay 3 --retry-all-errors "$url") || status="no answer"
+
+    if [ "$status" != "200" ]; then
+        fail "$url answered $status, expected 200. The new code is live; check storage/logs/laravel.log."
+    fi
+
+    echo "$url: 200"
+}
+
+main() {
+    cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+    [ -f .env ] || fail "no .env in $(pwd)."
+    [ "$(env_value APP_ENV)" = "production" ] || fail "APP_ENV is not production in $(pwd)/.env. This script is for the production checkout only."
+
+    local stage="pull"
+    if [ "${1:-}" = "--after-pull" ]; then
+        stage="build"
+        shift
+    fi
+    local expected="${1:-}"
+
+    if [ "$stage" = "pull" ]; then
+        # First: a cached config that names a removed provider stops every
+        # artisan command, and the site runs fine from .env until the caches
+        # are rebuilt below.
+        step "Clearing bootstrap caches"
+        rm -f bootstrap/cache/*.php
+
+        step "Pulling main"
+        git checkout main
+        git pull --ff-only
+
+        if [ -n "$expected" ] && [ "$(git rev-parse HEAD)" != "$expected" ]; then
+            fail "main is at $(git rev-parse HEAD), expected $expected. Nothing after the pull has run."
+        fi
+
+        # The pull may have changed this script; run the rest from the new copy.
+        exec bash bin/deploy --after-pull "$expected"
+    fi
+
+    local release
+    release=$(git rev-parse HEAD)
+
+    # Always: a change to composer.lock that isn't installed is an outage.
+    step "Installing PHP dependencies"
+    composer install --no-dev --optimize-autoloader --no-interaction
+
+    # Additive schema changes ship with the code that needs them.
+    step "Running migrations"
+    php artisan migrate --force
+
+    step "Building frontend assets"
+    npm ci
+    npm run build
+
+    # SENTRY_RELEASE is read by config/sentry.php and kept in the cached
+    # config, so every error is tagged with the commit that was live.
+    step "Caching config, routes and views (release $release)"
+    SENTRY_RELEASE="$release" php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+
+    # The supervised worker keeps the old code in memory until restarted.
+    step "Restarting the queue worker"
+    php artisan queue:restart
+
+    step "Checking the site"
+    local url="${DEPLOY_CHECK_URL:-$(env_value APP_URL)}"
+    url="${url%/}"
+    [ -n "$url" ] || fail "no APP_URL in .env to check; set DEPLOY_CHECK_URL."
+    check_url "$url/up"
+    check_url "$url/"
+
+    printf '\nDeployed %s.\n' "$release"
+}
+
+main "$@"

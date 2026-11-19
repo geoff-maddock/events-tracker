@@ -4,6 +4,15 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One deploy script, checked at the end; Sentry releases (#2401)
+- `bin/deploy` on the production server runs every deploy step in order (pull, composer install,
+  migrate, asset build, config/route/view caches, worker restart) and stops at the first failure.
+  The GitHub deploy workflow runs the same script. It refuses to run outside production.
+- It ends by requesting `/up` and the home page and fails unless both answer 200.
+- Errors in Sentry are tagged with the deployed commit (`SENTRY_RELEASE`, set by the script).
+- Query values are no longer sent to Sentry with errors. Set `SENTRY_SQL_BINDINGS=true` to turn
+  them back on.
+
 ### CI: audits in their own daily job, production caches built in CI (#2400)
 - `composer audit` and the npm audit moved out of the test job into `.github/workflows/audit.yml`,
   which runs daily and on pull requests that change a dependency file. A newly published advisory

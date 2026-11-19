@@ -36,44 +36,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            # stop at the first failing step instead of carrying on with a half-deployed app
-            set -e
-
+            # bin/deploy is the one list of deploy steps, shared with a deploy
+            # run by hand on the server. Given a commit, it stops after the
+            # pull unless main is at exactly the commit CI checked.
             cd /var/www/events-tracker
-
-            # Drop the bootstrap caches before anything else: before git (the
-            # package manifests used to be tracked, and the server's --no-dev
-            # copies would block the pull) and before any artisan command boots
-            # Laravel, so a cached config referencing a removed provider can't
-            # fatal (this is what threw "HtmlServiceProvider not found").
-            rm -f bootstrap/cache/*.php
-
-            git checkout main
-            git remote update
-            git pull
-
-            # deploy exactly the commit CI checked; if main moved since, re-run the workflow
-            if [ "$(git rev-parse HEAD)" != "${{ github.sha }}" ]; then
-              echo "main is at $(git rev-parse HEAD), expected ${{ github.sha }}; aborting."
-              exit 1
-            fi
-
-            # Keep PHP + JS deps in sync with the committed lockfiles. The missing
-            # composer install here is what caused the link_to_route "cannot
-            # redeclare" outage when a package was removed from composer.json.
-            composer install --no-dev --optimize-autoloader --no-interaction
-
-            # Additive schema changes ship with the code that needs them.
-            php artisan migrate --force
-
-            # npm ci installs exactly what package-lock.json pins.
-            npm ci
-            npm run build
-
-            # Rebuild the production caches from the freshly deployed code.
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-
-            # The supervised queue worker keeps old code in memory until restarted.
-            php artisan queue:restart
+            bash bin/deploy "${{ github.sha }}"
