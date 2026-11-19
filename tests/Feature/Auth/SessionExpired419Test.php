@@ -56,4 +56,30 @@ class SessionExpired419Test extends TestCase
         $response->assertJsonStructure(['token']);
         $this->assertNotEmpty($response->json('token'));
     }
+
+    /**
+     * The message has to be on whichever page the user is sent back to, not
+     * only the sign-in pages (#2396).
+     */
+    public function test_session_messages_are_shown_on_any_page(): void
+    {
+        foreach (['/events', '/tags'] as $page) {
+            $html = $this->withSession(['error' => 'Probe error message', 'status' => 'Probe status message'])
+                ->get($page)->assertOk()->getContent();
+
+            $this->assertSame(1, substr_count($html, 'Probe error message'), $page);
+            $this->assertSame(1, substr_count($html, 'Probe status message'), $page);
+        }
+    }
+
+    public function test_pages_that_place_the_message_themselves_show_it_once(): void
+    {
+        foreach (['/login', '/register', '/password/reset'] as $page) {
+            $html = $this->withSession(['error' => 'Probe error message', 'status' => 'Probe status message'])
+                ->get($page)->assertOk()->getContent();
+
+            $this->assertSame(1, substr_count($html, 'Probe error message'), $page);
+            $this->assertSame(1, substr_count($html, 'Probe status message'), $page);
+        }
+    }
 }

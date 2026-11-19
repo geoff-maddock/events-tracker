@@ -8,7 +8,6 @@
     marks onboarding complete; "Skip for now" permanently dismisses it.
     Either way it never auto-shows again.
 --}}
-<style>[x-cloak]{display:none!important}</style>
 <div x-data="onboarding()" x-init="init()" x-show="open" x-cloak
      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
      role="dialog" aria-modal="true" aria-labelledby="onboarding-title">

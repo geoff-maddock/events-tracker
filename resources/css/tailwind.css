@@ -24,6 +24,9 @@
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
+    /* text on the page or card background; --destructive is tuned as a button fill */
+    --destructive-text: 0 74% 42%;
+    --success-text: 142 72% 25%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
@@ -48,6 +51,8 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
+    --destructive-text: 0 91% 71%;
+    --success-text: 142 69% 58%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
@@ -67,6 +72,11 @@
 
   a {
     text-decoration: none;
+  }
+
+  /* Alpine removes x-cloak once it has started; until then the element stays hidden */
+  [x-cloak] {
+    display: none !important;
   }
 }
 

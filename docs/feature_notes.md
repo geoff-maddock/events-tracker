@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Session messages shown on every page, readable error text (#2396)
+- A message a redirect leaves in the session (`->with('error', ...)` or `->with('status', ...)`),
+  such as "Your session expired. Please try again.", is now shown at the top of whichever page
+  the user lands on. It was only shown on the sign-in pages. The markup is
+  `partials/session-messages`.
+- Elements marked `x-cloak` (the search dropdown, some menus and modals) stay hidden until
+  Alpine starts, on every page; the rule is now in the global stylesheet.
+- `text-destructive` uses its own colour token (`--destructive-text`), so error text and the
+  "Cancelled" badge meet 4.5:1 contrast in both themes. Buttons keep the `--destructive` fill.
+  `text-success` is new, for status messages.
 ### Faster series next dates (#2388)
 A series' next scheduled date is now worked out without stepping through every week or month
 since it was founded, and once per series per request. The dates are unchanged. In the API, a

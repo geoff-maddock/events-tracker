@@ -99,6 +99,10 @@
 
 			<!-- Main Content Area -->
 			<main class="flex-1 min-w-0 w-full mx-auto p-4 md:p-6 overflow-x-hidden overflow-y-auto bg-background max-w-[2400px]">
+				@sectionMissing('session-messages')
+					@include('partials.session-messages')
+				@endif
+
 				@yield('content')
 
 				@include('partials.footer-tw')

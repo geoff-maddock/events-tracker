@@ -2,6 +2,8 @@
 
 @section('title', 'Register')
 
+@section('session-messages', 'inline')
+
 @section('content')
 <div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
     <div class="w-full max-w-md">
@@ -27,14 +29,7 @@
                 </div>
             @endif
 
-            @if (session('error'))
-                <div class="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <i class="bi bi-exclamation-triangle text-destructive"></i>
-                        <span class="text-destructive">{{ session('error') }}</span>
-                    </div>
-                </div>
-            @endif
+            @include('partials.session-messages')
 
             <form method="POST" action="{{ url('/register') }}" class="space-y-6">
                 @csrf
