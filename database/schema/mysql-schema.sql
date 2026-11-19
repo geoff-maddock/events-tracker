@@ -57,7 +57,9 @@ CREATE TABLE `activities` (
   KEY `activities_user_id_index` (`user_id`) USING BTREE,
   KEY `activities_object_id_index` (`object_id`) USING BTREE,
   KEY `activities_action_id_index` (`action_id`) USING BTREE,
-  KEY `activities_object_table_index` (`object_table`) USING BTREE
+  KEY `activities_object_table_index` (`object_table`) USING BTREE,
+  KEY `activities_user_id_action_id_index` (`user_id`,`action_id`),
+  KEY `activities_ip_address_created_at_index` (`ip_address`,`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `alias_entity`;
@@ -202,7 +204,8 @@ CREATE TABLE `comments` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `comments_response_to_foreign` (`response_to`)
+  KEY `comments_response_to_foreign` (`response_to`),
+  KEY `comments_commentable_type_commentable_id_index` (`commentable_type`,`commentable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `contact_entity`;
@@ -262,6 +265,129 @@ CREATE TABLE `default_settings` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `discord_posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `discord_posts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `discord_target_id` bigint unsigned NOT NULL,
+  `event_id` int unsigned NOT NULL DEFAULT '0',
+  `reason` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason_key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `message_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `channel_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payload_hash` char(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attempts` tinyint unsigned NOT NULL DEFAULT '0',
+  `error` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `posted_at` timestamp NULL DEFAULT NULL,
+  `created_by` int unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `discord_posts_dedupe_unique` (`discord_target_id`,`event_id`,`reason`,`reason_key`),
+  KEY `discord_posts_event_id_index` (`event_id`),
+  KEY `discord_posts_status_created_at_index` (`status`,`created_at`),
+  KEY `discord_posts_created_by_foreign` (`created_by`),
+  CONSTRAINT `discord_posts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `discord_posts_discord_target_id_foreign` FOREIGN KEY (`discord_target_id`) REFERENCES `discord_targets` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `discord_target_criteria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `discord_target_criteria` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `discord_target_id` bigint unsigned NOT NULL,
+  `criteria_type` varchar(24) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `criteria_id` int unsigned NOT NULL,
+  `mode` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'include',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `discord_target_criteria_unique` (`discord_target_id`,`criteria_type`,`criteria_id`),
+  KEY `discord_target_criteria_criteria_type_criteria_id_index` (`criteria_type`,`criteria_id`),
+  CONSTRAINT `discord_target_criteria_discord_target_id_foreign` FOREIGN KEY (`discord_target_id`) REFERENCES `discord_targets` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `discord_targets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `discord_targets` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(96) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(96) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `webhook_url` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `webhook_fingerprint` char(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `webhook_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `match_all` tinyint(1) NOT NULL DEFAULT '0',
+  `requires_photo` tinyint(1) NOT NULL DEFAULT '1',
+  `post_on_create` tinyint(1) NOT NULL DEFAULT '1',
+  `post_reminders` tinyint(1) NOT NULL DEFAULT '0',
+  `post_digest` tinyint(1) NOT NULL DEFAULT '0',
+  `allow_manual` tinyint(1) NOT NULL DEFAULT '1',
+  `reminder_offsets` json DEFAULT NULL,
+  `digest_day` tinyint NOT NULL DEFAULT '4',
+  `digest_hour` tinyint NOT NULL DEFAULT '10',
+  `digest_window_days` smallint NOT NULL DEFAULT '7',
+  `mention` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `embed_color` int unsigned DEFAULT NULL,
+  `consecutive_failures` smallint NOT NULL DEFAULT '0',
+  `last_success_at` timestamp NULL DEFAULT NULL,
+  `last_failure_at` timestamp NULL DEFAULT NULL,
+  `last_error` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `disabled_at` timestamp NULL DEFAULT NULL,
+  `disabled_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` int unsigned DEFAULT NULL,
+  `updated_by` int unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `discord_targets_slug_unique` (`slug`),
+  UNIQUE KEY `discord_targets_webhook_fingerprint_unique` (`webhook_fingerprint`),
+  KEY `discord_targets_is_enabled_post_on_create_index` (`is_enabled`,`post_on_create`),
+  KEY `discord_targets_digest_index` (`is_enabled`,`post_digest`,`digest_day`,`digest_hour`),
+  KEY `discord_targets_created_by_foreign` (`created_by`),
+  KEY `discord_targets_updated_by_foreign` (`updated_by`),
+  CONSTRAINT `discord_targets_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `discord_targets_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `email_opt_outs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `email_opt_outs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `list` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_opt_outs_email_list_unique` (`email`,`list`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `email_suppressions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `email_suppressions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'bounce',
+  `source` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'manual',
+  `code` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `error` text COLLATE utf8mb4_unicode_ci,
+  `suppressed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_suppressions_email_unique` (`email`),
+  KEY `email_suppressions_reason_index` (`reason`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `entities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -284,6 +410,7 @@ CREATE TABLE `entities` (
   PRIMARY KEY (`id`),
   KEY `entities_entity_type_id_index` (`entity_type_id`) USING BTREE,
   KEY `entities_entity_status_id_index` (`entity_status_id`) USING BTREE,
+  KEY `entities_slug_index` (`slug`),
   FULLTEXT KEY `entities_search_fulltext` (`name`,`short`,`description`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -297,6 +424,31 @@ CREATE TABLE `entity_attribute` (
   `value` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `entity_claims`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entity_claims` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_id` int unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `evidence_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reviewed_by` int unsigned DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `review_note` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `entity_claims_status_created_at_index` (`status`,`created_at`),
+  KEY `entity_claims_entity_id_status_index` (`entity_id`,`status`),
+  KEY `entity_claims_user_id_status_index` (`user_id`,`status`),
+  KEY `entity_claims_reviewed_by_foreign` (`reviewed_by`),
+  CONSTRAINT `entity_claims_entity_id_foreign` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `entity_claims_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `entity_claims_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `entity_event`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -320,6 +472,25 @@ CREATE TABLE `entity_link` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `entity_link_entity_id_index` (`entity_id`),
   KEY `entity_link_link_id_index` (`link_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `entity_owners`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entity_owners` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_id` int unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `granted_by` int unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `entity_owners_entity_id_user_id_unique` (`entity_id`,`user_id`),
+  KEY `entity_owners_user_id_index` (`user_id`),
+  KEY `entity_owners_granted_by_foreign` (`granted_by`),
+  CONSTRAINT `entity_owners_entity_id_foreign` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `entity_owners_granted_by_foreign` FOREIGN KEY (`granted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `entity_owners_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `entity_permission`;
@@ -411,6 +582,25 @@ CREATE TABLE `entity_series` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `entity_series_series_id_index` (`series_id`),
   KEY `entity_series_entity_id_index` (`entity_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `entity_stats_daily`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entity_stats_daily` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_id` int unsigned NOT NULL,
+  `date` date NOT NULL,
+  `views` int unsigned NOT NULL DEFAULT '0',
+  `follows` int unsigned NOT NULL DEFAULT '0',
+  `clicks` int unsigned NOT NULL DEFAULT '0',
+  `responses` int unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `entity_stats_daily_entity_id_date_unique` (`entity_id`,`date`),
+  KEY `entity_stats_daily_date_index` (`date`),
+  CONSTRAINT `entity_stats_daily_entity_id_foreign` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `entity_statuses`;
@@ -537,6 +727,22 @@ CREATE TABLE `event_photo` (
   KEY `event_photo_photo_id_index` (`photo_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `event_reach_daily`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `event_reach_daily` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `event_id` int unsigned NOT NULL,
+  `date` date NOT NULL,
+  `channel` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `count` int unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `event_reach_daily_event_id_date_channel_unique` (`event_id`,`date`,`channel`),
+  CONSTRAINT `event_reach_daily_event_id_foreign` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `event_responses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -622,6 +828,23 @@ CREATE TABLE `event_shares` (
   PRIMARY KEY (`id`),
   KEY `event_shares_event_id_index` (`event_id`),
   KEY `event_shares_created_by_index` (`created_by`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `event_showings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `event_showings` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `event_id` int unsigned NOT NULL,
+  `start_at` datetime NOT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `door_at` datetime DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `event_showings_event_id_start_at_index` (`event_id`,`start_at`),
+  KEY `event_showings_start_at_index` (`start_at`),
+  CONSTRAINT `event_showings_event_id_foreign` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `event_statuses`;
@@ -733,6 +956,7 @@ CREATE TABLE `events` (
   `soundcheck_at` timestamp NULL DEFAULT NULL,
   `door_at` timestamp NULL DEFAULT NULL,
   `start_at` timestamp NULL DEFAULT NULL,
+  `last_start_at` timestamp NULL DEFAULT NULL,
   `end_at` timestamp NULL DEFAULT NULL,
   `min_age` tinyint unsigned DEFAULT NULL,
   `series_id` int unsigned DEFAULT NULL,
@@ -752,6 +976,11 @@ CREATE TABLE `events` (
   KEY `events_event_type_id` (`event_type_id`) USING BTREE,
   KEY `events_created_by` (`created_by`) USING BTREE,
   KEY `events_series_id` (`series_id`) USING BTREE,
+  KEY `events_slug_index` (`slug`),
+  KEY `events_start_at_index` (`start_at`),
+  KEY `events_visibility_id_start_at_index` (`visibility_id`,`start_at`),
+  KEY `events_venue_id_start_at_index` (`venue_id`,`start_at`),
+  KEY `events_last_start_at_index` (`last_start_at`),
   FULLTEXT KEY `events_search_fulltext` (`name`,`short`,`description`),
   CONSTRAINT `event_event_status_fk` FOREIGN KEY (`event_status_id`) REFERENCES `event_statuses` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `event_event_type_fk` FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -789,6 +1018,8 @@ CREATE TABLE `follows` (
   KEY `follows_user_id_index` (`user_id`) USING BTREE,
   KEY `follows_object_type_index` (`object_type`) USING BTREE,
   KEY `follows_object_id_index` (`object_id`) USING BTREE,
+  KEY `follows_object_type_object_id_index` (`object_type`,`object_id`),
+  KEY `follows_user_id_object_type_object_id_index` (`user_id`,`object_type`,`object_id`),
   CONSTRAINT `follows_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -919,6 +1150,7 @@ CREATE TABLE `likes` (
   KEY `like_user_index` (`user_id`) USING BTREE,
   KEY `like_object_type_index` (`object_type`) USING BTREE,
   KEY `like_object_id_index` (`object_id`) USING BTREE,
+  KEY `likes_object_type_object_id_index` (`object_type`,`object_id`),
   CONSTRAINT `likes_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1151,6 +1383,7 @@ CREATE TABLE `photos` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `thumbnail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `large` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `caption` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT '1',
@@ -1230,11 +1463,17 @@ CREATE TABLE `profiles` (
   `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `default_theme` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `setting_weekly_update` tinyint(1) NOT NULL DEFAULT '1',
-  `setting_daily_update` tinyint(1) NOT NULL DEFAULT '1',
-  `setting_instant_update` tinyint(1) NOT NULL DEFAULT '1',
-  `setting_forum_update` tinyint(1) NOT NULL DEFAULT '1',
+  `setting_daily_update` tinyint(1) NOT NULL DEFAULT '0',
+  `setting_instant_update` tinyint(1) NOT NULL DEFAULT '0',
+  `setting_forum_update` tinyint(1) NOT NULL DEFAULT '0',
   `setting_notify_threads_by_follow` tinyint(1) NOT NULL DEFAULT '0',
   `setting_public_profile` tinyint(1) NOT NULL DEFAULT '1',
+  `setting_feedback_requests` tinyint(1) NOT NULL DEFAULT '1',
+  `onboarding_completed_at` timestamp NULL DEFAULT NULL,
+  `onboarding_dismissed_at` timestamp NULL DEFAULT NULL,
+  `digests_paused_at` timestamp NULL DEFAULT NULL,
+  `digests_confirmed_at` timestamp NULL DEFAULT NULL,
+  `email_clicked_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `profiles_user_fk` (`user_id`),
   KEY `profiles_visibility_fi` (`visibility_id`) USING BTREE,
@@ -1386,6 +1625,9 @@ CREATE TABLE `series` (
   `min_age` tinyint unsigned DEFAULT NULL,
   `created_by` int unsigned DEFAULT NULL,
   `updated_by` int unsigned DEFAULT NULL,
+  `facebook_username` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `instagram_username` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `twitter_username` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `series_visibility_id_foreign` (`visibility_id`),
   KEY `series_event_type_id_foreign` (`event_type_id`),
@@ -1396,6 +1638,7 @@ CREATE TABLE `series` (
   KEY `series_venue_id_foreign` (`venue_id`),
   KEY `series_created_by_fk` (`created_by`),
   KEY `series_updated_by_fk` (`updated_by`),
+  KEY `series_slug_index` (`slug`),
   FULLTEXT KEY `series_search_fulltext` (`name`,`short`,`description`),
   CONSTRAINT `series_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `series_event_type_fk` FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1494,6 +1737,132 @@ CREATE TABLE `short_urls` (
   UNIQUE KEY `short_urls_code_unique` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `survey_answers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `survey_answers` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `survey_response_id` bigint unsigned NOT NULL,
+  `survey_question_id` bigint unsigned NOT NULL,
+  `value_int` smallint DEFAULT NULL,
+  `value_option` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value_text` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `survey_answers_response_index` (`survey_response_id`),
+  KEY `survey_answers_question_option_index` (`survey_question_id`,`value_option`),
+  CONSTRAINT `survey_answers_survey_question_id_foreign` FOREIGN KEY (`survey_question_id`) REFERENCES `survey_questions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `survey_answers_survey_response_id_foreign` FOREIGN KEY (`survey_response_id`) REFERENCES `survey_responses` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `survey_campaigns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `survey_campaigns` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `slug` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `intro` text COLLATE utf8mb4_unicode_ci,
+  `subject_type` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `priority` smallint NOT NULL DEFAULT '0',
+  `expires_after_days` smallint unsigned DEFAULT '30',
+  `default_visibility_id` int unsigned NOT NULL DEFAULT '2',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `survey_campaigns_slug_unique` (`slug`),
+  KEY `survey_campaigns_is_active_index` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `survey_invitations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `survey_invitations` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `survey_campaign_id` bigint unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `subject_type` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `subject_id` int unsigned NOT NULL DEFAULT '0',
+  `token` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `source` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'app',
+  `shown_at` timestamp NULL DEFAULT NULL,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  `dismissed_at` timestamp NULL DEFAULT NULL,
+  `snoozed_until` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `survey_invitations_target_unique` (`survey_campaign_id`,`user_id`,`subject_type`,`subject_id`),
+  UNIQUE KEY `survey_invitations_token_unique` (`token`),
+  KEY `survey_invitations_user_status_index` (`user_id`,`status`),
+  KEY `survey_invitations_subject_index` (`subject_type`,`subject_id`),
+  KEY `survey_invitations_expiry_index` (`status`,`expires_at`),
+  CONSTRAINT `survey_invitations_survey_campaign_id_foreign` FOREIGN KEY (`survey_campaign_id`) REFERENCES `survey_campaigns` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `survey_invitations_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `survey_questions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `survey_questions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `survey_campaign_id` bigint unsigned NOT NULL,
+  `key` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sort` smallint unsigned NOT NULL DEFAULT '0',
+  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prompt` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `help` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `options` json DEFAULT NULL,
+  `min_value` smallint DEFAULT NULL,
+  `max_value` smallint DEFAULT NULL,
+  `is_required` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `depends_on_key` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `depends_on_value` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `survey_questions_campaign_key_unique` (`survey_campaign_id`,`key`),
+  KEY `survey_questions_campaign_sort_index` (`survey_campaign_id`,`sort`),
+  CONSTRAINT `survey_questions_survey_campaign_id_foreign` FOREIGN KEY (`survey_campaign_id`) REFERENCES `survey_campaigns` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `survey_responses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `survey_responses` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `survey_invitation_id` bigint unsigned DEFAULT NULL,
+  `survey_campaign_id` bigint unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `subject_type` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `subject_id` int unsigned NOT NULL DEFAULT '0',
+  `visibility_id` int unsigned NOT NULL DEFAULT '2',
+  `display_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `approved_by` int unsigned DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `survey_responses_survey_invitation_id_unique` (`survey_invitation_id`),
+  KEY `survey_responses_campaign_submitted_index` (`survey_campaign_id`,`submitted_at`),
+  KEY `survey_responses_subject_index` (`subject_type`,`subject_id`),
+  KEY `survey_responses_visibility_index` (`visibility_id`),
+  KEY `survey_responses_user_id_foreign` (`user_id`),
+  KEY `survey_responses_display_index` (`visibility_id`,`display_status`),
+  KEY `survey_responses_approved_by_foreign` (`approved_by`),
+  CONSTRAINT `survey_responses_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `survey_responses_survey_campaign_id_foreign` FOREIGN KEY (`survey_campaign_id`) REFERENCES `survey_campaigns` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `survey_responses_survey_invitation_id_foreign` FOREIGN KEY (`survey_invitation_id`) REFERENCES `survey_invitations` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `survey_responses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `survey_responses_visibility_id_foreign` FOREIGN KEY (`visibility_id`) REFERENCES `visibilities` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tag_thread`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1527,13 +1896,16 @@ CREATE TABLE `tags` (
   `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tag_type_id` int unsigned DEFAULT NULL,
+  `created_by` int unsigned DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `description` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `slug` (`slug`),
+  UNIQUE KEY `tags_slug_unique` (`slug`),
   KEY `tags_tag_type_index` (`tag_type_id`) USING BTREE,
+  KEY `tags_created_by_index` (`created_by`),
   FULLTEXT KEY `tags_search_fulltext` (`name`,`description`),
   CONSTRAINT `tag_tag_type_fk` FOREIGN KEY (`tag_type_id`) REFERENCES `tag_types` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1574,7 +1946,7 @@ CREATE TABLE `threads` (
   `created_by` int unsigned DEFAULT '1',
   `updated_by` int unsigned DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `locked_at` timestamp NULL DEFAULT NULL,
   `locked_by` int DEFAULT NULL,
   `event_id` int unsigned DEFAULT NULL,
@@ -1622,6 +1994,10 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `user_status_id` int NOT NULL DEFAULT '1',
   `email_verified_at` timestamp NULL DEFAULT NULL,
+  `email_change_pending_at` timestamp NULL DEFAULT NULL,
+  `trusted_at` timestamp NULL DEFAULT NULL,
+  `risk_score` smallint unsigned DEFAULT NULL,
+  `risk_reasons` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1694,3 +2070,31 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_05_20_000002_creat
 INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_05_20_000003_create_notifications_table',12);
 INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_05_20_000004_create_job_statuses_table',12);
 INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_05_25_000001_make_failed_jobs_uuid_nullable',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_06_17_000000_add_onboarding_timestamps_to_profiles_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_07_22_000001_normalize_plural_morph_object_types',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_07_30_000000_add_created_by_to_tags_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_07_000000_create_survey_definition_tables',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_07_000001_create_survey_collection_tables',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_07_000002_add_display_moderation_to_survey_responses',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_07_000002_add_setting_feedback_requests_to_profiles_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_07_000003_add_conditional_display_to_survey_questions',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_08_000000_create_discord_tables',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_10_000000_stop_threads_updated_at_auto_touching',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_08_17_000000_create_email_suppressions_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_04_000000_merge_duplicate_tags_and_add_unique_slug',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_16_000000_create_entity_stats_daily_and_event_reach_daily_tables',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_17_000000_create_entity_owners_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_18_000000_create_entity_claims_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_25_000000_add_missing_performance_indexes',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_29_000000_normalize_link_url_schemes',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_29_000001_reassign_events_of_deleted_users',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_09_29_000002_add_social_usernames_to_series',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_06_000000_add_unlisted_entity_status',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_07_000000_create_email_opt_outs_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_08_000000_add_digest_pause_to_profiles_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_08_000001_default_new_profiles_to_weekly_email_only',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_08_100000_add_large_to_photos_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_13_000000_add_signup_trust_to_users_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_14_000000_add_ip_index_to_activities_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_10_19_000000_add_email_change_pending_at_to_users_table',12);
+INSERT INTO `migrations` (`migration`, `batch`) VALUES ('2026_11_15_000000_create_event_showings_table',12);
