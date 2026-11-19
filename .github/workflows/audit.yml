@@ -1,0 +1,59 @@
+name: Dependency audit
+
+# Checks the locked PHP and JS dependencies against published advisories.
+# Separate from the tests (php.yml) on purpose: an advisory published overnight
+# is not a problem with the commit being tested, and must not block a deploy.
+# A failed scheduled run emails whoever last changed this file.
+on:
+  schedule:
+    # daily, 09:17 UTC
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - composer.json
+      - composer.lock
+      - package.json
+      - package-lock.json
+      - .github/scripts/npm-audit.mjs
+      - .github/workflows/audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  composer:
+    name: Composer audit
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          coverage: none
+
+      # Reads composer.lock, so nothing needs installing. Fails on any advisory not
+      # ignored in composer.json; abandoned packages are reported, not gated.
+      - name: Composer security audit
+        run: composer audit --locked --abandoned=report
+
+  npm:
+    name: NPM audit
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # Reads package-lock.json. Fails on any high/critical advisory not ignored
+      # in the script (for unpatched ones only).
+      - name: NPM security audit
+        run: node .github/scripts/npm-audit.mjs
