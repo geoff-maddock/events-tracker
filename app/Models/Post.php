@@ -80,6 +80,7 @@ use Illuminate\Support\Facades\Auth;
 class Post extends Eloquent
 {
     use HasFactory;
+    use \App\Models\Concerns\SyncsEntities;
 
     public static function boot()
     {

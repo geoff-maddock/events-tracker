@@ -269,6 +269,8 @@ class FeedbackPromptService
             if ($subject->venue) {
                 $payload['venue'] = $subject->venue->name;
                 $payload['venue_url'] = route('entities.show', $subject->venue->slug ?: $subject->venue->id);
+            } elseif ($subject->venueLabel()) {
+                $payload['venue'] = $subject->venueLabel();
             }
         }
 

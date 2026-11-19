@@ -13,6 +13,8 @@ use App\Models\Entity;
  */
 trait RefersToEntities
 {
+    use SyncsEntities;
+
     /**
      * Names already looked up for this model, by entity id.
      *
@@ -26,7 +28,11 @@ trait RefersToEntities
             return null;
         }
 
-        return $this->hiddenEntityNames[$id] ??= Entity::publicName($id);
+        if (!array_key_exists($id, $this->hiddenEntityNames)) {
+            $this->hiddenEntityNames[$id] = Entity::publicName($id);
+        }
+
+        return $this->hiddenEntityNames[$id];
     }
 
     /**
@@ -35,6 +41,18 @@ trait RefersToEntities
     public function venueLabel(): ?string
     {
         return $this->venue->name ?? $this->hiddenEntityName($this->venue_id);
+    }
+
+    /**
+     * The venue as anyone may see it: null when it is unlisted, whoever is
+     * asking. For output that leaves the site (email, Discord), where the
+     * reader is not the person whose request built it.
+     */
+    public function publicVenue(): ?Entity
+    {
+        $venue = $this->venue;
+
+        return $venue instanceof Entity && $venue->isVisibleTo(null) ? $venue : null;
     }
 
     /**
@@ -66,18 +84,5 @@ trait RefersToEntities
         }
 
         return $input;
-    }
-
-    /**
-     * Sync the related entities, keeping any attached ones the viewer cannot see.
-     *
-     * @param array<int, int|string>|null $ids
-     */
-    public function syncEntities(?array $ids): void
-    {
-        $ids = array_map('intval', $ids ?? []);
-        $attached = $this->entities()->withoutGlobalScopes()->pluck('entities.id')->all();
-
-        $this->entities()->sync(array_values(array_unique([...$ids, ...Entity::hiddenIds($attached)])));
     }
 }

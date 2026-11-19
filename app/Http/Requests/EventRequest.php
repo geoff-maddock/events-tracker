@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\VisibleEntity;
 use App\Http\Requests\Concerns\ValidatesShowings;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Request;
@@ -68,11 +69,11 @@ class EventRequest extends Request
             // (e.g. entity names instead of IDs) returns 422 rather than tripping
             // the entity_id integer column with a raw SQL error (EVENTREPO-XV).
             'entity_list' => ['nullable', 'array'],
-            'entity_list.*' => ['integer', 'exists:entities,id'],
+            'entity_list.*' => ['integer', VisibleEntity::for($this->route('event'))],
             // the rest of the form's fields, so controllers can save validated() alone (#2180)
             'description' => 'nullable|string',
-            'venue_id' => 'nullable|integer|exists:entities,id',
-            'promoter_id' => 'nullable|integer|exists:entities,id',
+            'venue_id' => ['nullable', 'integer', VisibleEntity::for($this->route('event'))],
+            'promoter_id' => ['nullable', 'integer', VisibleEntity::for($this->route('event'))],
             'series_id' => 'nullable|integer|exists:series,id',
             'event_status_id' => 'nullable|integer|exists:event_statuses,id',
             'min_age' => 'nullable|integer|min:0|max:99',

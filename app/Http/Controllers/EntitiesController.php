@@ -804,7 +804,8 @@ class EntitiesController extends Controller
         $baseSlug = Str::slug($validated['name']);
         $slug = $baseSlug !== '' ? $baseSlug : 'entity';
         $i = 1;
-        while (Entity::where('slug', $slug)->exists()) {
+        // unlisted entities hold their slugs too
+        while (Entity::withUnlisted()->where('slug', $slug)->exists()) {
             $slug = $baseSlug.'-'.$i++;
         }
 

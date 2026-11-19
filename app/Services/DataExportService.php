@@ -86,7 +86,8 @@ class DataExportService
         $seriesData = SeriesResource::collection($series)->resolve();
         
         // Entities created by user (need to check if there's a created_by field)
-        $entities = \App\Models\Entity::where('created_by', $user->id)
+        // the user's own, unlisted ones included
+        $entities = \App\Models\Entity::withUnlisted()->where('created_by', $user->id)
             ->with(['entityType', 'entityStatus', 'tags', 'roles', 'aliases'])
             ->get();
         $entitiesData = EntityResource::collection($entities)->resolve();

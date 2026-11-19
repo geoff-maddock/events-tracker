@@ -31,7 +31,7 @@ class UnlistedEntityScope implements Scope
 
     /**
      * A global scope for a model that hangs off entities (locations, links,
-     * contacts): rows belonging to an unlisted entity are hidden with it.
+     * contacts): rows that belong only to unlisted entities are hidden with them.
      *
      * @param string      $column the column holding the entity id, or this model's key when $pivot is given
      * @param string|null $pivot  "table.column" of a pivot whose entity_id links the model to entities
@@ -43,14 +43,23 @@ class UnlistedEntityScope implements Scope
                 return;
             }
 
-            $unlisted = DB::table('entities')->select('id')->where('entity_status_id', EntityStatus::UNLISTED);
+            $entities = fn (string $operator) => DB::table('entities')->select('id')
+                ->where('entity_status_id', $operator, EntityStatus::UNLISTED);
+            $column = $builder->qualifyColumn($column);
 
-            if (null !== $pivot) {
-                [$table, $key] = explode('.', $pivot);
-                $unlisted = DB::table($table)->select($key)->whereIn('entity_id', $unlisted);
+            if (null === $pivot) {
+                $builder->whereNotIn($column, $entities('='));
+
+                return;
             }
 
-            $builder->whereNotIn($builder->qualifyColumn($column), $unlisted);
+            // many-to-many: a row shared with a listed entity stays visible through that one
+            [$table, $key] = explode('.', $pivot);
+            $attachedTo = fn (string $operator) => DB::table($table)->select($key)->whereIn('entity_id', $entities($operator));
+
+            $builder->where(fn (Builder $query) => $query
+                ->whereNotIn($column, $attachedTo('='))
+                ->orWhereIn($column, $attachedTo('<>')));
         };
     }
 

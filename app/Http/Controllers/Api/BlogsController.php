@@ -202,7 +202,7 @@ class BlogsController extends Controller
         $blog->fill($input)->save();
 
         $blog->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
-        $blog->entities()->sync($request->input('entity_list', []));
+        $blog->syncEntities($request->input('entity_list', []));
 
         Activity::log($blog, $this->user, Action::UPDATE);
 
@@ -231,7 +231,7 @@ class BlogsController extends Controller
         }
 
         if ($request->has('entity_list')) {
-            $blog->entities()->sync((array) $request->input('entity_list', []));
+            $blog->syncEntities((array) $request->input('entity_list', []));
         }
 
         Activity::log($blog, $this->user, Action::UPDATE);

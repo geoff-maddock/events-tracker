@@ -15,6 +15,9 @@ response: only admins (the `admin` and `super_admin` groups) see an unlisted ent
   promoter keeps the existing one, and it stays in the related entities. Choosing a different
   venue or promoter replaces it.
 - Only admins can set the status to Unlisted.
+- Non-admins cannot attach an unlisted entity to an event or series by id; the id is rejected as
+  invalid, as if it did not exist.
+- Email and Discord posts never link an unlisted venue, whoever's request sends them.
 - Entity option lists in forms and filters are refreshed whenever an entity is saved or deleted,
   including through the API (#2394).
 

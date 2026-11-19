@@ -325,4 +325,89 @@ class EntityStatusVisibilityTest extends TestCase
         $this->assertFalse(Cache::has('form-opts-venues'));
         $this->assertFalse(Cache::has('form-opts-venues:admin'));
     }
+
+    public function test_a_member_cannot_point_an_event_at_an_unlisted_entity_by_id(): void
+    {
+        $owner = $this->member();
+        $event = $this->eventAt($this->listed, $owner);
+
+        foreach (['venue_id' => $this->unlisted->id, 'promoter_id' => $this->unlisted->id, 'entity_list' => [$this->unlisted->id]] as $field => $value) {
+            $this->patchJson('/api/events/'.$event->slug, [$field => $value], $this->token($owner))
+                ->assertStatus(422);
+            $this->app['auth']->forgetGuards();
+        }
+
+        $event = Event::find($event->id);
+        $this->assertSame($this->listed->id, (int) $event->venue_id);
+        $this->assertSame(0, $event->entities()->withoutGlobalScopes()->count());
+
+        // an admin can, on an event of their own (the API lets only the owner edit, #2395)
+        $admin = $this->admin();
+        $adminEvent = Event::factory()->create(['slug' => 'the-admins-night', 'created_by' => $admin->id]);
+        $this->patchJson('/api/events/the-admins-night', ['venue_id' => $this->unlisted->id], $this->token($admin))
+            ->assertOk();
+        $this->assertSame($this->unlisted->id, (int) $adminEvent->fresh()->venue_id);
+    }
+
+    public function test_the_venue_an_event_already_has_passes_validation_when_sent_back(): void
+    {
+        $owner = $this->member();
+        $event = $this->eventAt($this->unlisted, $owner);
+
+        $this->patchJson('/api/events/'.$event->slug, ['venue_id' => $this->unlisted->id, 'short' => 'Edited'], $this->token($owner))
+            ->assertOk();
+
+        $this->assertSame($this->unlisted->id, (int) Event::find($event->id)->venue_id);
+    }
+
+    public function test_editing_a_thread_keeps_an_unlisted_entity_attached(): void
+    {
+        $thread = \App\Models\Thread::factory()->create();
+        $thread->entities()->attach([$this->unlisted->id, $this->listed->id]);
+
+        Auth::login($this->member());
+        $thread->syncEntities([]);
+
+        $this->assertSame(
+            [$this->unlisted->id],
+            $thread->entities()->withoutGlobalScopes()->pluck('entities.id')->map(fn ($id) => (int) $id)->all()
+        );
+    }
+
+    public function test_a_link_shared_with_a_listed_entity_stays_visible(): void
+    {
+        $shared = \App\Models\Link::factory()->create();
+        $shared->entities()->attach([$this->unlisted->id, $this->listed->id]);
+
+        $private = \App\Models\Link::factory()->create();
+        $private->entities()->attach($this->unlisted->id);
+
+        $this->assertNotNull(\App\Models\Link::find($shared->id));
+        $this->assertNull(\App\Models\Link::find($private->id));
+
+        Auth::login($this->admin());
+        $this->assertNotNull(\App\Models\Link::find($private->id));
+    }
+
+    public function test_output_that_leaves_the_site_never_links_an_unlisted_venue(): void
+    {
+        $event = $this->eventAt($this->unlisted);
+
+        // even when an admin's request builds it
+        Auth::login($this->admin());
+        $event = Event::find($event->id);
+
+        $this->assertNotNull($event->venue);
+        $this->assertNull($event->publicVenue());
+        $this->assertSame('Basement Number Nine', $event->venueLabel());
+    }
+
+    public function test_a_quick_added_entity_does_not_reuse_an_unlisted_slug(): void
+    {
+        $this->actingAs($this->member())
+            ->postJson('/entities/quick-store', ['name' => 'Basement Number Nine', 'role' => 'Venue'])
+            ->assertSuccessful();
+
+        $this->assertSame(1, Entity::withUnlisted()->where('slug', 'basement-number-nine')->count());
+    }
 }

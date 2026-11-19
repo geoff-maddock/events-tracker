@@ -31,7 +31,7 @@
 
 		@if ($event->venueLabel())
 			<br>{{ $event->venueLabel() }}
-			@if ($event->venue?->getPrimaryLocationAddress())
+			@if ($event->publicVenue()?->getPrimaryLocationAddress())
 				{{ $event->venue->getPrimaryLocationAddress() }}
 			@endif
 		@else

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\VisibleEntity;
 use App\Http\Requests\Request;
 use Illuminate\Validation\Rule;
 
@@ -55,8 +56,8 @@ class SeriesRequest extends Request
             // the rest of the form's fields, so controllers can save validated() alone (#2180);
             // created_by is only honoured for admins (#2165)
             'description' => 'nullable|string',
-            'venue_id' => 'nullable|integer|exists:entities,id',
-            'promoter_id' => 'nullable|integer|exists:entities,id',
+            'venue_id' => ['nullable', 'integer', VisibleEntity::for($this->route('series'))],
+            'promoter_id' => ['nullable', 'integer', VisibleEntity::for($this->route('series'))],
             'founded_at' => 'nullable|date',
             'cancelled_at' => 'nullable|date',
             'soundcheck_at' => 'nullable|date',
@@ -70,7 +71,7 @@ class SeriesRequest extends Request
             'twitter_username' => 'nullable|string|max:64',
             'created_by' => 'nullable|integer|exists:users,id',
             'entity_list' => 'nullable|array',
-            'entity_list.*' => 'integer|exists:entities,id',
+            'entity_list.*' => ['integer', VisibleEntity::for($this->route('series'))],
         ];
         
         // Add conditional validation rules for monthly occurrence type

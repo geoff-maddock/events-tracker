@@ -269,7 +269,7 @@ class BlogsController extends Controller
         }
 
         $blog->tags()->sync($syncArray);
-        $blog->entities()->sync($request->input('entity_list', []));
+        $blog->syncEntities($request->input('entity_list', []));
 
         // add to activity log
         Activity::log($blog, $this->user, Action::UPDATE);

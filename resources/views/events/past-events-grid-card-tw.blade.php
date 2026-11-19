@@ -55,7 +55,7 @@
                             @if ($primary = $pastEvent->getPrimaryPhoto())
                                 <a href="{{ Storage::disk('external')->url($primary->getStoragePath()) }}"
                                    data-lightbox="past-events-grid"
-                                   data-title="{{ $pastEvent->name }} @ {{ $pastEvent->venue ? $pastEvent->venue->name : '' }}">
+                                   data-title="{{ $pastEvent->name }} @ {{ $pastEvent->venueLabel() ?? '' }}">
                                     <img src="{{ Storage::disk('external')->url($primary->getStorageThumbnail()) }}"
                                          alt="{{ $pastEvent->name }}"
                                          class="w-full h-full object-cover transition-transform duration-300"

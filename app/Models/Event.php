@@ -1429,7 +1429,7 @@ class Event extends Model implements HasPhotos
             'action' => 'TEMPLATE',
             'text' => $this->name,
             'details' => $this->description,
-            'location' => $this->venue ? $this->venue->name : 'Unknown',
+            'location' => $this->venueLabel() ?? 'Unknown',
             'sf' => 'true',
             'output' => 'xml',
         ], '', '&', PHP_QUERY_RFC3986);
