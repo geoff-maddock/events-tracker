@@ -2,6 +2,8 @@
 
 @section('title', 'Reset Password')
 
+@section('session-messages', 'inline')
+
 @section('content')
 <div class="min-h-[70vh] flex items-center justify-center px-4">
     <div class="w-full max-w-md">
@@ -14,14 +16,7 @@
                 <p class="text-muted-foreground mt-2">Enter your email to receive a reset link</p>
             </div>
 
-            @if (session('status'))
-                <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <i class="bi bi-check-circle text-green-500"></i>
-                        <span class="text-green-500">{{ session('status') }}</span>
-                    </div>
-                </div>
-            @endif
+            @include('partials.session-messages')
 
             <form method="POST" action="{{ url('/password/email') }}" class="space-y-6">
                 @csrf

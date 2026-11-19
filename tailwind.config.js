@@ -26,6 +26,15 @@ module.exports = {
       '3xl': '2000px',
     },
     extend: {
+      // text-destructive reads a lighter token than bg-destructive: the fill colour
+      // is too dark for text on the dark theme and too light on the light one
+      textColor: {
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive-text))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        success: 'hsl(var(--success-text))',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

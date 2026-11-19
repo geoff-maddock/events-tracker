@@ -16,7 +16,6 @@
     Optional:
       $emailChanged (bool)  the link verifies a changed email, not a new account
 --}}
-<style>[x-cloak]{display:none!important}</style>
 <div x-data="verifyEmailNotice()" x-show="open" x-cloak
      @keydown.escape.window="open = false"
      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"

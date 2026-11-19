@@ -4,6 +4,17 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Session messages shown on every page, readable error text (#2396)
+- A message a redirect leaves in the session (`->with('error', ...)` or `->with('status', ...)`),
+  such as "Your session expired. Please try again.", is now shown at the top of whichever page
+  the user lands on. It was only shown on the sign-in pages. The markup is
+  `partials/session-messages`.
+- Elements marked `x-cloak` (the search dropdown, some menus and modals) stay hidden until
+  Alpine starts, on every page; the rule is now in the global stylesheet.
+- `text-destructive` uses its own colour token (`--destructive-text`), so error text and the
+  "Cancelled" badge meet 4.5:1 contrast in both themes. Buttons keep the `--destructive` fill.
+  `text-success` is new, for status messages.
+
 ### Unlisted entities are admin-only everywhere
 The Unlisted entity status is now applied in one place, for every page, list, feed and API
 response: only admins (the `admin` and `super_admin` groups) see an unlisted entity.
