@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Throwable;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -50,8 +52,31 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->mapHealthRoute();
         $this->mapWebRoutes();
         $this->mapApiRoutes();
+    }
+
+    /**
+     * The route an uptime monitor pings: 200 when the app boots and the
+     * database answers, 503 otherwise. No middleware, so a ping every minute
+     * doesn't start a session.
+     *
+     * @return void
+     */
+    protected function mapHealthRoute()
+    {
+        Route::get('/up', function () {
+            try {
+                DB::select('select 1');
+            } catch (Throwable $e) {
+                report($e);
+
+                return response('Database unavailable', 503, ['Content-Type' => 'text/plain', 'Cache-Control' => 'no-store']);
+            }
+
+            return response('OK', 200, ['Content-Type' => 'text/plain', 'Cache-Control' => 'no-store']);
+        })->name('health');
     }
 
     /**
