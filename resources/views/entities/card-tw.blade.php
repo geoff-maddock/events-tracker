@@ -112,7 +112,7 @@
 		@endunless
 
 		<!-- Embeds (lazy-loaded) -->
-		<div id="card-entity-minimal-playlist">
+		<div class="card-minimal-playlist">
 		@include('embeds.minimal-playlist', ['entity' => $entity, 'event' => null, 'series' => null])
 		</div>
 

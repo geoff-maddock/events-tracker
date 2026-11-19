@@ -186,7 +186,7 @@
     </div>
 
     <!-- Embeds (lazy-loaded) -->
-    <div id="card-event-minimal-playlist">
+    <div class="card-minimal-playlist">
         @include('embeds.minimal-playlist', ['event' => $event, 'entity' => null, 'series' => null])
     </div>
 

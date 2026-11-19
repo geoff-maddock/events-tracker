@@ -148,7 +148,7 @@ class Event extends Model implements HasPhotos
     const MAX_SHOWINGS = 60;
 
     /** Leads cardFingerprint(); bump when the events/card-tw markup changes. */
-    const CARD_MARKUP_VERSION = 2;
+    const CARD_MARKUP_VERSION = 3;
 
     public static function boot()
     {

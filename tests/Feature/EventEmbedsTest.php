@@ -2,7 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Entity;
 use App\Models\Event;
+use App\Models\Link;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\Visibility;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\Embeds\Provider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -124,6 +129,150 @@ class EventEmbedsTest extends TestCase
     {
         Cache::flush();
         parent::tearDown();
+    }
+
+    private function listedEvent(string $description): Event
+    {
+        return Event::factory()->create([
+            'description' => $description,
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->addWeek(),
+        ]);
+    }
+
+    /**
+     * A list card leaves its player placeholder out, and so makes no request, when
+     * nothing on the event could become a player (#2389).
+     */
+    public function test_card_has_no_placeholder_when_the_event_has_nothing_to_play(): void
+    {
+        $event = $this->listedEvent('Nothing to play here: https://example.com/tickets');
+        $entity = Entity::factory()->create();
+        $entity->links()->attach(Link::factory()->create(['url' => 'https://example.com/artist'])->id);
+        $event->entities()->attach($entity->id);
+
+        $this->get('/events')->assertOk()
+            ->assertSee($event->name)
+            ->assertDontSee('id="playlist-events-'.$event->id.'"', false);
+    }
+
+    public function test_card_has_a_versioned_placeholder_when_the_description_has_an_audio_link(): void
+    {
+        $event = $this->listedEvent('Stream: https://soundcloud.com/example/track-one');
+
+        $this->get('/events')->assertOk()
+            ->assertSee('id="playlist-events-'.$event->id.'"', false)
+            ->assertSee('data-version="'.OembedExtractor::versionFor($event->fresh()).'"', false);
+    }
+
+    /** Embeds are often added later, as a link on one of the event's entities. */
+    public function test_the_placeholder_appears_once_a_related_entity_gets_an_audio_link(): void
+    {
+        $event = $this->listedEvent('Nothing to play here.');
+        $entity = Entity::factory()->create();
+        $event->entities()->attach($entity->id);
+        $placeholder = 'id="playlist-events-'.$event->id.'"';
+
+        $this->get('/events')->assertOk()->assertDontSee($placeholder, false);
+
+        $entity->links()->attach(Link::factory()->create(['url' => 'https://artist.bandcamp.com/album/one'])->id);
+
+        $this->get('/events')->assertOk()->assertSee($placeholder, false);
+    }
+
+    public function test_may_have_embeds_is_maybe_when_links_are_not_loaded(): void
+    {
+        $event = $this->listedEvent('Nothing to play here.');
+        $entity = Entity::factory()->create();
+        $event->entities()->attach($entity->id);
+
+        $this->assertTrue(OembedExtractor::mayHaveEmbeds(Event::find($event->id)));
+        $this->assertTrue(OembedExtractor::mayHaveEmbeds(Event::with('entities')->find($event->id)));
+        $this->assertFalse(OembedExtractor::mayHaveEmbeds(Event::with('entities.links')->find($event->id)));
+
+        $this->assertTrue(OembedExtractor::mayHaveEmbeds(Entity::withoutEagerLoads()->find($entity->id)));
+        $this->assertFalse(OembedExtractor::mayHaveEmbeds(Entity::with('links')->find($entity->id)));
+    }
+
+    /**
+     * The version keys the server cache and the browser's, so it has to move with
+     * anything that can change the embeds.
+     */
+    public function test_version_changes_with_the_event_its_entities_and_their_links(): void
+    {
+        $event = $this->listedEvent('Nothing to play here.');
+        $older = Entity::factory()->create();
+        $newer = Entity::factory()->create();
+        $link = Link::factory()->create(['url' => 'https://soundcloud.com/example/entity-track']);
+        $older->links()->attach($link->id);
+
+        // everything last saved well in the past, the event most recently
+        $older->forceFill(['updated_at' => now()->subDays(3)])->saveQuietly();
+        $newer->forceFill(['updated_at' => now()->subDays(2)])->saveQuietly();
+        $event->forceFill(['updated_at' => now()->subDay()])->saveQuietly();
+        $version = fn () => OembedExtractor::versionFor(Event::find($event->id));
+        $last = $version();
+
+        $step = function (string $what) use (&$last, $version) {
+            $this->assertNotSame($last, $version(), $what);
+            $last = $version();
+        };
+
+        // an entity older than the event is added, nothing else saved
+        $event->entities()->attach($older->id);
+        $step('entity attached');
+
+        // back to the one entity: the same inputs as before, so the same version
+        $withOne = $last;
+        $event->entities()->attach($newer->id);
+        $step('second entity attached');
+        $event->entities()->detach($newer->id);
+        $step('entity detached');
+        $this->assertSame($withOne, $version());
+
+        $older->links()->attach(Link::factory()->create(['url' => 'https://artist.bandcamp.com/album/two'])->id);
+        $step('link attached');
+
+        $older->forceFill(['updated_at' => now()->subDays(3)])->saveQuietly();
+        $step('reset');
+        $link->update(['url' => 'https://soundcloud.com/example/entity-track-two']);
+        $step('link changed');
+
+        $older->forceFill(['updated_at' => now()->subDays(4)])->saveQuietly();
+        $step('reset');
+        $link->delete();
+        $step('link deleted');
+    }
+
+    public function test_removing_a_link_through_the_entity_page_touches_the_entity(): void
+    {
+        $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $owner->assignGroup('admin');
+        $entity = Entity::factory()->create(['created_by' => $owner->id]);
+        $link = Link::factory()->create(['url' => 'https://soundcloud.com/example/entity-track']);
+        $entity->links()->attach($link->id);
+        $entity->forceFill(['updated_at' => now()->subDay()])->saveQuietly();
+
+        $this->actingAs($owner)->delete('/entities/'.$entity->slug.'/links/'.$link->id)->assertRedirect();
+
+        $this->assertNull(Link::find($link->id));
+        $this->assertTrue($entity->fresh()->updated_at->gt(now()->subMinute()));
+    }
+
+    /** An empty answer can be a provider that did not respond: it is kept for an hour, not a week. */
+    public function test_an_empty_result_is_cached_for_a_shorter_time(): void
+    {
+        $this->bindFakeProvider();
+        $event = $this->listedEvent('Broken: https://artist.bandcamp.com/album/gone');
+
+        $this->getJson('/events/'.$event->slug.'/minimal-embeds')->assertOk()->assertJsonPath('data', []);
+
+        $this->travel(OembedExtractor::FAILED_SOURCES_TTL_SECONDS + 60)->seconds();
+        $fake = $this->bindFakeProvider();
+        $this->app->forgetInstance(OembedExtractor::class);
+        $this->getJson('/events/'.$event->slug.'/minimal-embeds')->assertOk();
+
+        $this->assertGreaterThan(0, $fake->requestCount, 'the provider is asked again once the hour is up');
     }
 }
 

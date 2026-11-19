@@ -14,52 +14,110 @@ var App = (function () {
 
 
     // load embeded audio code with caching support
+    var loadEmbed = function ($container) {
+        var url = $container.attr('data-url');
+        var slug = $container.attr('data-slug');
+        var resourceType = $container.attr('data-resource-type') || 'events';
+        var endpoint = $container.attr('data-endpoint') || 'minimal-embeds';
+
+        // Use EmbedLoader with caching if available and slug is provided
+        if (typeof EmbedLoader !== 'undefined' && slug) {
+            EmbedLoader.load(resourceType, slug, {
+                endpoint: endpoint,
+                version: $container.attr('data-version'),
+                onSuccess: function (embeds) {
+                    if (embeds && embeds.length > 0) {
+                        // Cards render at most one player. The server caps this too,
+                        // but localStorage entries cached before that cap can still
+                        // hold several, so trim here as well.
+                        var list = endpoint === 'embeds' ? embeds : embeds.slice(0, 1);
+                        var html = list.map(function (embed) {
+                            return endpoint === 'embeds'
+                                ? '<div class="rounded-md overflow-hidden">' + embed + '</div>'
+                                : embed;
+                        }).join('');
+                        $container.html(html);
+                        $container.removeClass('playlist-id hidden');
+                    }
+                },
+                onError: function () {
+                }
+            }).catch(function () {
+                // already reported through onError
+            });
+        } else if (url) {
+            // Fallback to original AJAX behavior for backward compatibility
+            $.ajax({
+                url: url
+            }).done(function (data) {
+                // load results into the applicable position if data exists
+                if (data.Success && data.Success.trim() !== '') {
+                    $container.html(data.Success);
+                    $container.removeClass('playlist-id hidden');
+                }
+            }).fail(function () {
+            });
+        }
+    };
+
+    // One observer for the life of the page: loadEmbeds() runs again whenever cards
+    // are added (infinite scroll, day panels), and must not watch a card twice.
+    var embedObserver = null;
+    var embedsWaiting = [];
+
+    var getEmbedObserver = function () {
+        if (embedObserver === null && 'IntersectionObserver' in window) {
+            // start a little before the card arrives, so the player is there when it does
+            embedObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+                    embedObserver.unobserve(entry.target);
+                    embedsWaiting = embedsWaiting.filter(function (item) {
+                        if (item.watched !== entry.target) {
+                            return true;
+                        }
+                        loadEmbed(item.$container);
+                        return false;
+                    });
+                });
+            }, { rootMargin: '300px 0px' });
+        }
+        return embedObserver;
+    };
+
     var loadEmbeds = function () {
-        $('body div.playlist-id').each(function () {
+        // drop cards that have since been replaced, so they can be collected
+        embedsWaiting = embedsWaiting.filter(function (item) {
+            if (document.body.contains(item.watched)) {
+                return true;
+            }
+            embedObserver.unobserve(item.watched);
+            return false;
+        });
+
+        $('body div.playlist-id').not('[data-embed-requested]').each(function () {
             // Hold onto the element itself rather than looking it back up by id:
             // a page can carry more than one placeholder with the same id (e.g. an
             // entity page whose event card and Audio section both key off the same
             // record), and $('#id') would resolve every loader to the first match.
             var $container = $(this);
-            var url = $container.attr('data-url');
-            var slug = $container.attr('data-slug');
-            var resourceType = $container.attr('data-resource-type') || 'events';
-            var endpoint = $container.attr('data-endpoint') || 'minimal-embeds';
+            var observer = this.hasAttribute('data-lazy') ? getEmbedObserver() : null;
+            // The placeholder is display:none until it has a player, and an element
+            // that is not rendered never reports as scrolled into view, so watch the
+            // card around it. A card in a hidden panel reports once the panel opens.
+            var watched = observer ? $container.closest('.card-minimal-playlist').parent().get(0) : null;
 
-            // Use EmbedLoader with caching if available and slug is provided
-            if (typeof EmbedLoader !== 'undefined' && slug) {
-                EmbedLoader.load(resourceType, slug, {
-                    endpoint: endpoint,
-                    onSuccess: function (embeds) {
-                        if (embeds && embeds.length > 0) {
-                            // Cards render at most one player. The server caps this too,
-                            // but localStorage entries cached before that cap can still
-                            // hold several, so trim here as well.
-                            var list = endpoint === 'embeds' ? embeds : embeds.slice(0, 1);
-                            var html = list.map(function (embed) {
-                                return endpoint === 'embeds'
-                                    ? '<div class="rounded-md overflow-hidden">' + embed + '</div>'
-                                    : embed;
-                            }).join('');
-                            $container.html(html);
-                            $container.removeClass('playlist-id hidden');
-                        }
-                    },
-                    onError: function () {
-                    }
-                });
-            } else if (url) {
-                // Fallback to original AJAX behavior for backward compatibility
-                $.ajax({
-                    url: url
-                }).done(function (data) {
-                    // load results into the applicable position if data exists
-                    if (data.Success && data.Success.trim() !== '') {
-                        $container.html(data.Success);
-                        $container.removeClass('playlist-id hidden');
-                    }
-                }).fail(function () {
-                });
+            $container.attr('data-embed-requested', '');
+
+            // list cards (data-lazy) wait until they are scrolled near; everything
+            // else, and any browser without IntersectionObserver, loads right away
+            if (watched) {
+                embedsWaiting.push({ watched: watched, $container: $container });
+                observer.observe(watched);
+            } else {
+                loadEmbed($container);
             }
         });
     };

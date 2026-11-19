@@ -4,6 +4,20 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Fewer embed requests on list pages (#2389)
+List cards used to make one request each, at page load, to look for a player.
+- A card leaves the player placeholder out, and makes no request, when nothing on the event,
+  series or entity could become a player: no SoundCloud or Bandcamp URL in its description or
+  among its entities' links. This is worked out from the record on each render, so a link
+  added later brings the placeholder back at once. Lists that do not load the links keep the
+  placeholder.
+- The remaining cards ask only when they are scrolled near.
+- An empty answer is remembered for an hour, by the server and the browser, not a week: it
+  can be a provider that did not respond.
+- Cached answers are keyed on a version that changes when the record is saved, when an entity
+  is added to or removed from it, and when a link on one of its entities is added, changed or
+  removed (a link now touches its entities' `updated_at`).
+
 ### One edit rule for events and series (#2395)
 Editing an event or series is allowed for its owner and for admins (the `admin` and
 `super_admin` groups), through `EventPolicy::update` and `SeriesPolicy::update`.

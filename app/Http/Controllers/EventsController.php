@@ -157,6 +157,8 @@ class EventsController extends Controller
                 'tags',
                 'entities',
                 'entities.roles',
+                // the card decides from these whether to ask for a player at all (#2389)
+                'entities.links',
                 'photos',
                 'threads',
                 // a short run's dates, for its JSON-LD (#2375)
