@@ -424,6 +424,25 @@ sudo grep -rn 'schedule:run' /var/spool/cron/crontabs/ /etc/cron.d/ /etc/crontab
 Scheduled commands inherit the timezone set per-task in the Kernel (most use
 `America/New_York`), not the server timezone.
 
+### Nightly housekeeping (#2392)
+
+Four scheduled commands delete data that nothing else removes:
+
+| Command | What it deletes |
+| --- | --- |
+| `cache:prune-expired` | Expired files in the file cache (`storage/framework/cache`). The file store only deletes an entry when it is read again, and most page-fragment keys never are. The (empty) directories are left in place. |
+| `clicks:prune` | Ticket-link clicks older than 365 days (`ClickTrack::RETENTION_DAYS`). The dashboard totals live in `entity_stats_daily` and are kept. `entities:rollup-stats` refuses to rebuild a day older than that, because it would zero the stored click totals. |
+| `queue:prune-failed --hours=720` | Failed jobs older than 30 days. |
+| `sanctum:prune-expired --hours=24` | API tokens more than a day past their expiry. |
+
+The first two take `--dry-run`. `cache:prune-expired` has to run as the user that owns the
+cache directories (`www-data`, the scheduler's user); it exits non-zero, which is reported
+to Sentry, if it finds expired files it cannot delete. To clear the backlog right after
+deploying: `sudo -u www-data php artisan cache:prune-expired`.
+
+Session files are not a leak: PHP's session garbage collection already deletes them after
+`SESSION_LIFETIME`; the large count is one day of cookieless (bot) requests.
+
 Some scheduled commands queue jobs rather than doing the work inline, so they also
 need the queue worker above to be running.
 

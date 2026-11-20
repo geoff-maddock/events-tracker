@@ -33,6 +33,12 @@ class ClickTrack extends Model
 {
     use HasFactory;
 
+    /**
+     * Clicks older than this are deleted by clicks:prune (#2392). The daily
+     * rollup keeps the totals; the stats pages look back 180 days at most.
+     */
+    public const RETENTION_DAYS = 365;
+
     protected $fillable = [
         'event_id',
         'user_id',
@@ -50,6 +56,14 @@ class ClickTrack extends Model
     protected $casts = [
         'clicked_at' => 'datetime',
     ];
+
+    /**
+     * Clicks from before this moment are gone, or about to be.
+     */
+    public static function retentionCutoff(): Carbon
+    {
+        return Carbon::today()->subDays(self::RETENTION_DAYS);
+    }
 
     /**
      * Why a stored click is left out of entity stats, or null when it counts
