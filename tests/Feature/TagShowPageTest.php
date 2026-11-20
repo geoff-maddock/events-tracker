@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TagShowPageTest extends TestCase
 {
@@ -27,7 +28,7 @@ class TagShowPageTest extends TestCase
         return $event;
     }
 
-    /** @test */
+    #[Test]
     public function upcoming_events_show_before_past_events()
     {
         $tag = Tag::factory()->create();
@@ -46,7 +47,7 @@ class TagShowPageTest extends TestCase
         $response->assertSeeInOrder(['Upcoming Events', $future->name, 'Past Events', $past->name]);
     }
 
-    /** @test */
+    #[Test]
     public function upcoming_events_are_sorted_ascending_by_start_date()
     {
         $tag = Tag::factory()->create();
@@ -65,7 +66,7 @@ class TagShowPageTest extends TestCase
         $response->assertSeeInOrder([$sooner->name, $later->name]);
     }
 
-    /** @test */
+    #[Test]
     public function past_events_are_sorted_descending_by_start_date()
     {
         $tag = Tag::factory()->create();
@@ -84,7 +85,7 @@ class TagShowPageTest extends TestCase
         $response->assertSeeInOrder([$recent->name, $older->name]);
     }
 
-    /** @test */
+    #[Test]
     public function jump_links_and_section_anchors_render_for_populated_sections()
     {
         $tag = Tag::factory()->create();
@@ -100,7 +101,7 @@ class TagShowPageTest extends TestCase
         $response->assertSee('id="past-events"', false);
     }
 
-    /** @test */
+    #[Test]
     public function empty_tag_shows_no_content_message_and_no_jump_links()
     {
         $tag = Tag::factory()->create();

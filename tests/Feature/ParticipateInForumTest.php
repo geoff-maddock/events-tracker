@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ParticipateInForumTest extends TestCase
 {
@@ -21,17 +22,7 @@ class ParticipateInForumTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testExample()
-    {
-        $this->addToAssertionCount(1);
-    }
-
-    /** @test  */
+    #[Test]
     public function an_authenticated_user_may_participate_in_forum_threads()
     {
         $user = User::factory()->create(['email_verified_at' => Carbon::now(), 'user_status_id' => UserStatus::ACTIVE]);

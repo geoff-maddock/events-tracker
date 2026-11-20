@@ -13,6 +13,7 @@ use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Regression tests for the unfollow/unlike null-dereference bug.
@@ -38,7 +39,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function unfollowing_an_entity_you_do_not_follow_does_not_error(): void
     {
         $this->actingAs($this->activeUser());
@@ -50,7 +51,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->assertEquals(0, $entity->follows()->count());
     }
 
-    /** @test */
+    #[Test]
     public function unfollowing_a_series_you_do_not_follow_does_not_error(): void
     {
         $this->actingAs($this->activeUser());
@@ -61,7 +62,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $response->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function unfollowing_a_tag_you_do_not_follow_does_not_error(): void
     {
         $this->actingAs($this->activeUser());
@@ -72,7 +73,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $response->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function unattending_an_event_you_are_not_attending_does_not_error(): void
     {
         $this->actingAs($this->activeUser());
@@ -84,7 +85,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->assertEquals(0, $event->eventResponses()->count());
     }
 
-    /** @test */
+    #[Test]
     public function unfollowing_a_thread_you_do_not_follow_does_not_error(): void
     {
         $this->actingAs($this->activeUser());
@@ -95,7 +96,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $response->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function unliking_a_thread_you_do_not_like_does_not_error_or_decrement_likes(): void
     {
         $this->actingAs($this->activeUser());
@@ -108,7 +109,7 @@ class UnfollowUnlikeNullGuardTest extends TestCase
         $this->assertEquals(3, $thread->fresh()->likes);
     }
 
-    /** @test */
+    #[Test]
     public function unliking_a_post_you_do_not_like_does_not_error_or_decrement_likes(): void
     {
         $this->actingAs($this->activeUser());

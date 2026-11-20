@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class SearchTest extends TestCase
 {
@@ -14,8 +15,7 @@ class SearchTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test
-     */
+    #[Test]
     public function a_search_returns_results()
     {
         $this->signIn();
@@ -28,8 +28,7 @@ class SearchTest extends TestCase
         $response->assertSee($keyword);
     }
 
-    /** @test
-     */
+    #[Test]
     public function search_orders_upcoming_events_ascending_and_past_events_descending()
     {
         $this->signIn();
@@ -79,11 +78,12 @@ class SearchTest extends TestCase
         $this->assertLessThan($relevancePos, $datePos);
     }
 
-    /** @test
+    /**
      * Search-page tag cards must render the real thumbnail image, not the
      * placeholder icon. Regression for #2037 (SearchService dropped
      * withGridThumbnail()).
      */
+    #[Test]
     public function search_tag_results_render_grid_thumbnails()
     {
         $this->signIn();

@@ -11,6 +11,7 @@ use App\Services\DataExportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ReflectionMethod;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * The GDPR export enumerates personal data explicitly, so anything new has to
@@ -34,7 +35,7 @@ class DataExportUserDataTest extends TestCase
         return $method->invoke(app(DataExportService::class), $user);
     }
 
-    /** @test */
+    #[Test]
     public function export_includes_the_feedback_request_setting(): void
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
@@ -46,7 +47,7 @@ class DataExportUserDataTest extends TestCase
         $this->assertSame(0, (int) $data['profile']['profile']['setting_feedback_requests']);
     }
 
-    /** @test */
+    #[Test]
     public function export_includes_submitted_survey_responses_and_answers(): void
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
@@ -79,7 +80,7 @@ class DataExportUserDataTest extends TestCase
         $this->assertSame('4', $exported['answers'][0]['value']);
     }
 
-    /** @test */
+    #[Test]
     public function export_does_not_leak_other_users_survey_responses(): void
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);

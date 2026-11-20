@@ -7,6 +7,7 @@ use App\Models\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class LikesTest extends TestCase
 {
@@ -16,7 +17,7 @@ class LikesTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function a_guest_cannot_like_anything()
     {
         $this->withExceptionHandling()
@@ -24,7 +25,7 @@ class LikesTest extends TestCase
             ->assertRedirect('/');
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_like_a_post()
     {
         $this->signIn();
@@ -40,7 +41,7 @@ class LikesTest extends TestCase
         $this->assertEquals($likes + 1, $post->getAttribute('likes'));
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_like_a_thread()
     {
         $this->signIn();

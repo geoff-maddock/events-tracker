@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class EventFilterUrlTest extends TestCase
 {
@@ -13,9 +14,8 @@ class EventFilterUrlTest extends TestCase
 
     /**
      * Test that the apply filter from URL route exists and is accessible.
-     *
-     * @test
      */
+    #[Test]
     public function testApplyFilterFromUrlRouteExists()
     {
         $response = $this->get(route('events.applyFilterFromUrl'));
@@ -26,9 +26,8 @@ class EventFilterUrlTest extends TestCase
 
     /**
      * Test that filters can be applied from URL parameters.
-     *
-     * @test
      */
+    #[Test]
     public function testFiltersCanBeAppliedFromUrl()
     {
         $filterParams = [
@@ -45,9 +44,8 @@ class EventFilterUrlTest extends TestCase
 
     /**
      * Test that complex filters with multiple parameters work.
-     *
-     * @test
      */
+    #[Test]
     public function testComplexFiltersFromUrl()
     {
         $filterParams = [
@@ -68,9 +66,8 @@ class EventFilterUrlTest extends TestCase
 
     /**
      * Test that the events filter page is accessible.
-     *
-     * @test
      */
+    #[Test]
     public function testEventsFilterPageAccessible()
     {
         $response = $this->get(route('events.filter'));
@@ -81,9 +78,8 @@ class EventFilterUrlTest extends TestCase
 
     /**
      * Test that date range filters can be applied from URL.
-     *
-     * @test
      */
+    #[Test]
     public function testDateRangeFiltersFromUrl()
     {
         $filterParams = [

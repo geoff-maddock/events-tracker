@@ -10,6 +10,7 @@ use App\Models\UserStatus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Photo uploads must require an authenticated owner (or admin). The web
@@ -47,7 +48,7 @@ class ApiPhotoAuthTest extends TestCase
         return ['Accept' => 'application/json'];
     }
 
-    /** @test */
+    #[Test]
     public function api_event_add_photo_rejects_non_owner(): void
     {
         $event = Event::factory()->create(['created_by' => $this->owner->id]);
@@ -59,7 +60,7 @@ class ApiPhotoAuthTest extends TestCase
         $this->assertSame(0, $event->photos()->count());
     }
 
-    /** @test */
+    #[Test]
     public function api_entity_add_photo_rejects_non_owner(): void
     {
         $entity = Entity::factory()->create(['created_by' => $this->owner->id]);
@@ -71,7 +72,7 @@ class ApiPhotoAuthTest extends TestCase
         $this->assertSame(0, $entity->photos()->count());
     }
 
-    /** @test */
+    #[Test]
     public function api_series_add_photo_rejects_non_owner(): void
     {
         $series = Series::factory()->create(['created_by' => $this->owner->id]);
@@ -83,7 +84,7 @@ class ApiPhotoAuthTest extends TestCase
         $this->assertSame(0, $series->photos()->count());
     }
 
-    /** @test */
+    #[Test]
     public function web_event_add_photo_is_blocked_for_guest(): void
     {
         $event = Event::factory()->create(['created_by' => $this->owner->id]);
@@ -94,7 +95,7 @@ class ApiPhotoAuthTest extends TestCase
         $this->assertSame(0, $event->photos()->count());
     }
 
-    /** @test */
+    #[Test]
     public function web_event_add_photo_rejects_non_owner(): void
     {
         $event = Event::factory()->create(['created_by' => $this->owner->id]);

@@ -8,6 +8,7 @@ use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class UserOptionsCacheInvalidationTest extends TestCase
 {
@@ -15,7 +16,7 @@ class UserOptionsCacheInvalidationTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function creating_a_user_forgets_the_cached_user_option_lists(): void
     {
         Cache::put(User::FORM_OPTIONS_CACHE_KEY, ['stale'], 3600);
@@ -27,7 +28,7 @@ class UserOptionsCacheInvalidationTest extends TestCase
         $this->assertFalse(Cache::has(User::FILTER_OPTIONS_CACHE_KEY));
     }
 
-    /** @test */
+    #[Test]
     public function renaming_or_deleting_a_user_forgets_the_cached_user_option_lists(): void
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
@@ -41,7 +42,7 @@ class UserOptionsCacheInvalidationTest extends TestCase
         $this->assertFalse(Cache::has(User::FORM_OPTIONS_CACHE_KEY));
     }
 
-    /** @test */
+    #[Test]
     public function newly_registered_user_appears_in_event_owner_select_without_waiting_for_cache_expiry(): void
     {
         $this->withExceptionHandling();

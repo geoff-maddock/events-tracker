@@ -6,6 +6,7 @@ use App\Models\Thread;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ActivityTest extends TestCase
 {
@@ -15,7 +16,7 @@ class ActivityTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function the_activity_index_loads()
     {
         // Exercises ListEntityResultBuilder::listResultSetFactory()/setSort(); must not
@@ -26,7 +27,7 @@ class ActivityTest extends TestCase
         $this->actingAs($admin)->get('/activity')->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_records_activity_when_a_thread_is_created()
     {
         $this->signIn();

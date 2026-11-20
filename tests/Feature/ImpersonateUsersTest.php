@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
+use PHPUnit\Framework\Attributes\Test;
 
 class ImpersonateUsersTest extends TestCase
 {
@@ -17,7 +18,7 @@ class ImpersonateUsersTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test  */
+    #[Test]
     public function non_admins_cannot_impersonate_users()
     {
         // create a new user

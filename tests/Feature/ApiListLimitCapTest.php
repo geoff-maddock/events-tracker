@@ -9,6 +9,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Ensures list endpoints cannot be coerced into an unbounded page size.
@@ -29,7 +30,7 @@ class ApiListLimitCapTest extends TestCase
         $this->actingAs($user, 'sanctum');
     }
 
-    /** @test */
+    #[Test]
     public function events_index_caps_an_oversized_limit(): void
     {
         $response = $this->getJson('/api/events?limit=999999');
@@ -38,7 +39,7 @@ class ApiListLimitCapTest extends TestCase
         $this->assertSame(ListQueryParameters::MAX_LIMIT, $response->json('per_page'));
     }
 
-    /** @test */
+    #[Test]
     public function events_index_honors_a_reasonable_limit(): void
     {
         $response = $this->getJson('/api/events?limit=50');
@@ -47,7 +48,7 @@ class ApiListLimitCapTest extends TestCase
         $this->assertSame(50, $response->json('per_page'));
     }
 
-    /** @test */
+    #[Test]
     public function popular_caps_an_oversized_limit_and_does_not_error(): void
     {
         Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);

@@ -26,6 +26,7 @@ use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Email volume levers from #2083: the 90-day engagement gate on both digests,
@@ -163,9 +164,8 @@ class DigestEngagementTest extends TestCase
     /**
      * One failed send used to throw out of the loop, so everyone after that user got
      * nothing and a re-run mailed everyone before them twice (#2338).
-     *
-     * @dataProvider digestCommands
      */
+    #[DataProvider('digestCommands')]
     public function test_a_failed_send_does_not_stop_the_digest_run(string $command, int $weekly, int $daily): void
     {
         $failing = $this->subscriber($weekly, $daily);

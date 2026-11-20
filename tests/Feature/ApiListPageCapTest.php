@@ -7,6 +7,7 @@ use App\Models\UserStatus;
 use App\Providers\AppServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Ensures list endpoints cannot be coerced into an unbounded pagination page.
@@ -29,7 +30,7 @@ class ApiListPageCapTest extends TestCase
         $this->actingAs($user, 'sanctum');
     }
 
-    /** @test */
+    #[Test]
     public function events_index_caps_an_oversized_page_and_does_not_error(): void
     {
         $response = $this->getJson('/api/events?page=792390418');
@@ -38,7 +39,7 @@ class ApiListPageCapTest extends TestCase
         $this->assertSame(AppServiceProvider::MAX_PAGE, $response->json('current_page'));
     }
 
-    /** @test */
+    #[Test]
     public function events_index_honors_a_reasonable_page(): void
     {
         $response = $this->getJson('/api/events?page=2');

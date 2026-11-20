@@ -45,6 +45,8 @@ PHPUnit env (`phpunit.xml`) forces `APP_ENV=testing`, `CACHE_DRIVER=array`, `SES
 
 A cached config (`bootstrap/cache/config.php`) makes Laravel ignore `phpunit.xml` and `.env.testing`, which would point `RefreshDatabase` at the dev DB. `tests/CreatesApplication.php` refuses to run in that case (or when `APP_ENV` isn't `testing`, or the DB is a live one); run `php artisan config:clear` and retry.
 
+Mark tests and data providers with PHPUnit attributes (`#[Test]`, `#[DataProvider('name')]`) or a `test` method prefix; the `@test` / `@dataProvider` docblock annotations are deprecated and PHPUnit 12 ignores them.
+
 PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part of unrelated work, and don't grow it: fix new errors in code. Both `app/` and `tests/` are analysed.
 
 ## Architecture notes worth knowing up front

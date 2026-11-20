@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TagsStoreTest extends TestCase
 {
@@ -20,7 +21,7 @@ class TagsStoreTest extends TestCase
         $this->withExceptionHandling();
     }
 
-    /** @test */
+    #[Test]
     public function storing_a_new_tag_redirects_to_its_page()
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
@@ -35,7 +36,7 @@ class TagsStoreTest extends TestCase
         $this->assertSame('field-trip', $tag->slug);
     }
 
-    /** @test */
+    #[Test]
     public function storing_an_existing_tag_name_returns_to_the_form_with_input()
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);

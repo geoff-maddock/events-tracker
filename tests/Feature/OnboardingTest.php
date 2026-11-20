@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Post-signup "Getting To Know You" onboarding (issue #901).
@@ -29,7 +30,7 @@ class OnboardingTest extends TestCase
         $this->withoutMiddleware(VerifyCsrfToken::class);
     }
 
-    /** @test */
+    #[Test]
     public function verified_user_with_no_follows_should_see_onboarding(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -37,7 +38,7 @@ class OnboardingTest extends TestCase
         $this->assertTrue($user->shouldSeeOnboarding());
     }
 
-    /** @test */
+    #[Test]
     public function unverified_user_should_not_see_onboarding(): void
     {
         $user = User::factory()->create(['user_status_id' => 1, 'email_verified_at' => null]);
@@ -45,7 +46,7 @@ class OnboardingTest extends TestCase
         $this->assertFalse($user->shouldSeeOnboarding());
     }
 
-    /** @test */
+    #[Test]
     public function user_who_already_follows_something_should_not_see_onboarding(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -60,7 +61,7 @@ class OnboardingTest extends TestCase
         $this->assertFalse($user->fresh()->shouldSeeOnboarding());
     }
 
-    /** @test */
+    #[Test]
     public function completed_or_dismissed_onboarding_is_not_shown_again(): void
     {
         $completed = User::factory()->create(['user_status_id' => 1]);
@@ -72,7 +73,7 @@ class OnboardingTest extends TestCase
         $this->assertFalse($dismissed->fresh()->shouldSeeOnboarding());
     }
 
-    /** @test */
+    #[Test]
     public function store_creates_follows_and_marks_onboarding_complete(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -101,7 +102,7 @@ class OnboardingTest extends TestCase
         $this->assertFalse($user->fresh()->shouldSeeOnboarding());
     }
 
-    /** @test */
+    #[Test]
     public function store_is_idempotent_and_does_not_duplicate_existing_follows(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -125,7 +126,7 @@ class OnboardingTest extends TestCase
             ->count());
     }
 
-    /** @test */
+    #[Test]
     public function dismiss_marks_onboarding_dismissed(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -137,7 +138,7 @@ class OnboardingTest extends TestCase
         $this->assertFalse($user->fresh()->shouldSeeOnboarding());
     }
 
-    /** @test */
+    #[Test]
     public function restart_onboarding_clears_the_completed_and_dismissed_flags(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -160,7 +161,7 @@ class OnboardingTest extends TestCase
         $this->assertNull($profile->onboarding_dismissed_at);
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_restart_onboarding_for_another_user(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -174,7 +175,7 @@ class OnboardingTest extends TestCase
         $this->assertNotNull($other->fresh()->profile->onboarding_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function data_endpoint_returns_popular_lists(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -188,7 +189,7 @@ class OnboardingTest extends TestCase
             ->assertJsonStructure(['entities', 'tags', 'events']);
     }
 
-    /** @test */
+    #[Test]
     public function data_endpoint_returns_enough_options_for_multiple_pages(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -218,7 +219,7 @@ class OnboardingTest extends TestCase
         $this->assertLessThanOrEqual(60, count($data['events']));
     }
 
-    /** @test */
+    #[Test]
     public function onboarding_routes_require_authentication(): void
     {
         $this->withExceptionHandling();

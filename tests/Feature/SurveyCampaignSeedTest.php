@@ -12,6 +12,7 @@ use App\Models\Visibility;
 use Database\Seeders\SurveyCampaignsTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Guards the seeded shape of the feedback campaigns (issue #1998).
@@ -26,7 +27,7 @@ class SurveyCampaignSeedTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function post_event_campaign_is_seeded_and_active(): void
     {
         $campaign = SurveyCampaign::where('slug', SurveyCampaign::POST_EVENT_ATTENDEE)->first();
@@ -38,7 +39,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame(Visibility::VISIBILITY_PRIVATE, $campaign->default_visibility_id);
     }
 
-    /** @test */
+    #[Test]
     public function by_slug_resolves_the_campaign(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -47,7 +48,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame(SurveyCampaign::POST_EVENT_ATTENDEE, $campaign->slug);
     }
 
-    /** @test */
+    #[Test]
     public function campaign_has_the_expected_active_questions_in_sort_order(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -71,7 +72,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame($sorted, $sorts, 'Questions should come back in sort order.');
     }
 
-    /** @test */
+    #[Test]
     public function the_attendance_gate_is_first_unconditional_and_required(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -85,7 +86,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame(['yes', 'no'], $gate->optionValues());
     }
 
-    /** @test */
+    #[Test]
     public function every_question_after_the_gate_belongs_to_exactly_one_branch(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -105,7 +106,7 @@ class SurveyCampaignSeedTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function the_rating_is_required_only_within_the_attended_branch(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -122,7 +123,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertFalse($rating->appliesGiven([]), 'An unanswered gate hides everything downstream.');
     }
 
-    /** @test */
+    #[Test]
     public function the_no_show_branch_asks_why(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -144,7 +145,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame(SurveyQuestion::TYPE_TEXT, $detail->type);
     }
 
-    /** @test */
+    #[Test]
     public function every_question_has_a_known_type(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -158,7 +159,7 @@ class SurveyCampaignSeedTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function choice_questions_have_non_empty_options_with_unique_values(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -184,7 +185,7 @@ class SurveyCampaignSeedTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function non_choice_questions_have_no_options(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -196,7 +197,7 @@ class SurveyCampaignSeedTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function reseeding_is_idempotent(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -217,7 +218,7 @@ class SurveyCampaignSeedTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function reseeding_preserves_collected_invitations_and_responses(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -247,7 +248,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertDatabaseHas('survey_answers', ['id' => $answer->id, 'value_int' => 4]);
     }
 
-    /** @test */
+    #[Test]
     public function invitations_get_a_token_and_are_actionable_by_default(): void
     {
         $invitation = SurveyInvitation::factory()->create(['token' => '']);
@@ -258,7 +259,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame($invitation->id, SurveyInvitation::actionable()->first()?->id);
     }
 
-    /** @test */
+    #[Test]
     public function expired_dismissed_completed_and_snoozed_invitations_are_not_actionable(): void
     {
         $expired = SurveyInvitation::factory()->expired()->create();
@@ -274,7 +275,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame(0, SurveyInvitation::actionable()->count());
     }
 
-    /** @test */
+    #[Test]
     public function the_target_unique_index_prevents_duplicate_invitations(): void
     {
         $invitation = SurveyInvitation::factory()->create();
@@ -290,7 +291,7 @@ class SurveyCampaignSeedTest extends TestCase
         $this->assertSame(1, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function subjectless_invitations_still_dedupe(): void
     {
         // NULL-in-unique-index trap: with nullable subject columns MySQL would

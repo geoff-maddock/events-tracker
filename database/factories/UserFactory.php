@@ -30,7 +30,9 @@ class UserFactory extends Factory
         return [
             'name' => $this->faker->name,
             'slug' => $this->faker->unique()->slug,
-            'email' => $this->faker->unique()->safeEmail,
+            // faker's unique() only remembers what it issued in this process,
+            // so it can repeat an address a seeded user already has (#2404)
+            'email' => 'user-'.Str::uuid().'@example.org',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\Framework\Attributes\Test;
 
 class ApiUserRegistrationTest extends TestCase
 {
@@ -26,7 +27,7 @@ class ApiUserRegistrationTest extends TestCase
         Validator::extend('g-recaptcha-response.captcha', fn () => true);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_register_a_new_user_via_api()
     {
         Notification::fake();
@@ -66,7 +67,7 @@ class ApiUserRegistrationTest extends TestCase
         $this->assertNotNull($user->profile);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_required_fields()
     {
         $response = $this->postJson('/api/register', []);
@@ -75,7 +76,7 @@ class ApiUserRegistrationTest extends TestCase
                 ->assertJsonValidationErrors(['name', 'email', 'password', 'g-recaptcha-response']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_name_minimum_length()
     {
         $userData = [
@@ -91,7 +92,7 @@ class ApiUserRegistrationTest extends TestCase
                 ->assertJsonValidationErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_email_format()
     {
         $userData = [
@@ -107,7 +108,7 @@ class ApiUserRegistrationTest extends TestCase
                 ->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_email_uniqueness()
     {
         // Create an existing user
@@ -126,7 +127,7 @@ class ApiUserRegistrationTest extends TestCase
                 ->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_password_minimum_length()
     {
         $userData = [
@@ -142,7 +143,7 @@ class ApiUserRegistrationTest extends TestCase
                 ->assertJsonValidationErrors(['password']);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_captcha_verification()
     {
         $userData = [
@@ -158,7 +159,7 @@ class ApiUserRegistrationTest extends TestCase
                 ->assertJsonValidationErrors(['g-recaptcha-response']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_user_with_pending_status()
     {
         Notification::fake();

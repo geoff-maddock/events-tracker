@@ -9,6 +9,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Covers PagesController::autoRelateSeries — the admin-only action that sets
@@ -54,7 +55,7 @@ class AutoRelateSeriesTest extends TestCase
         ], $attributes));
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_auto_relate(): void
     {
         $series = $this->makeSeries();
@@ -65,7 +66,7 @@ class AutoRelateSeriesTest extends TestCase
         $this->assertNull($event->fresh()->series_id);
     }
 
-    /** @test */
+    #[Test]
     public function non_admin_cannot_auto_relate(): void
     {
         $series = $this->makeSeries();
@@ -77,7 +78,7 @@ class AutoRelateSeriesTest extends TestCase
         $this->assertNull($event->fresh()->series_id);
     }
 
-    /** @test */
+    #[Test]
     public function admin_sets_series_on_events_matching_exact_phrase_case_insensitively(): void
     {
         $series = $this->makeSeries();
@@ -102,7 +103,7 @@ class AutoRelateSeriesTest extends TestCase
         $this->assertNull($splitWords->fresh()->series_id);
     }
 
-    /** @test */
+    #[Test]
     public function events_already_in_a_series_are_skipped(): void
     {
         $series = $this->makeSeries();
@@ -115,7 +116,7 @@ class AutoRelateSeriesTest extends TestCase
         $this->assertSame($otherSeries->id, $event->fresh()->series_id);
     }
 
-    /** @test */
+    #[Test]
     public function other_users_private_events_are_not_related(): void
     {
         $series = $this->makeSeries();
@@ -132,7 +133,7 @@ class AutoRelateSeriesTest extends TestCase
         $this->assertNull($privateEvent->fresh()->series_id);
     }
 
-    /** @test */
+    #[Test]
     public function empty_keyword_relates_nothing(): void
     {
         $series = $this->makeSeries();
@@ -144,7 +145,7 @@ class AutoRelateSeriesTest extends TestCase
         $this->assertNull($event->fresh()->series_id);
     }
 
-    /** @test */
+    #[Test]
     public function unknown_series_relates_nothing(): void
     {
         $event = $this->makeEvent(['name' => 'Cutups Vol. 12']);

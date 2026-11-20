@@ -14,6 +14,7 @@ use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ThreadFollowNotificationTest extends TestCase
 {
@@ -60,7 +61,7 @@ class ThreadFollowNotificationTest extends TestCase
         $this->post('/threads', $payload)->assertStatus(302);
     }
 
-    /** @test */
+    #[Test]
     public function tag_follower_is_not_notified_when_new_setting_is_off_by_default()
     {
         Mail::fake();
@@ -83,7 +84,7 @@ class ThreadFollowNotificationTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function tag_follower_is_notified_when_opted_in_via_new_setting()
     {
         Mail::fake();
@@ -106,7 +107,7 @@ class ThreadFollowNotificationTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function forum_update_off_still_suppresses_even_when_new_setting_is_on()
     {
         Mail::fake();
@@ -129,7 +130,7 @@ class ThreadFollowNotificationTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function new_setting_defaults_to_zero_on_a_fresh_profile()
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);

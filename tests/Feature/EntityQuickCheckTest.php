@@ -11,6 +11,7 @@ use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class EntityQuickCheckTest extends TestCase
 {
@@ -45,14 +46,14 @@ class EntityQuickCheckTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function a_guest_cannot_use_quick_check()
     {
         $this->getJson('/entities/quick-check?name=Spirit')
             ->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_requires_a_name_of_at_least_three_characters()
     {
         $this->actingAs($this->activeUser())
@@ -61,7 +62,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonValidationErrors('name');
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_finds_an_exact_name_match()
     {
         $entity = $this->makeEntity('Spirit Lodge');
@@ -72,7 +73,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonFragment(['id' => $entity->id, 'name' => 'Spirit Lodge']);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_finds_a_substring_match()
     {
         $entity = $this->makeEntity('The Spirit Lodge Hall');
@@ -83,7 +84,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonFragment(['id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_finds_a_close_misspelling()
     {
         $entity = $this->makeEntity('Spirit Lodge');
@@ -94,7 +95,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonFragment(['id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_matches_entities_of_any_type_and_returns_the_type_label()
     {
         $this->makeEntity('Spirit Collective', EntityType::GROUP);
@@ -108,7 +109,7 @@ class EntityQuickCheckTest extends TestCase
         $this->assertSame('Group', $match['entity_type']);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_matches_an_entity_alias()
     {
         $entity = $this->makeEntity('Spirit Lodge');
@@ -121,7 +122,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonFragment(['id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_reports_which_alias_matched()
     {
         $entity = $this->makeEntity('Spirit Lodge');
@@ -142,7 +143,7 @@ class EntityQuickCheckTest extends TestCase
         $this->assertNull(collect($byName)->firstWhere('id', $entity->id)['alias']);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_can_be_restricted_to_one_entity_type()
     {
         $space = $this->makeEntity('Spirit Lodge', EntityType::SPACE);
@@ -157,7 +158,7 @@ class EntityQuickCheckTest extends TestCase
         $this->assertFalse($ids->contains($space->id));
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_type_filter_still_matches_aliases()
     {
         $entity = $this->makeEntity('Spirit Lodge', EntityType::SPACE);
@@ -177,7 +178,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonMissing(['id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_rejects_an_unknown_entity_type()
     {
         $this->actingAs($this->activeUser())
@@ -186,7 +187,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonValidationErrors('entity_type_id');
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_can_exclude_the_entity_being_edited()
     {
         $self = $this->makeEntity('Spirit Lodge');
@@ -201,7 +202,7 @@ class EntityQuickCheckTest extends TestCase
         $this->assertTrue($ids->contains($other->id));
     }
 
-    /** @test */
+    #[Test]
     public function entity_create_and_edit_forms_render_the_duplicate_warning()
     {
         $user = $this->activeUser();
@@ -221,7 +222,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertSee('const excludeId = '.$entity->id.';', false);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_returns_nothing_for_an_unrelated_name()
     {
         $this->makeEntity('Spirit Lodge');
@@ -232,7 +233,7 @@ class EntityQuickCheckTest extends TestCase
             ->assertJsonMissing(['name' => 'Spirit Lodge']);
     }
 
-    /** @test */
+    #[Test]
     public function quick_check_returns_at_most_five_matches()
     {
         foreach (range(1, 8) as $i) {

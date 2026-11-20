@@ -12,6 +12,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Ownership guards on mutations that previously allowed any authenticated
@@ -61,7 +62,7 @@ class ApiOwnershipGuardsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function entity_update_does_not_mutate_data_for_non_owner(): void
     {
         $entity = $this->ownerEntity();
@@ -72,7 +73,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertSame('Original ZZ', $entity->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function entity_patch_does_not_mutate_data_for_non_owner(): void
     {
         $entity = $this->ownerEntity();
@@ -83,7 +84,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertSame('Original ZZ', $entity->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function entity_update_succeeds_for_owner(): void
     {
         $entity = $this->ownerEntity();
@@ -95,7 +96,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertSame('Renamed ZZ', $entity->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function api_thread_destroy_rejects_non_owner(): void
     {
         // authenticate as owner first so the Thread::creating hook stamps created_by
@@ -108,7 +109,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertNotNull(Thread::find($thread->id), 'Thread should still exist.');
     }
 
-    /** @test */
+    #[Test]
     public function api_thread_destroy_succeeds_for_owner(): void
     {
         $this->actingAs($this->owner);
@@ -120,7 +121,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertNull(Thread::find($thread->id), 'Owner should be able to delete their thread.');
     }
 
-    /** @test */
+    #[Test]
     public function create_thread_is_blocked_for_non_owner(): void
     {
         $event = Event::factory()->create([
@@ -134,7 +135,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertSame(0, Thread::where('event_id', $event->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function create_thread_is_blocked_for_guest(): void
     {
         $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
@@ -145,7 +146,7 @@ class ApiOwnershipGuardsTest extends TestCase
         $this->assertSame(0, Thread::where('event_id', $event->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function create_thread_succeeds_for_owner(): void
     {
         $event = Event::factory()->create([

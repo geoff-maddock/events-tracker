@@ -11,6 +11,7 @@ use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class UserAttendingEventsCardTest extends TestCase
 {
@@ -55,7 +56,7 @@ class UserAttendingEventsCardTest extends TestCase
         return $m[0];
     }
 
-    /** @test */
+    #[Test]
     public function public_profile_shows_attending_event_thumbnails(): void
     {
         $this->withExceptionHandling();
@@ -72,7 +73,7 @@ class UserAttendingEventsCardTest extends TestCase
         $this->assertStringContainsString('title="'.e($event->name).'"', $card);
     }
 
-    /** @test */
+    #[Test]
     public function row_caps_at_four_soonest_events_with_overflow_chip(): void
     {
         $this->withExceptionHandling();
@@ -96,7 +97,7 @@ class UserAttendingEventsCardTest extends TestCase
         $this->assertStringContainsString('+2', $card);
     }
 
-    /** @test */
+    #[Test]
     public function no_future_events_renders_no_row(): void
     {
         $this->withExceptionHandling();
@@ -114,7 +115,7 @@ class UserAttendingEventsCardTest extends TestCase
         $this->assertStringNotContainsString('data-attending-events', $card);
     }
 
-    /** @test */
+    #[Test]
     public function private_profile_hides_row(): void
     {
         $this->withExceptionHandling();
@@ -130,7 +131,7 @@ class UserAttendingEventsCardTest extends TestCase
         $this->assertStringNotContainsString('data-attending-events', $card);
     }
 
-    /** @test */
+    #[Test]
     public function user_without_profile_row_shows_no_row(): void
     {
         $this->withExceptionHandling();
@@ -146,7 +147,7 @@ class UserAttendingEventsCardTest extends TestCase
         $this->assertStringNotContainsString('data-attending-events', $card);
     }
 
-    /** @test */
+    #[Test]
     public function private_events_of_others_are_not_shown(): void
     {
         $this->withExceptionHandling();
@@ -166,7 +167,7 @@ class UserAttendingEventsCardTest extends TestCase
         $this->assertStringNotContainsString('data-attending-events', $card);
     }
 
-    /** @test */
+    #[Test]
     public function filtered_index_keeps_the_row(): void
     {
         $this->withExceptionHandling();

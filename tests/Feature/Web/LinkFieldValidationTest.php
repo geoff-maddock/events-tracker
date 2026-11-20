@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * ticket_link and primary_link on the event and series forms must be
@@ -42,9 +43,7 @@ class LinkFieldValidationTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider rejectedLinks
-     */
+    #[DataProvider('rejectedLinks')]
     public function test_event_form_rejects_a_link_that_is_not_an_absolute_url(string $link): void
     {
         $this->actingAs(User::factory()->create(['user_status_id' => UserStatus::ACTIVE]))
@@ -52,9 +51,7 @@ class LinkFieldValidationTest extends TestCase
             ->assertSessionHasErrors(['ticket_link', 'primary_link']);
     }
 
-    /**
-     * @dataProvider rejectedLinks
-     */
+    #[DataProvider('rejectedLinks')]
     public function test_series_form_rejects_a_link_that_is_not_an_absolute_url(string $link): void
     {
         $this->actingAs(User::factory()->create(['user_status_id' => UserStatus::ACTIVE]))

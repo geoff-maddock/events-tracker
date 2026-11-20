@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Photo attribution and management (issue #1989): uploads must set
@@ -56,7 +57,7 @@ class ApiPhotoManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function uploaded_photo_is_attributed_to_the_uploader(): void
     {
         Mail::fake();
@@ -75,7 +76,7 @@ class ApiPhotoManagementTest extends TestCase
             'Uploaded photo must be attributed to the uploader, not the DB default of 1.');
     }
 
-    /** @test */
+    #[Test]
     public function uploader_can_manage_their_own_photo(): void
     {
         $photo = $this->seedPhotoOwnedBy($this->owner);
@@ -95,7 +96,7 @@ class ApiPhotoManagementTest extends TestCase
         $this->assertDatabaseMissing('photos', ['id' => $photo->id]);
     }
 
-    /** @test */
+    #[Test]
     public function make_photo_falls_back_to_user_one_when_unauthenticated(): void
     {
 
@@ -106,7 +107,7 @@ class ApiPhotoManagementTest extends TestCase
         $this->assertSame(1, $photo->created_by);
     }
 
-    /** @test */
+    #[Test]
     public function other_users_cannot_manage_anothers_photo(): void
     {
         $photo = $this->seedPhotoOwnedBy($this->owner);

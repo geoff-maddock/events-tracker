@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class UserStatusDotTest extends TestCase
 {
@@ -13,7 +14,7 @@ class UserStatusDotTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function users_index_shows_colored_status_dot_for_user_with_status(): void
     {
         $this->withExceptionHandling();
@@ -29,7 +30,7 @@ class UserStatusDotTest extends TestCase
         $this->assertStringContainsString('title="Active"', $card);
     }
 
-    /** @test */
+    #[Test]
     public function status_dot_color_matches_user_status(): void
     {
         $this->withExceptionHandling();
@@ -45,7 +46,7 @@ class UserStatusDotTest extends TestCase
         $this->assertStringContainsString('bg-red-500', $this->extractCard($html, $banned->id));
     }
 
-    /** @test */
+    #[Test]
     public function users_index_shows_no_dot_for_unmapped_status(): void
     {
         $this->withExceptionHandling();

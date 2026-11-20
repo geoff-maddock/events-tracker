@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class PostsTest extends TestCase
 {
@@ -19,7 +20,7 @@ class PostsTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function it_has_an_owner()
     {
         $post = Post::factory()->create();
@@ -27,7 +28,7 @@ class PostsTest extends TestCase
         $this->assertInstanceOf(User::class, $post->user);
     }
 
-    /** @test */
+    #[Test]
     public function it_knows_if_it_was_just_published()
     {
         $post = Post::factory()->create();
@@ -36,7 +37,7 @@ class PostsTest extends TestCase
         $this->assertFalse($post->wasJustPublished());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_detect_all_mentioned_users_in_the_body()
     {
         $post = new Post([
@@ -47,14 +48,13 @@ class PostsTest extends TestCase
 
     /**
      * Test that a select post is visible
-     *
-     * @test void
      */
+    #[Test]
     public function posts_browsable()
     {
-        $this->signIn();
-
-        $user = User::find(1);
+        // the post page needs the show_forum permission, which admins have
+        $user = User::factory()->create();
+        $user->assignGroup('admin');
         $post = Post::factory()->create();
 
         // when we visit a thread page, we'll see the first 100 characters of the post (at minimum)

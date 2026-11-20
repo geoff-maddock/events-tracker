@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * POST /api/{events,entities,series}/{id}/photos/from-url (issue #2123):
@@ -96,7 +98,7 @@ class ApiPhotoFromUrlTest extends TestCase
 
     // ---- events -----------------------------------------------------------
 
-    /** @test */
+    #[Test]
     public function event_first_photo_from_url_is_attached_primary_and_notifies_followers(): void
     {
         $this->fakeCdn();
@@ -124,7 +126,7 @@ class ApiPhotoFromUrlTest extends TestCase
         $this->assertSame(1, Mail::sent(FollowingUpdate::class)->filter(fn (FollowingUpdate $m) => $m->hasTo($follower->email))->count());
     }
 
-    /** @test */
+    #[Test]
     public function event_second_photo_from_url_is_not_primary_and_does_not_renotify(): void
     {
         $this->fakeCdn();
@@ -144,7 +146,7 @@ class ApiPhotoFromUrlTest extends TestCase
         Mail::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function event_from_url_rejects_non_owner(): void
     {
         $this->fakeCdn();
@@ -157,7 +159,7 @@ class ApiPhotoFromUrlTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function event_from_url_requires_authentication(): void
     {
         $this->fakeCdn();
@@ -169,7 +171,7 @@ class ApiPhotoFromUrlTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function event_from_url_returns_404_for_an_unknown_event(): void
     {
         $this->fakeCdn();
@@ -180,7 +182,7 @@ class ApiPhotoFromUrlTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function event_from_url_validates_the_url_field(): void
     {
         $this->fakeCdn();
@@ -197,11 +199,8 @@ class ApiPhotoFromUrlTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unsafeUrls
-     */
+    #[Test]
+    #[DataProvider('unsafeUrls')]
     public function event_from_url_returns_422_for_unsafe_or_invalid_sources(string $url, string $message): void
     {
         Http::fake([
@@ -234,7 +233,7 @@ class ApiPhotoFromUrlTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
     public function event_from_url_is_rate_limited(): void
     {
         $this->fakeCdn();
@@ -247,7 +246,7 @@ class ApiPhotoFromUrlTest extends TestCase
 
     // ---- entities ---------------------------------------------------------
 
-    /** @test */
+    #[Test]
     public function entity_photo_from_url_is_attached(): void
     {
         $this->fakeCdn();
@@ -269,7 +268,7 @@ class ApiPhotoFromUrlTest extends TestCase
         $this->assertSame(2, $entity->photos()->count());
     }
 
-    /** @test */
+    #[Test]
     public function entity_from_url_rejects_non_owner_and_unknown_ids(): void
     {
         $this->fakeCdn();
@@ -288,7 +287,7 @@ class ApiPhotoFromUrlTest extends TestCase
 
     // ---- series -----------------------------------------------------------
 
-    /** @test */
+    #[Test]
     public function series_photo_from_url_is_attached(): void
     {
         $this->fakeCdn();
@@ -309,7 +308,7 @@ class ApiPhotoFromUrlTest extends TestCase
         $this->assertSame(2, $series->photos()->count());
     }
 
-    /** @test */
+    #[Test]
     public function series_from_url_rejects_non_owner_and_unknown_ids(): void
     {
         $this->fakeCdn();

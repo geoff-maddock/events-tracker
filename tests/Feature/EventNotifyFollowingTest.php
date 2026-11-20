@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * FollowerNotifier::event() dedup (issue #1991; formerly EventsController::notifyFollowing): the tag loop keyed
@@ -81,7 +82,7 @@ class EventNotifyFollowingTest extends TestCase
             ->count();
     }
 
-    /** @test */
+    #[Test]
     public function every_tag_follower_receives_the_notification(): void
     {
         $tag = Tag::factory()->create();
@@ -101,7 +102,7 @@ class EventNotifyFollowingTest extends TestCase
         $this->assertSame(1, $this->sentTo('second-follower@example.com'));
     }
 
-    /** @test */
+    #[Test]
     public function follower_of_two_tags_receives_exactly_one_email(): void
     {
         $tagOne = Tag::factory()->create();
@@ -118,7 +119,7 @@ class EventNotifyFollowingTest extends TestCase
         $this->assertSame(1, $this->sentTo('two-tags@example.com'));
     }
 
-    /** @test */
+    #[Test]
     public function follower_of_a_tag_and_a_linked_entity_receives_exactly_one_email(): void
     {
         $tag = Tag::factory()->create();
@@ -153,7 +154,7 @@ class EventNotifyFollowingTest extends TestCase
             ->assertStatus(201);
     }
 
-    /** @test */
+    #[Test]
     public function first_photo_upload_notifies_followers(): void
     {
         Storage::fake('external');
@@ -175,7 +176,7 @@ class EventNotifyFollowingTest extends TestCase
         $this->assertSame(1, $event->photos()->first()->is_primary);
     }
 
-    /** @test */
+    #[Test]
     public function second_photo_upload_does_not_renotify(): void
     {
         Storage::fake('external');
@@ -213,9 +214,8 @@ class EventNotifyFollowingTest extends TestCase
      * notifyFollowing and 500 the request — after the event had already been
      * saved, so the user saw a failure for work that succeeded and could retry
      * into duplicates.
-     *
-     * @test
      */
+    #[Test]
     public function a_dead_mail_transport_does_not_break_the_notification_pass(): void
     {
         $tag = Tag::factory()->create();
@@ -237,7 +237,7 @@ class EventNotifyFollowingTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /** @test */
+    #[Test]
     public function followers_with_instant_updates_disabled_are_not_notified(): void
     {
         $tag = Tag::factory()->create();

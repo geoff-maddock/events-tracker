@@ -9,6 +9,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Ensures the API listing endpoints apply the model `visible($user)`
@@ -36,7 +37,7 @@ class ApiVisibilityFilteringTest extends TestCase
         $this->other = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
     }
 
-    /** @test */
+    #[Test]
     public function events_index_hides_other_users_private_events(): void
     {
         $private = Event::factory()->create([
@@ -62,7 +63,7 @@ class ApiVisibilityFilteringTest extends TestCase
         $this->assertTrue($ownerIds->contains($private->id), 'Owner should see their own private event.');
     }
 
-    /** @test */
+    #[Test]
     public function events_popular_hides_other_users_private_events(): void
     {
         $private = Event::factory()->create([
@@ -82,7 +83,7 @@ class ApiVisibilityFilteringTest extends TestCase
         $this->assertFalse($ids->contains($private->id), 'Private event must not leak via popular.');
     }
 
-    /** @test */
+    #[Test]
     public function blogs_index_hides_other_users_private_blogs(): void
     {
         $private = Blog::factory()->create([

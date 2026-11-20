@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class EntityQuickStoreTest extends TestCase
 {
@@ -36,14 +37,14 @@ class EntityQuickStoreTest extends TestCase
         return $user;
     }
 
-    /** @test */
+    #[Test]
     public function a_guest_cannot_quick_create_an_entity()
     {
         $this->postJson('/entities/quick-store', ['name' => 'The Smiling Moose', 'role' => 'Venue'])
             ->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_quick_create_a_venue()
     {
         $user = $this->activeUser();
@@ -64,7 +65,7 @@ class EntityQuickStoreTest extends TestCase
         $this->assertTrue($entity->roles->contains('name', 'Venue'));
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_quick_create_a_promoter()
     {
         $user = $this->activeUser();
@@ -81,7 +82,7 @@ class EntityQuickStoreTest extends TestCase
         $this->assertTrue($entity->roles->contains('name', 'Promoter'));
     }
 
-    /** @test */
+    #[Test]
     public function quick_create_generates_a_unique_slug()
     {
         $user = $this->activeUser();
@@ -97,7 +98,7 @@ class EntityQuickStoreTest extends TestCase
         $this->assertNotSame($first, $second);
     }
 
-    /** @test */
+    #[Test]
     public function quick_create_requires_a_name_of_at_least_three_characters()
     {
         $user = $this->activeUser();
@@ -108,7 +109,7 @@ class EntityQuickStoreTest extends TestCase
             ->assertJsonValidationErrors('name');
     }
 
-    /** @test */
+    #[Test]
     public function quick_create_stores_optional_short_and_full_description()
     {
         $user = $this->activeUser();
@@ -129,7 +130,7 @@ class EntityQuickStoreTest extends TestCase
         $this->assertSame('A concert venue in Millvale housed in a converted 19th-century church.', $entity->description);
     }
 
-    /** @test */
+    #[Test]
     public function quick_create_uses_the_name_as_placeholder_when_descriptions_are_omitted()
     {
         $user = $this->activeUser();
@@ -144,7 +145,7 @@ class EntityQuickStoreTest extends TestCase
         $this->assertSame('Placeholder Hall', $entity->description);
     }
 
-    /** @test */
+    #[Test]
     public function quick_create_attaches_an_optional_image_as_primary_photo()
     {
         Storage::fake('external');
@@ -166,7 +167,7 @@ class EntityQuickStoreTest extends TestCase
         $this->assertSame($user->id, $photo->created_by);
     }
 
-    /** @test */
+    #[Test]
     public function quick_create_rejects_a_non_image_file()
     {
         Storage::fake('external');

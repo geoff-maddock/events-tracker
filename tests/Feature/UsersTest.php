@@ -9,6 +9,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class UsersTest extends TestCase
 {
@@ -18,7 +19,7 @@ class UsersTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function a_user_can_fetch_their_most_recent_post()
     {
         $user = User::factory()->create();
@@ -48,7 +49,7 @@ class UsersTest extends TestCase
         $response->assertSee('Reset Password');
     }
 
-    /** @test */
+    #[Test]
     public function a_non_admin_cannot_access_password_reset_form()
     {
         $this->withExceptionHandling();
@@ -67,7 +68,7 @@ class UsersTest extends TestCase
         $this->assertContains($response->status(), [302, 301, 403]);
     }
 
-    /** @test */
+    #[Test]
     public function updating_a_user_with_no_profile_row_does_not_error(): void
     {
         // UserFactory doesn't create a profile row (EVENTREPO-VW regression).

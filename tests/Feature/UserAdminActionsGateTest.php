@@ -9,6 +9,7 @@ use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * The user admin actions (activate / suspend / delete / reminder) are exposed
@@ -60,9 +61,7 @@ class UserAdminActionsGateTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider adminOnlyActionProvider
-     */
+    #[DataProvider('adminOnlyActionProvider')]
     public function test_guests_cannot_reach_the_user_admin_actions(string $action): void
     {
         $target = User::factory()->create();
@@ -72,9 +71,7 @@ class UserAdminActionsGateTest extends TestCase
             ->assertRedirect('/login');
     }
 
-    /**
-     * @dataProvider adminOnlyActionProvider
-     */
+    #[DataProvider('adminOnlyActionProvider')]
     public function test_non_admins_cannot_reach_the_user_admin_actions(string $action): void
     {
         $target = User::factory()->create();

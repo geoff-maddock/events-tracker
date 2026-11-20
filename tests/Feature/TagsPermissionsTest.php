@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TagsPermissionsTest extends TestCase
 {
@@ -39,7 +40,7 @@ class TagsPermissionsTest extends TestCase
         return $tag;
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_delete_a_tag_they_did_not_create()
     {
         $owner = $this->makeUser();
@@ -52,7 +53,7 @@ class TagsPermissionsTest extends TestCase
         $this->assertDatabaseMissing('tags', ['id' => $tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function super_admin_can_delete_a_tag_they_did_not_create()
     {
         $owner = $this->makeUser();
@@ -65,7 +66,7 @@ class TagsPermissionsTest extends TestCase
         $this->assertDatabaseMissing('tags', ['id' => $tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function creator_cannot_delete_their_own_tag()
     {
         $owner = $this->makeUser();
@@ -77,7 +78,7 @@ class TagsPermissionsTest extends TestCase
         $this->assertDatabaseHas('tags', ['id' => $tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_delete_a_tag()
     {
         $owner = $this->makeUser();
@@ -90,7 +91,7 @@ class TagsPermissionsTest extends TestCase
         $this->assertDatabaseHas('tags', ['id' => $tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_delete_a_tag()
     {
         $owner = $this->makeUser();
@@ -102,7 +103,7 @@ class TagsPermissionsTest extends TestCase
         $this->assertDatabaseHas('tags', ['id' => $tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_access_edit_page()
     {
         $owner = $this->makeUser();
@@ -114,7 +115,7 @@ class TagsPermissionsTest extends TestCase
         $response->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function creator_can_access_edit_page_for_their_own_tag()
     {
         $owner = $this->makeUser();
@@ -125,7 +126,7 @@ class TagsPermissionsTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_access_edit_page_for_a_tag_they_did_not_create()
     {
         $owner = $this->makeUser();
@@ -137,7 +138,7 @@ class TagsPermissionsTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function admin_sees_action_menu_on_tag_show_page()
     {
         $owner = $this->makeUser();
@@ -150,7 +151,7 @@ class TagsPermissionsTest extends TestCase
         $response->assertSee('Delete Tag');
     }
 
-    /** @test */
+    #[Test]
     public function creator_sees_edit_but_not_delete_on_tag_show_page()
     {
         $owner = $this->makeUser();
@@ -163,7 +164,7 @@ class TagsPermissionsTest extends TestCase
         $response->assertDontSee('Delete Tag');
     }
 
-    /** @test */
+    #[Test]
     public function unrelated_user_does_not_see_action_menu_on_tag_show_page()
     {
         $owner = $this->makeUser();
