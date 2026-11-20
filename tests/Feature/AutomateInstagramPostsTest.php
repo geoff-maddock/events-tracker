@@ -10,9 +10,12 @@ use App\Models\EventType;
 use App\Models\Photo;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\Integrations\Instagram;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Mockery;
 use Tests\TestCase;
 
 class AutomateInstagramPostsTest extends TestCase
@@ -417,5 +420,162 @@ class AutomateInstagramPostsTest extends TestCase
         $method->invoke($command, $event, 'second failure');
 
         Mail::assertSent(InstagramPostFailure::class, 1);
+    }
+
+    /**
+     * The Instagram client with every call succeeding, bound in the container;
+     * a test overrides the call it wants to fail (#2404).
+     */
+    private function mockInstagram(): Instagram|Mockery\MockInterface
+    {
+        Storage::shouldReceive('disk')->with('external')->andReturnSelf()->byDefault();
+        Storage::shouldReceive('url')->andReturn('http://example.com/test.jpg')->byDefault();
+
+        $instagram = Mockery::mock(Instagram::class);
+        $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(222)->byDefault();
+        $instagram->shouldReceive('checkBatchStatus')->andReturn(true)->byDefault();
+        $instagram->shouldReceive('createCarousel')->andReturn(444)->byDefault();
+        $instagram->shouldReceive('checkStatus')->andReturn(true)->byDefault();
+        $instagram->shouldReceive('publishMedia')->andReturn(777)->byDefault();
+        $this->app->instance(Instagram::class, $instagram);
+
+        return $instagram;
+    }
+
+    public function test_the_command_posts_an_eligible_event_as_a_carousel(): void
+    {
+        Mail::fake();
+        $event = $this->eligibleEvent();
+        $second = Photo::factory()->create(['is_primary' => 0, 'path' => 'second.jpg', 'thumbnail' => 'second_thumb.jpg']);
+        $event->photos()->attach($second->id);
+
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('uploadCarouselPhoto')->twice()->andReturn(222, 223);
+        $instagram->shouldReceive('checkBatchStatus')->once()->with([222, 223])->andReturn(true);
+        $instagram->shouldReceive('createCarousel')->once()->with([222, 223], $event->getInstagramFormat())->andReturn(444);
+        $instagram->shouldReceive('checkStatus')->once()->with(444)->andReturn(true);
+        $instagram->shouldReceive('publishMedia')->once()->with(444)->andReturn(777);
+
+        $this->artisan('instagram:autopost')
+            ->expectsOutputToContain('Completed: 1 successful, 0 failed')
+            ->assertSuccessful();
+
+        $share = EventShare::where('event_id', $event->id)->sole();
+        $this->assertSame('instagram', $share->platform);
+        $this->assertSame('777', $share->platform_id);
+        $this->assertNotNull($share->posted_at);
+        Mail::assertNothingSent();
+
+        // posted, so the next run leaves it alone
+        $this->assertFalse($this->eventsToPost()->contains($event));
+    }
+
+    public function test_the_command_does_nothing_when_no_event_is_eligible(): void
+    {
+        $instagram = $this->mockInstagram();
+        $instagram->shouldNotReceive('uploadCarouselPhoto');
+
+        $this->artisan('instagram:autopost')
+            ->expectsOutputToContain('No events to post at this time.')
+            ->assertSuccessful();
+
+        $this->assertSame(0, EventShare::count());
+    }
+
+    public function test_a_failed_publish_is_recorded_and_mailed_to_the_admin(): void
+    {
+        Mail::fake();
+        $event = $this->eligibleEvent();
+
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('publishMedia')->once()->andReturn(false);
+
+        $this->artisan('instagram:autopost')
+            ->expectsOutputToContain('Completed: 0 successful, 1 failed')
+            ->assertSuccessful();
+
+        $share = EventShare::where('event_id', $event->id)->sole();
+        $this->assertNull($share->posted_at);
+        $this->assertNull($share->platform_id);
+        Mail::assertSent(InstagramPostFailure::class, 1);
+
+        // and it waits before the next attempt
+        $this->assertFalse($this->eventsToPost()->contains($event));
+    }
+
+    public function test_a_failed_primary_upload_stops_the_post(): void
+    {
+        Mail::fake();
+        $event = $this->eligibleEvent();
+
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('uploadCarouselPhoto')->once()->andThrow(new \Exception('bad image'));
+        $instagram->shouldNotReceive('createCarousel');
+        $instagram->shouldNotReceive('publishMedia');
+
+        $this->artisan('instagram:autopost')->assertSuccessful();
+
+        $this->assertNull(EventShare::where('event_id', $event->id)->sole()->posted_at);
+        Mail::assertSent(InstagramPostFailure::class, 1);
+    }
+
+    public function test_a_failed_extra_photo_is_left_out_and_the_post_goes_ahead(): void
+    {
+        Mail::fake();
+        $event = $this->eligibleEvent();
+        $second = Photo::factory()->create(['is_primary' => 0, 'path' => 'second.jpg', 'thumbnail' => 'second_thumb.jpg']);
+        $event->photos()->attach($second->id);
+
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('uploadCarouselPhoto')->twice()->andReturnUsing(
+            fn () => 222,
+            fn () => throw new \Exception('bad image')
+        );
+        $instagram->shouldReceive('createCarousel')->once()->with([222], Mockery::any())->andReturn(444);
+
+        $this->artisan('instagram:autopost')
+            ->expectsOutputToContain('Completed: 1 successful, 0 failed')
+            ->assertSuccessful();
+
+        $this->assertNotNull(EventShare::where('event_id', $event->id)->sole()->posted_at);
+    }
+
+    public function test_a_failed_status_check_stops_the_post(): void
+    {
+        Mail::fake();
+        $batch = $this->eligibleEvent();
+
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('checkBatchStatus')->once()->andReturn(false);
+        $instagram->shouldNotReceive('createCarousel');
+
+        $this->artisan('instagram:autopost')->assertSuccessful();
+        $this->assertNull(EventShare::where('event_id', $batch->id)->sole()->posted_at);
+
+        // the carousel container's own status check
+        $carousel = $this->eligibleEvent();
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('checkStatus')->once()->andReturn(false);
+        $instagram->shouldNotReceive('publishMedia');
+
+        $this->artisan('instagram:autopost')->assertSuccessful();
+        $this->assertNull(EventShare::where('event_id', $carousel->id)->sole()->posted_at);
+    }
+
+    public function test_a_run_posts_three_events_at_most_when_few_are_waiting(): void
+    {
+        Mail::fake();
+        foreach (range(1, 5) as $i) {
+            $this->eligibleEvent();
+        }
+
+        $instagram = $this->mockInstagram();
+        $instagram->shouldReceive('publishMedia')->times(3)->andReturn(777);
+
+        $this->artisan('instagram:autopost')
+            ->expectsOutputToContain('Will attempt to post 3 event(s) in this batch.')
+            ->assertSuccessful();
+
+        $this->assertSame(3, EventShare::whereNotNull('posted_at')->count());
     }
 }

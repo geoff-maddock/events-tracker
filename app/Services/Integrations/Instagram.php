@@ -2,6 +2,8 @@
 
 namespace App\Services\Integrations;
 
+use Illuminate\Support\Sleep;
+
 /**
  * Connects to Instagram API
  */
@@ -193,7 +195,7 @@ class Instagram
                 );
                 return false;
             }
-            sleep(3);
+            Sleep::sleep(3);
         }
 
         return true;
@@ -264,7 +266,7 @@ class Instagram
 
             $attempt++;
             if ($attempt < $maxAttempts) {
-                sleep($sleepTime);
+                Sleep::sleep($sleepTime);
             }
         }
 
@@ -311,9 +313,11 @@ class Instagram
 
 
     /**
-     * Curl API call.
+     * Curl API call. Protected so a test can stand in for the Graph API.
+     *
+     * @return array{type: string, endpoint: string, params: array, api_endpoint: string, data: mixed}
      */
-    private function makeApiCall(string $endpoint, string $type, array $params): array
+    protected function makeApiCall(string $endpoint, string $type, array $params): array
     {
         $ch = curl_init();
 
