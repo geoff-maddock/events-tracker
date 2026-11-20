@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Regression test for EVENTREPO-XB.
@@ -42,7 +43,7 @@ class EntityUpdateAliasSyncTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function updating_with_a_non_numeric_alias_name_creates_a_new_alias_without_truncation(): void
     {
         // An existing alias whose id the coerced string will collide with.

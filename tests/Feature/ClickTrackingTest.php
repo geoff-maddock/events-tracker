@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\EventType;
 use App\Models\Visibility;
+use PHPUnit\Framework\Attributes\Test;
 
 class ClickTrackingTest extends TestCase
 {
@@ -18,7 +19,7 @@ class ClickTrackingTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function event_with_ticket_link_redirects_and_tracks_click()
     {
         // Create an event with a ticket link
@@ -38,7 +39,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function event_without_ticket_link_redirects_to_event_page()
     {
         // Create an event without a ticket link
@@ -58,7 +59,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function nonexistent_event_returns_not_found()
     {
         $this->withExceptionHandling();
@@ -73,7 +74,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickTrack::count());
     }
 
-    /** @test */
+    #[Test]
     public function series_with_ticket_link_redirects_and_tracks_click()
     {
         // Create a series with a ticket link
@@ -93,7 +94,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function click_tracking_stores_user_agent_and_referrer()
     {
         // Create an event with a ticket link
@@ -115,7 +116,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function click_tracking_attaches_referral_params()
     {
         // Create an event with a ticket link
@@ -133,7 +134,7 @@ class ClickTrackingTest extends TestCase
         $this->assertStringContainsString('ref=', $redirectUrl);
     }
 
-    /** @test */
+    #[Test]
     public function event_ticket_tracking_link_method_returns_correct_url()
     {
         // Create an event with a ticket link
@@ -148,7 +149,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(route('clicktrack.event', ['id' => $event->id]), $trackingLink);
     }
 
-    /** @test */
+    #[Test]
     public function event_without_ticket_link_returns_null_tracking_link()
     {
         // Create an event without a ticket link
@@ -163,7 +164,7 @@ class ClickTrackingTest extends TestCase
         $this->assertNull($trackingLink);
     }
 
-    /** @test */
+    #[Test]
     public function series_ticket_tracking_link_method_returns_correct_url()
     {
         // Create a series with a ticket link
@@ -178,7 +179,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(route('clicktrack.series', ['id' => $series->id]), $trackingLink);
     }
 
-    /** @test */
+    #[Test]
     public function click_tracking_stores_authenticated_user_id()
     {
         // Create a user and authenticate
@@ -205,7 +206,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function click_tracking_stores_null_user_id_for_anonymous_users()
     {
         // Create an event with a ticket link
@@ -226,7 +227,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function click_tracking_does_not_track_bot_requests()
     {
         // Create an event with a ticket link
@@ -246,7 +247,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickTrack::count());
     }
 
-    /** @test */
+    #[Test]
     public function click_tracking_does_not_track_crawler_requests()
     {
         // Create an event with a ticket link
@@ -266,7 +267,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickTrack::count());
     }
 
-    /** @test */
+    #[Test]
     public function series_click_tracking_stores_authenticated_user_id()
     {
         // Create a user and authenticate
@@ -292,7 +293,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function series_click_tracking_does_not_track_bot_requests()
     {
         // Create a series with a ticket link
@@ -312,7 +313,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickTrack::count());
     }
 
-    /** @test */
+    #[Test]
     public function event_with_schemeless_ticket_link_redirects_with_https_and_does_not_error()
     {
         // Regression: ticket links stored without a scheme (e.g. "example.com/...")
@@ -335,7 +336,7 @@ class ClickTrackingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function event_with_protocol_relative_ticket_link_redirects_with_https()
     {
         $event = Event::factory()->create([

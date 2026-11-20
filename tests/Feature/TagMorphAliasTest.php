@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Morph alias regression (issue #1990): the morphMap aliased Tag as 'tags'
@@ -33,7 +34,7 @@ class TagMorphAliasTest extends TestCase
         $this->actingAs($this->user, 'sanctum');
     }
 
-    /** @test */
+    #[Test]
     public function following_a_tag_is_visible_through_the_morph_relation(): void
     {
         $tag = Tag::factory()->create();
@@ -50,7 +51,7 @@ class TagMorphAliasTest extends TestCase
         $this->assertSame($tag->id, $follow->object->id);
     }
 
-    /** @test */
+    #[Test]
     public function tags_popular_counts_follows_in_the_popularity_score(): void
     {
         $tag = Tag::factory()->create(['name' => 'Morphstyle ZZ', 'slug' => 'morphstyle-zz']);
@@ -68,7 +69,7 @@ class TagMorphAliasTest extends TestCase
         $this->assertSame(1, $row['popularity_score']);
     }
 
-    /** @test */
+    #[Test]
     public function unfollowing_removes_the_morph_relation_row(): void
     {
         $tag = Tag::factory()->create();
@@ -79,7 +80,7 @@ class TagMorphAliasTest extends TestCase
         $this->assertSame(0, $tag->follows()->count());
     }
 
-    /** @test */
+    #[Test]
     public function event_comments_resolve_their_commentable_event(): void
     {
         $event = Event::factory()->create();

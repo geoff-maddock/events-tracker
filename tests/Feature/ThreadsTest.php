@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ThreadsTest extends TestCase
 {
@@ -29,7 +30,7 @@ class ThreadsTest extends TestCase
         $this->thread = Thread::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function a_thread_has_a_path()
     {
         $thread = Thread::factory()->create();
@@ -41,9 +42,8 @@ class ThreadsTest extends TestCase
 
     /**
      * Test that threads are visible
-     *
-     * @test void
      */
+    #[Test]
     public function threads_browsable()
     {
         $thread = Thread::factory()->create();
@@ -51,12 +51,10 @@ class ThreadsTest extends TestCase
         ->assertSee('Thread');
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_read_a_single_thread()
     {
-        $this->signIn();
-
-        $user = User::find(1);
+        $user = User::factory()->create();
         $temp = $this->thread->id;
 
         // when we visit a thread page
@@ -65,12 +63,10 @@ class ThreadsTest extends TestCase
             ->assertSee('Thread');
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_read_posts_that_are_associated_with_a_thread()
     {
-        //$this->signIn();
-
-        $user = User::find(1);
+        $user = User::factory()->create();
         // add that thread includes replies
         $post = Post::factory()
             ->create(['thread_id' => $this->thread->id]);
@@ -83,7 +79,7 @@ class ThreadsTest extends TestCase
         $response->assertSee($post->body);
     }
 
-    /** @test */
+    #[Test]
     public function a_thread_has_a_creator()
     {
         // add that thread
@@ -92,7 +88,7 @@ class ThreadsTest extends TestCase
         $this->assertInstanceOf(User::class, $thread->creator);
     }
 
-    /** @test */
+    #[Test]
     public function a_thread_can_add_a_reply()
     {
         // add a post to the thread
@@ -105,7 +101,7 @@ class ThreadsTest extends TestCase
         $this->assertInstanceOf(Post::class, $this->thread->posts->first());
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_create_new_forum_threads()
     {
         $this->signIn();
@@ -129,7 +125,7 @@ class ThreadsTest extends TestCase
         return $thread;
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_filter_threads_according_to_a_tag()
     {
         $this->signIn();
@@ -143,7 +139,7 @@ class ThreadsTest extends TestCase
             ->assertDontSee($threadNotInCategory->name);
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_filter_threads_by_any_username()
     {
         $user = User::factory()->create(['name' => 'JohnDoe']);
@@ -159,7 +155,7 @@ class ThreadsTest extends TestCase
                 ->assertDontSee($threadNotByJohn->name);
     }
 
-    /** @test */
+    #[Test]
     public function add_a_user()
     {
         $user = User::factory()->create(['name' => 'smith']);

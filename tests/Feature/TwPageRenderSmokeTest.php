@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Page-load smoke tests for the Tailwind (-tw) index/show pages whose filter
@@ -34,9 +35,7 @@ class TwPageRenderSmokeTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /**
-     * @dataProvider twPages
-     */
+    #[DataProvider('twPages')]
     public function test_tw_page_renders(string $url): void
     {
         $this->get($url)->assertOk();

@@ -5,10 +5,11 @@ namespace Tests\Feature\Services\Embeds;
 use App\Services\Embeds\Provider;
 use App\Services\Embeds\OembedExtractor;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class OembedExtractorTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_can_be_instantiated()
     {
         $provider = new Provider();
@@ -16,7 +17,7 @@ class OembedExtractorTest extends TestCase
         $this->assertInstanceOf(OembedExtractor::class, $extractor);
     }
 
-    /** @test */
+    #[Test]
     public function default_config_has_medium_layouts()
     {
         $provider = new Provider();
@@ -29,7 +30,7 @@ class OembedExtractorTest extends TestCase
         $this->assertStringContainsString('height: 120px', $results['soundcloud_layout']);
     }
 
-    /** @test */
+    #[Test]
     public function config_can_be_set_to_large()
     {
         $provider = new Provider();
@@ -43,7 +44,7 @@ class OembedExtractorTest extends TestCase
         $this->assertStringContainsString('height: 300px', $results['bandcamp_layout']);
     }
 
-    /** @test */
+    #[Test]
     public function config_can_be_set_to_small()
     {
         $provider = new Provider();
@@ -57,7 +58,7 @@ class OembedExtractorTest extends TestCase
         $this->assertStringContainsString('height: 42px', $results['bandcamp_layout']);
     }
 
-    /** @test */
+    #[Test]
     public function soundcloud_layout_is_set_for_each_size()
     {
         $provider = new Provider();
@@ -72,7 +73,7 @@ class OembedExtractorTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function extract_embeds_from_urls_returns_array()
     {
         $provider = new Provider();
@@ -82,7 +83,7 @@ class OembedExtractorTest extends TestCase
         $this->assertEmpty($results);
     }
 
-    /** @test */
+    #[Test]
     public function extract_embeds_filters_soundcloud_urls()
     {
         $provider = new Provider();
@@ -97,7 +98,7 @@ class OembedExtractorTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /** @test */
+    #[Test]
     public function soundcloud_small_size_rewrites_visual_param_to_mini_player()
     {
         $provider = new Provider();
@@ -113,7 +114,7 @@ class OembedExtractorTest extends TestCase
         $this->assertStringContainsString('show_artwork=false', $result);
     }
 
-    /** @test */
+    #[Test]
     public function soundcloud_medium_and_large_sizes_leave_src_unchanged()
     {
         $provider = new Provider();
@@ -138,7 +139,7 @@ class OembedExtractorTest extends TestCase
         return $ref->invoke($extractor, $src);
     }
 
-    /** @test */
+    #[Test]
     public function extract_embeds_filters_bandcamp_urls()
     {
         $provider = new Provider();

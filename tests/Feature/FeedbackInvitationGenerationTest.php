@@ -13,6 +13,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Covers `feedback:generate` — who gets asked for post-event feedback, and
@@ -71,7 +72,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_an_invitation_for_an_attendee_of_a_recently_finished_event(): void
     {
         $user = $this->makeAttendee();
@@ -94,7 +95,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_the_event_subject_through_the_morph_map(): void
     {
         $user = $this->makeAttendee();
@@ -110,7 +111,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame($event->id, $invitation->subject->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_waits_for_the_configured_delay_after_the_event_ends(): void
     {
         $user = $this->makeAttendee();
@@ -123,7 +124,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_events_older_than_the_lookback_window(): void
     {
         $user = $this->makeAttendee();
@@ -135,7 +136,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_future_events(): void
     {
         $user = $this->makeAttendee();
@@ -147,7 +148,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_start_at_when_end_at_is_null(): void
     {
         $user = $this->makeAttendee();
@@ -159,7 +160,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(1, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_non_attending_responses(): void
     {
         $user = $this->makeAttendee();
@@ -176,7 +177,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_cancelled_events(): void
     {
         $user = $this->makeAttendee();
@@ -192,7 +193,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_events_with_cancelled_visibility(): void
     {
         $user = $this->makeAttendee();
@@ -208,7 +209,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function running_twice_creates_exactly_one_invitation(): void
     {
         $user = $this->makeAttendee();
@@ -221,7 +222,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(1, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_users_who_opted_out(): void
     {
         $user = $this->makeAttendee(['setting_feedback_requests' => 0]);
@@ -233,7 +234,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_users_with_no_profile_row(): void
     {
         // Legacy users without a profile row are excluded by design — the whole
@@ -252,7 +253,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_users_who_cannot_log_in(): void
     {
         $user = $this->makeAttendee();
@@ -266,7 +267,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_users_with_unverified_email(): void
     {
         $user = $this->makeAttendee();
@@ -280,7 +281,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_does_nothing_when_the_feature_flag_is_off(): void
     {
         config(['feedback.enabled' => false]);
@@ -294,7 +295,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function dry_run_reports_candidates_without_writing(): void
     {
         $user = $this->makeAttendee();
@@ -308,7 +309,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_silently_drop_candidates_while_inserting(): void
     {
         // The candidate query filters on `survey_invitations.id is null` and the
@@ -334,7 +335,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(7, SurveyInvitation::count(), 'Every candidate should get an invitation.');
     }
 
-    /** @test */
+    #[Test]
     public function dry_run_predicts_the_same_count_the_real_run_creates(): void
     {
         // The point of --dry-run is to predict the real run. Because a dry run
@@ -363,7 +364,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(1, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_respects_the_max_pending_per_user_cap(): void
     {
         config(['feedback.max_pending_per_user' => 1]);
@@ -383,7 +384,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(1, SurveyInvitation::where('user_id', $user->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function dismissing_a_prompt_starts_a_cooldown(): void
     {
         config(['feedback.max_pending_per_user' => 0, 'feedback.min_days_between_prompts' => 7]);
@@ -406,7 +407,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(1, SurveyInvitation::where('user_id', $user->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function completing_a_prompt_does_not_start_a_cooldown(): void
     {
         // Someone who just answered is engaged. Making them wait a week is how
@@ -430,7 +431,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(2, SurveyInvitation::where('user_id', $user->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function the_freshest_event_is_queued_first(): void
     {
         config(['feedback.max_pending_per_user' => 1]);
@@ -454,7 +455,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame($newest->id, $invitation->subject_id, 'Ask while the memory is sharp.');
     }
 
-    /** @test */
+    #[Test]
     public function a_busy_week_of_events_all_get_asked_about(): void
     {
         // The regression this whole change exists for: with a queue depth of 1
@@ -490,7 +491,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function the_limit_option_caps_how_many_are_created(): void
     {
         config(['feedback.max_pending_per_user' => 0, 'feedback.min_days_between_prompts' => 0]);
@@ -506,7 +507,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(2, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function single_event_mode_only_considers_that_event(): void
     {
         config(['feedback.max_pending_per_user' => 0, 'feedback.min_days_between_prompts' => 0]);
@@ -525,7 +526,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame($wanted->id, SurveyInvitation::first()->subject_id);
     }
 
-    /** @test */
+    #[Test]
     public function the_expiry_sweep_marks_overdue_invitations_expired(): void
     {
         $invitation = SurveyInvitation::factory()->create([
@@ -538,7 +539,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(SurveyInvitation::STATUS_EXPIRED, $invitation->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function the_expiry_sweep_leaves_current_invitations_alone(): void
     {
         $invitation = SurveyInvitation::factory()->create([
@@ -551,7 +552,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(SurveyInvitation::STATUS_PENDING, $invitation->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_removes_invitations_whose_event_was_deleted(): void
     {
         // Nothing soft-deletes in this app and there's no FK on the polymorphic
@@ -565,7 +566,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertDatabaseMissing('survey_invitations', ['id' => $invitation->id]);
     }
 
-    /** @test */
+    #[Test]
     public function campaign_filter_can_skip_the_post_event_campaign(): void
     {
         $user = $this->makeAttendee();
@@ -577,7 +578,7 @@ class FeedbackInvitationGenerationTest extends TestCase
         $this->assertSame(0, SurveyInvitation::count());
     }
 
-    /** @test */
+    #[Test]
     public function an_inactive_campaign_generates_nothing(): void
     {
         $campaign = SurveyCampaign::where('slug', SurveyCampaign::POST_EVENT_ATTENDEE)->first();

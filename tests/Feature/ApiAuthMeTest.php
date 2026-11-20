@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Permission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ApiAuthMeTest extends TestCase
 {
@@ -14,7 +15,7 @@ class ApiAuthMeTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function it_returns_user_data_with_groups_and_permissions()
     {
         // Create a user
@@ -100,7 +101,7 @@ class ApiAuthMeTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_groups_and_permissions_for_user_without_groups()
     {
         // Create a user without any groups
@@ -122,7 +123,7 @@ class ApiAuthMeTest extends TestCase
             ->assertJsonPath('permissions', []);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication()
     {
         // Re-enable exception handling for this test to properly handle 401 response
@@ -135,7 +136,7 @@ class ApiAuthMeTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_deduplicates_permissions_from_multiple_groups()
     {
         // Create a user

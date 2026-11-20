@@ -12,6 +12,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Admin reporting over collected feedback (issue #1998).
@@ -85,7 +86,7 @@ class FeedbackAdminTest extends TestCase
 
     // ------------------------------------------------------------------ access
 
-    /** @test */
+    #[Test]
     public function admin_can_view_the_response_index(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent());
@@ -97,7 +98,7 @@ class FeedbackAdminTest extends TestCase
             ->assertSee('Summer Showcase');
     }
 
-    /** @test */
+    #[Test]
     public function a_non_admin_cannot_view_the_response_index(): void
     {
         $this->withExceptionHandling();
@@ -107,7 +108,7 @@ class FeedbackAdminTest extends TestCase
             ->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function a_guest_is_redirected_from_the_response_index(): void
     {
         $this->withExceptionHandling();
@@ -115,7 +116,7 @@ class FeedbackAdminTest extends TestCase
         $this->get(route('feedback.admin.index'))->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function the_summary_and_export_are_admin_only(): void
     {
         $this->withExceptionHandling();
@@ -126,7 +127,7 @@ class FeedbackAdminTest extends TestCase
         $this->actingAs($user)->get(route('feedback.admin.export'))->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function the_response_detail_page_is_admin_only(): void
     {
         $this->withExceptionHandling();
@@ -140,7 +141,7 @@ class FeedbackAdminTest extends TestCase
 
     // ----------------------------------------------------------------- filters
 
-    /** @test */
+    #[Test]
     public function filtering_by_event_narrows_the_list(): void
     {
         $wanted = $this->makeEvent('Wanted Event');
@@ -156,7 +157,7 @@ class FeedbackAdminTest extends TestCase
             ->assertDontSee('Other Event');
     }
 
-    /** @test */
+    #[Test]
     public function filtering_by_user_narrows_the_list(): void
     {
         $wanted = User::factory()->create(['name' => 'Wanted Person', 'user_status_id' => UserStatus::ACTIVE]);
@@ -172,7 +173,7 @@ class FeedbackAdminTest extends TestCase
             ->assertDontSee('Someone Else');
     }
 
-    /** @test */
+    #[Test]
     public function filtering_by_visibility_narrows_the_list(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent('Private Event'));
@@ -187,7 +188,7 @@ class FeedbackAdminTest extends TestCase
             ->assertDontSee('Private Event');
     }
 
-    /** @test */
+    #[Test]
     public function filtering_by_minimum_rating_narrows_the_list(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent('High Rated'), 5);
@@ -200,7 +201,7 @@ class FeedbackAdminTest extends TestCase
             ->assertDontSee('Low Rated');
     }
 
-    /** @test */
+    #[Test]
     public function filtering_by_campaign_narrows_the_list(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent('Kept Event'));
@@ -221,7 +222,7 @@ class FeedbackAdminTest extends TestCase
 
     // ------------------------------------------------------------------ detail
 
-    /** @test */
+    #[Test]
     public function the_detail_page_shows_every_answer(): void
     {
         $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
@@ -238,7 +239,7 @@ class FeedbackAdminTest extends TestCase
 
     // ----------------------------------------------------------------- summary
 
-    /** @test */
+    #[Test]
     public function the_summary_reports_averages_and_histograms(): void
     {
         $event = $this->makeEvent();
@@ -256,7 +257,7 @@ class FeedbackAdminTest extends TestCase
         $view->assertSee('The opener was excellent.');
     }
 
-    /** @test */
+    #[Test]
     public function the_summary_reports_the_completion_rate(): void
     {
         $campaign = SurveyCampaign::bySlug(SurveyCampaign::POST_EVENT_ATTENDEE);
@@ -277,7 +278,7 @@ class FeedbackAdminTest extends TestCase
             ->assertSee('25%');
     }
 
-    /** @test */
+    #[Test]
     public function the_summary_can_be_scoped_to_one_event(): void
     {
         $wanted = $this->makeEvent('Scoped Event');
@@ -297,7 +298,7 @@ class FeedbackAdminTest extends TestCase
             ->assertSee('5');
     }
 
-    /** @test */
+    #[Test]
     public function the_summary_handles_an_unknown_campaign(): void
     {
         $this->actingAs($this->makeAdmin())
@@ -308,7 +309,7 @@ class FeedbackAdminTest extends TestCase
 
     // ------------------------------------------------------------------ export
 
-    /** @test */
+    #[Test]
     public function the_export_returns_csv_with_a_row_per_response(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent('Exported Event'), 4);
@@ -327,7 +328,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertStringContainsString('Exported Event', $lines[1]);
     }
 
-    /** @test */
+    #[Test]
     public function the_export_pipe_joins_multi_choice_values(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent(), 4);
@@ -339,7 +340,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertStringContainsString('The lineup / music|Sound & production', $csv);
     }
 
-    /** @test */
+    #[Test]
     public function the_export_respects_filters(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent('Kept Event'), 5);
@@ -353,7 +354,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertStringNotContainsString('Dropped Event', $csv);
     }
 
-    /** @test */
+    #[Test]
     public function a_new_response_starts_pending_and_is_not_displayable(): void
     {
         $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
@@ -363,7 +364,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(0, SurveyResponse::displayable()->count());
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_approve_a_response_for_display(): void
     {
         $admin = $this->makeAdmin();
@@ -387,7 +388,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(1, SurveyResponse::displayable()->count());
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_flip_a_response_between_private_and_public(): void
     {
         $admin = $this->makeAdmin();
@@ -412,7 +413,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertFalse($response->fresh()->isPublic());
     }
 
-    /** @test */
+    #[Test]
     public function approval_alone_does_not_make_a_private_response_displayable(): void
     {
         $response = $this->makeResponse($this->makeUser(), $this->makeEvent());
@@ -431,7 +432,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(0, SurveyResponse::displayable()->count());
     }
 
-    /** @test */
+    #[Test]
     public function a_public_response_is_not_displayable_until_approved(): void
     {
         SurveyResponse::factory()->shared()->create();
@@ -440,7 +441,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(0, SurveyResponse::displayable()->count());
     }
 
-    /** @test */
+    #[Test]
     public function rejecting_a_response_clears_the_approval_audit_trail(): void
     {
         $admin = $this->makeAdmin();
@@ -462,7 +463,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertNull($response->approved_by);
     }
 
-    /** @test */
+    #[Test]
     public function an_invalid_display_status_is_rejected(): void
     {
         $this->withExceptionHandling();
@@ -479,7 +480,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->fresh()->display_status);
     }
 
-    /** @test */
+    #[Test]
     public function moderating_a_response_is_admin_only(): void
     {
         $this->withExceptionHandling();
@@ -498,7 +499,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->fresh()->display_status);
     }
 
-    /** @test */
+    #[Test]
     public function a_guest_cannot_moderate_a_response(): void
     {
         $this->withExceptionHandling();
@@ -513,7 +514,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertSame(SurveyResponse::DISPLAY_PENDING, $response->fresh()->display_status);
     }
 
-    /** @test */
+    #[Test]
     public function filtering_by_display_status_narrows_the_list(): void
     {
         $this->makeResponse($this->makeUser(), $this->makeEvent('Pending Event'));

@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class EventTimeWindowPagesTest extends TestCase
 {
@@ -64,9 +65,7 @@ class EventTimeWindowPagesTest extends TestCase
         ], $overrides));
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_page_returns_200_with_expected_title(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -80,9 +79,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee($phrase, false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_canonical_is_the_clean_window_path(string $windowValue, string $path, string $phrase): void
     {
         $response = $this->get($path);
@@ -92,9 +89,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee('<link rel="canonical" href="'.$base.$path.'">', false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_sort_param_variant_is_noindexed(string $windowValue, string $path, string $phrase): void
     {
         $response = $this->get($path.'?sort=name');
@@ -103,9 +98,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee('<meta name="robots" content="noindex, follow">', false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_event_inside_window_is_shown_and_outside_window_is_absent(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -120,9 +113,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertDontSee($outside->name);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_private_event_inside_window_is_absent_for_guests(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -138,9 +129,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertDontSee($private->name);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_meta_description_contains_the_computed_event_count(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -158,9 +147,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee((string) $stats['events'], false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_response_contains_item_list_json_ld_when_events_present(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -173,9 +160,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee('"@type": "ItemList"', false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_empty_state_has_no_json_ld(string $windowValue, string $path, string $phrase): void
     {
         // No events created inside the window: only whatever the seeder
@@ -194,9 +179,7 @@ class EventTimeWindowPagesTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_tag_pills_render_for_in_window_tags(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -211,9 +194,7 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee($path.'?tag='.$tag->slug, false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_tag_param_filters_the_window_to_that_tag(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);
@@ -232,17 +213,13 @@ class EventTimeWindowPagesTest extends TestCase
         $response->assertSee('Clear tag filter', false);
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_unknown_tag_slug_is_a_404(string $windowValue, string $path, string $phrase): void
     {
         $this->get($path.'?tag=no-such-tag-slug')->assertNotFound();
     }
 
-    /**
-     * @dataProvider windowProvider
-     */
+    #[DataProvider('windowProvider')]
     public function test_tag_param_variant_is_noindexed(string $windowValue, string $path, string $phrase): void
     {
         $window = EventTimeWindow::from($windowValue);

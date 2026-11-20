@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CreateThreadsTest extends TestCase
 {
@@ -18,7 +19,7 @@ class CreateThreadsTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test  */
+    #[Test]
     public function unauthorized_users_may_not_delete_threads()
     {
         $this->withExceptionHandling();
@@ -34,7 +35,7 @@ class CreateThreadsTest extends TestCase
         $result->assertSee('verify');
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_create_new_forum_threads()
     {
         $this->withExceptionHandling();

@@ -6,6 +6,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ApiTagsStoreTest extends TestCase
 {
@@ -20,7 +21,7 @@ class ApiTagsStoreTest extends TestCase
         $this->withExceptionHandling();
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_validation_error_when_slug_already_exists(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -38,7 +39,7 @@ class ApiTagsStoreTest extends TestCase
                  ->assertJsonValidationErrors(['slug']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_a_tag_with_unique_slug(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);

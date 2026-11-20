@@ -6,6 +6,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ApiTagsDeleteTest extends TestCase
 {
@@ -13,7 +14,7 @@ class ApiTagsDeleteTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function it_deletes_a_tag_via_api()
     {
         $user = User::factory()->create();

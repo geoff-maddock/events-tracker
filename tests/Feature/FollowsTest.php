@@ -6,6 +6,7 @@ use App\Models\Entity;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class FollowsTest extends TestCase
 {
@@ -15,7 +16,7 @@ class FollowsTest extends TestCase
     // reseed the database
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function a_guest_cannot_follow_anything()
     {
         // This test assumes an entity with an id = 1 exists
@@ -24,7 +25,7 @@ class FollowsTest extends TestCase
             ->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_follow_any_entity()
     {
         $this->signIn();

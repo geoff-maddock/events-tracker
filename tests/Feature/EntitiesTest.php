@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class EntitiesTest extends TestCase
 {
@@ -32,15 +33,14 @@ class EntitiesTest extends TestCase
 
     /**
      * Test that entities are browsable
-     *
-     * @test void
      */
+    #[Test]
     public function entities_browsable()
     {
         $this->get('/entities')->assertSee('Entities');
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_view_a_single_entity()
     {
         // create an entity
@@ -53,7 +53,7 @@ class EntitiesTest extends TestCase
         // show failing for some unknown reason
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_edit_an_entity_they_own()
     {
         // create a user
@@ -70,7 +70,7 @@ class EntitiesTest extends TestCase
             ->assertSee($entity->name);
     }
 
-    /** @test */
+    #[Test]
     public function an_entity_has_a_creator()
     {
         // add that thread
@@ -79,7 +79,7 @@ class EntitiesTest extends TestCase
         $this->assertInstanceOf(User::class, $entity->user);
     }
 
-    /** @test */
+    #[Test]
     public function an_entity_can_add_a_photo()
     {
         // create a photo
@@ -92,7 +92,7 @@ class EntitiesTest extends TestCase
         $this->assertInstanceOf(Photo::class, $one);
     }
 
-    /** @test */
+    #[Test]
     public function an_entity_page_excludes_related_event_photos_by_default()
     {
         $entity = Entity::factory()->create(['slug' => 'gallery-entity']);
@@ -129,7 +129,7 @@ class EntitiesTest extends TestCase
             ->assertDontSee('tn-event-photo.jpg');
     }
 
-    /** @test */
+    #[Test]
     public function an_authenticated_user_can_create_new_entities()
     {
         $this->signIn();

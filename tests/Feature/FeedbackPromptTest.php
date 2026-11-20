@@ -17,6 +17,7 @@ use App\Services\FeedbackPromptService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * The user-facing half of the proactive feedback interview (issue #1998):
@@ -83,7 +84,7 @@ class FeedbackPromptTest extends TestCase
 
     // ---------------------------------------------------------------- resolution
 
-    /** @test */
+    #[Test]
     public function it_resolves_a_pending_invitation(): void
     {
         $user = $this->makeUser();
@@ -92,7 +93,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame($invitation->id, $this->service()->pendingFor($user)?->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_nothing_when_the_feature_flag_is_off(): void
     {
         config(['feedback.enabled' => false]);
@@ -103,7 +104,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user));
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_nothing_when_the_user_opted_out(): void
     {
         $user = $this->makeUser(['setting_feedback_requests' => 0]);
@@ -112,7 +113,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user));
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_nothing_for_a_user_with_no_profile(): void
     {
         $user = User::factory()->create([
@@ -126,7 +127,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user->fresh()));
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_nothing_for_dismissed_completed_expired_or_snoozed_invitations(): void
     {
         foreach (['dismissed', 'completed', 'expired', 'snoozed'] as $state) {
@@ -142,7 +143,7 @@ class FeedbackPromptTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_nothing_when_the_campaign_is_inactive(): void
     {
         $user = $this->makeUser();
@@ -153,7 +154,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user));
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_nothing_when_the_subject_event_was_deleted(): void
     {
         $user = $this->makeUser();
@@ -165,7 +166,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user));
     }
 
-    /** @test */
+    #[Test]
     public function onboarding_takes_precedence_over_the_feedback_prompt(): void
     {
         // shouldSeeOnboarding() is true for a verified user following nothing
@@ -185,7 +186,7 @@ class FeedbackPromptTest extends TestCase
 
     // ------------------------------------------------------------------- layout
 
-    /** @test */
+    #[Test]
     public function the_layout_renders_the_prompt_for_a_user_with_an_invitation(): void
     {
         $user = $this->makeUser();
@@ -197,7 +198,7 @@ class FeedbackPromptTest extends TestCase
             ->assertSee('feedbackPrompt(', false);
     }
 
-    /** @test */
+    #[Test]
     public function the_layout_does_not_render_the_prompt_when_disabled(): void
     {
         config(['feedback.enabled' => false]);
@@ -210,7 +211,7 @@ class FeedbackPromptTest extends TestCase
             ->assertDontSee('feedbackPrompt(', false);
     }
 
-    /** @test */
+    #[Test]
     public function the_layout_does_not_render_the_prompt_for_an_opted_out_user(): void
     {
         $user = $this->makeUser(['setting_feedback_requests' => 0]);
@@ -221,7 +222,7 @@ class FeedbackPromptTest extends TestCase
             ->assertDontSee('feedbackPrompt(', false);
     }
 
-    /** @test */
+    #[Test]
     public function the_layout_shows_onboarding_instead_when_both_apply(): void
     {
         $user = User::factory()->create([
@@ -239,7 +240,7 @@ class FeedbackPromptTest extends TestCase
 
     // ------------------------------------------------------------------- prompt
 
-    /** @test */
+    #[Test]
     public function the_prompt_endpoint_returns_the_payload_and_marks_it_shown(): void
     {
         $user = $this->makeUser();
@@ -265,7 +266,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNotNull($invitation->fresh()->shown_at);
     }
 
-    /** @test */
+    #[Test]
     public function the_prompt_endpoint_returns_a_null_invitation_when_nothing_is_pending(): void
     {
         $user = $this->makeUser();
@@ -275,7 +276,7 @@ class FeedbackPromptTest extends TestCase
             ->assertJsonPath('invitation', null);
     }
 
-    /** @test */
+    #[Test]
     public function the_prompt_endpoint_404s_when_the_feature_is_off(): void
     {
         $this->withExceptionHandling();
@@ -288,7 +289,7 @@ class FeedbackPromptTest extends TestCase
 
     // ------------------------------------------------------------------- submit
 
-    /** @test */
+    #[Test]
     public function it_stores_a_response_with_answers_and_completes_the_invitation(): void
     {
         $user = $this->makeUser();
@@ -322,7 +323,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNotNull($invitation->fresh()->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function opting_in_to_sharing_makes_the_response_public(): void
     {
         $user = $this->makeUser();
@@ -342,7 +343,7 @@ class FeedbackPromptTest extends TestCase
 
     // ------------------------------------------------------- subject details
 
-    /** @test */
+    #[Test]
     public function the_payload_carries_the_venue_and_flyer_thumbnail(): void
     {
         $user = $this->makeUser();
@@ -376,7 +377,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame($invitation->token, $payload['invitation']['token']);
     }
 
-    /** @test */
+    #[Test]
     public function the_payload_tolerates_an_event_with_no_venue_or_flyer(): void
     {
         $user = $this->makeUser();
@@ -398,7 +399,7 @@ class FeedbackPromptTest extends TestCase
 
     // ---------------------------------------------------------------- queue
 
-    /** @test */
+    #[Test]
     public function the_payload_reports_how_many_invitations_are_queued(): void
     {
         $user = $this->makeUser();
@@ -411,7 +412,7 @@ class FeedbackPromptTest extends TestCase
             ->assertJsonPath('queue.remaining', 3);
     }
 
-    /** @test */
+    #[Test]
     public function a_single_invitation_reports_a_queue_of_one(): void
     {
         $user = $this->makeUser();
@@ -422,7 +423,7 @@ class FeedbackPromptTest extends TestCase
             ->assertJsonPath('queue.remaining', 1);
     }
 
-    /** @test */
+    #[Test]
     public function submitting_hands_back_the_next_invitation_inline(): void
     {
         $user = $this->makeUser();
@@ -442,7 +443,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(SurveyInvitation::STATUS_SHOWN, $second->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function submitting_the_last_invitation_returns_a_null_next(): void
     {
         $user = $this->makeUser();
@@ -453,7 +454,7 @@ class FeedbackPromptTest extends TestCase
         ])->assertOk()->assertJsonPath('next', null);
     }
 
-    /** @test */
+    #[Test]
     public function the_queue_can_be_worked_through_end_to_end(): void
     {
         $user = $this->makeUser();
@@ -485,7 +486,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(0, SurveyInvitation::where('user_id', $user->id)->actionable()->count());
     }
 
-    /** @test */
+    #[Test]
     public function the_queue_does_not_leak_another_users_invitations(): void
     {
         $user = $this->makeUser();
@@ -503,7 +504,7 @@ class FeedbackPromptTest extends TestCase
 
     // --------------------------------------------------------- no-show branch
 
-    /** @test */
+    #[Test]
     public function a_user_can_report_that_they_did_not_attend_with_a_reason(): void
     {
         $user = $this->makeUser();
@@ -535,7 +536,7 @@ class FeedbackPromptTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function the_why_is_optional_for_a_no_show(): void
     {
         // We ask why; we don't demand it. Answering only the gate must succeed.
@@ -552,7 +553,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(SurveyInvitation::STATUS_COMPLETED, $invitation->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function the_rating_is_not_required_when_the_user_did_not_attend(): void
     {
         $this->withExceptionHandling();
@@ -565,7 +566,7 @@ class FeedbackPromptTest extends TestCase
         ])->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function attended_branch_answers_are_discarded_when_the_user_did_not_attend(): void
     {
         // A stale value left behind by switching the gate to "no" must not be
@@ -590,7 +591,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(['attended', 'not_attended_reason'], $keys);
     }
 
-    /** @test */
+    #[Test]
     public function no_show_answers_are_discarded_when_the_user_did_attend(): void
     {
         $user = $this->makeUser();
@@ -613,7 +614,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(['attended', 'overall_rating'], $keys);
     }
 
-    /** @test */
+    #[Test]
     public function the_attendance_gate_itself_is_required(): void
     {
         $this->withExceptionHandling();
@@ -628,7 +629,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(0, SurveyResponse::count());
     }
 
-    /** @test */
+    #[Test]
     public function an_unknown_attendance_value_is_rejected(): void
     {
         $this->withExceptionHandling();
@@ -641,7 +642,7 @@ class FeedbackPromptTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors('answers.attended');
     }
 
-    /** @test */
+    #[Test]
     public function an_unknown_no_show_reason_is_rejected(): void
     {
         $this->withExceptionHandling();
@@ -657,7 +658,7 @@ class FeedbackPromptTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors('answers.not_attended_reason.0');
     }
 
-    /** @test */
+    #[Test]
     public function unknown_answer_keys_are_ignored(): void
     {
         $user = $this->makeUser();
@@ -674,7 +675,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertCount(2, SurveyResponse::where('user_id', $user->id)->first()->answers);
     }
 
-    /** @test */
+    #[Test]
     public function the_required_rating_is_enforced(): void
     {
         $this->withExceptionHandling();
@@ -689,7 +690,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(0, SurveyResponse::count());
     }
 
-    /** @test */
+    #[Test]
     public function an_out_of_range_rating_is_rejected(): void
     {
         $this->withExceptionHandling();
@@ -702,7 +703,7 @@ class FeedbackPromptTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors('answers.overall_rating');
     }
 
-    /** @test */
+    #[Test]
     public function an_unknown_option_value_is_rejected(): void
     {
         $this->withExceptionHandling();
@@ -719,7 +720,7 @@ class FeedbackPromptTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors('answers.liked_most.0');
     }
 
-    /** @test */
+    #[Test]
     public function another_users_invitation_cannot_be_answered(): void
     {
         $this->withExceptionHandling();
@@ -735,7 +736,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(0, SurveyResponse::count());
     }
 
-    /** @test */
+    #[Test]
     public function an_already_completed_invitation_returns_gone(): void
     {
         $this->withExceptionHandling();
@@ -748,7 +749,7 @@ class FeedbackPromptTest extends TestCase
             ->assertStatus(410);
     }
 
-    /** @test */
+    #[Test]
     public function an_unknown_token_returns_not_found(): void
     {
         $this->withExceptionHandling();
@@ -758,7 +759,7 @@ class FeedbackPromptTest extends TestCase
             ->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function submitting_while_the_feature_is_off_returns_not_found(): void
     {
         $this->withExceptionHandling();
@@ -775,7 +776,7 @@ class FeedbackPromptTest extends TestCase
 
     // --------------------------------------------------------------- ways out
 
-    /** @test */
+    #[Test]
     public function dismissing_closes_the_invitation_and_clears_the_cache(): void
     {
         $user = $this->makeUser();
@@ -792,7 +793,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user->fresh()));
     }
 
-    /** @test */
+    #[Test]
     public function the_shown_endpoint_records_the_view(): void
     {
         // The in-app modal is seeded by the layout composer rather than by the
@@ -808,7 +809,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNotNull($fresh->shown_at);
     }
 
-    /** @test */
+    #[Test]
     public function a_shown_invitation_can_still_be_answered(): void
     {
         $user = $this->makeUser();
@@ -821,7 +822,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(SurveyInvitation::STATUS_COMPLETED, $invitation->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function snoozing_pushes_the_invitation_out_without_dismissing_it(): void
     {
         $user = $this->makeUser();
@@ -837,7 +838,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user->fresh()));
     }
 
-    /** @test */
+    #[Test]
     public function opting_out_sets_the_profile_flag_and_dismisses_outstanding_invitations(): void
     {
         $user = $this->makeUser();
@@ -850,7 +851,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertNull($this->service()->pendingFor($user->fresh()));
     }
 
-    /** @test */
+    #[Test]
     public function opting_out_works_for_a_user_with_no_profile_row(): void
     {
         $user = User::factory()->create([
@@ -864,7 +865,7 @@ class FeedbackPromptTest extends TestCase
         $this->assertSame(0, (int) $user->fresh()->profile->setting_feedback_requests);
     }
 
-    /** @test */
+    #[Test]
     public function an_opted_out_user_cannot_submit(): void
     {
         $this->withExceptionHandling();
@@ -881,7 +882,7 @@ class FeedbackPromptTest extends TestCase
 
     // --------------------------------------------------------- standalone page
 
-    /** @test */
+    #[Test]
     public function the_standalone_page_renders_for_the_owner(): void
     {
         $user = $this->makeUser();
@@ -893,7 +894,7 @@ class FeedbackPromptTest extends TestCase
             ->assertSee('feedbackPrompt(', false);
     }
 
-    /** @test */
+    #[Test]
     public function the_standalone_page_is_forbidden_for_another_user(): void
     {
         $this->withExceptionHandling();
@@ -905,7 +906,7 @@ class FeedbackPromptTest extends TestCase
             ->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function the_standalone_page_does_not_stack_a_second_modal(): void
     {
         $user = $this->makeUser();
@@ -922,7 +923,7 @@ class FeedbackPromptTest extends TestCase
 
     // ------------------------------------------------------------------- auth
 
-    /** @test */
+    #[Test]
     public function all_feedback_endpoints_require_authentication(): void
     {
         $this->withExceptionHandling();

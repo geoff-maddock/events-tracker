@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ApiEmailVerificationTest extends TestCase
 {
@@ -23,7 +24,7 @@ class ApiEmailVerificationTest extends TestCase
         $this->withExceptionHandling();
     }
 
-    /** @test */
+    #[Test]
     public function api_email_verification_works_with_valid_link()
     {
         Event::fake();
@@ -59,7 +60,7 @@ class ApiEmailVerificationTest extends TestCase
         Event::assertDispatched(Verified::class);
     }
 
-    /** @test */
+    #[Test]
     public function api_email_verification_returns_error_for_invalid_hash()
     {
         // Create an unverified user
@@ -88,7 +89,7 @@ class ApiEmailVerificationTest extends TestCase
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 
-    /** @test */
+    #[Test]
     public function api_email_verification_returns_success_if_already_verified()
     {
         // Create an already verified user
@@ -115,7 +116,7 @@ class ApiEmailVerificationTest extends TestCase
     }
 
 
-    /** @test */
+    #[Test]
     public function api_email_verification_returns_404_for_non_existent_user()
     {
         // Generate a signed URL for non-existent user
@@ -132,7 +133,7 @@ class ApiEmailVerificationTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[Test]
     public function api_email_verification_is_throttled()
     {
         // Create an unverified user

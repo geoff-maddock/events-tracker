@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Regression test for the inverted alias-existence condition in
@@ -49,7 +50,7 @@ class ApiEntityAliasSyncTest extends TestCase
         ], $overrides);
     }
 
-    /** @test */
+    #[Test]
     public function storing_with_an_existing_alias_id_attaches_it_without_duplicating(): void
     {
         $alias = Alias::create(['name' => 'The Original Alias']);

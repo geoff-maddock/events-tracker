@@ -5,11 +5,12 @@ namespace Tests\Feature\Services\Embeds;
 use App\Services\Embeds\Provider;
 use App\Services\Embeds\EmbedExtractor;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class EmbedExtractorTest extends TestCase
 {
 
-    /** @test */
+    #[Test]
     public function default_config_is_medium()
     {
         $provider = new Provider();

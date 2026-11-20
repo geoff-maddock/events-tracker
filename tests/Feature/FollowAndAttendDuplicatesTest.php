@@ -15,6 +15,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * A double submit used to add a second follow or attending row, and unfollowing
@@ -65,9 +66,7 @@ class FollowAndAttendDuplicatesTest extends TestCase
         };
     }
 
-    /**
-     * @dataProvider followables
-     */
+    #[DataProvider('followables')]
     public function test_following_twice_leaves_one_row(string $type, string $prefix): void
     {
         $id = $this->makeFollowable($type);
@@ -78,9 +77,7 @@ class FollowAndAttendDuplicatesTest extends TestCase
         $this->assertSame(1, $this->follows($type, $id));
     }
 
-    /**
-     * @dataProvider followables
-     */
+    #[DataProvider('followables')]
     public function test_unfollowing_removes_duplicate_rows(string $type, string $prefix): void
     {
         $id = $this->makeFollowable($type);

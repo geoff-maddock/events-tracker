@@ -10,6 +10,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Covers PagesController::autoRelateEntity — the admin-only action that
@@ -48,7 +49,7 @@ class AutoRelateEntityTest extends TestCase
     }
 
     // it changes data, so a GET (a link or image tag in an admin's browser) is refused (#2345)
-    /** @test */
+    #[Test]
     public function auto_relate_does_not_accept_get(): void
     {
         $entity = $this->makeEntity();
@@ -65,7 +66,7 @@ class AutoRelateEntityTest extends TestCase
         $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_auto_relate(): void
     {
         $entity = $this->makeEntity();
@@ -80,7 +81,7 @@ class AutoRelateEntityTest extends TestCase
         $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function non_admin_cannot_auto_relate(): void
     {
         $entity = $this->makeEntity();
@@ -96,7 +97,7 @@ class AutoRelateEntityTest extends TestCase
         $this->assertDatabaseMissing('entity_event', ['event_id' => $event->id, 'entity_id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_relates_events_matching_exact_phrase_case_insensitively(): void
     {
         $entity = $this->makeEntity();
@@ -126,7 +127,7 @@ class AutoRelateEntityTest extends TestCase
         $this->assertDatabaseMissing('entity_event', ['event_id' => $splitWords->id, 'entity_id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_relates_matching_series(): void
     {
         $entity = $this->makeEntity();
@@ -142,7 +143,7 @@ class AutoRelateEntityTest extends TestCase
         $this->assertDatabaseHas('entity_series', ['series_id' => $series->id, 'entity_id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function relating_twice_does_not_duplicate_pivot_rows(): void
     {
         $entity = $this->makeEntity();
@@ -161,7 +162,7 @@ class AutoRelateEntityTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function other_users_private_events_are_not_related(): void
     {
         $entity = $this->makeEntity();
@@ -178,7 +179,7 @@ class AutoRelateEntityTest extends TestCase
         $this->assertDatabaseMissing('entity_event', ['event_id' => $privateEvent->id, 'entity_id' => $entity->id]);
     }
 
-    /** @test */
+    #[Test]
     public function empty_keyword_relates_nothing(): void
     {
         $entity = $this->makeEntity();

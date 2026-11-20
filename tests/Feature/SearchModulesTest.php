@@ -7,6 +7,7 @@ use App\Models\UserStatus;
 use App\Services\ModuleRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class SearchModulesTest extends TestCase
 {
@@ -30,7 +31,7 @@ class SearchModulesTest extends TestCase
         return $admin;
     }
 
-    /** @test */
+    #[Test]
     public function module_registry_matches_on_name_and_description(): void
     {
         $registry = new ModuleRegistry;
@@ -47,7 +48,7 @@ class SearchModulesTest extends TestCase
         $this->assertSame([], $registry->search('   ', null));
     }
 
-    /** @test */
+    #[Test]
     public function guests_only_see_public_and_policy_modules(): void
     {
         $registry = new ModuleRegistry;
@@ -60,7 +61,7 @@ class SearchModulesTest extends TestCase
         $this->assertEmpty($registry->search('notifications', null));
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_see_notifications_but_not_admin_modules(): void
     {
         $registry = new ModuleRegistry;
@@ -70,7 +71,7 @@ class SearchModulesTest extends TestCase
         $this->assertEmpty($registry->search('permissions', $user));
     }
 
-    /** @test */
+    #[Test]
     public function admins_see_admin_modules(): void
     {
         $registry = new ModuleRegistry;
@@ -79,7 +80,7 @@ class SearchModulesTest extends TestCase
         $this->assertContains('Permissions', collect($registry->search('permissions', $admin))->pluck('name'));
     }
 
-    /** @test */
+    #[Test]
     public function search_page_shows_matching_public_module_to_guests(): void
     {
         $response = $this->get('/search?keyword=calendar');
@@ -89,7 +90,7 @@ class SearchModulesTest extends TestCase
         $response->assertSee('Browse events by calendar');
     }
 
-    /** @test */
+    #[Test]
     public function api_search_returns_modules_scoped_by_permission(): void
     {
         // Guest: gets public module, no admin module.

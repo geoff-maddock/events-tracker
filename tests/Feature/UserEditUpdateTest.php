@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class UserEditUpdateTest extends TestCase
 {
@@ -22,7 +23,7 @@ class UserEditUpdateTest extends TestCase
         return $admin->fresh();
     }
 
-    /** @test */
+    #[Test]
     public function edit_form_shows_populated_name_and_email_fields(): void
     {
         $this->withExceptionHandling();
@@ -48,7 +49,7 @@ class UserEditUpdateTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_update_another_users_name_and_email(): void
     {
         $this->withExceptionHandling();
@@ -67,7 +68,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertSame('renamed@example.com', $target->email);
     }
 
-    /** @test */
+    #[Test]
     public function update_rejects_missing_name_and_invalid_email(): void
     {
         $this->withExceptionHandling();
@@ -85,7 +86,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertSame($originalEmail, $target->fresh()->email);
     }
 
-    /** @test */
+    #[Test]
     public function update_rejects_email_already_used_by_another_user(): void
     {
         $this->withExceptionHandling();
@@ -102,7 +103,7 @@ class UserEditUpdateTest extends TestCase
         $response->assertSessionHasErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_update_own_profile_keeping_own_email(): void
     {
         $this->withExceptionHandling();
@@ -118,7 +119,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertSame('My New Name', $user->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function unchecking_the_feedback_setting_persists_the_opt_out(): void
     {
         // Unchecked checkboxes are simply absent from the POST body, so the
@@ -139,7 +140,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertSame(0, (int) $user->fresh()->profile->setting_feedback_requests);
     }
 
-    /** @test */
+    #[Test]
     public function checking_the_feedback_setting_persists_the_opt_in(): void
     {
         $this->withExceptionHandling();
@@ -158,7 +159,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertSame(1, (int) $user->fresh()->profile->setting_feedback_requests);
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_view_edit_form_for_another_user(): void
     {
         $this->withExceptionHandling();
@@ -171,7 +172,7 @@ class UserEditUpdateTest extends TestCase
             ->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_update_another_user(): void
     {
         $this->withExceptionHandling();
@@ -190,7 +191,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertSame($originalName, $target->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_delete_another_user(): void
     {
         $this->withExceptionHandling();
@@ -205,7 +206,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertNotNull(User::find($target->id));
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_grant_themselves_groups_or_change_status(): void
     {
         $this->withExceptionHandling();
@@ -226,7 +227,7 @@ class UserEditUpdateTest extends TestCase
         $this->assertFalse($user->hasGroup('admin'));
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_still_change_status_and_groups(): void
     {
         $this->withExceptionHandling();

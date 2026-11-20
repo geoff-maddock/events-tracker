@@ -8,6 +8,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * RemoteImageFetcher (issue #2123) is an SSRF sink: the caller picks the
@@ -81,7 +82,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->fail('Expected RemoteImageException for '.$url);
     }
 
-    /** @test */
+    #[Test]
     public function it_downloads_a_public_image_and_hands_back_an_uploaded_file(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image($this->png())]);
@@ -97,7 +98,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->url() === 'https://cdn.example.com/uploads/Flyer%20Final.png?w=800');
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_whatever_the_callback_returns(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image($this->png())]);
@@ -105,7 +106,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertSame('done', $this->fetcher()->fetch('https://cdn.example.com/a.png', fn () => 'done'));
     }
 
-    /** @test */
+    #[Test]
     public function the_extension_follows_the_sniffed_type_not_the_url(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image($this->jpeg(), 'image/png')]);
@@ -116,7 +117,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertSame('image/jpeg', $mime);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_a_name_when_the_url_has_no_usable_path(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image($this->png())]);
@@ -126,7 +127,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertMatchesRegularExpression('/^remote-[A-Za-z0-9]{12}\.png$/', $name);
     }
 
-    /** @test */
+    #[Test]
     public function it_cleans_up_the_temp_file_when_the_callback_throws(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image($this->png())]);
@@ -145,7 +146,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertFileDoesNotExist($path);
     }
 
-    /** @test */
+    #[Test]
     public function it_only_allows_https(): void
     {
         Http::fake();
@@ -160,7 +161,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_hosts_in_private_or_reserved_address_space(): void
     {
         Http::fake();
@@ -178,7 +179,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function is_global_address_classifies_the_edge_cases(): void
     {
         $fetcher = $this->fetcher();
@@ -193,7 +194,7 @@ class RemoteImageFetcherTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_follows_redirects_but_revalidates_every_hop(): void
     {
         Http::fake([
@@ -208,7 +209,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertSentCount(3);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_a_redirect_chain_that_lands_on_a_private_address(): void
     {
         Http::fake([
@@ -222,7 +223,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertNotSent(fn (Request $request) => str_contains($request->url(), 'internal.example.com'));
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_a_redirect_to_a_non_https_scheme(): void
     {
         Http::fake([
@@ -233,7 +234,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    /** @test */
+    #[Test]
     public function it_caps_the_redirect_chain(): void
     {
         Http::fake([
@@ -248,7 +249,7 @@ class RemoteImageFetcherTest extends TestCase
         Http::assertSentCount(RemoteImageFetcher::MAX_REDIRECTS + 1);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_a_body_over_the_cap_even_without_content_length(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image(str_repeat('x', RemoteImageFetcher::MAX_BYTES + 1), 'image/jpeg')]);
@@ -256,7 +257,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertRejected('https://cdn.example.com/huge.jpg', 'larger than the 5 MB limit');
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_an_announced_size_over_the_cap(): void
     {
         Http::fake(['https://cdn.example.com/*' => $this->image($this->png(), 'image/png', ['Content-Length' => (string) (RemoteImageFetcher::MAX_BYTES + 1)])]);
@@ -264,7 +265,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertRejected('https://cdn.example.com/huge.png', 'larger than the 5 MB limit');
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_a_body_exactly_at_the_cap(): void
     {
         // a real PNG padded to exactly MAX_BYTES; trailing bytes are ignored by decoders
@@ -277,7 +278,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertSame(RemoteImageFetcher::MAX_BYTES, $size);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_bodies_that_are_not_images_whatever_the_headers_say(): void
     {
         Http::fake([
@@ -293,7 +294,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertRejected('https://cdn.example.com/empty.png', 'empty');
     }
 
-    /** @test */
+    #[Test]
     public function it_reports_non_success_statuses(): void
     {
         Http::fake(['https://cdn.example.com/*' => Http::response('gone', 404)]);
@@ -301,7 +302,7 @@ class RemoteImageFetcherTest extends TestCase
         $this->assertRejected('https://cdn.example.com/missing.png', 'HTTP 404');
     }
 
-    /** @test */
+    #[Test]
     public function it_reports_connection_failures_without_leaking_details(): void
     {
         Http::fake(['https://cdn.example.com/*' => fn () => throw new \Illuminate\Http\Client\ConnectionException('cURL error 28: timed out at 10.0.0.1')]);

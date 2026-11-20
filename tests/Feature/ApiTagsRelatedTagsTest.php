@@ -7,6 +7,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ApiTagsRelatedTagsTest extends TestCase
 {
@@ -14,7 +15,7 @@ class ApiTagsRelatedTagsTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function it_returns_related_tags_for_a_tag(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -46,7 +47,7 @@ class ApiTagsRelatedTagsTest extends TestCase
         $this->assertEquals(1, $data['Related Tag 2']); // Should appear in 1 event
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_for_tag_with_no_related_tags(): void
     {
         $user = User::factory()->create(['user_status_id' => 1]);
@@ -63,7 +64,7 @@ class ApiTagsRelatedTagsTest extends TestCase
         $this->assertEmpty($data);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_non_existent_tag(): void
     {
         // Ensure exceptions are handled so the test can assert the 404 response

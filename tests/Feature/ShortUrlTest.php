@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\ShortUrl;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ShortUrlTest extends TestCase
 {
@@ -12,7 +13,7 @@ class ShortUrlTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function shorten_endpoint_creates_a_short_url_record()
     {
         $url = url('/events/apply-filter?filters%5Bname%5D=Concert');
@@ -25,7 +26,7 @@ class ShortUrlTest extends TestCase
         $this->assertDatabaseHas('short_urls', ['url' => $url]);
     }
 
-    /** @test */
+    #[Test]
     public function shorten_endpoint_returns_existing_record_for_same_url()
     {
         $url = url('/events/apply-filter?filters%5Bname%5D=Concert');
@@ -37,7 +38,7 @@ class ShortUrlTest extends TestCase
         $this->assertEquals(1, ShortUrl::where('url', $url)->count());
     }
 
-    /** @test */
+    #[Test]
     public function shorten_endpoint_returns_different_codes_for_different_urls()
     {
         $url1 = url('/events/apply-filter?filters%5Bname%5D=Concert');
@@ -52,7 +53,7 @@ class ShortUrlTest extends TestCase
         $this->assertNotEquals($response1->json('code'), $response2->json('code'));
     }
 
-    /** @test */
+    #[Test]
     public function shorten_endpoint_rejects_invalid_url()
     {
         $this->withExceptionHandling();
@@ -62,7 +63,7 @@ class ShortUrlTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function shorten_endpoint_rejects_missing_url()
     {
         $this->withExceptionHandling();
@@ -72,7 +73,7 @@ class ShortUrlTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function redirect_endpoint_resolves_short_code_to_full_url()
     {
         $url = url('/events/apply-filter?filters%5Bname%5D=Concert');
@@ -85,7 +86,7 @@ class ShortUrlTest extends TestCase
         $redirectResponse->assertRedirect($url);
     }
 
-    /** @test */
+    #[Test]
     public function redirect_endpoint_increments_visit_count()
     {
         $shortUrl = ShortUrl::create([
@@ -99,7 +100,7 @@ class ShortUrlTest extends TestCase
         $this->assertEquals(1, $shortUrl->fresh()->visit_count);
     }
 
-    /** @test */
+    #[Test]
     public function redirect_endpoint_returns_404_for_unknown_code()
     {
         $this->withExceptionHandling();
@@ -109,7 +110,7 @@ class ShortUrlTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[Test]
     public function short_url_in_response_points_to_redirect_route()
     {
         $url = url('/series/filter?filters%5Bname%5D=Jazz');

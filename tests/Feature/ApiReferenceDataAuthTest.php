@@ -14,6 +14,7 @@ use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Global reference data (entity/event types & statuses, roles, menus and
@@ -52,9 +53,7 @@ class ApiReferenceDataAuthTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider referenceEndpoints
-     */
+    #[DataProvider('referenceEndpoints')]
     public function test_non_admin_cannot_delete_reference_record(string $endpoint, string $modelClass): void
     {
         /** @var \Illuminate\Database\Eloquent\Model|null $record */

@@ -16,6 +16,7 @@ use Laravel\Dusk\Chrome;
 use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class EventsTest extends TestCase
 {
@@ -27,9 +28,8 @@ class EventsTest extends TestCase
 
     /**
      * Test that events are browsable
-     *
-     * @test void
      */
+    #[Test]
     public function eventsBrowsable()
     {
         $this->get('/events')->assertSee('Events');

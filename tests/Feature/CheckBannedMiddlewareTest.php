@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CheckBannedMiddlewareTest extends TestCase
 {
@@ -16,7 +17,7 @@ class CheckBannedMiddlewareTest extends TestCase
 
     protected $seed = true;
 
-    /** @test */
+    #[Test]
     public function middleware_handles_null_user_gracefully()
     {
         // Create a request
@@ -43,7 +44,7 @@ class CheckBannedMiddlewareTest extends TestCase
         $this->assertEquals('OK', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function middleware_blocks_banned_users()
     {
         // Create a banned user
@@ -77,7 +78,7 @@ class CheckBannedMiddlewareTest extends TestCase
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function middleware_blocks_suspended_users()
     {
         // Create a suspended user
@@ -111,7 +112,7 @@ class CheckBannedMiddlewareTest extends TestCase
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function middleware_allows_active_users()
     {
         // Create an active user
@@ -143,7 +144,7 @@ class CheckBannedMiddlewareTest extends TestCase
         $this->assertEquals('OK', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function middleware_returns_json_for_api_requests_when_banned()
     {
         // Create a banned user
