@@ -4,6 +4,18 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Nightly cleanup of expired cache files, old clicks, failed jobs and expired tokens (#2392)
+- `php artisan cache:prune-expired` deletes expired files from the file cache. The file store
+  only removes an entry when it is read again, and page fragments keyed on a content
+  fingerprint never are, so production had built up about 700 MB of them.
+- `php artisan clicks:prune` deletes ticket-link clicks older than 365 days. The dashboard
+  totals come from the daily rollup and are unaffected; `entities:rollup-stats` now skips days
+  older than that instead of overwriting their totals with zero.
+- `queue:prune-failed` (30 days) and `sanctum:prune-expired` are scheduled too. All four run
+  nightly between 04:15 and 04:45.
+- New migration: an index on `click_tracks.clicked_at` (production already had one).
+- Nothing changes for visitors. See "Nightly housekeeping" in `docs/deployment_notes.md`.
+
 ### `.env.example` lists every setting; a sync queue in production is reported (#2403)
 - `.env.example` was missing 49 of the settings `config/` reads, including the Spaces keys photo
   uploads need, the Instagram tokens, the Sentry DSN, the session settings and the captcha keys

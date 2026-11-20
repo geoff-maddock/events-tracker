@@ -80,6 +80,14 @@ class Kernel extends ConsoleKernel
         // schedule daily cleanup of abandoned create-form image uploads
         $schedule->command('images:prune-temp')->daily()->timezone('America/New_York')->at('03:30');
 
+        // housekeeping (#2392): nothing else ever deletes these
+        $schedule->command('cache:prune-expired')->daily()->timezone('America/New_York')->at('04:15');
+        $schedule->command('clicks:prune')->daily()->timezone('America/New_York')->at('04:30');
+        // failed jobs are kept 30 days for debugging
+        $schedule->command('queue:prune-failed --hours=720')->daily()->timezone('America/New_York')->at('04:40');
+        // API tokens a day past their expiry
+        $schedule->command('sanctum:prune-expired --hours=24')->daily()->timezone('America/New_York')->at('04:45');
+
         // generate proactive feedback invitations for recently finished events,
         // and expire stale ones (issue #1998). No-ops unless FEEDBACK_ENABLED.
         $schedule->command('feedback:generate')->daily()->timezone('America/New_York')->at('10:00');
