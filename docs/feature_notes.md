@@ -9,8 +9,8 @@ A more detailed description of new features and changes to the application.
   only removes an entry when it is read again, and page fragments keyed on a content
   fingerprint never are, so production had built up about 700 MB of them.
 - `php artisan clicks:prune` deletes ticket-link clicks older than 365 days. The dashboard
-  totals come from the daily rollup and are unaffected; `entities:rollup-stats` now skips days
-  older than that instead of overwriting their totals with zero.
+  totals come from the daily rollup and are unaffected; re-running `entities:rollup-stats` for
+  a day older than that rebuilds follows and responses and keeps the stored click total.
 - `queue:prune-failed` (30 days) and `sanctum:prune-expired` are scheduled too. All four run
   nightly between 04:15 and 04:45.
 - New migration: an index on `click_tracks.clicked_at` (production already had one).
