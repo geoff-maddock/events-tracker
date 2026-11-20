@@ -4,6 +4,14 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One schema dump, and a command to compare a database with a fresh install (#2402)
+- `database/schema/` held two dumps and Laravel only ever loaded the older one, which had been
+  edited by hand. There is now one, `mysql-schema.sql`, generated from a database built the old
+  way (old dump plus every migration), so a fresh install has exactly the structure it had before.
+- `database/initialize/INIT-schema-only-prod-events_tracker.sql`, a third and older snapshot that
+  nothing used, is removed.
+- `php artisan db:schema-diff` compares a database's tables, columns, indexes and foreign keys
+  with a fresh build and lists every difference. See `docs/deployment_notes.md`, "Database schema".
 ### One deploy script, checked at the end; Sentry releases (#2401)
 - `bin/deploy` on the production server runs every deploy step in order (pull, composer install,
   migrate, asset build, config/route/view caches, worker restart) and stops at the first failure.

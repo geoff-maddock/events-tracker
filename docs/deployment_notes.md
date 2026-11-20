@@ -259,6 +259,30 @@ config makes PHPUnit ignore `.env.testing`; the test suite refuses to run in tha
 script over SSH. It first checks that the **PHP Composer** CI run for that exact commit passed,
 and passes the commit to `bin/deploy`, which stops after the pull if `main` has moved.
 
+## Database schema
+
+A fresh install is built from two things: `database/schema/mysql-schema.sql`, loaded first, and
+the files in `database/migrations` that it doesn't already record as run. That dump is the only
+schema file, it is generated (`php artisan schema:dump`), and it is never edited by hand. Every
+schema change is a new migration.
+
+To check that a database has the structure a fresh install would have:
+
+```bash
+php artisan db:schema-diff                          # this environment's database
+php artisan db:schema-diff --database=other_db      # another database on the same server
+```
+
+It builds a fresh copy in a scratch database named `<database>_schema_check`, compares tables,
+columns, indexes and foreign keys, drops the scratch database, and exits non-zero if anything
+differs. The database being checked is only read. The database user needs to be able to create
+and drop the scratch database; otherwise pass `--against=<name>` with a freshly migrated
+database someone else created. Index and foreign key names are not compared, only what they
+cover.
+
+Run it against production before rebuilding the server or moving the database, and after any
+change made to a database by hand.
+
 ## Environments:  Dev, Testing, Production
 * Dev environment notes
 * Testing environment notes
