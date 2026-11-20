@@ -96,6 +96,17 @@ class MonitoringTest extends TestCase
         Exceptions::assertNothingReported();
     }
 
+    public function test_a_sync_queue_in_production_is_reported(): void
+    {
+        Exceptions::fake();
+        config(['queue.default' => 'sync']);
+        $this->app->detectEnvironment(fn () => 'production');
+
+        $this->artisan('monitor:check')->assertSuccessful();
+
+        Exceptions::assertReported(fn (MonitoringAlert $e) => str_contains($e->getMessage(), 'QUEUE_DRIVER=database'));
+    }
+
     public function test_a_token_about_to_expire_is_reported_without_the_token(): void
     {
         Exceptions::fake();
