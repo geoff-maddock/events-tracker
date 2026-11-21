@@ -89,8 +89,6 @@ class EventsController extends Controller
     // this is the class specifying the filters methods for each field
     protected EventFilters $filter;
 
-    protected bool $hasFilter;
-
     protected int $defaultWindow;
 
     public function __construct(EventFilters $filter)
@@ -117,7 +115,6 @@ class EventsController extends Controller
 
         $this->defaultSortCriteria = ['events.start_at' => 'desc'];
 
-        $this->hasFilter = false;
         parent::__construct();
     }
 
@@ -189,51 +186,26 @@ class EventsController extends Controller
         ICalBuilder $iCalBuilder
     )
     {
-        
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+            // from today, unless the request or the saved filters say otherwise
+            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()
-            ->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')
-            ->select('events.*')
-        ;
-
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort(['events.start_at' => 'asc'])
-        ;
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
         // Eager-load the relations ICalBuilder reads per event: venue, the
         // promoter and its contacts (organizer lookup), and photos for
         // getPrimaryPhoto(). Without photos/promoter.contacts each event
         // triggers its own query while rendering the feed (EVENTREPO-T5).
-        /* @phpstan-ignore-next-line */
-        $events = $query->visible($this->user)
+        $events = $query
             // showings: a short run's dates each become a VEVENT (#2375)
             ->with('visibility', 'venue', 'promoter.contacts', 'photos', 'showings')
             ->paginate($listResultSet->getLimit());
 
-        // create a calendar object
-        $calendar = $iCalBuilder->buildCalendar('arcane-city-ical.ics', $events);
-
-        return $calendar;
+        return $iCalBuilder->buildCalendar('arcane-city-ical.ics', $events);
     }
 
     /**
@@ -818,75 +790,14 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $date = ''
     ): View | string {
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_upcoming');
+        $window = $this->dayWindow($date);
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // $date is a user-supplied route param; crawlers hit this with non-date junk
-        // (e.g. /events/upcoming/www.parktildark.com), which makes Carbon::parse() throw.
-        // Treat anything that isn't a real date as a missing page rather than a 500.
-        try {
-            $baseDate = $date === '' ? Carbon::now() : Carbon::parse($date);
-        } catch (\Throwable $e) {
-            abort(404);
-        }
-
-        // dated variants outside the range of real event data are navigation
-        // state, not pages — 404 them so crawlers can't walk into empty decades
-        $dateRange = new EventDateRange();
-        if ($date !== '' && !$dateRange->contains($baseDate)) {
-            abort(404);
-        }
-
-        // use the window to get the last date and set the criteria between
-        $next_day = $baseDate->copy()->addDays(1);
-        $next_day_window = $baseDate->copy()->addDays($this->defaultWindow);
-        $prev_day = $baseDate->copy()->subDays(1);
-        $prev_day_window = $baseDate->copy()->subDays($this->defaultWindow);
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // NOTE normally a query would be created, a list entity result builder configured and events retrieved, but this uses ajax calls
-
-        // handle the request if ajax
+        // the days themselves are loaded by ajax calls
         if ($request->ajax()) {
-            return view('events.4daysAjax-tw')
-                    ->with([
-                        'date' => $date,
-                        'window' => $this->defaultWindow,
-                        'next_day' => $next_day,
-                        'next_day_window' => $next_day_window,
-                        'prev_day' => $prev_day,
-                        'prev_day_window' => $prev_day_window,
-                        'hasPrev' => $dateRange->contains($prev_day),
-                        'hasPrevWindow' => $dateRange->contains($prev_day_window),
-                        'hasNext' => $dateRange->contains($next_day),
-                        'hasNextWindow' => $dateRange->contains($next_day_window),
-                    ])
-                    ->render();
+            return view('events.4daysAjax-tw')->with($window)->render();
         }
 
-        return view('events.upcoming-tw')
-        ->with([
-            'date' => $date,
-            'window' => $this->defaultWindow,
-            'next_day' => $next_day,
-            'next_day_window' => $next_day_window,
-            'prev_day' => $prev_day,
-            'prev_day_window' => $prev_day_window,
-            'hasPrev' => $dateRange->contains($prev_day),
-            'hasPrevWindow' => $dateRange->contains($prev_day_window),
-            'hasNext' => $dateRange->contains($next_day),
-            'hasNextWindow' => $dateRange->contains($next_day_window),
-        ]);
+        return view('events.upcoming-tw')->with($window);
     }
 
     /*
@@ -899,72 +810,16 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $date = ''
     ): View | string {
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_add');
+        $window = $this->dayWindow($date);
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // $date is a user-supplied route param; crawlers hit this with non-date junk
-        // (e.g. /events/upcoming/www.parktildark.com), which makes Carbon::parse() throw.
-        // Treat anything that isn't a real date as a missing page rather than a 500.
-        try {
-            $baseDate = $date === '' ? Carbon::now() : Carbon::parse($date);
-        } catch (\Throwable $e) {
-            abort(404);
-        }
-
-        // dated variants outside the range of real event data are navigation
-        // state, not pages — 404 them so crawlers can't walk into empty decades
-        $dateRange = new EventDateRange();
-        if ($date !== '' && !$dateRange->contains($baseDate)) {
-            abort(404);
-        }
-
-        // use the window to get the last date and set the criteria between
-        $next_day = $baseDate->copy()->addDays(1);
-        $next_day_window = $baseDate->copy()->addDays($this->defaultWindow);
-        $prev_day = $baseDate->copy()->subDays(1);
-        $prev_day_window = $baseDate->copy()->subDays($this->defaultWindow);
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // NOTE normally a query would be created, a list entity result builder configured and events retrieved, but this uses ajax calls
-
-        // handle the request if ajax
+        // the days themselves are loaded by ajax calls
         if ($request->ajax()) {
             return view('events.addDays-tw')
-                    ->with([
-                        'date' => $date,
-                        'window' => $this->defaultWindow,
-                        'next_day' => $next_day,
-                        'next_day_window' => $next_day_window,
-                        'prev_day' => $prev_day,
-                        'prev_day_window' => $prev_day_window,
-                        'hasNextWindow' => $dateRange->contains($next_day_window),
-                    ])
-                    ->render();
+                ->with(Arr::except($window, ['hasPrev', 'hasPrevWindow', 'hasNext']))
+                ->render();
         }
 
-        return view('events.upcoming-tw')
-        ->with([
-            'date' => $date,
-            'window' => $this->defaultWindow,
-            'next_day' => $next_day,
-            'next_day_window' => $next_day_window,
-            'prev_day' => $prev_day,
-            'prev_day_window' => $prev_day_window,
-            'hasPrev' => $dateRange->contains($prev_day),
-            'hasPrevWindow' => $dateRange->contains($prev_day_window),
-            'hasNext' => $dateRange->contains($next_day),
-            'hasNextWindow' => $dateRange->contains($next_day_window),
-        ]);
+        return view('events.upcoming-tw')->with($window);
     }
 
     /**
@@ -1042,33 +897,16 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
         // venue.locations.visibility feeds getPrimaryLocationAddress() on every row (#2172)
-        // @phpstan-ignore-next-line
-        $events = $query->visible($this->user)
-            ->with(self::FEED_EAGER_LOAD)
-            ->paginate(1000);
+        $events = $query->with(self::FEED_EAGER_LOAD)->paginate(1000);
 
         return view('events.feed-tw', compact('events'));
     }
@@ -1094,33 +932,16 @@ class EventsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ) {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
         // the brief list prints each event's tags (#2172)
-        // @phpstan-ignore-next-line
-        $events = $query->visible($this->user)
-            ->with('visibility', 'venue', 'tags')
-            ->paginate(1000);
+        $events = $query->with('visibility', 'venue', 'tags')->paginate(1000);
 
         return view('events.briefText', compact('events'));
     }
@@ -1134,13 +955,7 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_index';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_event', $request->get('key') ?? 'internal_event_index', filters: false);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'events.index'));
     }
@@ -1154,16 +969,86 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_index';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_event', $request->get('key') ?? 'internal_event_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'events.index'));
+    }
+
+    /**
+     * Save the filters, sort and limit given in the query string as a list's
+     * own, so a filtered list can be shared as a link. Nothing is saved
+     * without filters.
+     */
+    private function saveFiltersFromUrl(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        string $keyPrefix,
+        string $indexTab,
+    ): void {
+        $filters = $request->input('filters', []);
+        if (empty($filters)) {
+            return;
+        }
+
+        $this->useList($listParamSessionStore, 'internal_event', $keyPrefix);
+        $listParamSessionStore->setIndexTab(action([EventsController::class, $indexTab]));
+        $listParamSessionStore->setFilters($filters);
+
+        if ($request->has('sort')) {
+            $listParamSessionStore->setSortFieldName($request->input('sort'));
+        }
+        if ($request->has('direction')) {
+            $listParamSessionStore->setSortDirection($request->input('direction'));
+        }
+        if ($request->has('limit')) {
+            $listParamSessionStore->setLimit((int) $request->input('limit'));
+        }
+
+        $listParamSessionStore->save();
+    }
+
+    /**
+     * View data for the pages that show a few days at a time from $date
+     * (today when empty): the days either side and whether they hold events.
+     * 404s for anything that isn't a date with event data around it.
+     *
+     * @return array<string, mixed>
+     */
+    private function dayWindow(string $date): array
+    {
+        // $date is a user-supplied route param; crawlers hit this with non-date junk
+        // (e.g. /events/upcoming/www.parktildark.com), which makes Carbon::parse() throw.
+        // Treat anything that isn't a real date as a missing page rather than a 500.
+        try {
+            $baseDate = $date === '' ? Carbon::now() : Carbon::parse($date);
+        } catch (\Throwable $e) {
+            abort(404);
+        }
+
+        // dated variants outside the range of real event data are navigation
+        // state, not pages — 404 them so crawlers can't walk into empty decades
+        $dateRange = new EventDateRange();
+        if ($date !== '' && !$dateRange->contains($baseDate)) {
+            abort(404);
+        }
+
+        $next_day = $baseDate->copy()->addDays(1);
+        $next_day_window = $baseDate->copy()->addDays($this->defaultWindow);
+        $prev_day = $baseDate->copy()->subDays(1);
+        $prev_day_window = $baseDate->copy()->subDays($this->defaultWindow);
+
+        return [
+            'date' => $date,
+            'window' => $this->defaultWindow,
+            'next_day' => $next_day,
+            'next_day_window' => $next_day_window,
+            'prev_day' => $prev_day,
+            'prev_day_window' => $prev_day_window,
+            'hasPrev' => $dateRange->contains($prev_day),
+            'hasPrevWindow' => $dateRange->contains($prev_day_window),
+            'hasNext' => $dateRange->contains($next_day),
+            'hasNextWindow' => $dateRange->contains($next_day_window),
+        ];
     }
 
     /**
@@ -1176,36 +1061,9 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // Initialize session store
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
-        
-        // Set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+        $this->saveFiltersFromUrl($request, $listParamSessionStore, 'internal_event_index', 'index');
 
-        // Get filters from query parameters
-        $filters = $request->input('filters', []);
-        
-        if (!empty($filters)) {
-            // Set filters in session
-            $listParamSessionStore->setFilters($filters);
-            
-            // Set sorting if provided
-            if ($request->has('sort')) {
-                $listParamSessionStore->setSortFieldName($request->input('sort'));
-            }
-            if ($request->has('direction')) {
-                $listParamSessionStore->setSortDirection($request->input('direction'));
-            }
-            if ($request->has('limit')) {
-                $listParamSessionStore->setLimit((int) $request->input('limit'));
-            }
-            
-            // Save to session
-            $listParamSessionStore->save();
-        }
-
-        // Redirect to events filter page to apply the filters
+        // the filter page applies them
         return redirect()->route('events.filter');
     }
 
@@ -1218,27 +1076,7 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_grid');
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'indexGrid']));
-
-        $filters = $request->input('filters', []);
-
-        if (!empty($filters)) {
-            $listParamSessionStore->setFilters($filters);
-
-            if ($request->has('sort')) {
-                $listParamSessionStore->setSortFieldName($request->input('sort'));
-            }
-            if ($request->has('direction')) {
-                $listParamSessionStore->setSortDirection($request->input('direction'));
-            }
-            if ($request->has('limit')) {
-                $listParamSessionStore->setLimit((int) $request->input('limit'));
-            }
-
-            $listParamSessionStore->save();
-        }
+        $this->saveFiltersFromUrl($request, $listParamSessionStore, 'internal_event_grid', 'indexGrid');
 
         return redirect()->route('events.grid');
     }
@@ -2436,32 +2274,15 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
     ): View {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_index');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_index',
+            Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['events.start_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        /* @phpstan-ignore-next-line */
-        $events = $query->visible($this->user)
-            ->with(self::FEED_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
+        $events = $query->with(self::FEED_EAGER_LOAD)->paginate($listResultSet->getLimit());
 
         return view('events.feed', compact('events'));
     }
@@ -2472,35 +2293,17 @@ class EventsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
     ): View {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_attending');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_attending',
+            $this->user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+            // from today, unless the request or the saved filters say otherwise
+            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort(['events.start_at' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        /* @phpstan-ignore-next-line */
-        $events = $query->visible($this->user)
-            ->with('visibility', 'venue')
-            ->paginate($listResultSet->getLimit());
+        $events = $query->with('visibility', 'venue')->paginate($listResultSet->getLimit());
 
         return view('events.feed-tw', compact('events'));
     }
@@ -2569,45 +2372,22 @@ class EventsController extends Controller
         $user = User::findOrFail($id);
         abort_unless($user->profileIsVisibleTo($this->user), 403);
 
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix('internal_event_attending');
+        [$query, $listResultSet] = $this->startEventList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event_attending',
+            $user->getAttending()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
+            ['events.start_at' => 'asc'],
+            // from today, unless the request or the saved filters say otherwise
+            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EventsController::class, 'index']));
+        $events = $query->with('visibility', 'venue', 'showings')->paginate($listResultSet->getLimit());
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $user->getAttending()->visible($this->user)->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*');
-
-        // set the default filter to starting today, can override
-        $defaultFilter = ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]];
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort(['events.start_at' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $events = $query
-            ->with('visibility', 'venue', 'showings')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
+        // this feed shares the attending list's saved filters and sort
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // create a calendar object for the user
-        $calendar = $iCalBuilder->buildCalendar('arcane-city-attending-ical.ics', $events);
-
-        return $calendar;
+        return $iCalBuilder->buildCalendar('arcane-city-attending-ical.ics', $events);
     }
 
     /**
@@ -2647,14 +2427,7 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_attending';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_event', $request->get('key') ?? 'internal_event_attending', filters: true);
 
         return redirect()->route('users.attending', ['id' => $id]);
     }
@@ -2669,13 +2442,7 @@ class EventsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_event_attending';
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_event', $request->get('key') ?? 'internal_event_attending', filters: false);
 
         return redirect()->route('users.attending', ['id' => $id]);
     }

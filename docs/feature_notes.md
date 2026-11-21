@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Remaining event list actions moved onto the shared list-page scaffold (#2406)
+- The iCal feed, the text feed, the brief list, the two exports and the attending iCal feed
+  now start their lists the way every other event list does; the reset links use
+  `clearList()`; the two "apply filter from a link" actions share one method.
+- `/events/upcoming` and `/events/add` set up a list they never ran. That is gone, and the
+  date checks and day window they both computed are one method.
+- `EventsController` goes from 2,683 to 2,450 lines and no longer sets up the session store
+  or list builder by hand anywhere.
+- No change in behaviour: a snapshot of 126 requests is identical before and after.
+
 ### Six admin lists moved onto the shared list-page scaffold (#2406)
 - Roles, menus, groups, permissions, entity types and reviews: their `index`, `filter`,
   `reset` and `rppReset` actions now use `BuildsListPages`, and where `filter` was a copy of
