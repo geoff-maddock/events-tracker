@@ -67,7 +67,6 @@ class OrphanedPrivateContentVisibilityTest extends TestCase
     {
         foreach ([
             'Event::visible' => Event::visible(null),
-            'Event::starting' => Event::starting(now()->format('Y-m-d')),
             'Series::visible' => Series::visible(null),
             'Thread::visible' => Thread::visible(null),
         ] as $scope => $query) {

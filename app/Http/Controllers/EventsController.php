@@ -794,7 +794,6 @@ class EventsController extends Controller
     ): View | string {
         $window = $this->dayWindow($date);
 
-        // the days themselves are loaded by ajax calls
         if ($request->ajax()) {
             return view('events.4daysAjax-tw')->with($window)->render();
         }
@@ -814,7 +813,6 @@ class EventsController extends Controller
     ): View | string {
         $window = $this->dayWindow($date);
 
-        // the days themselves are loaded by ajax calls
         if ($request->ajax()) {
             return view('events.addDays-tw')
                 ->with(Arr::except($window, ['hasPrev', 'hasPrevWindow', 'hasNext']))
@@ -1050,6 +1048,8 @@ class EventsController extends Controller
             'hasPrevWindow' => $dateRange->contains($prev_day_window),
             'hasNext' => $dateRange->contains($next_day),
             'hasNextWindow' => $dateRange->contains($next_day_window),
+            // the window's cards, a list per day
+            'eventsByDay' => Event::cardsByDay($baseDate, $this->defaultWindow, $this->user),
         ];
     }
 
@@ -1108,6 +1108,7 @@ class EventsController extends Controller
         return view('events.day-tw')
             ->with([
                 'day' => $day,
+                'events' => Event::cardsByDay($day, 1, $this->user)->get($day->format('Y-m-d'), collect()),
                 'position' => 0,
                 'offset' => 0,
             ])
@@ -1958,14 +1959,10 @@ class EventsController extends Controller
         // the six days the page shows, in one query grouped by day; the view used to run
         // a query per day (without venue) after this loaded every future event, unused (#2168)
         $today = Carbon::now()->startOfDay();
-        $userId = $this->user?->id;
-
         $weekEnd = $today->copy()->addDays(6)->subSecond();
 
         $eventsByDay = Event::query()
             ->occurringBetween($today, $weekEnd)
-            // same rules as the Event::starting() scope the view used, plus visible()
-            ->where(fn ($q) => $q->where('visibility_id', '=', 3)->when($userId !== null, fn ($q) => $q->orWhere('created_by', '=', $userId)))
             ->visible($this->user)
             ->with('venue', 'showings')
             ->get();
