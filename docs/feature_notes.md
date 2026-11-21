@@ -5,7 +5,7 @@ A more detailed description of new features and changes to the application.
 ## Unreleased
 
 ### Thread lists moved onto the shared list-page scaffold (#2406)
-- The nine thread list actions and the two reset links now use `BuildsListPages`;
+- The eight thread list actions and the two reset links now use `BuildsListPages`;
   `ThreadsController` goes from 984 to 670 lines.
 - Fixed along the way, because every list now shares one query:
   - `/threads` shows each thread's reply count (only the main list was missing it);
