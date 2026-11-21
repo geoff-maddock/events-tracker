@@ -11,8 +11,8 @@ A more detailed description of new features and changes to the application.
   (sitemap, Instagram and Discord posts, counts, cached option lists).
 - No change in what anyone sees. The thread rule now names its table, so it can be used on a
   query that joins another table with a `visibility_id`.
-- No Blade view queries events or series any more: the day views get their scheduled series
-  from `Series::byDay()` in the controller, as they get their cards from `Event::cardsByDay()`.
+- The day views no longer query from Blade: they get their scheduled series from
+  `Series::byDay()` in the controller, as they get their cards from `Event::cardsByDay()`.
 - Blogs, forums and posts keep their own, simpler rule (public, or your own).
 
 ### Day views list what the event list does (#2408)

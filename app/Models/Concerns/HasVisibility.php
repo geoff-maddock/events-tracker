@@ -56,7 +56,8 @@ trait HasVisibility
      */
     public static function visibleTo(?User $user): \Closure
     {
-        $table = (new static())->getTable();
+        // self, not static: a subclass keeps the table of the model the rule belongs to
+        $table = (new self())->getTable();
 
         return function ($query) use ($user, $table) {
             $query->where($table.'.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
@@ -90,7 +91,8 @@ trait HasVisibility
     }
 
     /**
-     * Whether a cancelled record's own page still opens for everyone.
+     * Whether a cancelled record's own page still opens for everyone. Also
+     * decides a record with no, or an unknown, visibility.
      */
     protected function opensWhenCancelled(): bool
     {
