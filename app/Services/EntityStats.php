@@ -232,6 +232,10 @@ class EntityStats
     /**
      * Rebuild follows, clicks and responses for one day. Views are left alone
      * because they are only ever recorded live. Safe to re-run.
+     *
+     * For a day whose clicks have been pruned (clicks:prune, #2392) the stored
+     * click totals are all that is left, so they are kept as they are and only
+     * follows and responses are rebuilt.
      */
     public function rollupDay(CarbonInterface $day): int
     {
@@ -239,8 +243,11 @@ class EntityStats
         $end = Carbon::parse($day)->endOfDay();
         $date = $start->toDateString();
 
+        $clicksPruned = $start->lt(ClickTrack::retentionCutoff());
+        $rebuilt = $clicksPruned ? ['follows', 'responses'] : ['follows', 'clicks', 'responses'];
+
         $follows = $this->followCounts($start, $end);
-        $clicks = $this->clickCounts($start, $end);
+        $clicks = $clicksPruned ? collect() : $this->clickCounts($start, $end);
         $responses = $this->responseCounts($start, $end);
 
         $entityIds = $follows->keys()->merge($clicks->keys())->merge($responses->keys())->unique();
@@ -248,11 +255,11 @@ class EntityStats
         // only entities that still exist, so a stale click never breaks the foreign key
         $entityIds = DB::table('entities')->whereIn('id', $entityIds)->pluck('id');
 
-        return DB::transaction(function () use ($date, $entityIds, $follows, $clicks, $responses) {
+        return DB::transaction(function () use ($date, $entityIds, $follows, $clicks, $responses, $rebuilt) {
             // zero the day first so a re-run reflects rows deleted since the last run
             DB::table('entity_stats_daily')
                 ->where('date', $date)
-                ->update(['follows' => 0, 'clicks' => 0, 'responses' => 0]);
+                ->update(array_fill_keys($rebuilt, 0));
 
             $now = Carbon::now();
             $rows = $entityIds->map(fn ($id) => [
@@ -270,7 +277,7 @@ class EntityStats
                 DB::table('entity_stats_daily')->upsert(
                     $chunk->values()->all(),
                     ['entity_id', 'date'],
-                    ['follows', 'clicks', 'responses', 'updated_at']
+                    [...$rebuilt, 'updated_at']
                 );
             }
 

@@ -53,25 +53,15 @@ class PruneExpiredCache extends Command
                 continue;
             }
 
-            $expiresAt = $this->expiresAt($file->getPathname());
+            $result = $this->prune($file->getPathname(), $now, $dryRun);
 
-            // not a cache entry (.gitignore, a lock being written), or still live
-            if ($expiresAt === null || $expiresAt > $now) {
+            if ($result === null) {
                 $kept++;
-
-                continue;
-            }
-
-            $size = (int) $file->getSize();
-
-            // the directories are left in place: removing one could race with
-            // a request that is about to write into it
-            if ($dryRun || @unlink($file->getPathname())) {
-                $removed++;
-                $bytes += $size;
-            } elseif (file_exists($file->getPathname())) {
-                // still there, so it wasn't a concurrent delete: a permissions problem
+            } elseif ($result === false) {
                 $failed++;
+            } else {
+                $removed++;
+                $bytes += $result;
             }
         }
 
@@ -93,17 +83,50 @@ class PruneExpiredCache extends Command
     }
 
     /**
-     * The file store writes the expiry as a ten digit unix timestamp at the
-     * start of the file. Null when the file doesn't start with one.
+     * Delete one file if it is an expired cache entry. Returns the bytes
+     * freed, null when the file is kept, false when it could not be deleted.
+     *
+     * The file is locked the way the file store locks it and the expiry is
+     * read under that lock, so an entry (or a cache lock) that a request has
+     * just rewritten is seen as live. A request that has opened the file but
+     * not yet locked it can still lose its write; nothing short of leaving
+     * the files alone closes that.
      */
-    protected function expiresAt(string $pathname): ?int
+    protected function prune(string $pathname, int $now, bool $dryRun): int|false|null
     {
-        $head = @file_get_contents($pathname, false, null, 0, 10);
+        $handle = @fopen($pathname, 'r');
 
-        if ($head === false || strlen($head) !== 10 || !ctype_digit($head)) {
+        // gone already: another process read it after it expired
+        if ($handle === false) {
             return null;
         }
 
-        return (int) $head;
+        try {
+            // in use right now, so not abandoned
+            if (!flock($handle, LOCK_EX | LOCK_NB)) {
+                return null;
+            }
+
+            $head = (string) fread($handle, 10);
+
+            // not a cache entry (.gitignore), or still live. The file store
+            // writes the expiry as a ten digit unix timestamp at the start.
+            if (strlen($head) !== 10 || !ctype_digit($head) || (int) $head > $now) {
+                return null;
+            }
+
+            $size = (int) (fstat($handle)['size'] ?? 0);
+
+            // the directories are left in place: removing one could race with
+            // a request that is about to write into it
+            if ($dryRun || @unlink($pathname)) {
+                return $size;
+            }
+
+            // still there, so not a concurrent delete: a permissions problem
+            return file_exists($pathname) ? false : null;
+        } finally {
+            fclose($handle);
+        }
     }
 }

@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\ClickTrack;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 /**
  * Deletes ticket-link clicks older than the retention period (#2392).
@@ -29,10 +28,11 @@ class PruneClickTracks extends Command
     public function handle(): int
     {
         $cutoff = ClickTrack::retentionCutoff();
+        // one definition of what is pruned, for the dry run and the delete
+        $expired = fn () => ClickTrack::where('clicked_at', '<', $cutoff);
 
         if ($this->option('dry-run')) {
-            $count = ClickTrack::where('clicked_at', '<', $cutoff)->count();
-            $this->info("Would remove {$count} click(s) from before {$cutoff->toDateString()}.");
+            $this->info("Would remove {$expired()->count()} click(s) from before {$cutoff->toDateString()}.");
 
             return self::SUCCESS;
         }
@@ -40,7 +40,7 @@ class PruneClickTracks extends Command
         // in batches, so the table is never locked for long
         $count = 0;
         do {
-            $deleted = ClickTrack::where('clicked_at', '<', $cutoff)->limit(5000)->delete();
+            $deleted = $expired()->limit(5000)->delete();
             $count += $deleted;
         } while ($deleted > 0);
 

@@ -31,16 +31,13 @@ class RollupEntityStats extends Command
         for ($offset = $days - 1; $offset >= 0; $offset--) {
             $day = $end->copy()->subDays($offset);
 
-            // the clicks for that day have been pruned, so rebuilding it
-            // would replace the stored click totals with zero
-            if ($day->lt(ClickTrack::retentionCutoff())) {
-                $this->warn(sprintf('%s: skipped, older than the click retention period', $day->toDateString()));
-
-                continue;
-            }
-
             $count = $stats->rollupDay($day);
-            $this->line(sprintf('%s: %d entities', $day->toDateString(), $count));
+            $this->line(sprintf(
+                '%s: %d entities%s',
+                $day->toDateString(),
+                $count,
+                $day->lt(ClickTrack::retentionCutoff()) ? ' (clicks pruned; stored click totals kept)' : ''
+            ));
         }
 
         return self::SUCCESS;

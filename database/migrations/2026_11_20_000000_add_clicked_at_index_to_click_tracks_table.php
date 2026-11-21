@@ -12,7 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasIndex('click_tracks', 'click_tracks_clicked_at_index')) {
+        // by column, so an index added by hand under another name counts too
+        if (Schema::hasIndex('click_tracks', ['clicked_at'])) {
             return;
         }
 
@@ -21,14 +22,11 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Left in place: the index may be older than this migration (up() does
+     * nothing where it already existed), and a rollback must not remove it.
+     */
     public function down(): void
     {
-        if (!Schema::hasIndex('click_tracks', 'click_tracks_clicked_at_index')) {
-            return;
-        }
-
-        Schema::table('click_tracks', function (Blueprint $table) {
-            $table->dropIndex(['clicked_at']);
-        });
     }
 };
