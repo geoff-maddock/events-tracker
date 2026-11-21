@@ -4,6 +4,15 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Thread lists moved onto the shared list-page scaffold (#2406)
+- The nine thread list actions and the two reset links now use `BuildsListPages`;
+  `ThreadsController` goes from 984 to 670 lines.
+- Fixed along the way, because every list now shares one query:
+  - `/threads` shows each thread's reply count (only the main list was missing it);
+  - sorting by User on the tag, category, series and related-to lists no longer fails with a
+    server error;
+  - a request for JSON gets the normal page instead of an empty response.
+
 ### Shared list-page scaffold, series lists moved onto it (#2406)
 - The set-up and view data that every filterable list page repeats now live in one trait,
   `App\Http\Controllers\Concerns\BuildsListPages` (`startList()`, `finishList()`,

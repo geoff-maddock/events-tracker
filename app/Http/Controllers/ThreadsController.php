@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ThreadFilters;
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Jobs\NotifyFollowers;
 use App\Http\Requests\ThreadRequest;
+use App\Http\Response\ResultSet\ListResultSet;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
@@ -20,6 +22,7 @@ use App\Models\User;
 use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +32,8 @@ use Illuminate\View\View;
 
 class ThreadsController extends Controller
 {
+    use BuildsListPages;
+
     // define a list of variables
     protected string $prefix;
 
@@ -47,8 +52,6 @@ class ThreadsController extends Controller
     protected array $defaultSortCriteria;
 
     protected int $page;
-
-    protected bool $hasFilter;
 
     protected array $filters;
 
@@ -78,7 +81,6 @@ class ThreadsController extends Controller
         $this->defaultSortCriteria = ['thread.updated_at' => 'desc'];
 
         $this->page = 1;
-        $this->hasFilter = false;
 
         $this->filter = $filter;
 
@@ -95,59 +97,73 @@ class ThreadsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_index');
+        $listResultSet = $this->startThreadList($listParamSessionStore, $listEntityResultBuilder, 'internal_thread_index');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+        return $this->threadListPage($listParamSessionStore, $listResultSet);
+    }
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()
+    /**
+     * Start a thread list page (#2406): every thread list shares one session
+     * base index, the thread filters, the default sort and the sort columns
+     * the list controls offer.
+     *
+     * @param array<string, mixed> $parentFilter
+     */
+    private function startThreadList(
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $keyPrefix,
+        ?Builder $baseQuery = null,
+        array $parentFilter = [],
+    ): ListResultSet {
+        return $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_thread',
+            $keyPrefix,
+            action([ThreadsController::class, 'index']),
+            $this->filter,
+            $baseQuery ?? $this->baseQuery(),
+            ['threads.created_at' => 'desc'],
+            parentFilter: $parentFilter,
+            allowedSortFields: array_keys($this->getListControlOptions()['sortOptions']),
+        );
+    }
+
+    /**
+     * Threads with their author joined in, because every list offers a sort
+     * by users.name; without the join that sort is an unknown-column error
+     * (EVENTREPO-W2).
+     */
+    private function baseQuery(): Builder
+    {
+        return Thread::query()
             ->leftJoin('users', 'threads.created_by', '=', 'users.id')
             ->select('threads.*');
+    }
 
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
+    /**
+     * Render the thread list view for a started list.
+     *
+     * @param array<string, mixed> $extra more view data (the page's tag, type, ...)
+     *
+     * @throws \Throwable
+     */
+    private function threadListPage(
+        ListParameterSessionStore $listParamSessionStore,
+        ListResultSet $listResultSet,
+        array $extra = [],
+    ): string {
         /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
+        $threads = $listResultSet->getList()->visible($this->user)
             ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
+            ->withCount('posts')
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $threads;
-        }
-
         return view('threads.index-tw')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('threads'))
-                ->render();
+            ->with($this->finishList($listParamSessionStore, $listResultSet, extra: $extra))
+            ->with(compact('threads'))
+            ->render();
     }
 
     /**
@@ -160,244 +176,76 @@ class ThreadsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        // leftJoin users so the shared 'internal_thread_index' session sort by users.name
-        // resolves here too (same class of error as EVENTREPO-W2).
         $baseQuery = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
-        ->leftJoin('users', 'threads.created_by', '=', 'users.id')
-        ->where('follows.object_type', '=', 'thread')
-        ->where('follows.user_id', '=', $this->user->id)
-        ->orderBy('follows.created_at', 'desc')
-        ->select('threads.*');
+            ->leftJoin('users', 'threads.created_by', '=', 'users.id')
+            ->where('follows.object_type', '=', 'thread')
+            ->where('follows.user_id', '=', $this->user->id)
+            ->orderBy('follows.created_at', 'desc')
+            ->select('threads.*');
 
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc']);
+        $listResultSet = $this->startThreadList($listParamSessionStore, $listEntityResultBuilder, 'internal_thread_index', $baseQuery);
 
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $threads;
-        }
-
-        return view('threads.index-tw')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('threads'))
-                ->with(['type' => 'Followed Threads'])
-                ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet, ['type' => 'Followed Threads']);
     }
 
     /**
      * Filter the list of threads.
      *
-     * @internal param $Request
+     * @throws \Throwable
      */
     public function filter(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_index');
+        $listResultSet = $this->startThreadList($listParamSessionStore, $listEntityResultBuilder, 'internal_thread_index');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()
-            ->leftJoin('users', 'threads.created_by', '=', 'users.id')
-             ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $threads;
-        }
-
-        return view('threads.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet);
     }
 
     /**
      * Reset the limit, sort, order.
-     *
-     * @throws \Throwable
      */
     public function rppReset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the limit, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_thread_index';
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_thread', $request->get('key') ?? 'internal_thread_index', filters: false);
 
         return redirect()->route('threads.index');
     }
 
     /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
+     * Reset the filtering of threads.
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_thread_index';
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+    ): RedirectResponse {
+        $this->clearList($listParamSessionStore, 'internal_thread', $request->get('key') ?? 'internal_thread_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'threads.index'));
     }
 
     /**
      * Display a listing of the resource.
+     *
+     * @throws \Throwable
      */
     public function indexAll(
         Request $request,
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_index');
+        $listResultSet = $this->startThreadList($listParamSessionStore, $listEntityResultBuilder, 'internal_thread_index');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        // leftJoin users so the shared 'internal_thread_index' session sort by users.name
-        // (offered on the main threads index) resolves here instead of throwing
-        // "Unknown column 'users.name' in order clause" (EVENTREPO-W2).
-        $baseQuery = Thread::query()
-        ->leftJoin('users', 'threads.created_by', '=', 'users.id')
-        ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $threads;
-        }
-
-        return view('threads.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet);
     }
 
     /**
      * Display a listing of threads by tag.
+     *
+     * @throws \Throwable
      */
     public function indexTags(
         Request $request,
@@ -406,60 +254,21 @@ class ThreadsController extends Controller
         string $tag
     ): string {
         $tag = urldecode($tag);
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_tags');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+        $listResultSet = $this->startThreadList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_thread_tags',
+            parentFilter: ['tag' => ucfirst($tag)],
+        );
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()
-        ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc'])
-            ->setParentFilter(['tag' => ucfirst($tag)]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('threads.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet);
     }
 
     /**
      * Display a listing of threads by category.
+     *
+     * @throws \Throwable
      */
     public function indexCategories(
         Request $request,
@@ -467,61 +276,20 @@ class ThreadsController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $category
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_category');
+        $listResultSet = $this->startThreadList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_thread_category',
+            parentFilter: ['category' => strtolower($category)],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()->select('threads.*');
-
-        // configure the list entity results builder
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc'])
-            ->setParentFilter(['category' => strtolower($category)]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('threads.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-                'tag' => $category,
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet, ['tag' => $category]);
     }
 
     /**
      * Display a listing of threads by series.
+     *
+     * @throws \Throwable
      */
     public function indexSeries(
         Request $request,
@@ -530,61 +298,21 @@ class ThreadsController extends Controller
         string $series
     ): string {
         $series = urldecode($series);
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_series');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
+        $listResultSet = $this->startThreadList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_thread_series',
+            parentFilter: ['series' => ucfirst($series)],
+        );
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()
-        ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc'])
-            ->setParentFilter(['series' => ucfirst($series)]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('threads.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-                'tag' => $series,
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet, ['tag' => $series]);
     }
 
     /**
      * Display a listing of threads by entity.
+     *
+     * @throws \Throwable
      */
     public function indexRelatedTo(
         Request $request,
@@ -594,56 +322,14 @@ class ThreadsController extends Controller
     ): string {
         $relatedTo = Str::title(str_replace('-', ' ', $relatedTo));
 
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_related_to');
+        $listResultSet = $this->startThreadList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_thread_related_to',
+            parentFilter: ['related' => $relatedTo],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()
-        ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']))
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc'])
-            ->setParentFilter(['related' => $relatedTo]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
-            ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
-            ->withCount('posts')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('threads.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-                'tag' => $relatedTo,
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('threads'))
-        ->render();
+        return $this->threadListPage($listParamSessionStore, $listResultSet, ['tag' => $relatedTo]);
     }
 
     public function create(): View
