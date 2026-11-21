@@ -98,14 +98,15 @@ trait BuildsListPages
 
         $listParamSessionStore->save();
 
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        // whether the "filters active" state shows: anything other than the list's defaults
+        $hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return array_merge(
             [
                 'limit' => $listResultSet->getLimit(),
                 'sort' => $listResultSet->getSort(),
                 'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
+                'hasFilter' => $hasFilter,
                 'filters' => $listResultSet->getFilters(),
             ],
             $this->getFilterOptions(),

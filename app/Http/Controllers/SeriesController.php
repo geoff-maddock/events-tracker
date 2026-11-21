@@ -57,8 +57,6 @@ class SeriesController extends Controller
 
     protected array $defaultSortCriteria;
 
-    protected bool $hasFilter;
-
     protected array $filters;
 
     protected int $page;
@@ -91,7 +89,6 @@ class SeriesController extends Controller
         $this->childLimit = 10;
         $this->page = 1;
         $this->defaultSortCriteria = ['series.created_at' => 'desc'];
-        $this->hasFilter = false;
         parent::__construct();
     }
 
