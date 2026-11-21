@@ -83,6 +83,7 @@ class EmbedLoaderRoutesTest extends TestCase
         $minimal = $this->get("/$kind/{$subject->id}/load-minimal-embeds", self::AJAX)->assertOk()
             ->assertJsonPath('Message', "Added embeds to $noun page.");
         $this->assertSame(1, substr_count($minimal->json('Success'), '<iframe'));
+        $this->assertStringContainsString('tracks/1&', $minimal->json('Success'));
         $this->assertStringContainsString('height: 24px', $minimal->json('Success'));
     }
 
@@ -111,6 +112,8 @@ class EmbedLoaderRoutesTest extends TestCase
         $minimal = $this->getJson("/$kind/{$subject->slug}/minimal-embeds")->assertOk()
             ->assertJsonPath('message', 'Embeds loaded successfully')->assertJsonCount(1, 'data');
         $this->assertStringContainsString('height: 24px', $minimal->json('data.0'));
+        $this->assertStringContainsString('tracks/1&', $minimal->json('data.0'));
+        $this->get("/$kind/{$subject->slug}/minimal-embeds", self::AJAX)->assertOk()->assertJsonCount(1, 'data');
 
         // the same routes count an ajax call as wanting JSON
         $this->get("/$kind/{$subject->slug}/embeds", self::AJAX)->assertOk()->assertJsonCount(2, 'data');
@@ -140,7 +143,17 @@ class EmbedLoaderRoutesTest extends TestCase
             $this->from('/somewhere')->get("/$kind/{$subject->id}/load-embeds", self::AJAX)->assertRedirect('/somewhere');
             $this->from('/somewhere')->get("/$kind/{$subject->id}/load-minimal-embeds", self::AJAX)->assertRedirect('/somewhere');
 
-            $this->actingAs(User::findOrFail($subject->created_by))->getJson("/$kind/{$subject->slug}/embeds")->assertOk();
+            // signed in as someone else it is still missing
+            $this->actingAs(User::factory()->create());
+            $this->getJson("/$kind/{$subject->slug}/embeds")->assertNotFound();
+            $this->from('/somewhere')->get("/$kind/{$subject->id}/load-embeds", self::AJAX)->assertRedirect('/somewhere');
+
+            // its owner gets all four
+            $this->actingAs(User::findOrFail($subject->created_by));
+            $this->getJson("/$kind/{$subject->slug}/embeds")->assertOk()->assertJsonCount(2, 'data');
+            $this->getJson("/$kind/{$subject->slug}/minimal-embeds")->assertOk()->assertJsonCount(1, 'data');
+            $this->get("/$kind/{$subject->id}/load-embeds", self::AJAX)->assertOk()->assertJsonStructure(['Success']);
+            $this->get("/$kind/{$subject->id}/load-minimal-embeds", self::AJAX)->assertOk()->assertJsonStructure(['Success']);
             $this->app['auth']->forgetGuards();
         }
     }
@@ -154,8 +167,10 @@ class SoundcloudOnlyProvider extends Provider
 {
     public function request(string $url): void
     {
+        // a different track number for each link, so a test can tell which embed it was given
+        $track = str_contains($url, 'track-two') ? 2 : 1;
         $this->setResponse(str_contains($url, 'soundcloud.com/oembed')
-            ? (string) json_encode(['html' => '<iframe src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123&visual=true"></iframe>'])
+            ? (string) json_encode(['html' => '<iframe src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/'.$track.'&visual=true"></iframe>'])
             : '');
     }
 
