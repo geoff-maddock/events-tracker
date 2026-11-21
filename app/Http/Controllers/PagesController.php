@@ -359,8 +359,9 @@ class PagesController extends Controller
         $prev_day_window = Carbon::parse($date)->subDays($this->defaultWindow);
 
         $dateRange = new EventDateRange();
-        // the window's cards, a list per day
+        // the window's cards and scheduled series, a list per day
         $eventsByDay = Event::cardsByDay($date, $this->defaultWindow, $this->user);
+        $seriesByDay = Series::byDay($date, $this->defaultWindow, $eventsByDay);
 
         // handle the request if ajax
         if ($request->ajax()) {
@@ -377,6 +378,7 @@ class PagesController extends Controller
                         'hasNext' => $dateRange->contains($next_day),
                         'hasNextWindow' => $dateRange->contains($next_day_window),
                         'eventsByDay' => $eventsByDay,
+                        'seriesByDay' => $seriesByDay,
                     ])
                     ->render();
         }
@@ -395,6 +397,7 @@ class PagesController extends Controller
                             'hasNext' => $dateRange->contains($next_day),
                             'hasNextWindow' => $dateRange->contains($next_day_window),
                             'eventsByDay' => $eventsByDay,
+                            'seriesByDay' => $seriesByDay,
                         ]
                     );
     }
