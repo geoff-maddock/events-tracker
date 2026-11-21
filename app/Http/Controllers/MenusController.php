@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\MenuFilters;
 use App\Http\Requests\MenuRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -15,6 +16,8 @@ use Redirect;
 
 class MenusController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -33,8 +36,6 @@ class MenusController extends Controller
     protected array $defaultSortCriteria;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     protected MenuFilters $filter;
 
@@ -59,7 +60,6 @@ class MenusController extends Controller
 
         $this->defaultSortCriteria = ['menu.name' => 'desc'];
 
-        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -72,47 +72,22 @@ class MenusController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_menu');
-        $listParamSessionStore->setKeyPrefix('internal_menu_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_menu',
+            'internal_menu_index',
+            action([MenusController::class, 'index']),
+            $this->filter,
+            // public menus only
+            Menu::query()->visible()->select('menus.*'),
+            [$this->defaultSort => $this->defaultSortDirection],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([MenusController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Menu::query()->select('menus.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort([$this->defaultSort => $this->defaultSortDirection]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the menus
-        // @phpstan-ignore-next-line
-        $menus = $query->visible($this->user)->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $menus = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('menus.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('menus'))
             ->render();
     }
@@ -125,46 +100,21 @@ class MenusController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_menu');
-        $listParamSessionStore->setKeyPrefix('internal_menu_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_menu',
+            'internal_menu_index',
+            action([MenusController::class, 'index']),
+            $this->filter,
+            Menu::query()->select('menus.*'),
+            [$this->defaultSort => $this->defaultSortDirection],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([MenusController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Menu::query()->select('menus.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort([$this->defaultSort => $this->defaultSortDirection]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the blogs
-        $menus = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $menus = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('menus.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('menus'))
             ->render();
     }
@@ -178,13 +128,7 @@ class MenusController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_menu_index';
-        $listParamSessionStore->setBaseIndex('internal_menu');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_menu', $request->get('key') ?? 'internal_menu_index', filters: false);
 
         return redirect()->route('menus.index');
     }
@@ -196,14 +140,7 @@ class MenusController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_menu_index';
-        $listParamSessionStore->setBaseIndex('internal_menu');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_menu', $request->get('key') ?? 'internal_menu_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'menus.index'));
     }

@@ -4,6 +4,11 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Six admin lists moved onto the shared list-page scaffold (#2406)
+- Roles, menus, groups, permissions, entity types and reviews: their `index`, `filter`,
+  `reset` and `rppReset` actions now use `BuildsListPages`, and where `filter` was a copy of
+  `index` it calls it. About 480 lines removed across the six controllers.
+- No change in behaviour: a snapshot of 180 requests is identical before and after.
 ### Entity lists moved onto the shared list-page scaffold (#2406)
 - The seven entity list actions and the two reset links now use `BuildsListPages`;
   `EntitiesController` goes from 1,745 to about 1,500 lines. The trait gained sort aliases

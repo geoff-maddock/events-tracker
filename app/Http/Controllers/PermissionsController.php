@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\PermissionFilters;
 use App\Http\Requests\PermissionRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -14,6 +15,8 @@ use Illuminate\View\View;
 
 class PermissionsController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -32,8 +35,6 @@ class PermissionsController extends Controller
     protected array $sortCriteria;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     // this is the class specifying the filters methods for each field
     protected PermissionFilters $filter;
@@ -59,7 +60,6 @@ class PermissionsController extends Controller
         $this->limit = $this->defaultLimit;
         $this->sortCriteria = ['name', 'desc'];
 
-        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -72,47 +72,21 @@ class PermissionsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_permission');
-        $listParamSessionStore->setKeyPrefix('internal_permission_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_permission',
+            'internal_permission_index',
+            action([PermissionsController::class, 'index']),
+            $this->filter,
+            Permission::query()->select('permissions.*'),
+            ['permissions.created_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PermissionsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Permission::query()->select('permissions.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['permissions.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $permissions = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $permissions = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('permissions.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('permissions'))
             ->render();
     }
@@ -125,49 +99,7 @@ class PermissionsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_permission');
-        $listParamSessionStore->setKeyPrefix('internal_permission_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PermissionsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Permission::query()->select('permissions.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['permissions.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $permissions = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('permissions.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('permissions'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     protected function getListControlOptions(): array
@@ -194,13 +126,7 @@ class PermissionsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the limit, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_permission_index';
-        $listParamSessionStore->setBaseIndex('internal_permission');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_permission', $request->get('key') ?? 'internal_permission_index', filters: false);
 
         return redirect()->route('permissions.index');
     }
@@ -212,14 +138,7 @@ class PermissionsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_permission_index';
-        $listParamSessionStore->setBaseIndex('internal_permission');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_permission', $request->get('key') ?? 'internal_permission_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'permissions.index'));
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\RoleFilters;
 use App\Models\Activity;
 use App\Http\Controllers\Controller;
@@ -16,6 +17,8 @@ use Illuminate\View\View;
 
 class RolesController extends Controller
 {
+    use BuildsListPages;
+
     protected int $defaultLimit;
 
     protected string $defaultSort;
@@ -31,8 +34,6 @@ class RolesController extends Controller
     protected string $sortDirection;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     protected string $prefix;
 
@@ -56,7 +57,6 @@ class RolesController extends Controller
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
 
-        $this->hasFilter = false;
         parent::__construct();
     }
 
@@ -76,48 +76,21 @@ class RolesController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_role');
-        $listParamSessionStore->setKeyPrefix('internal_role_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_role',
+            'internal_role_index',
+            action([RolesController::class, 'index']),
+            $this->filter,
+            Role::query()->select('roles.*'),
+            ['roles.name' => 'asc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([RolesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Role::query()->select('roles.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['roles.name' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $roles = $query
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $roles = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('roles.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('roles'))
             ->render();
     }
@@ -133,55 +106,7 @@ class RolesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_role');
-        $listParamSessionStore->setKeyPrefix('internal_role_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([RolesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Role::query()->select('roles.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['roles.name' => 'asc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $roles = $query
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('roles.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('roles'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -198,13 +123,7 @@ class RolesController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_role_index';
-        $listParamSessionStore->setBaseIndex('internal_role');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_role', $request->get('key') ?? 'internal_role_index', filters: false);
 
         return redirect()->route('roles.index');
     }
@@ -225,14 +144,7 @@ class RolesController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_role_index';
-        $listParamSessionStore->setBaseIndex('internal_role');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_role', $request->get('key') ?? 'internal_role_index', filters: true);
 
         return redirect()->route('roles.index');
     }
