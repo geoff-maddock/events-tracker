@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
 
@@ -102,7 +101,6 @@ use App\Models\User;
  * @method static Builder|Event newQuery()
  * @method static Builder|Event past()
  * @method static Builder|Event query()
- * @method static Builder|Event starting($date)
  * @method static Builder|Event today()
  * @method static Builder|Event visible($user)
  * @method static Builder|Event whereAttending($value)
@@ -840,52 +838,40 @@ class Event extends Model implements HasPhotos
     }
 
     /**
-     * Events with a date on the given day, under the day views' visibility rule.
+     * The cards the day views show for each of $days days from $firstDay: what
+     * $user may see (the visible() rule, as on /events), keyed by day (Y-m-d)
+     * and in time order. One query for the whole window; a short run appears
+     * under each of its days, with that day's time (#2375). A day with nothing
+     * on has no key.
      *
-     * @param Builder<Event> $query
+     * @return Collection<string, Collection<int, Event>>
      */
-    public function scopeStarting(Builder $query, ?string $date): Builder
+    public static function cardsByDay(\DateTimeInterface|string $firstDay, int $days, ?User $user): Collection
     {
-        $dayStart = Carbon::parse($date)->startOfDay();
+        $start = Carbon::parse($firstDay)->startOfDay();
+        $end = $start->copy()->addDays($days - 1)->endOfDay();
 
-        return $query->occurringBetween($dayStart, $dayStart->copy()->endOfDay())
-            ->withNextStart($dayStart)
-            ->where(function ($query) {
-                $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
-                // a guest has no id: comparing created_by to null would compile to IS NULL
-                if (Auth::id() !== null) {
-                    $query->orWhere('created_by', '=', Auth::id());
-                }
-            })
-            ->orderByNextStart($dayStart)
-            ->with('visibility');
-    }
+        $events = self::with([
+            'showings',
+            'series.occurrenceType',
+            'series.occurrenceWeek',
+            'series.occurrenceDay',
+            'series.visibility',
+            'visibility',
+            'venue',
+            'entities',
+            'tags',
+            'threads',
+            // only the viewer's response is shown on the card
+            'eventResponses' => fn ($responses) => $responses->where('user_id', $user?->id),
+            'photos',
+        ])
+            ->occurringBetween($start, $end)
+            ->visible($user)
+            ->orderByNextStart($start)
+            ->get();
 
-    /**
-     * Events starting on any calendar day in the inclusive window
-     * [$startDate, $endDate], with the same visibility rules as
-     * scopeStarting(). The day partition matches scopeStarting() exactly,
-     * so a multi-day view can load the whole window in one query and group
-     * the result by day (Event::groupByDay(), which also places a short run
-     * under each of its days) instead of issuing one query per day (N+1).
-     *
-     * @param Builder<Event> $query
-     */
-    public function scopeStartingBetween(Builder $query, string $startDate, string $endDate): Builder
-    {
-        $rangeStart = Carbon::parse($startDate)->startOfDay();
-        $rangeEnd = Carbon::parse($endDate)->addDay()->startOfDay();
-
-        return $query->occurringBetween($rangeStart->toDateTimeString(), $rangeEnd->copy()->subSecond()->toDateTimeString())
-            ->where(function ($query) {
-                $query->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
-                // a guest has no id: comparing created_by to null would compile to IS NULL
-                if (Auth::id() !== null) {
-                    $query->orWhere('created_by', '=', Auth::id());
-                }
-            })
-            ->orderByNextStart($rangeStart)
-            ->with('visibility');
+        return self::groupByDay($events, $start, $end);
     }
 
     /**

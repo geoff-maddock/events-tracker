@@ -4,6 +4,17 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Day views list what the event list does (#2408)
+- The home page, `/events/upcoming`, `/events/day/{day}`, the "Load Next Events" fragment
+  and `/events/week` had their own rule: public events, plus anything the viewer created.
+  They now use `visible()`, the rule `/events` uses.
+- What a signed-in member will notice: guarded events now appear on these pages (before,
+  only on `/events`), and an event they created and then cancelled no longer does (it is
+  not on `/events` either; its page still opens). Guests see what they saw before.
+- The queries moved out of the Blade views into `Event::cardsByDay()`, called from the
+  controllers. `Event::starting()` and `startingBetween()` are gone. The ajax form of the
+  home and upcoming pages now loads its four days in one query, not one per day.
+
 ### One implementation of the embed loader routes (#2406)
 - Events, entities and series each had the same four actions (`loadEmbeds`,
   `loadMinimalEmbeds` and the two `BySlug` forms), twelve methods in all. They are now the

@@ -27,7 +27,7 @@
         @for ($offset = 0; $offset < 4; $offset++)
         <?php $day = \Carbon\Carbon::parse($date)->addDay($offset); ?>
             <section class="day min-h-[500px]" data-num="{{ $offset }}" id="day-position-{{ $offset }}" href="/events/day/{{ $day->format('Y-m-d') }}">
-                @include('events.day-tw', ['day' => $day, 'position' => $offset ])
+                @include('events.day-tw', ['day' => $day, 'position' => $offset, 'events' => $eventsByDay->get($day->format('Y-m-d'), collect()) ])
             </section>
         @endfor
     </div>
