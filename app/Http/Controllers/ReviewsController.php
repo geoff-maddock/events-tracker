@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\ReviewFilters;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Event;
@@ -16,6 +17,8 @@ use Illuminate\View\View;
 
 class ReviewsController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -32,8 +35,6 @@ class ReviewsController extends Controller
 
     // array of sort criteria to be applied in order
     protected array $defaultSortCriteria;
-
-    protected bool $hasFilter;
 
     protected Event $event;
 
@@ -61,9 +62,7 @@ class ReviewsController extends Controller
         $this->limit = $this->defaultLimit;
 
         $this->defaultSortCriteria = ['event_reviews.created_at', 'desc'];
-        $this->hasFilter = false;
 
-        $this->hasFilter = false;
         parent::__construct();
     }
 
@@ -77,47 +76,21 @@ class ReviewsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_review');
-        $listParamSessionStore->setKeyPrefix('internal_review_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_review',
+            'internal_review_index',
+            action([ReviewsController::class, 'index']),
+            $this->filter,
+            EventReview::query()->whereHas('event', Event::visibleTo($this->user))->select('event_reviews.*'),
+            [$this->defaultSort => $this->defaultSortDirection],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ReviewsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        // reviews of events the viewer can't see are left out
-        $baseQuery = EventReview::query()->whereHas('event', Event::visibleTo($this->user))->select('event_reviews.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort([$this->defaultSort => $this->defaultSortDirection]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the blogs
-        $reviews = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $reviews = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('reviews.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('reviews'))
             ->render();
     }
@@ -132,49 +105,7 @@ class ReviewsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_review');
-        $listParamSessionStore->setKeyPrefix('internal_review_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ReviewsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        // reviews of events the viewer can't see are left out
-        $baseQuery = EventReview::query()->whereHas('event', Event::visibleTo($this->user))->select('event_reviews.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort([$this->defaultSort => $this->defaultSortDirection]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the blogs
-        $reviews = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('reviews.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('reviews'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -186,13 +117,7 @@ class ReviewsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_review_index';
-        $listParamSessionStore->setBaseIndex('internal_review');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_review', $request->get('key') ?? 'internal_review_index', filters: false);
 
         return redirect()->route('reviews.index');
     }
@@ -204,14 +129,7 @@ class ReviewsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_review_index';
-        $listParamSessionStore->setBaseIndex('internal_review');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_review', $request->get('key') ?? 'internal_review_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'reviews.index'));
     }

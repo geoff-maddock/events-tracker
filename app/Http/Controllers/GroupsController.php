@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\GroupFilters;
 use App\Http\Requests\GroupRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -15,6 +16,8 @@ use Illuminate\View\View;
 
 class GroupsController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -32,8 +35,6 @@ class GroupsController extends Controller
     protected string $sortDirection;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     // this is the class specifying the filters methods for each field
     protected GroupFilters $filter;
@@ -58,7 +59,6 @@ class GroupsController extends Controller
         $this->sortDirection = $this->defaultSortDirection;
         $this->defaultSortCriteria = ['groups.name', 'asc'];
 
-        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -71,47 +71,21 @@ class GroupsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_group');
-        $listParamSessionStore->setKeyPrefix('internal_group_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_group',
+            'internal_group_index',
+            action([GroupsController::class, 'index']),
+            $this->filter,
+            Group::query()->select('groups.*'),
+            ['groups.created_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([GroupsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Group::query()->select('groups.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['groups.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the groups
-        $groups = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $groups = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('groups.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('groups'))
             ->render();
     }
@@ -124,49 +98,7 @@ class GroupsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_group');
-        $listParamSessionStore->setKeyPrefix('internal_group_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([GroupsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Group::query()->select('groups.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['groups.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the groups
-        $groups = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('groups.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('groups'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -178,13 +110,7 @@ class GroupsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the limit, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_group_index';
-        $listParamSessionStore->setBaseIndex('internal_group');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_group', $request->get('key') ?? 'internal_group_index', filters: false);
 
         return redirect()->route('groups.index');
     }
@@ -196,14 +122,7 @@ class GroupsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_group_index';
-        $listParamSessionStore->setBaseIndex('internal_group');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_group', $request->get('key') ?? 'internal_group_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'groups.index'));
     }
