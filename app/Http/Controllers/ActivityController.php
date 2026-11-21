@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\ActivityFilters;
 use App\Http\Controllers\Concerns\BucketsGraphData;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityController extends Controller
 {
+    use BuildsListPages;
+
     use BucketsGraphData;
 
     private const UNKNOWN_LABEL = 'Unknown';
@@ -37,8 +40,6 @@ class ActivityController extends Controller
     protected string $sortDirection;
 
     protected array $defaultSortCriteria;
-
-    protected bool $hasFilter = false;
 
     protected array $filters;
 
@@ -74,49 +75,23 @@ class ActivityController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix('internal_activity_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_activity',
+            'internal_activity_index',
+            action([ActivityController::class, 'index']),
+            $this->filter,
+            Activity::query()->select('activities.*'),
+            ['activities.created_at' => 'desc'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ActivityController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Activity::query()->select('activities.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['activities.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the activities
-        $activities = $query
+        $activities = $listResultSet->getList()
             ->with('user', 'action')
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('activities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('activities'))
             ->render();
     }
@@ -349,13 +324,7 @@ class ActivityController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_activity_index';
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear sorting from session
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_activity', $request->get('key') ?? 'internal_activity_index', filters: false);
 
         return redirect()->route('activities.index');
     }
@@ -367,14 +336,7 @@ class ActivityController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_activity_index';
-        $listParamSessionStore->setBaseIndex('internal_activity');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_activity', $request->get('key') ?? 'internal_activity_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'activities.index'));
     }

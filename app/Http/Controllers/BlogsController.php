@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\BlogFilters;
 use App\Http\Requests\BlogRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -23,6 +24,8 @@ use App\Models\Action;
 
 class BlogsController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -40,8 +43,6 @@ class BlogsController extends Controller
     protected string $sortDirection;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     // this is the class specifying the filters methods for each field
     protected BlogFilters $filter;
@@ -65,7 +66,6 @@ class BlogsController extends Controller
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
 
-        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -78,50 +78,23 @@ class BlogsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_blog');
-        $listParamSessionStore->setKeyPrefix('internal_blog_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_blog',
+            'internal_blog_index',
+            action([BlogsController::class, 'index']),
+            $this->filter,
+            Blog::query()->select('blogs.*')->with(['user', 'photos']),
+            $this->defaultSortCriteria,
+            defaultLimit: $this->defaultLimit,
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([BlogsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        // eager-load relations consumed by the blog card + JSON-LD (user, primary photo)
-        $baseQuery = Blog::query()->select('blogs.*')->with(['user', 'photos']);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultLimit($this->defaultLimit)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the blogs
         /* @phpstan-ignore-next-line */
-        $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $blogs = $listResultSet->getList()->visible($this->user)->paginate($listResultSet->getLimit());
 
         return view('blogs.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('blogs'))
             ->render();
     }
@@ -134,52 +107,7 @@ class BlogsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_blog');
-        $listParamSessionStore->setKeyPrefix('internal_blog_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([BlogsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        // eager-load relations consumed by the blog card + JSON-LD (user, primary photo)
-        $baseQuery = Blog::query()->select('blogs.*')->with(['user', 'photos']);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultLimit($this->defaultLimit)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the blogs
-        /* @phpstan-ignore-next-line */
-        $blogs = $query->visible($this->user)->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('blogs.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('blogs'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -313,13 +241,7 @@ class BlogsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_blog_index';
-        $listParamSessionStore->setBaseIndex('internal_blog');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear all sort
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_blog', $request->get('key') ?? 'internal_blog_index', filters: false);
 
         return redirect()->route('blogs.index');
     }
@@ -331,14 +253,7 @@ class BlogsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_blog_index';
-        $listParamSessionStore->setBaseIndex('internal_blog');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_blog', $request->get('key') ?? 'internal_blog_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'blogs.index'));
     }

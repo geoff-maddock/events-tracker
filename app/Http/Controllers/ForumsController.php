@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\ForumFilters;
 use App\Http\Requests\ForumRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -23,6 +24,8 @@ use Illuminate\View\View as ViewView;
 
 class ForumsController extends Controller
 {
+    use BuildsListPages;
+
     // define a list of variables
     protected int $rpp;
 
@@ -35,8 +38,6 @@ class ForumsController extends Controller
     protected string $sortOrder;
 
     protected array $defaultCriteria;
-
-    protected bool $hasFilter;
 
     protected string $prefix;
 
@@ -77,7 +78,6 @@ class ForumsController extends Controller
         $this->sortBy = 'created_at';
         $this->sortOrder = 'desc';
         $this->defaultCriteria = [];
-        $this->hasFilter = false;
         $this->filter = $filter;
 
         parent::__construct();
@@ -98,57 +98,26 @@ class ForumsController extends Controller
             return redirect()->back();
         }
 
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix('internal_forum_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Forum::query()
-        ->select('forums.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['forums.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_forum',
+            'internal_forum_index',
+            action([ForumsController::class, 'index']),
+            $this->filter,
+            Forum::query()->select('forums.*'),
+            ['forums.created_at' => 'desc'],
+        );
 
         /* @phpstan-ignore-next-line */
-        $forums = $query->visible($this->user)
+        $forums = $listResultSet->getList()->visible($this->user)
             ->with(['visibility', 'threadsCount'])
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $forums;
-        }
-
         return view('forums.index-tw')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('forums'))
-                ->render();
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
+            ->with(compact('forums'))
+            ->render();
     }
 
     /**
@@ -159,64 +128,7 @@ class ForumsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string|RedirectResponse {
-        // if the gate does not allow this user to show a forum redirect to home
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum index');
-
-            return redirect()->back();
-        }
-
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix('internal_forum_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ForumsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Forum::query()
-        ->select('forums.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['forums.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $forums = $query->visible($this->user)
-            ->with('visibility')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $forums;
-        }
-
-        return view('forums.index-tw')
-                ->with(array_merge(
-                    [
-                        'limit' => $listResultSet->getLimit(),
-                        'sort' => $listResultSet->getSort(),
-                        'direction' => $listResultSet->getSortDirection(),
-                        'hasFilter' => $this->hasFilter,
-                        'filters' => $listResultSet->getFilters(),
-                    ],
-                    $this->getFilterOptions(),
-                    $this->getListControlOptions()
-                ))
-                ->with(compact('forums'))
-                ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -267,54 +179,29 @@ class ForumsController extends Controller
             return redirect()->back();
         }
 
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_thread');
-        $listParamSessionStore->setKeyPrefix('internal_thread_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([ThreadsController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Thread::query()->where('forum_id', $forum->id)->orderBy('created_at', 'desc')
-        ->select('threads.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['threads.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
+        // the forum's threads, as the thread list
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_thread',
+            'internal_thread_index',
+            action([ThreadsController::class, 'index']),
+            $this->filter,
+            Thread::query()->where('forum_id', $forum->id)->orderBy('created_at', 'desc')->select('threads.*'),
+            ['threads.created_at' => 'desc'],
+        );
 
         /* @phpstan-ignore-next-line */
-        $threads = $query->visible($this->user)
+        $threads = $listResultSet->getList()->visible($this->user)
             ->with('visibility', 'entities', 'tags', 'event', 'series', 'user.photos', 'lastPost.user')
             ->withCount('posts')
             ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         // pass a slug for the forum
         $slug = $forum->description;
 
         return view('threads.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('threads', 'slug'));
     }
 
@@ -373,13 +260,7 @@ class ForumsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_forum_index';
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_forum', $request->get('key') ?? 'internal_forum_index', filters: false);
 
         return redirect()->route('forums.index');
     }
@@ -393,14 +274,7 @@ class ForumsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_forum_index';
-        $listParamSessionStore->setBaseIndex('internal_forum');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_forum', $request->get('key') ?? 'internal_forum_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'forums.index'));
     }

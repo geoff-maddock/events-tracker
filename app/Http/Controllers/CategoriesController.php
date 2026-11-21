@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\ThreadCategoryFilters;
 use App\Models\Activity;
 use App\Models\ThreadCategory;
@@ -17,6 +18,8 @@ use Illuminate\View\View;
 
 class CategoriesController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -34,8 +37,6 @@ class CategoriesController extends Controller
     protected string $sortDirection;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     // this is the class specifying the filters methods for each field
     protected ThreadCategoryFilters $filter;
@@ -60,7 +61,6 @@ class CategoriesController extends Controller
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
 
-        $this->hasFilter = false;
 
         parent::__construct();
     }
@@ -73,48 +73,22 @@ class CategoriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_category');
-        $listParamSessionStore->setKeyPrefix('internal_category_index');
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_category',
+            'internal_category_index',
+            action([CategoriesController::class, 'index']),
+            $this->filter,
+            ThreadCategory::query()->select('thread_categories.*'),
+            $this->defaultSortCriteria,
+            defaultLimit: $this->defaultLimit,
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([CategoriesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = ThreadCategory::query()->select('thread_categories.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultLimit($this->defaultLimit)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the categories
-        $categories = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $categories = $listResultSet->getList()->paginate($listResultSet->getLimit());
 
         return view('categories.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('categories'))
             ->render();
     }
@@ -130,50 +104,7 @@ class CategoriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_category');
-        $listParamSessionStore->setKeyPrefix('internal_category_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([CategoriesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = ThreadCategory::query()->select('thread_categories.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultLimit($this->defaultLimit)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the categories
-        $categories = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('categories.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('categories'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -184,50 +115,7 @@ class CategoriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_category');
-        $listParamSessionStore->setKeyPrefix('internal_category_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([CategoriesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = ThreadCategory::query()->select('thread_categories.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultLimit($this->defaultLimit)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // query and paginate the categories
-        $categories = $query->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('categories.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters()
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('categories'))
-            ->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -333,13 +221,7 @@ class CategoriesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_category_index';
-        $listParamSessionStore->setBaseIndex('internal_category');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear all sort
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_category', $request->get('key') ?? 'internal_category_index', filters: false);
 
         return redirect()->route('categories.index');
     }
@@ -351,14 +233,7 @@ class CategoriesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_category_index';
-        $listParamSessionStore->setBaseIndex('internal_category');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_category', $request->get('key') ?? 'internal_category_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'categories.index'));
     }
