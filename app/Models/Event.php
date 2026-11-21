@@ -135,6 +135,7 @@ use App\Models\User;
  */
 class Event extends Model implements HasPhotos
 {
+    use \App\Models\Concerns\HasVisibility;
     use Notifiable;
     use HasFactory;
     use RecommendedByFollows;
@@ -402,27 +403,6 @@ class Event extends Model implements HasPhotos
         }
 
         return (null !== $latest && $latest->gt($this->start_at)) ? $latest : $this->start_at->copy();
-    }
-
-    /**
-     * Whether $user may open this event's page or API record (#2164).
-     *
-     * Proposal and private events are only for their creator; guarded ones need a
-     * signed-in user; public and cancelled ones are open (cancelled pages stay
-     * reachable from shared links). Admins see everything. List queries use the
-     * visible() scope instead.
-     */
-    public function isVisibleTo(?User $user): bool
-    {
-        if ($user?->isAdmin()) {
-            return true;
-        }
-
-        return match ((int) $this->visibility_id) {
-            Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE => $user !== null && (int) $this->created_by === $user->id,
-            Visibility::VISIBILITY_GUARDED => $user !== null,
-            default => true,
-        };
     }
 
     public function resolveRouteBinding($value, $field = null)
@@ -804,37 +784,6 @@ class Event extends Model implements HasPhotos
         // over only once the last showing has passed
         return $query->where('events.last_start_at', '<', Carbon::today()->startOfDay())
             ->orderBy('events.start_at', 'desc');
-    }
-
-    /**
-     * Returns visible events.
-     * @return Builder<Event>
-     */
-    public function scopeVisible(Builder $query, ?User $user): Builder
-    {
-        return $query->where(self::visibleTo($user));
-    }
-
-    /**
-     * The where-group behind visible(), on the `events` table's columns, so a
-     * query joining events (e.g. photos) can apply the same rule.
-     *
-     * @return \Closure(\Illuminate\Database\Eloquent\Builder<*>|\Illuminate\Database\Query\Builder): void
-     */
-    public static function visibleTo(?User $user): \Closure
-    {
-        return function ($query) use ($user) {
-            $query->where('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
-            // signed in: their own proposals and private events, and guarded ones.
-            // Never compare created_by to null: `= null` compiles to IS NULL, which
-            // showed guests every private event whose creator had been deleted.
-            if ($user) {
-                $query->orWhere(function ($own) use ($user) {
-                    $own->whereIn('events.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
-                        ->where('events.created_by', '=', $user->id);
-                })->orWhere('events.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
-            }
-        };
     }
 
     /**

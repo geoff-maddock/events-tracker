@@ -68,7 +68,7 @@
                         <p class="text-sm text-muted-foreground italic">No events</p>
                     @endif
 
-                    @php $series = App\Models\Series::byNextDate($day->format('Y-m-d')); @endphp
+                    @php $series = $seriesByDay->get($day->format('Y-m-d'), []); @endphp
 
                     @if (count($series) > 0)
                         <div>

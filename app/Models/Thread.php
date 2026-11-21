@@ -100,6 +100,7 @@ use Illuminate\Support\Str;
  */
 class Thread extends Eloquent
 {
+    use \App\Models\Concerns\HasVisibility;
     use HasFactory;
     use \App\Models\Concerns\SyncsEntities;
 
@@ -153,42 +154,11 @@ class Thread extends Eloquent
     }
 
     /**
-     * Returns visible threads.
-     *
-     * @return Builder<Thread>
+     * A cancelled thread is closed to everyone but admins.
      */
-    public function scopeVisible(Builder $query, ?User $user): Builder
+    protected function opensWhenCancelled(): bool
     {
-        return $query->where(function ($query) use ($user) {
-            $query->where('visibility_id', '=', 3);
-            // signed in: their own proposals and private threads, and guarded ones
-            // (never created_by = null: that compiles to IS NULL)
-            if ($user) {
-                $query->orWhere(function ($own) use ($user) {
-                    $own->whereIn('visibility_id', [1, 2])->where('created_by', '=', $user->id);
-                })->orWhere('visibility_id', '=', 4);
-            }
-
-            return $query;
-        });
-    }
-
-    /**
-     * Whether $user may open this thread: the scopeVisible() rule for one row.
-     * Admins see everything.
-     */
-    public function isVisibleTo(?User $user): bool
-    {
-        if ($user?->isAdmin()) {
-            return true;
-        }
-
-        return match ((int) $this->visibility_id) {
-            Visibility::VISIBILITY_PUBLIC => true,
-            Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE => $user !== null && (int) $this->created_by === $user->id,
-            Visibility::VISIBILITY_GUARDED => $user !== null,
-            default => false,
-        };
+        return false;
     }
 
     /**

@@ -108,7 +108,7 @@ class AutomateInstagramPosts extends Command
 
         // Get all public events that haven't been posted yet or need a reminder post
         // Exclude events with do_not_repost flag set
-        $events = Event::where('visibility_id', \App\Models\Visibility::VISIBILITY_PUBLIC)
+        $events = Event::public()
             // only future events; a short run until its last showing, by its next one (#2375)
             ->occurringBetween($today)
             ->where(function ($query) {

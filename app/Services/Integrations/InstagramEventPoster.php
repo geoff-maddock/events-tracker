@@ -6,7 +6,6 @@ use App\Models\Activity;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\EventShare;
-use App\Models\Visibility;
 use App\Services\ImageHandler;
 use Carbon\Carbon;
 use Exception;
@@ -151,7 +150,7 @@ class InstagramEventPoster extends InstagramPoster
         // week it plays (#2375)
         $events = Event::query()
             ->occurringBetween(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek())
-            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->whereNull('cancelled_at')
             ->orderByNextStart(Carbon::now()->startOfWeek())
             ->with('showings')
@@ -252,7 +251,7 @@ class InstagramEventPoster extends InstagramPoster
         // showing there (#2375)
         $ids = Event::query()
             ->occurringBetween($fridayStart, $sundayEnd)
-            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->whereNull('cancelled_at')
             // the photo getPrimaryPhoto() uses
             ->whereHas('photos', fn ($query) => $query->where('photos.is_primary', '=', 1))
@@ -339,7 +338,7 @@ class InstagramEventPoster extends InstagramPoster
         $ids = $tag->events()
             // a short run until its last showing, by its next one (#2375)
             ->occurringBetween(Carbon::now())
-            ->where('events.visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->whereNull('events.cancelled_at')
             // the photo getPrimaryPhoto() uses
             ->whereHas('photos', fn ($query) => $query->where('photos.is_primary', '=', 1))
@@ -435,7 +434,7 @@ class InstagramEventPoster extends InstagramPoster
     private function publicEventsInOrder(array $eventIds): \Illuminate\Support\Collection
     {
         return Event::whereIn('id', $eventIds)
-            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->whereNull('cancelled_at')
             ->with('showings')
             ->get()
@@ -472,7 +471,7 @@ class InstagramEventPoster extends InstagramPoster
         // a short run with a showing today is in today's preview (#2375)
         $todaysEvents = Event::query()
             ->occurringBetween($dayStart, $dayEnd)
-            ->where('visibility_id', '=', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->whereNull('cancelled_at')
             ->withCount(['eventResponses as response_count'])
             ->orderBy('response_count', 'desc')

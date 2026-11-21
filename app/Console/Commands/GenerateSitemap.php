@@ -279,10 +279,8 @@ class GenerateSitemap extends Command
      */
     protected function eventUrls(): iterable
     {
-        // deliberately NOT scopeVisible(null): that also matches proposal or
-        // private events with a null creator — the sitemap wants public only
         $query = Event::query()
-            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->select(['id', 'slug', 'updated_at']);
 
         foreach ($this->slugUrls($query, 'events') as $url) {
@@ -315,7 +313,7 @@ class GenerateSitemap extends Command
     protected function seriesUrls(): iterable
     {
         $query = Series::query()
-            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->select(['id', 'slug', 'updated_at']);
 
         foreach ($this->slugUrls($query, 'series') as $url) {
@@ -359,7 +357,7 @@ class GenerateSitemap extends Command
     protected function threadUrls(): iterable
     {
         $query = Thread::query()
-            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->select(['id', 'updated_at']);
 
         foreach ($this->idUrls($query, 'threads') as $url) {

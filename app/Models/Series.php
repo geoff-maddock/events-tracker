@@ -129,6 +129,7 @@ use App\Filters\SeriesFilters;
  */
 class Series extends Eloquent implements HasPhotos
 {
+    use \App\Models\Concerns\HasVisibility;
     use HasFactory;
     use RecommendedByFollows;
     use RefersToEntities;
@@ -189,7 +190,7 @@ class Series extends Eloquent implements HasPhotos
      */
     public static function getFilterOptions(): array
     {
-        return Cache::remember(self::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => static::where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+        return Cache::remember(self::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => static::public()
             ->orderBy('name', 'ASC')->pluck('name', 'slug')->all());
     }
 
@@ -324,48 +325,6 @@ class Series extends Eloquent implements HasPhotos
     protected function orInFollowedSeries(Builder $match, array $seriesIds): void
     {
         $match->orWhereIn('series.id', $seriesIds);
-    }
-
-    /**
-     * Returns visible events.
-     */
-    /**
-     * Whether $user may open this series's page or API record (#2164).
-     *
-     * Proposal and private series are only for their creator; guarded ones need a
-     * signed-in user; public and cancelled ones are open (cancelled pages stay
-     * reachable from shared links). Admins see everything. List queries use the
-     * visible() scope instead.
-     */
-    public function isVisibleTo(?User $user): bool
-    {
-        if ($user?->isAdmin()) {
-            return true;
-        }
-
-        return match ((int) $this->visibility_id) {
-            Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE => $user !== null && (int) $this->created_by === $user->id,
-            Visibility::VISIBILITY_GUARDED => $user !== null,
-            default => true,
-        };
-    }
-
-    public function scopeVisible(Builder $query, ?User $user): Builder
-    {
-        return $query->where(function ($query) use ($user) {
-            // qualified: series lists join tables (events, event_types…) that have these columns too
-            $query->where('series.visibility_id', '=', Visibility::VISIBILITY_PUBLIC);
-            // signed in: their own proposals and private series, and guarded ones
-            // (never created_by = null: that compiles to IS NULL)
-            if ($user) {
-                $query->orWhere(function ($own) use ($user) {
-                    $own->whereIn('series.visibility_id', [Visibility::VISIBILITY_PROPOSAL, Visibility::VISIBILITY_PRIVATE])
-                        ->where('series.created_by', '=', $user->id);
-                })->orWhere('series.visibility_id', '=', Visibility::VISIBILITY_GUARDED);
-            }
-
-            return $query;
-        });
     }
 
     /**
@@ -789,7 +748,7 @@ class Series extends Eloquent implements HasPhotos
 
         return Event::where('series_id', '=', $this->id)
             ->where('start_at', '>=', Carbon::now())
-            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->orderBy('start_at', 'asc')
             ->first();
     }
@@ -826,6 +785,10 @@ class Series extends Eloquent implements HasPhotos
 
     /**
      * Get all series that would fall on the passed date.
+     *
+     * @param Collection<int, Event>|null $events
+     *
+     * @return array<int, Series>
      */
     public static function byNextDate(?string $date, ?Collection $events = null): array
     {
@@ -840,6 +803,28 @@ class Series extends Eloquent implements HasPhotos
         }
 
         return $list;
+    }
+
+    /**
+     * byNextDate() for each of $days days from $firstDay, keyed by day (Y-m-d),
+     * for the day views. $eventsByDay is Event::cardsByDay() for the same
+     * window: a series with an event listed on a day is left out of that day.
+     *
+     * @param Collection<string, Collection<int, Event>>|null $eventsByDay
+     *
+     * @return Collection<string, array<int, Series>>
+     */
+    public static function byDay(\DateTimeInterface|string $firstDay, int $days, ?Collection $eventsByDay = null): Collection
+    {
+        $first = Carbon::parse($firstDay)->startOfDay();
+        $byDay = [];
+
+        for ($offset = 0; $offset < $days; $offset++) {
+            $day = $first->copy()->addDays($offset)->format('Y-m-d');
+            $byDay[$day] = self::byNextDate($day, $eventsByDay?->get($day));
+        }
+
+        return collect($byDay);
     }
 
     /**

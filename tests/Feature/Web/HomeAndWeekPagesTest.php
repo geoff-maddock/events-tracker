@@ -74,6 +74,25 @@ class HomeAndWeekPagesTest extends TestCase
         $this->assertSame(1, $count, 'the series list should be loaded once, not once per day');
     }
 
+    public function test_every_day_view_lists_a_series_due_that_day_unless_its_event_is_listed(): void
+    {
+        $this->weeklySeriesToday(['name' => 'ZZ Weekly Series']);
+        $withEvent = $this->weeklySeriesToday(['name' => 'ZZ Listed Series']);
+        Event::factory()->create([
+            'name' => 'ZZ Listed Night', 'series_id' => $withEvent->id, 'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => $this->homeToday()->setTime(21, 0), 'end_at' => null,
+        ]);
+        $today = $this->homeToday()->format('Y-m-d');
+        $ajax = ['X-Requested-With' => 'XMLHttpRequest'];
+
+        foreach ([['/', []], ['/', $ajax], ["/events/upcoming/$today", []], ["/events/upcoming/$today", $ajax], ["/events/day/$today", []]] as [$url, $headers]) {
+            $this->get($url, $headers)->assertOk()
+                ->assertSee('ZZ Weekly Series')->assertSee('ZZ Listed Night')
+                // that series is shown by its event, not again under "Series"
+                ->assertDontSee('ZZ Listed Series');
+        }
+    }
+
     public function test_week_page_loads_series_once_and_events_in_one_query(): void
     {
         $this->weeklySeriesToday(['name' => 'ZZ Weekly Series']);

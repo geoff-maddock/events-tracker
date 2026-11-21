@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Event;
 use App\Models\EventShare;
-use App\Models\Visibility;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +45,7 @@ class InitializeEventShares extends Command
         $today = Carbon::today();
 
         // Get all public future events
-        $events = Event::where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+        $events = Event::public()
             // a short run until its last showing (#2375)
             ->occurringBetween($today)
             ->whereHas('eventType')

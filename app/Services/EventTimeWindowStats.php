@@ -40,7 +40,7 @@ class EventTimeWindowStats
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($range): array {
             $counts = Event::query()
-                ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+                ->public()
                 ->between($range['start'], $range['end'])
                 ->selectRaw('COUNT(*) as event_count, COUNT(DISTINCT venue_id) as venue_count')
                 ->toBase()

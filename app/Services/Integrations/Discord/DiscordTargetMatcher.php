@@ -5,7 +5,6 @@ namespace App\Services\Integrations\Discord;
 use App\Models\DiscordTarget;
 use App\Models\DiscordTargetCriterion;
 use App\Models\Event;
-use App\Models\Visibility;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -81,7 +80,7 @@ class DiscordTargetMatcher
     private function baseEligible(DiscordTarget $target): Builder
     {
         $query = Event::query()
-            ->where('visibility_id', Visibility::VISIBILITY_PUBLIC)
+            ->public()
             ->whereNull('cancelled_at')
             ->where('events.last_start_at', '>=', now())
             // do_not_repost is shared with the Instagram integration: opting an

@@ -1048,8 +1048,9 @@ class EventsController extends Controller
             'hasPrevWindow' => $dateRange->contains($prev_day_window),
             'hasNext' => $dateRange->contains($next_day),
             'hasNextWindow' => $dateRange->contains($next_day_window),
-            // the window's cards, a list per day
-            'eventsByDay' => Event::cardsByDay($baseDate, $this->defaultWindow, $this->user),
+            // the window's cards and scheduled series, a list per day
+            'eventsByDay' => $eventsByDay = Event::cardsByDay($baseDate, $this->defaultWindow, $this->user),
+            'seriesByDay' => Series::byDay($baseDate, $this->defaultWindow, $eventsByDay),
         ];
     }
 
@@ -1108,7 +1109,8 @@ class EventsController extends Controller
         return view('events.day-tw')
             ->with([
                 'day' => $day,
-                'events' => Event::cardsByDay($day, 1, $this->user)->get($day->format('Y-m-d'), collect()),
+                'events' => $events = Event::cardsByDay($day, 1, $this->user)->get($day->format('Y-m-d'), collect()),
+                'series' => Series::byNextDate($day->format('Y-m-d'), $events),
                 'position' => 0,
                 'offset' => 0,
             ])
@@ -1969,7 +1971,9 @@ class EventsController extends Controller
         // a short run appears under each of its days, with that day's time (#2375)
         $eventsByDay = Event::groupByDay($eventsByDay, $today, $weekEnd);
 
-        return view('events.indexWeek-tw', compact('eventsByDay'));
+        $seriesByDay = Series::byDay($today, 6);
+
+        return view('events.indexWeek-tw', compact('eventsByDay', 'seriesByDay'));
     }
 
     /**

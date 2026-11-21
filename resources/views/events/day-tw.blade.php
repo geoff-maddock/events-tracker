@@ -13,7 +13,7 @@
 
         <!-- Body -->
         <div class="p-4 flex-grow overflow-y-auto custom-scrollbar">
-            {{-- $events: this day's cards, from Event::cardsByDay() in the controller --}}
+            {{-- $events and $series: this day's cards and scheduled series, from the controller --}}
             @if (count($events) > 0)
             <ul class="grid gap-3">
                 @foreach ($events as $event)
@@ -28,7 +28,6 @@
             @endif
 
             <!-- Series Section -->
-            <?php $series = App\Models\Series::byNextDate($day->format('Y-m-d'), $events); ?>
             @if (count($series) > 0)
             <div class="mt-6 pt-6 border-t border-border">
                 <h6 class="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Series Occurring Today</h6>
