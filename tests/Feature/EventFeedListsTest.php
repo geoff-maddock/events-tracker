@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
+use App\Models\EventResponse;
+use App\Models\ResponseType;
 use App\Models\User;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -57,6 +59,49 @@ class EventFeedListsTest extends TestCase
     public function test_a_feed_ignores_a_sort_column_that_is_not_offered(): void
     {
         $this->get('/events/feed?sort=no_such_column')->assertOk()->assertSee('Zzsoon show');
+    }
+
+    public function test_a_feed_sorts_only_by_the_columns_the_event_list_offers(): void
+    {
+        // added in the reverse of their date order
+        Event::where('name', 'Zzlater gig')->update(['created_at' => now()->subDays(9)]);
+        Event::where('name', 'Zzpast show')->update(['created_at' => now()->subDays(1)]);
+
+        // a real column, but not a sort the list offers: the default column, in the direction asked for
+        $this->get('/events/feed?sort=events.created_at&direction=asc')->assertOk()
+            ->assertSeeInOrder(['Zzpast show', 'Zzsoon show', 'Zzlater gig']);
+        $this->get('/events/feed?sort=events.name&direction=asc')->assertOk()
+            ->assertSeeInOrder(['Zzlater gig', 'Zzpast show', 'Zzsoon show']);
+    }
+
+    public function test_the_feeds_leave_out_what_the_viewer_may_not_see(): void
+    {
+        $owner = User::factory()->create();
+        $member = User::factory()->create();
+        $private = Event::factory()->create([
+            'name' => 'Zzhidden party', 'visibility_id' => Visibility::VISIBILITY_PRIVATE, 'created_by' => $owner->id,
+            'start_at' => now()->addDays(3)->setTime(20, 0), 'end_at' => null,
+        ]);
+        $public = Event::where('name', 'Zzsoon show')->firstOrFail();
+        foreach ([$private, $public] as $event) {
+            EventResponse::create([
+                'event_id' => $event->id, 'user_id' => $member->id, 'response_type_id' => ResponseType::ATTENDING,
+            ]);
+        }
+
+        foreach (['/events/feed', '/events/brief-text', '/events/export', '/events/ical'] as $url) {
+            $this->get($url)->assertOk()->assertSee('Zzsoon show')->assertDontSee('Zzhidden party');
+        }
+
+        // the member said they are going to both, and still only gets the one they may see
+        $this->actingAs($member);
+        $this->get('/events/feed')->assertOk()->assertDontSee('Zzhidden party');
+        foreach (['/events/export-attending', "/users/{$member->id}/attending-ical"] as $url) {
+            $this->get($url)->assertOk()->assertSee('Zzsoon show')->assertDontSee('Zzhidden party')->assertDontSee('Zzlater gig');
+        }
+
+        $this->actingAs($owner);
+        $this->get('/events/feed')->assertOk()->assertSee('Zzhidden party');
     }
 
     public function test_a_shared_link_saves_its_filters_for_the_list_it_names(): void

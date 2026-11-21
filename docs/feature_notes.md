@@ -12,7 +12,10 @@ A more detailed description of new features and changes to the application.
   date checks and day window they both computed are one method.
 - `EventsController` goes from 2,683 to 2,450 lines and no longer sets up the session store
   or list builder by hand anywhere.
-- No change in behaviour: a snapshot of 126 requests is identical before and after.
+- One change in behaviour: those feeds and exports now sort only by the columns the event
+  list offers (name, start date, type, updated). Another column in `?sort=` falls back to the
+  default, where before any event column was accepted. Otherwise a snapshot of 126 requests
+  is identical before and after.
 
 ### Six admin lists moved onto the shared list-page scaffold (#2406)
 - Roles, menus, groups, permissions, entity types and reviews: their `index`, `filter`,
