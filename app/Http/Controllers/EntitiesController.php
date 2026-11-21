@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\EntityFilters;
 use App\Http\Requests\EntityRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -44,6 +45,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EntitiesController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -61,8 +64,6 @@ class EntitiesController extends Controller
     protected string $sortDirection;
 
     protected array $filters;
-
-    protected bool $hasFilter;
 
     protected EntityFilters $filter;
 
@@ -86,8 +87,6 @@ class EntitiesController extends Controller
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
 
-        $this->hasFilter = false;
-
         parent::__construct();
     }
 
@@ -101,61 +100,83 @@ class EntitiesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_index');
+        $listResultSet = $this->startEntityList(
+            $request,
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_entity_index',
+            $this->getBaseQuery(),
+            $this->defaultSortCriteria,
+            defaultFilters: ['entity_status' => 'Active'],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
+        return $this->entityListPage($listParamSessionStore, $listResultSet);
+    }
+
+    /**
+     * Start an entity list page (#2406): every entity list shares one session
+     * base index, the entity filters, the popularity score (events in the
+     * list's active_range filter, plus follows) and the "popularity" sort name.
+     *
+     * @param Builder<Entity> $baseQuery
+     * @param array<string, string> $defaultSort
+     * @param array<string, mixed> $defaultFilters
+     * @param array<string, mixed> $parentFilter
+     */
+    private function startEntityList(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $keyPrefix,
+        Builder $baseQuery,
+        array $defaultSort = ['entities.name' => 'asc'],
+        array $defaultFilters = [],
+        array $parentFilter = [],
+    ): ListResultSet {
+        // the active range may come from this list's saved filters
+        $this->useList($listParamSessionStore, 'internal_entity', $keyPrefix);
         $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
 
-        // the base query with the joins sorting needs; select entities.* so only entity columns come back
-        $baseQuery = Entity::query()
-            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-            ->select('entities.*')
+        return $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_entity',
+            $keyPrefix,
+            action([EntitiesController::class, 'index']),
+            $this->filter,
+            $this->addPopularityScoreToQuery($baseQuery, $activeRange),
+            $defaultSort,
+            $defaultFilters,
+            $parentFilter,
+            sortAliases: ['popularity' => 'popularity_score'],
+        );
+    }
+
+    /**
+     * Render the entity list view for a started list.
+     *
+     * @param array<string, mixed> $extra more view data (the page's role, type, tag, ...)
+     * @param array<string, mixed>|false $playerFilters filters the page applies itself, for the
+     *                                                   "Play this list" queue; false hides the button
+     *
+     * @throws \Throwable
+     */
+    private function entityListPage(
+        ListParameterSessionStore $listParamSessionStore,
+        ListResultSet $listResultSet,
+        array $extra = [],
+        array|false $playerFilters = [],
+    ): string {
+        $entities = $listResultSet->getList()
+            // the card relations include roles, which index-json-ld's getSchemaType() checks
+            // per entity; without it that's an N+1 query per row (EVENTREPO-VN).
             ->with(Entity::CARD_EAGER_LOAD)
-            ->withCount('follows');
-
-        // set the default filter to active
-        $defaultFilter = ['entity_status' => 'Active'];
-
-        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilter)
-            ->setDefaultSort($this->defaultSortCriteria)
-            ->setSortAliases(['popularity' => 'popularity_score']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities - card relationships are already loaded in baseQuery
-        $entities = $query
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $extra['playerQuery'] = $playerFilters === false ? null : $this->playerQuery($listResultSet, $playerFilters);
 
         return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'playerQuery' => $this->playerQuery($listResultSet),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet, extra: $extra))
             ->with(compact('entities'))
             ->render();
     }
@@ -170,69 +191,25 @@ class EntitiesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        $this->middleware('auth');
-
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Entity::query()
-            ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
+        $baseQuery = $this->getBaseQuery()
             ->join('follows', 'entities.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'entity')
-            ->where('follows.user_id', '=', $this->user->id)
-            ->select('entities.*')
-                        ->withCount('follows');
+            ->where('follows.user_id', '=', $this->user->id);
 
-        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
+        $listResultSet = $this->startEntityList(
+            $request,
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_entity_index',
+            $baseQuery,
+            $this->defaultSortCriteria,
+        );
 
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria)
-            ->setSortAliases(['popularity' => 'popularity_score']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'playerQuery' => $this->playerQuery($listResultSet, ['display_type' => 'following']),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('entities'))
-            ->with(['type' => 'Following'])
-            ->render();
+        return $this->entityListPage($listParamSessionStore, $listResultSet, ['type' => 'Following'], ['display_type' => 'following']);
     }
 
     /**
-     * Gets the base query.
+     * Entities with their type joined in, for the sort by entity type.
      *
      * @return Builder<Entity>
      */
@@ -252,54 +229,16 @@ class EntitiesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $type
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_roles');
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
+        $listResultSet = $this->startEntityList(
+            $request,
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_entity_roles',
+            $this->getBaseQuery(),
+            parentFilter: ['entity_type' => $type],
+        );
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->addPopularityScoreToQuery($this->getBaseQuery(), $activeRange);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc'])
-            ->setSortAliases(['popularity' => 'popularity_score'])
-            ->setParentFilter(['entity_type' => $type]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'playerQuery' => $this->playerQuery($listResultSet),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(['type' => $type])
-            ->with(compact('entities'))
-            ->render();
+        return $this->entityListPage($listParamSessionStore, $listResultSet, ['type' => $type]);
     }
 
     /**
@@ -313,54 +252,17 @@ class EntitiesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         ?string $role
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_roles');
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
+        $listResultSet = $this->startEntityList(
+            $request,
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_entity_roles',
+            $this->getBaseQuery(),
+            ['popularity_score' => 'desc'],
+            parentFilter: ['role' => $role],
+        );
 
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->addPopularityScoreToQuery($this->getBaseQuery(), $activeRange);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['popularity_score' => 'desc'])
-            ->setSortAliases(['popularity' => 'popularity_score'])
-            ->setParentFilter(['role' => $role]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query->with(Entity::CARD_EAGER_LOAD)->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'playerQuery' => $this->playerQuery($listResultSet),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(['role' => $role])
-            ->with(compact('entities'))
-            ->render();
+        return $this->entityListPage($listParamSessionStore, $listResultSet, ['role' => $role]);
     }
 
     /**
@@ -373,98 +275,34 @@ class EntitiesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_index');
+        $baseQuery = $this->getBaseQuery()
+            ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id');
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
+        $listResultSet = $this->startEntityList($request, $listParamSessionStore, $listEntityResultBuilder, 'internal_entity_index', $baseQuery);
 
-        // create the base query including any required joins; needs select to make sure only entities are returned
-        $baseQuery = Entity::query()
-                        ->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')
-                        ->leftJoin('entity_statuses', 'entities.entity_status_id', '=', 'entity_statuses.id')
-                        ->select('entities.*');
-
-        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc'])
-            ->setSortAliases(['popularity' => 'popularity_score']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'playerQuery' => $this->playerQuery($listResultSet),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('entities'))
-            ->render();
+        return $this->entityListPage($listParamSessionStore, $listResultSet);
     }
 
     /**
      * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
      */
     public function rppReset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_entity_index';
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_entity', $request->get('key') ?? 'internal_entity_index', filters: false);
 
         return redirect()->route('entities.index');
     }
 
     /**
      * Reset the filtering of entities.
-     *
-     * @throws \Throwable
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): Response {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_entity_index';
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_entity', $request->get('key') ?? 'internal_entity_index', filters: true);
 
         return redirect()->route('entities.index');
     }
@@ -527,56 +365,16 @@ class EntitiesController extends Controller
         // Get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_tags');
-        // Set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
+        $listResultSet = $this->startEntityList(
+            $request,
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_entity_tags',
+            $this->getBaseQuery(),
+            parentFilter: ['tag' => $slug],
+        );
 
-        // Create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = $this->addPopularityScoreToQuery($this->getBaseQuery(), $activeRange);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc'])
-            ->setSortAliases(['popularity' => 'popularity_score'])
-            ->setParentFilter(['tag' => $slug]);
-
-        // Get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // Get the query builder
-        $query = $listResultSet->getList();
-
-        // Get the entities
-        // the card relations include roles, which index-json-ld's getSchemaType() checks
-        // per entity; without it that's an N+1 query per row (EVENTREPO-VN).
-        $entities = $query
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // Save the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'playerQuery' => $this->playerQuery($listResultSet),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(['tag' => $tag])
-            ->with(compact('entities'))
-            ->render();
+        return $this->entityListPage($listParamSessionStore, $listResultSet, ['tag' => $tag]);
     }
 
     /**
@@ -590,55 +388,19 @@ class EntitiesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         string $alias
     ): string {
-        $listParamSessionStore->setBaseIndex('internal_entity');
-        $listParamSessionStore->setKeyPrefix('internal_entity_tags');
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([EntitiesController::class, 'index']));
-        $activeRange = $this->getActiveRangeFilter($request, $listParamSessionStore);
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
         $baseQuery = Entity::getByAlias($alias)->leftJoin('entity_types', 'entities.entity_type_id', '=', 'entity_types.id')->select('entities.*');
-        $baseQuery = $this->addPopularityScoreToQuery($baseQuery, $activeRange);
 
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['entities.name' => 'asc'])
-            ->setSortAliases(['popularity' => 'popularity_score']);
+        $listResultSet = $this->startEntityList(
+            $request,
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            // shares its filters and sort with the tag list, as it always has
+            'internal_entity_tags',
+            $baseQuery,
+        );
 
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the entities
-        $entities = $query
-            ->with(Entity::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('entities.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    // no alias filter for the player to mirror
-                    'playerQuery' => null,
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(['role' => $alias])
-            ->with(compact('entities'))
-            ->render();
+        // no alias filter for the player to mirror
+        return $this->entityListPage($listParamSessionStore, $listResultSet, ['role' => $alias], playerFilters: false);
     }
 
     /**

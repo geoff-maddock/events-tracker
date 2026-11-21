@@ -4,6 +4,14 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Entity lists moved onto the shared list-page scaffold (#2406)
+- The seven entity list actions and the two reset links now use `BuildsListPages`;
+  `EntitiesController` goes from 1,745 to about 1,500 lines. The trait gained sort aliases
+  (the entity lists accept `popularity` for `popularity_score`).
+- `/entities` and the following list no longer run a follower-count subquery per row whose
+  result nothing displayed.
+- No change in behaviour: a snapshot of 78 list requests is identical before and after.
+
 ### Thread lists moved onto the shared list-page scaffold (#2406)
 - The eight thread list actions and the two reset links now use `BuildsListPages`;
   `ThreadsController` goes from 984 to 670 lines.

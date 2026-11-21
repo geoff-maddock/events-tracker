@@ -42,6 +42,7 @@ trait BuildsListPages
      * @param array<string, mixed> $defaultFilters
      * @param array<string, mixed> $parentFilter filters the page itself imposes (e.g. its tag)
      * @param null|array<int, string> $allowedSortFields when given, any other sort falls back to the default
+     * @param array<string, string> $sortAliases sort names the request may use => the column sorted on
      */
     protected function startList(
         ListParameterSessionStore $listParamSessionStore,
@@ -56,6 +57,7 @@ trait BuildsListPages
         array $parentFilter = [],
         ?array $allowedSortFields = null,
         ?int $defaultLimit = null,
+        array $sortAliases = [],
     ): ListResultSet {
         $this->useList($listParamSessionStore, $baseIndex, $keyPrefix);
         $listParamSessionStore->setIndexTab($indexUrl);
@@ -71,6 +73,9 @@ trait BuildsListPages
         }
         if ($defaultLimit !== null) {
             $listEntityResultBuilder->setDefaultLimit($defaultLimit);
+        }
+        if ($sortAliases !== []) {
+            $listEntityResultBuilder->setSortAliases($sortAliases);
         }
 
         return $listEntityResultBuilder->listResultSetFactory();
@@ -134,7 +139,12 @@ trait BuildsListPages
         $listParamSessionStore->clearSort();
     }
 
-    private function useList(ListParameterSessionStore $listParamSessionStore, string $baseIndex, string $keyPrefix): void
+    /**
+     * Point the session store at a list. startList() and clearList() do this
+     * themselves; call it first only to read the list's saved state before
+     * starting it.
+     */
+    protected function useList(ListParameterSessionStore $listParamSessionStore, string $baseIndex, string $keyPrefix): void
     {
         $listParamSessionStore->setBaseIndex($baseIndex);
         $listParamSessionStore->setKeyPrefix($keyPrefix);
