@@ -61,7 +61,6 @@ class CategoriesController extends Controller
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
 
-
         parent::__construct();
     }
 

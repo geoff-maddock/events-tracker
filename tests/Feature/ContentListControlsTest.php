@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Blog;
 use App\Models\Forum;
 use App\Models\Photo;
 use App\Models\Post;
@@ -118,6 +119,23 @@ class ContentListControlsTest extends TestCase
         $this->get('/posts/tag/zzposttag')->assertOk()->assertSee('Zztaggedpost')->assertDontSee('Zzplainpost');
         // the tag is the page's own filter, not one saved for the main list
         $this->get('/posts')->assertOk()->assertSee('Zztaggedpost')->assertSee('Zzplainpost');
+
+        // and a filter saved for the main list is not applied to the tag page
+        $this->post('/posts/filter', ['filters' => ['body' => 'Zzplain']])->assertOk()->assertDontSee('Zztaggedpost');
+        $this->get('/posts/tag/zzposttag')->assertOk()->assertSee('Zztaggedpost');
+    }
+
+    public function test_the_blog_list_remembers_and_resets_its_filter(): void
+    {
+        foreach (['Zzfirst blog', 'Zzsecond blog'] as $name) {
+            Blog::factory()->create(['name' => $name, 'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'created_by' => $this->admin->id]);
+        }
+
+        $this->post('/blogs/filter', ['filters' => ['name' => 'Zzfirst']])->assertOk()->assertSee('Zzfirst blog')->assertDontSee('Zzsecond blog');
+        $this->get('/blogs')->assertOk()->assertSee('Zzfirst blog')->assertDontSee('Zzsecond blog');
+
+        $this->get('/blogs/reset')->assertRedirect(route('blogs.index'));
+        $this->get('/blogs')->assertOk()->assertSee('Zzsecond blog');
     }
 
     public function test_the_user_index_lists_newest_first_and_the_filter_page_by_name(): void
