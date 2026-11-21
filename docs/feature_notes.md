@@ -4,6 +4,19 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Remaining event list actions moved onto the shared list-page scaffold (#2406)
+- The iCal feed, the text feed, the brief list, the two exports and the attending iCal feed
+  now start their lists the way every other event list does; the reset links use
+  `clearList()`; the two "apply filter from a link" actions share one method.
+- `/events/upcoming` and `/events/add` set up a list they never ran. That is gone, and the
+  date checks and day window they both computed are one method.
+- `EventsController` goes from 2,683 to 2,450 lines and no longer sets up the session store
+  or list builder by hand anywhere.
+- One change in behaviour: those feeds and exports now sort only by the columns the event
+  list offers (name, start date, type, updated). Another column in `?sort=` falls back to the
+  default, where before any event column was accepted. Otherwise a snapshot of 126 requests
+  is identical before and after.
+
 ### Content lists moved onto the shared list-page scaffold (#2406)
 - Categories, forums (and a forum's own thread list), blogs, photos, posts, users and the
   activity log now use `BuildsListPages`; the seven controllers lose about 700 lines.
