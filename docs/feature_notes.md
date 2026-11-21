@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Shared list-page scaffold, series lists moved onto it (#2406)
+- The set-up and view data that every filterable list page repeats now live in one trait,
+  `App\Http\Controllers\Concerns\BuildsListPages` (`startList()`, `finishList()`,
+  `clearList()`). The event lists use it through their existing helpers and the eight series
+  lists were rewritten on it; `SeriesController` is about 240 lines shorter.
+- No change in behaviour: a snapshot of 114 list requests is identical before and after.
+
 ### Nightly cleanup of expired cache files, old clicks, failed jobs and expired tokens (#2392)
 - `php artisan cache:prune-expired` deletes expired files from the file cache. The file store
   only removes an entry when it is read again, and page fragments keyed on a content

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Events\EventCreated;
 use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
@@ -52,6 +53,8 @@ use App\Services\Embeds\OembedExtractor;
 
 class EventsController extends Controller
 {
+    use BuildsListPages;
+
     /**
      * Relations the text feeds (events/feed-tw) read on every row.
      */
@@ -324,26 +327,24 @@ class EventsController extends Controller
         string $indexTab = 'index',
         ?int $defaultLimit = null,
     ): array {
-        $listParamSessionStore->setBaseIndex('internal_event');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-        $listParamSessionStore->setIndexTab(action([EventsController::class, $indexTab]));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultFilters($defaultFilters)
-            ->setParentFilter($parentFilter)
-            ->setDefaultSort($defaultSort)
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_event',
+            $keyPrefix,
+            action([EventsController::class, $indexTab]),
+            $this->filter,
+            $baseQuery,
+            $defaultSort,
+            $defaultFilters,
+            $parentFilter,
             // Restrict sorting to the columns the event lists actually expose, so a
             // stale or injected sort value (e.g. a scanner's "namexh3probe9") falls
             // back to the default instead of reaching orderBy() and raising an
             // unknown-column SQL error (EVENTREPO-YP / EVENTREPO-YQ).
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']));
-        if ($defaultLimit !== null) {
-            $listEntityResultBuilder->setDefaultLimit($defaultLimit);
-        }
-
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
+            array_keys($this->getListControlOptions()['sortOptions']),
+            $defaultLimit,
+        );
 
         return [$listResultSet->getList()->where(Event::visibleTo($this->user)), $listResultSet];
     }
@@ -362,34 +363,16 @@ class EventsController extends Controller
         bool $rememberSort = false,
         array $extra = [],
     ): array {
-        if ($rememberSort) {
-            // persist resolved sort values so subsequent requests (e.g. the filter form) don't revert to a different default
-            $listParamSessionStore->setSortDirection($listResultSet->getSortDirection());
-            $listParamSessionStore->setSortFieldName($listResultSet->getSort());
-        }
-
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return array_merge(
+        return $this->finishList($listParamSessionStore, $listResultSet, $rememberSort, array_merge(
             [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
                 // what "Play this list" hands the audio player (#2366): by default the
                 // user's filters plus the page's own (e.g. the tag on /events/tag/{slug});
                 // lists narrowed some other way pass their own playerQuery in $extra,
                 // or null to hide the button
                 'playerQuery' => self::playerQuery($listResultSet),
             ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions(),
-            // last, so a caller's value always wins
             $extra
-        );
+        ));
     }
 
     /**

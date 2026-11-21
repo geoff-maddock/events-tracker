@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Filters\SeriesFilters;
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Http\Requests\SeriesRequest;
+use App\Http\Response\ResultSet\ListResultSet;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
@@ -35,6 +37,8 @@ use Str;
 
 class SeriesController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -52,8 +56,6 @@ class SeriesController extends Controller
     protected int $childLimit;
 
     protected array $defaultSortCriteria;
-
-    protected bool $hasFilter;
 
     protected array $filters;
 
@@ -87,12 +89,12 @@ class SeriesController extends Controller
         $this->childLimit = 10;
         $this->page = 1;
         $this->defaultSortCriteria = ['series.created_at' => 'desc'];
-        $this->hasFilter = false;
         parent::__construct();
     }
 
     /**
-     * Filter the list of events.
+     * The series list as the filter form submits it. Unlike index() it has no
+     * default visibility filter.
      *
      * @throws \Throwable
      */
@@ -101,50 +103,59 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_index');
+        $listResultSet = $this->startSeriesList($listParamSessionStore, $listEntityResultBuilder, 'internal_series_index', $this->baseQuery());
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
+        return $this->seriesListPage($listParamSessionStore, $listResultSet);
+    }
 
-        // create the base query including any required joins; needs select to make sure only series entities are returned
-        $baseQuery = $this->baseQuery();
+    /**
+     * Start a series list page (#2406): every series list shares one session
+     * base index, the series filters and the default sort.
+     *
+     * @param array<string, mixed> $defaultFilters
+     * @param array<string, mixed> $parentFilter
+     */
+    private function startSeriesList(
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $keyPrefix,
+        Builder $baseQuery,
+        array $defaultFilters = [],
+        array $parentFilter = [],
+    ): ListResultSet {
+        return $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_series',
+            $keyPrefix,
+            action([SeriesController::class, 'index']),
+            $this->filter,
+            $baseQuery,
+            $this->defaultSortCriteria,
+            $defaultFilters,
+            $parentFilter,
+        );
+    }
 
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the series
-        $series = $query
+    /**
+     * Render the series list view for a started list.
+     *
+     * @param array<string, mixed> $extra more view data (the page's slug, tag, ...)
+     *
+     * @throws \Throwable
+     */
+    private function seriesListPage(
+        ListParameterSessionStore $listParamSessionStore,
+        ListResultSet $listResultSet,
+        array $extra = [],
+    ): string {
+        $series = $listResultSet->getList()
             // everything series/card-tw reads per card (#2173)
             ->with(Series::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
         return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet, extra: $extra))
             ->with(compact('series'))
             ->render();
     }
@@ -168,41 +179,24 @@ class SeriesController extends Controller
 
     /**
      * Reset the rpp, sort, order.
-     *
-     * @throws \Throwable
      */
     public function rppReset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_series_index';
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_series', $request->get('key') ?? 'internal_series_index', filters: false);
 
         return redirect()->route('series.index');
     }
 
     /**
-     * Reset the filtering of entities.
-     *
-     * @return RedirectResponse|View
+     * Reset the filtering of series.
      */
     public function reset(
         Request $request,
         ListParameterSessionStore $listParamSessionStore
-    ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_series_index';
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+    ): RedirectResponse {
+        $this->clearList($listParamSessionStore, 'internal_series', $request->get('key') ?? 'internal_series_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'series.index'));
     }
@@ -258,50 +252,15 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_index');
+        $listResultSet = $this->startSeriesList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_series_index',
+            $this->baseQuery(),
+            defaultFilters: ['visibility' => Visibility::VISIBILITY_PUBLIC],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only series entities are returned
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($this->baseQuery())
-            ->setDefaultSort(['series.created_at' => 'desc'])
-            ->setDefaultFilters(['visibility' => Visibility::VISIBILITY_PUBLIC]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the series
-        $series = $query
-            ->with(Series::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->render();
+        return $this->seriesListPage($listParamSessionStore, $listResultSet);
     }
 
     /**
@@ -312,13 +271,6 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
         $baseQuery = Series::join('follows', 'series.id', '=', 'follows.object_id')
             ->where('follows.object_type', '=', 'series')
             ->where('follows.user_id', '=', $this->user->id)
@@ -327,45 +279,15 @@ class SeriesController extends Controller
             ->orderBy('follows.created_at', 'desc')
             ->select('series.*');
 
-        // create the base query including any required joins; needs select to make sure only series entities are returned
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['series.created_at' => 'desc'])
-            ->setDefaultFilters(['visibility' => Visibility::VISIBILITY_PUBLIC]);
+        $listResultSet = $this->startSeriesList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_series_index',
+            $baseQuery,
+            defaultFilters: ['visibility' => Visibility::VISIBILITY_PUBLIC],
+        );
 
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $series = $query
-            // everything series/card-tw reads per card (#2173)
-            ->with(Series::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(['type' => 'Following'])
-            ->with(compact('series'))
-            ->render();
+        return $this->seriesListPage($listParamSessionStore, $listResultSet, ['type' => 'Following']);
     }
 
     protected function getListControlOptions(): array
@@ -399,53 +321,14 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_cancelled');
+        $listResultSet = $this->startSeriesList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_series_cancelled',
+            $this->baseQuery()->whereNotNull('cancelled_at'),
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only series entities are returned
-        $baseQuery = $this->baseQuery()->whereNotNull('cancelled_at');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['series.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $series = $query
-            // everything series/card-tw reads per card (#2173)
-            ->with(Series::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'slug' => 'Cancelled',
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->render();
+        return $this->seriesListPage($listParamSessionStore, $listResultSet, ['slug' => 'Cancelled']);
     }
 
     /**
@@ -458,55 +341,16 @@ class SeriesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_cancelled');
+        $listResultSet = $this->startSeriesList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            // shares its filters and sort with the cancelled list, as it always has
+            'internal_series_cancelled',
+            // @phpstan-ignore-next-line
+            $this->baseQuery()->future(),
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        // this is more complex because we want to show weeklies that fall on the days, plus monthlies that fall on the days
-        // may be an iterative process that is called from the template to the series model that checks against each criteria and builds a list that way
-        // @phpstan-ignore-next-line
-        $baseQuery = $this->baseQuery()->future();
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['series.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $series = $query
-            // everything series/card-tw reads per card (#2173)
-            ->with(Series::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                    'slug' => 'Week',
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->render();
+        return $this->seriesListPage($listParamSessionStore, $listResultSet, ['slug' => 'Week']);
     }
 
     /**
@@ -523,53 +367,19 @@ class SeriesController extends Controller
         // get the entity by the slug name
         $related = Entity::where('slug', '=', $slug)->firstOrFail();
 
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_related');
+        $listResultSet = $this->startSeriesList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_series_related',
+            $this->baseQuery(),
+            parentFilter: ['related' => $slug],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($this->baseQuery())
-            ->setDefaultSort(['series.created_at' => 'desc'])
-            ->setParentFilter(['related' => $slug]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        // @phpstan-ignore-next-line
-        $series = $query->visible($this->user)
-            // everything series/card-tw reads per card (#2173)
-            ->with(Series::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->with(compact('related'))
-            ->render();
+        return $this->seriesListPage($listParamSessionStore, $listResultSet, compact('related'));
     }
 
     /**
-     * Display a listing of events by tag.
+     * Display a listing of series by tag.
      *
      * @throws \Throwable
      */
@@ -583,52 +393,15 @@ class SeriesController extends Controller
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_tags');
+        $listResultSet = $this->startSeriesList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_series_tags',
+            $this->baseQuery(),
+            parentFilter: ['tag' => $slug],
+        );
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($this->baseQuery())
-            ->setDefaultSort(['series.created_at' => 'desc'])
-            ->setParentFilter(['tag' => $slug]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $series = $query
-            // everything series/card-tw reads per card (#2173)
-            ->with(Series::CARD_EAGER_LOAD)
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('series.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('series'))
-            ->with(compact('tag'))
-            ->render();
+        return $this->seriesListPage($listParamSessionStore, $listResultSet, compact('tag'));
     }
 
     protected function getSeriesFormOptions(): array
@@ -850,33 +623,14 @@ class SeriesController extends Controller
         ListEntityResultBuilder $listEntityResultBuilder,
         RssFeed $feed
     ): View {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_series');
-        $listParamSessionStore->setKeyPrefix('internal_series_index');
+        $listResultSet = $this->startSeriesList($listParamSessionStore, $listEntityResultBuilder, 'internal_series_index', $this->baseQuery());
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([SeriesController::class, 'index']));
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($this->baseQuery())
-            ->setDefaultSort(['series.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the events
-        $series = $query
+        $series = $listResultSet->getList()
             ->with('occurrenceType', 'visibility', 'tags')
             ->paginate($listResultSet->getLimit());
 
         // saves the updated session
         $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
 
         return view('series.feed', compact('series'));
     }
