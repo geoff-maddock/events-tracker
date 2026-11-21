@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\UserFilters;
 use App\Http\Requests\AdminPasswordResetRequest;
 use App\Http\Requests\ProfileRequest;
@@ -44,6 +45,8 @@ use Throwable;
 
 class UsersController extends Controller
 {
+    use BuildsListPages;
+
     public const DEFAULT_SHOW_COUNT = 100;
 
     protected string $prefix;
@@ -64,8 +67,6 @@ class UsersController extends Controller
 
     // array of sort criteria to be applied in order
     protected array $defaultSortCriteria;
-
-    protected bool $hasFilter;
 
     protected array $filters;
 
@@ -108,58 +109,7 @@ class UsersController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_user');
-        $listParamSessionStore->setKeyPrefix('internal_user_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([UsersController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only user entities are returned
-        $baseQuery = User::query()
-        ->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')
-        ->select('users.*')
-        ->addSelect(['last_active' => Activity::select('created_at')
-            ->whereColumn('user_id', 'users.id')
-            ->latest()
-            ->take(1),
-        ])
-        ->withCasts(['last_active' => 'datetime']);
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort($this->defaultSortCriteria)
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']));
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the users
-        $users = $query->with($this->cardEagerLoads($request->user()))->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('users.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
-            ->with(compact('users'))
-            ->render();
+        return $this->userListPage($request, $listParamSessionStore, $listEntityResultBuilder, $this->defaultSortCriteria);
     }
 
     /**
@@ -172,58 +122,47 @@ class UsersController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_user');
-        $listParamSessionStore->setKeyPrefix('internal_user_index');
+        return $this->userListPage($request, $listParamSessionStore, $listEntityResultBuilder, ['users.name' => 'asc']);
+    }
 
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([UsersController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
+    /**
+     * The user list both list actions render.
+     *
+     * @param array<string, string> $defaultSort
+     */
+    private function userListPage(
+        Request $request,
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        array $defaultSort,
+    ): string {
+        // needs select to make sure only user columns are returned
         $baseQuery = User::query()
-        ->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')
-        ->select('users.*')
-        ->addSelect(['last_active' => Activity::select('created_at')
-            ->whereColumn('user_id', 'users.id')
-            ->latest()
-            ->take(1),
-        ])
-        ->withCasts(['last_active' => 'created_at']);
+            ->leftJoin('user_statuses', 'users.user_status_id', '=', 'user_statuses.id')
+            ->select('users.*')
+            ->addSelect(['last_active' => Activity::select('created_at')
+                ->whereColumn('user_id', 'users.id')
+                ->latest()
+                ->take(1),
+            ])
+            ->withCasts(['last_active' => 'datetime']);
 
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['users.name' => 'asc'])
-            ->setAllowedSortFields(array_keys($this->getListControlOptions()['sortOptions']));
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_user',
+            'internal_user_index',
+            action([UsersController::class, 'index']),
+            $this->filter,
+            $baseQuery,
+            $defaultSort,
+            allowedSortFields: array_keys($this->getListControlOptions()['sortOptions']),
+        );
 
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the users
-        $users = $query
-            ->with($this->cardEagerLoads($request->user()))
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
+        $users = $listResultSet->getList()->with($this->cardEagerLoads($request->user()))->paginate($listResultSet->getLimit());
 
         return view('users.index-tw')
-            ->with(array_merge(
-                [
-                    'limit' => $listResultSet->getLimit(),
-                    'sort' => $listResultSet->getSort(),
-                    'direction' => $listResultSet->getSortDirection(),
-                    'hasFilter' => $this->hasFilter,
-                    'filters' => $listResultSet->getFilters(),
-                ],
-                $this->getFilterOptions(),
-                $this->getListControlOptions()
-            ))
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
             ->with(compact('users'))
             ->render();
     }
@@ -237,13 +176,7 @@ class UsersController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the limit, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_user_index';
-        $listParamSessionStore->setBaseIndex('internal_user');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_user', $request->get('key') ?? 'internal_user_index', filters: false);
 
         return redirect()->route('users.index');
     }
@@ -257,14 +190,7 @@ class UsersController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_user_index';
-        $listParamSessionStore->setBaseIndex('internal_user');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_user', $request->get('key') ?? 'internal_user_index', filters: true);
 
         return redirect()->route('users.index');
     }

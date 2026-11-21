@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Filters\PostFilters;
 use App\Jobs\NotifyFollowers;
 use App\Http\Requests\PostRequest;
@@ -25,6 +26,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostsController extends Controller
 {
+    use BuildsListPages;
+
     protected Post $post;
 
     protected string $prefix;
@@ -40,8 +43,6 @@ class PostsController extends Controller
     protected string $sort;
 
     protected string $sortDirection;
-
-    protected bool $hasFilter;
 
     protected array $filters;
 
@@ -70,7 +71,6 @@ class PostsController extends Controller
         $this->limit = $this->defaultLimit;
 
         $this->defaultSortCriteria = ['posts.created_at', 'desc'];
-        $this->hasFilter = false;
 
         $this->filter = $filter;
 
@@ -92,57 +92,7 @@ class PostsController extends Controller
             return redirect()->back();
         }
 
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix('internal_post_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
-
-        $baseQuery = Post::query()
-        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
-        ->select('posts.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['posts.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $posts = $query->visible($this->user)
-            ->with('visibility')
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $posts;
-        }
-
-        return view('posts.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('posts'))
-        ->render();
+        return $this->postListPage($listParamSessionStore, $listEntityResultBuilder, 'internal_post_index');
     }
 
     /**
@@ -153,63 +103,7 @@ class PostsController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string|RedirectResponse {
-        // if the gate does not allow this user to show a forum redirect to home
-        if (Gate::denies('show_forum')) {
-            flash()->error('Unauthorized', 'Your cannot view the forum');
-
-            return redirect()->back();
-        }
-
-        // initialized listParamSessionStore with base index key
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix('internal_post_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
-
-        $baseQuery = Post::query()
-        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
-        ->select('posts.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['posts.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $posts = $query->visible($this->user)
-        ->with('visibility')
-        ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $posts;
-        }
-
-        return view('posts.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('posts'))->render();
+        return $this->index($request, $listParamSessionStore, $listEntityResultBuilder);
     }
 
     /**
@@ -222,61 +116,7 @@ class PostsController extends Controller
         string $slug,
         StringHelper $stringHelper
     ): string {
-        // convert the slug to name
-        $tag = $stringHelper->SlugToName($slug);
-
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix('internal_post_tags');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PostsController::class, 'index']));
-
-        $baseQuery = Post::query()
-        ->leftJoin('users', 'posts.created_by', '=', 'users.id')
-        ->select('posts.*');
-
-        $listEntityResultBuilder
-            ->setFilter($this->filter)
-            ->setQueryBuilder($baseQuery)
-            ->setDefaultSort(['posts.created_at' => 'desc'])
-            ->setParentFilter(['tag' => $slug]);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        /* @phpstan-ignore-next-line */
-        $posts = $query->visible($this->user)
-        ->with('visibility')
-        ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        // return json only
-        if (request()->wantsJson()) {
-            return $posts;
-        }
-
-        return view('posts.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('posts'))->render();
+        return $this->postListPage($listParamSessionStore, $listEntityResultBuilder, 'internal_post_tags', ['tag' => $slug]);
     }
 
     /**
@@ -505,6 +345,40 @@ class PostsController extends Controller
     }
 
     /**
+     * The posts list every list action here renders.
+     *
+     * @param array<string, mixed> $parentFilter filters the page itself imposes (its tag)
+     */
+    private function postListPage(
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $keyPrefix,
+        array $parentFilter = [],
+    ): string {
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_post',
+            $keyPrefix,
+            action([PostsController::class, 'index']),
+            $this->filter,
+            Post::query()->leftJoin('users', 'posts.created_by', '=', 'users.id')->select('posts.*'),
+            ['posts.created_at' => 'desc'],
+            parentFilter: $parentFilter,
+        );
+
+        /* @phpstan-ignore-next-line */
+        $posts = $listResultSet->getList()->visible($this->user)
+            ->with('visibility')
+            ->paginate($listResultSet->getLimit());
+
+        return view('posts.index-tw')
+            ->with($this->finishList($listParamSessionStore, $listResultSet))
+            ->with(compact('posts'))
+            ->render();
+    }
+
+    /**
      * Reset the limit, sort, direction.
      *
      * @throws \Throwable
@@ -513,13 +387,7 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the limit, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_post_index';
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_post', $request->get('key') ?? 'internal_post_index', filters: false);
 
         return redirect()->route('posts.index');
     }
@@ -533,14 +401,7 @@ class PostsController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_post_index';
-        $listParamSessionStore->setBaseIndex('internal_post');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_post', $request->get('key') ?? 'internal_post_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'posts.index'));
     }

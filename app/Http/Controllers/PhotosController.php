@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Events\EventPhotoAdded;
 use App\Filters\PhotoFilters;
+use Illuminate\Database\Eloquent\Builder;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Entity;
 use App\Models\Event;
@@ -17,6 +19,8 @@ use Illuminate\View\View;
 
 class PhotosController extends Controller
 {
+    use BuildsListPages;
+
     protected string $prefix;
 
     protected int $defaultLimit;
@@ -42,8 +46,6 @@ class PhotosController extends Controller
 
     // this is the class specifying the filters methods for each field
     protected PhotoFilters $filter;
-
-    protected bool $hasFilter;
 
     protected int $defaultWindow;
 
@@ -82,63 +84,7 @@ class PhotosController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_photo');
-        $listParamSessionStore->setKeyPrefix('internal_photo_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PhotosController::class, 'index']));
-
-        // set the default filter as is_event
-        $defaultFilter = ['is_event' => 1];
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Photo::query()
-        ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
-        ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
-        // photos of events the viewer can't see are left out
-        ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
-        ->select('photos.*');
-
-        $listEntityResultBuilder
-        ->setFilter($this->filter)
-        ->setQueryBuilder($baseQuery)
-        ->setDefaultFilters($defaultFilter)
-        ->setDefaultSort(['photos.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the photos
-        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
-        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
-        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
-        $photos = $query
-            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('photos.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('photos'))
-        ->render();
+        return $this->photoListPage($listParamSessionStore, $listEntityResultBuilder, 'internal_photo_index', $this->photoQuery(), ['is_event' => 1]);
     }
 
     /**
@@ -154,64 +100,11 @@ class PhotosController extends Controller
         // get the tag by the slug name
         $tag = Tag::where('slug', '=', $slug)->firstOrFail();
 
-        // initialized listParamSessionStore with baseindex key
-        // list entity result builder
-        $listParamSessionStore->setBaseIndex('internal_photo');
-        $listParamSessionStore->setKeyPrefix('internal_photo_tags');
+        $baseQuery = $this->photoQuery()->whereHas('events.tags', function ($q) use ($tag) {
+            $q->where('slug', '=', $tag->slug);
+        });
 
-        // set the default filter as is_event
-        $defaultFilter = ['is_event' => 1];
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Photo::query()->select('photos.*')
-            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
-            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
-            // photos of events the viewer can't see are left out
-            ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
-            ->whereHas('events.tags', function ($q) use ($tag) {
-                $q->where('slug', '=', $tag->slug);
-            });
-
-        $listEntityResultBuilder
-        ->setFilter($this->filter)
-        ->setQueryBuilder($baseQuery)
-        ->setDefaultFilters($defaultFilter)
-        ->setDefaultSort(['photos.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the photos
-        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
-        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
-        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
-        $photos = $query
-            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('photos.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('photos'))
-        ->with(['tag' => $tag])
-        ->render();
+        return $this->photoListPage($listParamSessionStore, $listEntityResultBuilder, 'internal_photo_tags', $baseQuery, ['is_event' => 1], ['tag' => $tag]);
     }
 
     /**
@@ -224,59 +117,7 @@ class PhotosController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // initialized listParamSessionStore with baseindex key
-        $listParamSessionStore->setBaseIndex('internal_photo');
-        $listParamSessionStore->setKeyPrefix('internal_photo_index');
-
-        // set the index tab in the session
-        $listParamSessionStore->setIndexTab(action([PhotosController::class, 'index']));
-
-        // create the base query including any required joins; needs select to make sure only event entities are returned
-        $baseQuery = Photo::query()
-        ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
-        ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
-        // photos of events the viewer can't see are left out
-        ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
-        ->select('photos.*');
-
-        $listEntityResultBuilder
-        ->setFilter($this->filter)
-        ->setQueryBuilder($baseQuery)
-        ->setDefaultSort(['photos.created_at' => 'desc']);
-
-        // get the result set from the builder
-        $listResultSet = $listEntityResultBuilder->listResultSetFactory();
-
-        // get the query builder
-        $query = $listResultSet->getList();
-
-        // get the photos
-        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
-        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
-        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
-        $photos = $query
-            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
-            ->paginate($listResultSet->getLimit());
-
-        // saves the updated session
-        $listParamSessionStore->save();
-
-        $this->hasFilter = $listResultSet->getFilters() != $listResultSet->getDefaultFilters() || $listResultSet->getIsEmptyFilter();
-
-        return view('photos.index-tw')
-        ->with(array_merge(
-            [
-                'limit' => $listResultSet->getLimit(),
-                'sort' => $listResultSet->getSort(),
-                'direction' => $listResultSet->getSortDirection(),
-                'hasFilter' => $this->hasFilter,
-                'filters' => $listResultSet->getFilters(),
-            ],
-            $this->getFilterOptions(),
-            $this->getListControlOptions()
-        ))
-        ->with(compact('photos'))
-        ->render();
+        return $this->photoListPage($listParamSessionStore, $listEntityResultBuilder, 'internal_photo_index', $this->photoQuery());
     }
 
     public function show(Photo $photo): View
@@ -429,16 +270,63 @@ class PhotosController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ) {
-        // set filters and list controls to default values
-        $keyPrefix = $request->get('key') ?? 'internal_photo_index';
-        $listParamSessionStore->setBaseIndex('internal_photo');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearFilter();
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_photo', $request->get('key') ?? 'internal_photo_index', filters: true);
 
         return redirect()->route($this->resolveRedirectRoute($request, 'photos.index'));
+    }
+
+    /**
+     * Photos, leaving out those of events the viewer can't see.
+     *
+     * @return Builder<Photo>
+     */
+    private function photoQuery(): Builder
+    {
+        return Photo::query()
+            ->leftJoin('event_photo', 'event_photo.photo_id', '=', 'photos.id')
+            ->leftJoin('events', 'events.id', '=', 'event_photo.event_id')
+            ->where(fn ($q) => $q->whereNull('events.id')->orWhere(Event::visibleTo($this->user)))
+            ->select('photos.*');
+    }
+
+    /**
+     * The photo grid every list action here renders.
+     *
+     * @param Builder<Photo> $baseQuery
+     * @param array<string, mixed> $defaultFilters
+     * @param array<string, mixed> $extra view data on top of the list's own
+     */
+    private function photoListPage(
+        ListParameterSessionStore $listParamSessionStore,
+        ListEntityResultBuilder $listEntityResultBuilder,
+        string $keyPrefix,
+        Builder $baseQuery,
+        array $defaultFilters = [],
+        array $extra = [],
+    ): string {
+        $listResultSet = $this->startList(
+            $listParamSessionStore,
+            $listEntityResultBuilder,
+            'internal_photo',
+            $keyPrefix,
+            action([PhotosController::class, 'index']),
+            $this->filter,
+            $baseQuery,
+            ['photos.created_at' => 'desc'],
+            defaultFilters: $defaultFilters,
+        );
+
+        // Eager-load each photo's events and their venue; the grid card (photos/cell-tw)
+        // reads $photo->events->first()->venue per row, which otherwise fires an N+1
+        // lookup on the entities table (the venue) for every photo (EVENTREPO-WD).
+        $photos = $listResultSet->getList()
+            ->with(['events' => fn ($q) => $q->visible($this->user)->with('venue')])
+            ->paginate($listResultSet->getLimit());
+
+        return view('photos.index-tw')
+            ->with($this->finishList($listParamSessionStore, $listResultSet, extra: $extra))
+            ->with(compact('photos'))
+            ->render();
     }
 
     /**
@@ -450,13 +338,7 @@ class PhotosController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // set the rpp, sort, direction only to default values
-        $keyPrefix = $request->get('key') ?? 'internal_photo_index';
-        $listParamSessionStore->setBaseIndex('internal_photo');
-        $listParamSessionStore->setKeyPrefix($keyPrefix);
-
-        // clear
-        $listParamSessionStore->clearSort();
+        $this->clearList($listParamSessionStore, 'internal_photo', $request->get('key') ?? 'internal_photo_index', filters: false);
 
         return redirect()->route('photos.index');
     }

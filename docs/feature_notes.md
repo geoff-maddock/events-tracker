@@ -4,6 +4,20 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Content lists moved onto the shared list-page scaffold (#2406)
+- Categories, forums (and a forum's own thread list), blogs, photos, posts, users and the
+  activity log now use `BuildsListPages`; the seven controllers lose about 700 lines.
+  Where `filter` was a copy of `index` it calls it; photos, posts and users each get one
+  private method their list actions share.
+- Kept as they were: the photo index defaults to event photos and its filter page does not;
+  the user index lists newest first and its filter page by name.
+- Two small differences, found by a snapshot of 330 requests before and after:
+  - the forum filter page loads the thread counts with the list, as the index does, instead
+    of one query per forum;
+  - a photo tag page no longer blanks the saved "index tab" link (nothing reads it).
+- As with the thread lists, a request for JSON to the forum and post lists gets the normal
+  page.
+
 ### Six admin lists moved onto the shared list-page scaffold (#2406)
 - Roles, menus, groups, permissions, entity types and reviews: their `index`, `filter`,
   `reset` and `rppReset` actions now use `BuildsListPages`, and where `filter` was a copy of
