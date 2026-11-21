@@ -29,7 +29,21 @@ class UsersTest extends TestCase
         $this->assertEquals($post->id, $user->lastPost->id);
     }
 
-    // Disabled - needs fixing
+    #[Test]
+    public function the_user_list_routes_share_the_index_sign_in_requirement()
+    {
+        $this->withExceptionHandling();
+
+        foreach (['/users', '/users/filter', '/users/reset', '/users/rpp-reset'] as $url) {
+            $this->get($url)->assertRedirect(route('login'));
+        }
+        $this->post('/users/filter', ['filters' => ['name' => 'a']])->assertRedirect(route('login'));
+
+        $this->actingAs(User::factory()->create());
+        $this->get('/users/filter')->assertOk();
+        $this->get('/users/reset')->assertRedirect(route('users.index'));
+    }
+
     // /** @test */
     public function an_admin_can_access_password_reset_form()
     {

@@ -14,6 +14,33 @@ A more detailed description of new features and changes to the application.
 - `tests/Feature/EmbedLoaderRoutesTest.php` pins all twelve routes; it passes against the
   old code too.
 
+### Remaining event list actions moved onto the shared list-page scaffold (#2406)
+- The iCal feed, the text feed, the brief list, the two exports and the attending iCal feed
+  now start their lists the way every other event list does; the reset links use
+  `clearList()`; the two "apply filter from a link" actions share one method.
+- `/events/upcoming` and `/events/add` set up a list they never ran. That is gone, and the
+  date checks and day window they both computed are one method.
+- `EventsController` goes from 2,683 to 2,450 lines and no longer sets up the session store
+  or list builder by hand anywhere.
+- One change in behaviour: those feeds and exports now sort only by the columns the event
+  list offers (name, start date, type, updated). Another column in `?sort=` falls back to the
+  default, where before any event column was accepted. Otherwise a snapshot of 126 requests
+  is identical before and after.
+
+### Content lists moved onto the shared list-page scaffold (#2406)
+- Categories, forums (and a forum's own thread list), blogs, photos, posts, users and the
+  activity log now use `BuildsListPages`; the seven controllers lose about 700 lines.
+  Where `filter` was a copy of `index` it calls it; photos, posts and users each get one
+  private method their list actions share.
+- Kept as they were: the photo index defaults to event photos and its filter page does not;
+  the user index lists newest first and its filter page by name.
+- Two small differences, found by a snapshot of 330 requests before and after:
+  - the forum filter page loads the thread counts with the list, as the index does, instead
+    of one query per forum;
+  - a photo tag page no longer blanks the saved "index tab" link (nothing reads it).
+- As with the thread lists, a request for JSON to the forum and post lists gets the normal
+  page.
+
 ### Six admin lists moved onto the shared list-page scaffold (#2406)
 - Roles, menus, groups, permissions, entity types and reviews: their `index`, `filter`,
   `reset` and `rppReset` actions now use `BuildsListPages`, and where `filter` was a copy of
