@@ -233,9 +233,10 @@ Route::match(['get', 'post'], 'users/{id}/interested-ical', [\App\Http\Controlle
 Route::post('users/{id}/reset-user-attending', ['as' => 'users.resetUserAttending', 'uses' => '\App\Http\Controllers\EventsController@resetUserAttending']);
 Route::get('users/{id}/rpp-reset-user-attending', ['as' => 'users.rppResetUserAttending', 'uses' => '\App\Http\Controllers\EventsController@rppResetUserAttending']);
 
-Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => '\App\Http\Controllers\UsersController@filter']);
-Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\UsersController@reset']);
-Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => '\App\Http\Controllers\UsersController@rppReset']);
+// the same sign-in requirement as the users index these belong to
+Route::match(['get', 'post'], 'users/filter', ['as' => 'users.filter', 'uses' => '\App\Http\Controllers\UsersController@filter'])->middleware('auth');
+Route::get('users/reset', ['as' => 'users.reset', 'uses' => '\App\Http\Controllers\UsersController@reset'])->middleware('auth');
+Route::get('users/rpp-reset', ['as' => 'users.rppReset', 'uses' => '\App\Http\Controllers\UsersController@rppReset'])->middleware('auth');
 
 // admin review of recent signups (#2312); before users/{user} so "signups" isn't read as a user
 Route::get('users/signups', [\App\Http\Controllers\SignupReviewController::class, 'index'])->name('users.signups')->middleware(['auth', 'can:grant_access']);
