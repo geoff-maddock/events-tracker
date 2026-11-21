@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\BuildsListPages;
+use App\Http\Controllers\Concerns\LoadsEmbeds;
 use App\Events\EventCreated;
 use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
@@ -54,6 +55,7 @@ use App\Services\Embeds\OembedExtractor;
 class EventsController extends Controller
 {
     use BuildsListPages;
+    use LoadsEmbeds;
 
     /**
      * Relations the text feeds (events/feed-tw) read on every row.
@@ -1530,98 +1532,6 @@ class EventsController extends Controller
     }
 
     /**
-     * Load the embeds and add to the UI
-     *
-     * @throws \Throwable
-     */
-    public function loadEmbeds(int $id, OembedExtractor $oembedExtractor, Request $request): RedirectResponse | array
-    {
-        // load the event
-        if (!($event = Event::with('entities.links')->find($id)) || !$event->isVisibleTo($this->user)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // handle the request if ajax
-        if ($request->ajax()) {
-            // extract all the links from the event body and convert into embeds
-            $oembedExtractor->setLayout("medium");
-            $embeds = $oembedExtractor->getEmbedsForEvent($event);
-
-            return [
-                'Message' => 'Added embeds to event page.',
-                'Success' => view('embeds.playlist')
-                    ->with(compact('embeds'))
-                    ->render(),
-            ];
-        }
-        flash()->success('Error', 'You cannot load embeds directly');
-
-        return back();
-    }
-
-    /**
-     * Load the embeds and add to the UI
-     *
-     * @throws \Throwable
-     */
-    public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
-    {
-        // load the event
-        if (!($event = Event::with('entities.links')->find($id)) || !$event->isVisibleTo($this->user)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // handle the request if ajax
-        if ($request->ajax()) {
-            // extract all the links from the event body and convert into embeds
-            $embedExtractor->setLayout("small");
-            $allEmbeds = $embedExtractor->getEmbedsForEvent($event, "small");
-            // Only use the first embed for minimal display
-            $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
-            return [
-                'Message' => 'Added embeds to event page.',
-                'Success' => view('embeds.minimal-playlist')
-                    ->with(compact('embeds'))
-                    ->render(),
-            ];
-        }
-        flash()->success('Error', 'You cannot load embeds directly');
-
-        return back();
-    }
-
-    /**
-     * Load the full (medium-size) embeds by slug as JSON (no auth required).
-     */
-    public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
-    {
-        if (!($event = Event::with('entities.links')->where('slug', $slug)->first()) || !$event->isVisibleTo($this->user)) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Event not found'], 404);
-            }
-            flash()->error('Error', 'No such event');
-            return back();
-        }
-
-        $embedExtractor->setLayout('medium');
-        $embeds = $embedExtractor->getEmbedsForEvent($event);
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data' => $embeds,
-                'message' => 'Embeds loaded successfully',
-            ]);
-        }
-
-        flash()->success('Error', 'You cannot load embeds directly');
-        return back();
-    }
-
-    /**
      * Attach a new event's tags, its listed entities, and its venue and promoter.
      *
      * @param array<int, int> $tagIds
@@ -1670,40 +1580,6 @@ class EventsController extends Controller
             ]);
             report($e);
         }
-    }
-
-    /**
-     * Load the minimal embeds by slug (no auth required)
-     *
-     * @throws \Throwable
-     */
-    public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
-    {
-        // load the event by slug
-        if (!($event = Event::with('entities.links')->where('slug', $slug)->first()) || !$event->isVisibleTo($this->user)) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Event not found'], 404);
-            }
-            flash()->error('Error', 'No such event');
-            return back();
-        }
-
-        // extract all the links from the event body and convert into embeds
-        $embedExtractor->setLayout("small");
-        $allEmbeds = $embedExtractor->getEmbedsForEvent($event, "small");
-        // Only return the first embed for minimal display
-        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
-
-        // return JSON response for AJAX/API calls
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data' => $embeds,
-                'message' => 'Embeds loaded successfully'
-            ]);
-        }
-
-        flash()->success('Error', 'You cannot load embeds directly');
-        return back();
     }
 
     public function store(EventRequest $request, Event $event, TempImageStore $tempImages): RedirectResponse
@@ -2680,4 +2556,14 @@ class EventsController extends Controller
         return redirect()->route('users.attending', ['id' => $id]);
     }
 
+    /**
+     * The embed loader routes serve events; an event's embeds come from its
+     * description and its entities' links.
+     *
+     * @return Builder<Event>
+     */
+    protected function embedQuery(): Builder
+    {
+        return Event::with('entities.links');
+    }
 }
