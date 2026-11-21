@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Filters\SeriesFilters;
 use App\Http\Controllers\Concerns\BuildsListPages;
+use App\Http\Controllers\Concerns\LoadsEmbeds;
 use App\Http\Requests\SeriesRequest;
 use App\Http\Response\ResultSet\ListResultSet;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -38,6 +39,7 @@ use Str;
 class SeriesController extends Controller
 {
     use BuildsListPages;
+    use LoadsEmbeds;
 
     protected string $prefix;
 
@@ -863,129 +865,13 @@ class SeriesController extends Controller
     }
 
     /**
-     * Load the embeds and add to the UI
+     * The embed loader routes serve series; a series' embeds come from its
+     * description and its entities' links.
      *
-     * @throws \Throwable
+     * @return Builder<Series>
      */
-    public function loadEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
+    protected function embedQuery(): Builder
     {
-        // load the series
-        if (!($series = Series::find($id)) || !$series->isVisibleTo($this->user)) {
-            flash()->error('Error', 'No such series');
-
-            return back();
-        }
-
-        // handle the request if ajax
-        if ($request->ajax()) {
-            // extract all the links from the series body and convert into embeds
-            $embedExtractor->setLayout("medium");
-            $embeds = $embedExtractor->getEmbedsForSeries($series);
-
-            return [
-                'Message' => 'Added embeds to series page.',
-                'Success' => view('embeds.playlist')
-                    ->with(compact('embeds'))
-                    ->render(),
-            ];
-        }
-        flash()->success('Error', 'You cannot load embeds directly');
-
-        return back();
-    }
-
-    /**
-     * Load the embeds and add to the UI
-     *
-     * @throws \Throwable
-     */
-    public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
-    {
-        // load the series
-        if (!($series = Series::find($id)) || !$series->isVisibleTo($this->user)) {
-            flash()->error('Error', 'No such series');
-
-            return back();
-        }
-
-        // extract all the links from the series and convert into embeds
-        $embedExtractor->setLayout("small");
-        $allEmbeds = $embedExtractor->getEmbedsForSeries($series);
-        // Only use the first embed for minimal display
-        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
-
-        // handle the request if ajax
-        if ($request->ajax()) {
-            return [
-                'Message' => 'Added embeds to series page.',
-                'Success' => view('embeds.minimal-playlist')
-                    ->with(compact('embeds'))
-                    ->render(),
-            ];
-        }
-        flash()->success('Error', 'You cannot load embeds directly');
-
-        return back();
-    }
-
-    /**
-     * Load the full (medium-size) embeds by slug as JSON (no auth required).
-     */
-    public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
-    {
-        if (!($series = Series::with('entities.links')->where('slug', $slug)->first()) || !$series->isVisibleTo($this->user)) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Series not found'], 404);
-            }
-            flash()->error('Error', 'No such series');
-            return back();
-        }
-
-        $embedExtractor->setLayout('medium');
-        $embeds = $embedExtractor->getEmbedsForSeries($series);
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data' => $embeds,
-                'message' => 'Embeds loaded successfully',
-            ]);
-        }
-
-        flash()->success('Error', 'You cannot load embeds directly');
-        return back();
-    }
-
-    /**
-     * Load the minimal embeds by slug (no auth required)
-     *
-     * @throws \Throwable
-     */
-    public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
-    {
-        // load the series by slug
-        if (!($series = Series::where('slug', $slug)->first()) || !$series->isVisibleTo($this->user)) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Series not found'], 404);
-            }
-            flash()->error('Error', 'No such series');
-            return back();
-        }
-
-        // extract all the links from the series and convert into embeds
-        $embedExtractor->setLayout("small");
-        $allEmbeds = $embedExtractor->getEmbedsForSeries($series);
-        // Only return the first embed for minimal display
-        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
-
-        // return JSON response for AJAX/API calls
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data' => $embeds,
-                'message' => 'Embeds loaded successfully'
-            ]);
-        }
-
-        flash()->success('Error', 'You cannot load embeds directly');
-        return back();
+        return Series::with('entities.links');
     }
 }

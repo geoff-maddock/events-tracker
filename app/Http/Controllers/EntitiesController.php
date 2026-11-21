@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\BuildsListPages;
+use App\Http\Controllers\Concerns\LoadsEmbeds;
 use App\Filters\EntityFilters;
 use App\Http\Requests\EntityRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
@@ -46,6 +47,7 @@ use Symfony\Component\HttpFoundation\Response;
 class EntitiesController extends Controller
 {
     use BuildsListPages;
+    use LoadsEmbeds;
 
     protected string $prefix;
 
@@ -801,132 +803,6 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Load the embeds and add to the UI
-     *
-     * @throws \Throwable
-     */
-    public function loadEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
-    {
-        // load the entity
-        if (!$entity = Entity::find($id)) {
-            flash()->error('Error', 'No such entity');
-
-            return back();
-        }
-
-        // extract all the links from the entity and convert into embeds
-        $embeds = $embedExtractor->getEmbedsForEntity($entity);
-
-        // handle the request if ajax
-        if ($request->ajax()) {
-            return [
-                'Message' => 'Added embeds to entity page.',
-                'Success' => view('embeds.playlist')
-                    ->with(compact('embeds'))
-                    ->render(),
-            ];
-        }
-        flash()->success('Error', 'You cannot load embeds directly');
-
-        return back();
-    }
-
-    /**
-     * Load the embeds and add to the UI
-     *
-     * @throws \Throwable
-     */
-    public function loadMinimalEmbeds(int $id, OembedExtractor $embedExtractor, Request $request): RedirectResponse | array
-    {
-        // load the entity
-        if (!$entity = Entity::find($id)) {
-            flash()->error('Error', 'No such entity');
-
-            return back();
-        }
-
-        // extract all the links from the entity and convert into embeds
-        $embedExtractor->setLayout("small");
-        $allEmbeds = $embedExtractor->getEmbedsForEntity($entity);
-        // Only use the first embed for minimal display
-        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
-
-        // handle the request if ajax
-        if ($request->ajax()) {
-            return [
-                'Message' => 'Added embeds to entity page.',
-                'Success' => view('embeds.minimal-playlist')
-                    ->with(compact('embeds'))
-                    ->render(),
-            ];
-        }
-        flash()->success('Error', 'You cannot load embeds directly');
-
-        return back();
-    }
-
-    /**
-     * Load the full (medium-size) embeds by slug as JSON (no auth required).
-     */
-    public function loadEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
-    {
-        if (!$entity = Entity::with('links')->where('slug', $slug)->first()) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Entity not found'], 404);
-            }
-            flash()->error('Error', 'No such entity');
-            return back();
-        }
-
-        $embedExtractor->setLayout('medium');
-        $embeds = $embedExtractor->getEmbedsForEntity($entity);
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data' => $embeds,
-                'message' => 'Embeds loaded successfully',
-            ]);
-        }
-
-        flash()->success('Error', 'You cannot load embeds directly');
-        return back();
-    }
-
-    /**
-     * Load the minimal embeds by slug (no auth required)
-     *
-     * @throws \Throwable
-     */
-    public function loadMinimalEmbedsBySlug(string $slug, OembedExtractor $embedExtractor, Request $request): JsonResponse | RedirectResponse
-    {
-        // load the entity by slug
-        if (!$entity = Entity::where('slug', $slug)->first()) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Entity not found'], 404);
-            }
-            flash()->error('Error', 'No such entity');
-            return back();
-        }
-
-        // extract all the links from the entity and convert into embeds
-        $embedExtractor->setLayout("small");
-        $allEmbeds = $embedExtractor->getEmbedsForEntity($entity);
-        // Only return the first embed for minimal display
-        $embeds = !empty($allEmbeds) ? [$allEmbeds[0]] : [];
-
-        // return JSON response for AJAX/API calls
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data' => $embeds,
-                'message' => 'Embeds loaded successfully'
-            ]);
-        }
-
-        flash()->success('Error', 'You cannot load embeds directly');
-        return back();
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Entity $entity): View|RedirectResponse
@@ -1503,5 +1379,15 @@ class EntitiesController extends Controller
             'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'userOptions' => ['' => ''] + Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
         ];
+    }
+
+    /**
+     * The embed loader routes serve entities; an entity's embeds come from its links.
+     *
+     * @return Builder<Entity>
+     */
+    protected function embedQuery(): Builder
+    {
+        return Entity::with('links');
     }
 }

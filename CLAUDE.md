@@ -55,6 +55,8 @@ PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part 
 
 **List pages.** A filterable, sortable list action is `startList()`, its own query tail (eager loads, `paginate`), then `finishList()` for the view data, from the `BuildsListPages` trait (`app/Http/Controllers/Concerns`); `clearList()` backs the reset links. `EventsController`, `SeriesController`, `ThreadsController` and `EntitiesController` each wrap these in their own `start…List()` helper. The other list controllers call the trait directly. Don't hand-roll the session store and list builder set-up in a new action; a few `PagesController` actions still do and are being moved over (#2406).
 
+**Embed loaders.** The `load-embeds` / `embeds` routes of events, entities and series are one implementation, the `LoadsEmbeds` trait; a controller supplies `embedQuery()`.
+
 **Entity is polymorphic-ish.** A single `Entity` model represents venues, artists, promoters, DJs, producers, etc. What it *does* is a `Role` (venue, artist, dj, promoter, ...; many-to-many). What it *is* is an `EntityType` (Space, Group, Individual, Interest). There's no venue controller: `/venue`, `/venue/{slug}` and the other role routes go to `EntitiesController` (`indexRoles`, `showByRoleAndSlug`). Don't introduce per-subtype models.
 
 **Events ↔ Entities ↔ Series ↔ Tags** are many-to-many with pivot tables, plus polymorphic `Photo`, `Tag`, `Comment`, `Like` relations attached to multiple parent types. Check existing relations on the model before adding new ones; duplication here is easy.

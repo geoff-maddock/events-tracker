@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One implementation of the embed loader routes (#2406)
+- Events, entities and series each had the same four actions (`loadEmbeds`,
+  `loadMinimalEmbeds` and the two `BySlug` forms), twelve methods in all. They are now the
+  `LoadsEmbeds` trait (`app/Http/Controllers/Concerns`); each controller only says which
+  model it serves in `embedQuery()`. About 340 lines removed; routes and responses unchanged.
+- Opening one of these routes directly (not as the page's ajax call) no longer looks the
+  embeds up before sending the visitor back.
+- `tests/Feature/EmbedLoaderRoutesTest.php` pins all twelve routes; it passes against the
+  old code too.
+
 ### Remaining event list actions moved onto the shared list-page scaffold (#2406)
 - The iCal feed, the text feed, the brief list, the two exports and the attending iCal feed
   now start their lists the way every other event list does; the reset links use
