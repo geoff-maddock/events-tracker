@@ -41,8 +41,6 @@ class EventTypesController extends Controller
 
     public function __construct(EventTypeFilters $filter)
     {
-        // TODO Handle API auth
-        // $this->middleware('auth', ['except' => ['index', 'show']]);
         $this->filter = $filter;
 
         // prefix for session storage

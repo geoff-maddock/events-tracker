@@ -4,6 +4,18 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Pruning: dead code (#2412)
+- Removed code nothing calls: the old `EmbedExtractor` service with its test and its package
+  (`jamband/ripple`; `OembedExtractor` is the one in use), the `UserBanned` event and its
+  listener, the `AccessType` model, `OwnableInterface`, three unused API resources, the empty
+  `app/Handlers` folders, two unused email views, and unreferenced methods on `Entity`,
+  `Event`, `Series`, `Thread`, `User`, `Group`, `Permission`, `Menu` and `Photo`.
+- Removed unused session helpers from `TagsController` and `PagesController`, and
+  `$this->middleware('auth')` calls made inside actions, where they do nothing. Each of those
+  actions is already guarded in its controller's constructor.
+- The two extra `OembedExtractor` docs are gone; `docs/OembedExtractor.md` is the one kept.
+- No change in behaviour. The deploy needs `composer install` (one package removed).
+
 ### One visibility rule for events, series and threads (#2408)
 - `Event`, `Series` and `Thread` each wrote out the same list scope and single-record check.
   They now share the `HasVisibility` trait (`app/Models/Concerns`): `visible($user)`,

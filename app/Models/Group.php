@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -22,11 +21,6 @@ class Group extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
-    }
-
-    public function givePermissionTo(Permission $permission): Model
-    {
-        return $this->permissions()->save($permission);
     }
 
     public function assignPermission(string $permission): Model
@@ -50,29 +44,5 @@ class Group extends Model
     public function getPermissionListAttribute(): array
     {
         return $this->permissions->pluck('id')->all();
-    }
-
-    /**
-     * Return a collection of groups with the passed user.
-     */
-    public static function getByUser(string $name): Builder
-    {
-        // get a list of groups that have the passed user
-        return self::whereHas('users', function ($q) use ($name) {
-            $q->where('name', '=', $name);
-        });
-    }
-
-    /**
-     * Return a collection of groups with the passed permission.
-     */
-    public static function getByPermission(string $name): Builder
-    {
-        // get a list of groups that have the passed permission
-        $groups = self::whereHas('permissions', function ($q) use ($name) {
-            $q->where('name', '=', $name);
-        });
-
-        return $groups;
     }
 }

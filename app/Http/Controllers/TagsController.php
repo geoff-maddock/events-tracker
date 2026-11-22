@@ -426,58 +426,6 @@ class TagsController extends Controller
     }
 
     /**
-     * Get user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getAttribute(Request $request, $attribute, $default = null)
-    {
-        return $request->session()
-            ->get($this->prefix.$attribute, $default);
-    }
-
-    /**
-     * Get session filters.
-     *
-     * @return array
-     */
-    public function getFilters(Request $request)
-    {
-        return $this->getAttribute($request, 'filters', $this->getDefaultFilters());
-    }
-
-    /**
-     * Get the default sort array.
-     *
-     * @return array
-     */
-    public function getDefaultSort()
-    {
-        return ['id', 'desc'];
-    }
-
-    /**
-     * Get the default filters array.
-     *
-     * @return array
-     */
-    public function getDefaultFilters()
-    {
-        return [];
-    }
-
-    /**
-     * Set user session attribute.
-     */
-    public function setAttribute(Request $request, string $attribute, mixed $value): void
-    {
-        $request->session()->put($this->prefix.$attribute, $value);
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Tag $tag, TagRequest $request): RedirectResponse

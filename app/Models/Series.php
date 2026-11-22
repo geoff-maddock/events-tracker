@@ -501,18 +501,6 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
-     * Return a collection of series with the passed event type.
-     * @return Builder<Series>
-     **/
-    public static function getByType(string $slug): Builder
-    {
-        // get a list of series that have the passed tag
-        return self::whereHas('eventType', function ($q) use ($slug) {
-            $q->where('name', '=', $slug);
-        });
-    }
-
-    /**
      * Return a collection of series with the passed venue.
      * @return Builder<Series>
      **/
@@ -876,14 +864,6 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
-     * Returns the date of the next occurrence of this template.
-     */
-    public function nextOccurrenceStartDate(): ?Carbon
-    {
-        return $this->cycleFromFoundedAt();
-    }
-
-    /**
      * Returns the date of the next occurence, either actual or scheduled
      */
     public function nextPlannedStartAt(): ?Carbon
@@ -1134,34 +1114,6 @@ class Series extends Eloquent implements HasPhotos
     public function follows(): MorphMany
     {
         return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
-    }
-
-    /**
-     * Returns the format for a calendar entry.
-     */
-    public function getCalendarFormat(): array
-    {
-        /*
-         * [
-         *  title,
-         *  full day,
-         *  start date time, must be a DateTime object or valid DateTime format (http://bit.ly/1z7QWbg)
-         *  end date time,
-         *  id,
-         *  options
-         * ]
-         */
-        return [
-            $this->name,
-            false,
-            $this->nextOccurrenceDate()->format('Y-m-d H:i'),
-            ($this->nextOccurrenceEndDate() ? $this->nextOccurrenceEndDate()->format('Y-m-d H:i') : null),
-            $this->id,
-            [
-                'url' => '/series/'.strtolower($this->slug),
-                'color' => '#99bcdb',
-            ],
-        ];
     }
 
     public function getTitleFormat(): string

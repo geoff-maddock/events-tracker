@@ -181,34 +181,6 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * Return a collection of entities with the role promoter.
-     * @return Builder<Entity>
-     **/
-    public static function getPromoters(): Builder
-    {
-        // get a list of venues
-        $venues = self::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC');
-
-        return $venues;
-    }
-
-    /**
-     * Return a collection of entities with the passed role.
-     * @return Builder<Entity>
-     **/
-    public static function getByRole(string $role): Builder
-    {
-        // get a list of entities that have the passed role
-        $entities = self::whereHas('roles', function ($q) use ($role) {
-            $q->where('slug', '=', strtolower($role));
-        })->orderBy('name', 'ASC');
-
-        return $entities;
-    }
-
-    /**
      * Return a collection of entities with the passed tag.
      * @return Builder<Entity>
      **/
@@ -247,20 +219,6 @@ class Entity extends Eloquent implements HasPhotos
         $entity = self::where('slug', $slug);
 
         return $entity;
-    }
-
-    /**
-     * Return a collection of entities with the passed type.
-     *
-     **/
-    public static function getByType(string $type): Builder
-    {
-        // get a list of entities that have the passed role
-        $entities = self::whereHas('entityType', function ($q) use ($type) {
-            $q->where('name', '=', ucfirst($type));
-        })->orderBy('name', 'ASC');
-
-        return $entities;
     }
 
     public function getRouteKeyName(): string
@@ -762,14 +720,6 @@ class Entity extends Eloquent implements HasPhotos
 
 
     /**
-     * Events that occurred at this venue.
-     */
-    public function eventsAtVenue(): Collection
-    {
-        return Event::where('venue_id', $this->id)->orderBy('start_at', 'ASC')->get();
-    }
-
-    /**
      * Get a ranked list of entities that frequently perform with this entity
      * (other entities related to the same events).
      *
@@ -1159,18 +1109,6 @@ class Entity extends Eloquent implements HasPhotos
             ->where('object_id', '=', $this->id)
             ->where('user_id', '=', $user->id)
             ->first();
-    }
-
-    /**
-     * Returns the users that like the entity.
-     *
-     **/
-    public function likers(): Collection
-    {
-        return User::join('likes', 'users.id', '=', 'follows.user_id')
-            ->where('likes.object_type', 'entity')
-            ->where('likes.object_id', $this->id)
-            ->get();
     }
 
     public function hasRole(string $role): int

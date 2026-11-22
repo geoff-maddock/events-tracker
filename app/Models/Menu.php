@@ -64,16 +64,4 @@ class Menu extends Eloquent
     {
         return $this->hasMany(Blog::class);
     }
-
-    /**
-     * Set the menu_parent attribute.
-     */
-    public function setMenuParent(string $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['menu_parent'] = $value;
-        } else {
-            $this->attributes['menu_parent'] = null;
-        }
-    }
 }

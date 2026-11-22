@@ -294,19 +294,6 @@ class Thread extends Eloquent
     }
 
     /**
-     * Returns the users that like the entity.
-     */
-    public function likers(): Collection
-    {
-        $users = User::join('likes', 'users.id', '=', 'likes.user_id')
-            ->where('likes.object_type', 'thread')
-            ->where('likes.object_id', $this->id)
-            ->get();
-
-        return $users;
-    }
-
-    /**
      * An thread is owned by one forum.
      */
     public function forum(): BelongsTo
@@ -511,17 +498,6 @@ class Thread extends Eloquent
     }
 
     /**
-     * Return a collection of threads with the passed thread category.
-     */
-    public static function getByCategory(string $slug): Builder
-    {
-        // get a list of threads that have the passed category
-        return self::whereHas('threadCategory', function ($q) use ($slug) {
-            $q->where('name', '=', $slug);
-        })->orderBy('name', 'ASC');
-    }
-
-    /**
      * Return a collection of threads with the passed entity.
      */
     public static function getByEntity(string $slug): Builder
@@ -535,15 +511,6 @@ class Thread extends Eloquent
     public function addPhoto(Photo $photo): void
     {
         $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Return the flyer for this thread.
-     */
-    public function getFlyer(): ?Photo
-    {
-        // get a list of threads that start on the passed date
-        return $this->photos()->first();
     }
 
     /**

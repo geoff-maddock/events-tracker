@@ -203,8 +203,6 @@ class MenusController extends Controller
      */
     public function edit(Menu $menu): View
     {
-        $this->middleware('auth');
-
         $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
         $parents = ['' => ''] + Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 

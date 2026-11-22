@@ -16,7 +16,6 @@
 		"symfony/http-client": "^7.0",
 		"league/flysystem": "^3.0",
 		"league/flysystem-aws-s3-v3": "^3.0",
-		"jamband/ripple": "^0.10.3",
 		"intervention/image": "^3.11",
 		"spatie/laravel-sitemap": "^8.0",
 		"laravel/tinker": "^2.10",

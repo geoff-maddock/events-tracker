@@ -802,16 +802,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
-     * Events that were created by the user.
-     */
-    public function createdEvents(): Collection
-    {
-        $events = $this->events()->where('created_at', '=', Auth::user())->orderBy('start_at', 'ASC')->get();
-
-        return $events;
-    }
-
-    /**
      * A user can have many events.
      *
      * @return HasMany<Event, $this>
@@ -852,11 +842,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
         }
 
         return (int) $this->profile?->setting_public_profile === 1;
-    }
-
-    public function hasPermission(string $permission): bool
-    {
-        return $this->getPermissions()->contains('name', $permission);
     }
 
     public function assignGroup(string $group): Model

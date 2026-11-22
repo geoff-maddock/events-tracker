@@ -807,8 +807,6 @@ class EntitiesController extends Controller
      */
     public function edit(Entity $entity): View|RedirectResponse
     {
-        $this->middleware('auth');
-
         if ($this->user->cannot('update', $entity)) {
             \Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this entity.', 'level' => 'error']);
 

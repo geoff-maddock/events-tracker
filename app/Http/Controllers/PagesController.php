@@ -402,40 +402,8 @@ class PagesController extends Controller
                     );
     }
 
-    /**
-     * Get user session attribute.
-     */
-    protected function getAttribute(Request $request, string $attribute, mixed $default = null): mixed
-    {
-        return $request->session()
-            ->get($this->prefix.$attribute, $default);
-    }
-
-    /**
-     * Get the default filters array.
-     */
-    protected function getDefaultFilters(): array
-    {
-        return [];
-    }
-
-    /**
-     * Set user session attribute.
-     *
-     * @param string $attribute
-     * @param mixed  $value
-     *
-     * @return void
-     */
-    protected function setAttribute($attribute, $value, Request $request)
-    {
-        $request->session()->put($this->prefix.$attribute, $value);
-    }
-
     public function tools(Request $request): View|RedirectResponse
     {
-        $this->middleware('auth');
-
         $user = $request->user();
         if (!$user->can('show_admin')) {
             flash()->error('Unauthorized', 'You cannot view the admin tools.');

@@ -170,8 +170,6 @@ class EntityTypesController extends Controller
      */
     public function edit(EntityType $entityType): View
     {
-        $this->middleware('auth');
-
         return view('entityTypes.edit-tw', compact('entityType'));
     }
 

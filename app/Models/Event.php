@@ -9,7 +9,6 @@ use App\Services\PriceLabel;
 use App\Contracts\HasPhotos;
 use App\Filters\QueryFilter;
 use Carbon\Carbon;
-use DateTime;
 use Storage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -1092,18 +1091,6 @@ class Event extends Model implements HasPhotos
     }
 
     /**
-     * Return a collection of events with the passed event type.
-     * @return Builder<Event>
-     */
-    public static function getByType(?string $slug): Builder
-    {
-        // get a list of events that have the passed tag
-        return self::whereHas('eventType', function (Builder $q) use ($slug) {
-            $q->where('name', '=', $slug);
-        });
-    }
-
-    /**
      * Return a collection of events with the passed series.
      * @return Builder<Event>
      */
@@ -1173,17 +1160,6 @@ class Event extends Model implements HasPhotos
     }
 
     /**
-     * Returns the review from the passed use if there is one.
-     *
-     **/
-    public function getEventReview(User $user): ?EventReview
-    {
-        return EventReview::where('event_id', '=', $this->id)
-            ->where('user_id', '=', $user->id)
-            ->first();
-    }
-
-    /**
      * Returns a count of reviews.
      *
      * @return int
@@ -1220,35 +1196,9 @@ class Event extends Model implements HasPhotos
             ->avg('rating');
     }
 
-    /**
-     * Return a collection of events that begin on the passed date.
-     * @return Builder<Event>
-     */
-    public static function getByStartAt(?DateTime $date): Builder
-    {
-        // get a list of events that start on the passed date
-        $cdate_yesterday = Carbon::parse($date)->subDay();
-        $cdate_tomorrow = Carbon::parse($date)->addDay();
-
-        return self::where('start_at', '>', $cdate_yesterday->toDateString())
-            ->where('start_at', '<', $cdate_tomorrow->toDateString())
-            ->with('visibility')
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC');
-    }
-
     public function addPhoto(Photo $photo): void
     {
         $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Return the flyer for this event.
-     *
-     **/
-    public function getFlyer(): ?Photo
-    {
-        return $this->photos()->first();
     }
 
     /**
@@ -1403,19 +1353,6 @@ class Event extends Model implements HasPhotos
             $format .= ' from '.$this->start_at->format($dateFormat).' to '.$this->last_start_at->format($dateFormat);
         } else {
             $format .= ' on '.$this->start_at->format('D F jS');
-        }
-
-        return $format;
-    }
-
-    public function getDateFirstTitleFormat(): ?string
-    {
-        $format = $this->start_at->format('D F jS').' '.$this->name;
-
-        // include the location of the event
-        if ($this->venueLabel()) {
-            $format .= ' at ';
-            $format .= $this->venueLabel();
         }
 
         return $format;

@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\UserBanned;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Services\Signup\SignupRiskScorer;

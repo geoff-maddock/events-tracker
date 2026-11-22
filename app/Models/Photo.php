@@ -116,23 +116,6 @@ class Photo extends Eloquent
         return $this->belongsToMany(Blog::class)->withTimestamps();
     }
 
-    public static function fromForm(UploadedFile $file): Photo
-    {
-        $name = time().$file->getClientOriginalName();
-
-        $photo = new static();
-        $photo->name = $name;
-        $photo->path = $photo->baseDir.'/'.$name;
-        $photo->thumbnail = $photo->baseDir.'/'.$name;
-        $photo->caption = $file->getClientOriginalName();
-
-        $file->move($photo->baseDir, $name);
-
-        $photo->save();
-
-        return $photo;
-    }
-
     public function move(UploadedFile $file): Photo
     {
         try {
