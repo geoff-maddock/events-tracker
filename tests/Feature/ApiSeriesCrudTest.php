@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Event;
 use App\Models\EventType;
 use App\Models\OccurrenceType;
+use App\Models\Photo;
 use App\Models\Series;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -137,5 +139,18 @@ class ApiSeriesCrudTest extends TestCase
 
         $this->assertContains($response->status(), [302, 401, 403]);
         $this->assertNotNull(Series::find($series->id));
+    }
+
+    public function test_store_from_an_event_links_it_and_copies_its_photos(): void
+    {
+        $event = Event::factory()->create(['created_by' => $this->user->id, 'series_id' => null]);
+        $photo = Photo::factory()->create(['is_primary' => 1]);
+        $event->photos()->attach($photo->id);
+
+        $this->postJson('/api/series', $this->validPayload(['name' => 'ZZ-From-Event', 'eventLinkId' => $event->id]))->assertOk();
+
+        $series = Series::where('name', 'ZZ-From-Event')->firstOrFail();
+        $this->assertSame($series->id, $event->fresh()->series_id);
+        $this->assertSame([$photo->id], $series->photos->modelKeys());
     }
 }
