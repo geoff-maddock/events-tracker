@@ -149,7 +149,7 @@ trait LoadsEmbeds
      */
     private function embedsNotAPage(): RedirectResponse
     {
-        flash()->success('Error', 'You cannot load embeds directly');
+        flash()->error('Error', 'You cannot load embeds directly');
 
         return back();
     }

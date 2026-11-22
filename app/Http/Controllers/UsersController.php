@@ -725,7 +725,7 @@ class UsersController extends Controller
             ->get();
 
         if (count($users) < 1) {
-            flash()->success('Error', 'There are no users to purge.');
+            flash()->error('Error', 'There are no users to purge.');
 
             return back();
         }

@@ -295,10 +295,13 @@ class Post extends Eloquent
      * Return the primary photo for this post.
      *
      **/
-    public function getPrimaryPhoto(): Photo
+    public function getPrimaryPhoto(): ?Photo
     {
-        // gets the first photo related to this post
-        return $this->photos()->where('photos.is_primary', '=', '1')->first();
+        // a post need not have a photo
+        /** @var Photo|null $photo */
+        $photo = $this->photos()->where('photos.is_primary', '=', '1')->first();
+
+        return $photo;
     }
 
     /**

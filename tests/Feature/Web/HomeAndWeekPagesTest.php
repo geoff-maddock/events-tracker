@@ -158,4 +158,17 @@ class HomeAndWeekPagesTest extends TestCase
         $this->assertFalse($ids->contains($tomorrow->id));
         $this->assertStringNotContainsString('date(', strtolower(Event::today()->toSql()));
     }
+
+    public function test_an_event_card_offers_tickets_once(): void
+    {
+        Event::factory()->create([
+            'name' => 'ZZ Ticketed Show', 'start_at' => now()->addDays(2),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'ticket_link' => 'https://tickets.example.test/zz',
+        ]);
+
+        // the grid card of the events list (the day views use a different card)
+        $html = $this->get('/events')->assertOk()->assertSee('ZZ Ticketed Show')->getContent();
+
+        $this->assertSame(1, substr_count($html, 'Buy Tickets</span>'));
+    }
 }

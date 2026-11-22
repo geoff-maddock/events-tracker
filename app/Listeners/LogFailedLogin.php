@@ -53,9 +53,10 @@ class LogFailedLogin
             $email = $event->credentials['email'];
             $user = $event->user;
 
-            // a mail failure must not turn a failed login into a 500
+            // queued, so the login response does not wait on the mail server; and a
+            // failure to queue must not turn a failed login into a 500
             try {
-                Mail::to($email)->send(new LoginFailure($url, $site, $admin_email, $reply_email, $user, $fails));
+                Mail::to($email)->queue(new LoginFailure($url, $site, $admin_email, $reply_email, $user, $fails));
             } catch (\Throwable $e) {
                 report($e);
             }

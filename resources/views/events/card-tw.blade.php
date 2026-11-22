@@ -222,17 +222,6 @@
                 <i class="bi bi-link-45deg" aria-hidden="true"></i>
             </a>
             @endif
-
-            <!-- Ticket Link -->
-            @if ($ticket = $event->ticket_link)
-            <a href="{{ $event->getTicketTrackingLink() }}" target="_blank" rel="noopener"
-                class="inline-flex items-center gap-1 px-2 py-2 rounded text-muted-foreground hover:text-primary transition-colors"
-                title="Buy tickets for {{ $event->name }}"
-                aria-label="Buy tickets for {{ $event->name }}">
-                <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
-                <span class="text-sm">Buy Tickets</span>
-            </a>
-            @endif
         </div>
 
         <!-- Series Link -->
