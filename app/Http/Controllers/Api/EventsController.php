@@ -563,6 +563,14 @@ class EventsController extends Controller
 
         $event->tags()->attach($syncArray);
         $event->entities()->attach($request->input('entity_list'));
+
+        // the venue and promoter are related entities too, as on the web form
+        foreach (['venue_id', 'promoter_id'] as $field) {
+            if ($request->input($field)) {
+                $event->entities()->syncWithoutDetaching($request->input($field));
+            }
+        }
+
         $event->syncShowings($showings);
 
         // add to activity log

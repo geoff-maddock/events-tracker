@@ -282,19 +282,11 @@ class EntitiesController extends Controller
             $msg .= ' Added tag '.$tag->name.'.';
         }
 
-        // check the elements in the alias list, and if any don't match, add the alias
-        foreach ($aliasArray as $key => $alias) {
-            if (!is_numeric($alias) || DB::table('aliases')->where('id', $alias)->count() === 0) {
-                $newAlias = new Alias();
-                $newAlias->name = ucwords(strtolower($alias));
-                $newAlias->save();
-
-                $aliasSyncArray[] = $newAlias->id;
-
-                $msg .= ' Added alias '.$alias.'.';
-            } else {
-                $aliasSyncArray[$key] = $alias;
-            }
+        // ids and names both resolve to an alias; only an unknown name creates one
+        $aliases = Alias::resolveList($aliasArray);
+        $aliasSyncArray = $aliases->modelKeys();
+        foreach ($aliases->filter(fn (Alias $alias) => $alias->wasRecentlyCreated) as $alias) {
+            $msg .= ' Added alias '.$alias->name.'.';
         }
 
         $entity = $entity->create($input);
@@ -416,26 +408,14 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Resolve a list of alias identifiers to ids, creating any aliases that
-     * don't already exist by id.
+     * Resolve a list of alias ids and names to ids, creating only the names
+     * that no alias has yet.
+     *
+     * @return array<int, int>
      */
     private function resolveAliasIds(array $aliasArray): array
     {
-        $aliasSyncArray = [];
-
-        foreach ($aliasArray as $key => $alias) {
-            if (!Alias::find($alias)) {
-                $newAlias = new Alias();
-                $newAlias->name = ucwords(strtolower($alias));
-                $newAlias->save();
-
-                $aliasSyncArray[strtolower($alias)] = $newAlias->id;
-            } else {
-                $aliasSyncArray[$key] = $alias;
-            }
-        }
-
-        return $aliasSyncArray;
+        return Alias::resolveList($aliasArray)->modelKeys();
     }
 
     /**

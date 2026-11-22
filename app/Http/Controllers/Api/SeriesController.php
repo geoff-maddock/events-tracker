@@ -262,6 +262,9 @@ class SeriesController extends Controller
             if ($event && ($event->ownedBy($this->user) || $this->user->isAdmin())) {
                 $event->series_id = $series->id;
                 $event->save();
+
+                // the new series starts with the event's photos, as on the web form
+                $series->photos()->attach($event->photos->pluck('id')->toArray());
             }
         }
 

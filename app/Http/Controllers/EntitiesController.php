@@ -37,7 +37,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -508,19 +507,11 @@ class EntitiesController extends Controller
             $msg .= ' Added tag '.$tag->name.'.';
         }
 
-        // check the elements in the alias list, and if any don't match, add the alias
-        foreach ($aliasArray as $key => $alias) {
-            if (!is_numeric($alias) || DB::table('aliases')->where('id', $alias)->count() === 0) {
-                $newAlias = new Alias();
-                $newAlias->name = ucwords(strtolower($alias));
-                $newAlias->save();
-
-                $aliasSyncArray[] = $newAlias->id;
-
-                $msg .= ' Added alias '.$alias.'.';
-            } else {
-                $aliasSyncArray[$key] = $alias;
-            }
+        // ids and names both resolve to an alias; only an unknown name creates one
+        $aliases = Alias::resolveList($aliasArray);
+        $aliasSyncArray = $aliases->modelKeys();
+        foreach ($aliases->filter(fn (Alias $alias) => $alias->wasRecentlyCreated) as $alias) {
+            $msg .= ' Added alias '.$alias->name.'.';
         }
 
         $entity = $entity->create($input);
@@ -850,19 +841,11 @@ class EntitiesController extends Controller
             $msg .= ' Added tag '.$tag->name.'.';
         }
 
-        // check the elements in the alias list, and if any don't match, add the alias
-        foreach ($aliasArray as $key => $alias) {
-            if (!is_numeric($alias) || !$newAlias = Alias::find($alias)) {
-                $newAlias = new Alias();
-                $newAlias->name = ucwords(strtolower($alias));
-                $newAlias->save();
-
-                $aliasSyncArray[strtolower($alias)] = $newAlias->id;
-
-                $msg .= ' Added alias '.$alias.'.';
-            } else {
-                $aliasSyncArray[$key] = $alias;
-            }
+        // ids and names both resolve to an alias; only an unknown name creates one
+        $aliases = Alias::resolveList($aliasArray);
+        $aliasSyncArray = $aliases->modelKeys();
+        foreach ($aliases->filter(fn (Alias $alias) => $alias->wasRecentlyCreated) as $alias) {
+            $msg .= ' Added alias '.$alias->name.'.';
         }
 
         $entity->tags()->sync($syncArray);

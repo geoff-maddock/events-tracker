@@ -72,4 +72,49 @@ class ApiEntityAliasSyncTest extends TestCase
         // ...and no duplicate alias row was created.
         $this->assertSame($aliasCountBefore, Alias::count());
     }
+
+    public function test_a_name_that_starts_with_digits_is_a_name_not_an_id(): void
+    {
+        $other = Alias::create(['name' => 'Someone Else']);
+        $entity = Entity::factory()->create(['created_by' => $this->user->id, 'slug' => 'zz-alias-target']);
+
+        // "{id} State" used to be coerced to the id in front of it
+        $name = $other->id.' State';
+        $this->putJson('/api/entities/'.$entity->slug, $this->payload(['slug' => $entity->slug, 'alias_list' => [$name]]))->assertOk();
+
+        $this->assertSame([$name], $entity->fresh()->aliases->pluck('name')->all());
+    }
+
+    public function test_an_alias_name_that_exists_is_reused_whatever_its_case(): void
+    {
+        $alias = Alias::create(['name' => 'Dj Sample']);
+        $entity = Entity::factory()->create(['created_by' => $this->user->id, 'slug' => 'zz-alias-target']);
+
+        foreach (['store' => fn (array $list) => $this->postJson('/api/entities', $this->payload(['alias_list' => $list])),
+            'update' => fn (array $list) => $this->putJson('/api/entities/'.$entity->slug, $this->payload(['slug' => $entity->slug, 'alias_list' => $list])),
+        ] as $name => $request) {
+            $request(['DJ SAMPLE', 'dj sample', 'Brand New Name'])->assertOk();
+
+            $this->assertSame(1, Alias::whereRaw('LOWER(name) = ?', ['dj sample'])->count(), $name);
+            $this->assertSame(1, Alias::where('name', 'Brand New Name')->count(), $name);
+        }
+
+        $this->assertEqualsCanonicalizing(
+            [$alias->id, Alias::where('name', 'Brand New Name')->value('id')],
+            $entity->fresh()->aliases->modelKeys()
+        );
+    }
+
+    public function test_the_web_form_reuses_and_creates_aliases_the_same_way(): void
+    {
+        $alias = Alias::create(['name' => 'Dj Sample']);
+
+        $this->actingAs($this->user, 'web')->post('/entities', $this->payload([
+            'name' => 'ZZ Web Alias Entity', 'alias_list' => [(string) $alias->id, 'dj sample', '99 Problems'],
+        ]))->assertSessionHasNoErrors();
+
+        $entity = Entity::where('name', 'ZZ Web Alias Entity')->firstOrFail();
+        $this->assertEqualsCanonicalizing(['Dj Sample', '99 Problems'], $entity->aliases->pluck('name')->all());
+        $this->assertSame(1, Alias::whereRaw('LOWER(name) = ?', ['dj sample'])->count());
+    }
 }

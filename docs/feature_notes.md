@@ -4,6 +4,19 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Aliases and API creates match the web form (#2398)
+- Entity aliases are resolved in one place, `Alias::resolveList()`, for the web form and the
+  API. A name that starts with digits ("808 State") is a name, not an alias id; the API update
+  used to treat it as the id. A name some alias already has, in any letter case, reuses that
+  alias instead of adding a duplicate row.
+- A migration merges the alias rows that share a name: the earliest is kept, entities linked to
+  a later copy are linked to it instead, the copies are deleted, and the name gets a unique
+  index. No entity loses or gains an alias name. Run `php artisan migrate` on deploy.
+- Creating an event through the API relates its venue and promoter to the event, as the web
+  form does.
+- Creating a series through the API from an event (`eventLinkId`) copies the event's photos to
+  the series, as the web form does.
+
 ### Small fixes (#2398)
 - An event card showed "Buy Tickets" twice; it now shows it once, beside the price.
 - New pages for 403 (not allowed), 429 (too many requests) and 500 (server error), in place of

@@ -267,4 +267,19 @@ class ApiEventsCrudTest extends TestCase
         $this->assertContains($response->status(), [302, 401, 403]);
         $this->assertNotNull(Event::find($event->id));
     }
+
+    public function test_store_relates_the_venue_and_promoter_to_the_event(): void
+    {
+        $venue = \App\Models\Entity::factory()->create(['entity_status_id' => \App\Models\EntityStatus::ACTIVE]);
+        $promoter = \App\Models\Entity::factory()->create(['entity_status_id' => \App\Models\EntityStatus::ACTIVE]);
+        $artist = \App\Models\Entity::factory()->create(['entity_status_id' => \App\Models\EntityStatus::ACTIVE]);
+
+        $this->postJson('/api/events', $this->validPayload([
+            'name' => 'ZZ-Venue-Event', 'venue_id' => $venue->id, 'promoter_id' => $promoter->id,
+            'entity_list' => [$artist->id, $venue->id],
+        ]))->assertOk();
+
+        $event = \App\Models\Event::where('name', 'ZZ-Venue-Event')->firstOrFail();
+        $this->assertEqualsCanonicalizing([$artist->id, $venue->id, $promoter->id], $event->entities()->pluck('entities.id')->all());
+    }
 }
