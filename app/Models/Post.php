@@ -79,6 +79,13 @@ use Illuminate\Support\Facades\Auth;
  */
 class Post extends Eloquent
 {
+    use \App\Models\Concerns\HasLikeCounter;
+
+    protected function likeType(): string
+    {
+        return 'post';
+    }
+
     use HasFactory;
     use \App\Models\Concerns\SyncsEntities;
 

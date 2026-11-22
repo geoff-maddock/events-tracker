@@ -16,6 +16,18 @@ A more detailed description of new features and changes to the application.
 - "calender" is now "calendar" in the default page description and site subtitle.
 - `Post::getPrimaryPhoto()` is declared nullable, which it always was.
 
+### Likes count each person once (#2398)
+- Liking a thread or post twice no longer adds a second like or raises the count; unliking
+  lowers it only when a like was there. The like actions use the same access rule as the
+  thread page.
+- A migration removes the existing duplicate likes, adds a unique index on
+  (`user_id`, `object_type`, `object_id`) and sets the `likes` counters on threads and posts
+  from the rows. Run `php artisan migrate` on deploy. Some like counts will change to the
+  true number.
+- Follows get the same rule: a second migration removes duplicate follows and makes the index
+  on (`user_id`, `object_type`, `object_id`) unique. Every follow action now creates the row
+  only if it is not there, so a double click cannot fail on the index.
+
 ### Pruning: Twitter posting and the predis package removed (#2412)
 - Twitter posting is gone: the `dailyTweet` command and its schedule entry, the
   `events/{id}/tweet` and `entities/{id}/tweet` routes (no page linked to them), the

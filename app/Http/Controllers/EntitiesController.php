@@ -977,11 +977,8 @@ class EntitiesController extends Controller
         }
 
         // add the following response
-        $follow = new Follow();
-        $follow->object_id = $id;
-        $follow->user_id = $this->user->id;
-        $follow->object_type = 'entity'; // 1 = Attending, 2 = Interested, 3 = Uninterested, 4 = Cannot Attend
-        $follow->save();
+        // firstOrCreate: two clicks at once must not trip the one-follow-per-user index
+        $follow = Follow::firstOrCreate(['object_type' => 'entity', 'object_id' => $id, 'user_id' => $this->user->id]);
 
         Log::info('User '.$id.' is following '.$entity->name);
 

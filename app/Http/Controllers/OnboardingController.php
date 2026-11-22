@@ -126,11 +126,7 @@ class OnboardingController extends Controller
                 continue;
             }
 
-            $follow = new Follow();
-            $follow->user_id = $user->id;
-            $follow->object_type = $type;
-            $follow->object_id = $id;
-            $follow->save();
+            Follow::firstOrCreate(['object_type' => $type, 'object_id' => $id, 'user_id' => $user->id]);
 
             $object = $modelClass::find($id);
             if ($object) {
