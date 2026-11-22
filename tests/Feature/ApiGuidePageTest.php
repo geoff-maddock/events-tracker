@@ -22,6 +22,17 @@ class ApiGuidePageTest extends TestCase
             ->assertDontSee('/api/auth/token');
     }
 
+    public function test_api_docs_page_points_swagger_at_the_spec_file(): void
+    {
+        $this->assertFileExists(public_path('postman/schemas/api.yml'));
+
+        $this->get('/api/docs')
+            ->assertOk()
+            ->assertSee('SwaggerUIBundle', false)
+            ->assertSee('postman\/schemas\/api.yml', false)
+            ->assertDontSee('js/swagger.js', false);
+    }
+
     public function test_help_page_links_to_api_guide(): void
     {
         $this->get('/help')
