@@ -374,11 +374,6 @@ Route::get('events/{id}/import-photo', [
     'uses' => '\App\Http\Controllers\EventsController@importPhoto',
 ]);
 
-Route::post('events/{id}/tweet', [
-    'as' => 'events.tweet',
-    'uses' => '\App\Http\Controllers\EventsController@tweet',
-])->middleware('auth');
-
 Route::post('events/{id}/attend', [
     'as' => 'events.attend',
     'uses' => '\App\Http\Controllers\EventsController@attend',
@@ -610,11 +605,6 @@ Route::get('entities/quick-check', [\App\Http\Controllers\EntitiesController::cl
 Route::get('entities/tag/{tag}', [\App\Http\Controllers\EntitiesController::class, 'indexTags'])->name('entities.tag');
 Route::get('entities/alias/{alias}', [\App\Http\Controllers\EntitiesController::class, 'indexAliases'])->name('entities.alias');
 Route::get('entities/slug/{slug}', [\App\Http\Controllers\EntitiesController::class, 'indexSlug'])->name('entities.slug');
-
-Route::post('entities/{id}/tweet', [
-    'as' => 'entities.tweet',
-    'uses' => '\App\Http\Controllers\EntitiesController@tweet',
-])->middleware('auth');
 
 Route::post('entities/{id}/instagram-post', [\App\Http\Controllers\EntitiesController::class, 'postToInstagram'])->name('entities.instagramPost')->middleware('auth');
 Route::post('entities/{id}/instagram-story-post', [\App\Http\Controllers\EntitiesController::class, 'postStoryToInstagram'])->name('entities.instagramStoryPost')->middleware('auth');

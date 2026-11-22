@@ -28,9 +28,8 @@ use Illuminate\Support\Str;
  * clock, so an instant computed in the app's fixed-offset 'Etc/GMT+5' zone shows an
  * hour late for the eight months of the year the timezone actually observes.
  *
- * Note this does not reuse Event::getBriefFormat() or getInstagramFormat():
- * both are shaped for their platform — hashtags, @handles, a 280-character
- * truncation — none of which belong in a Discord embed.
+ * Note this does not reuse Event::getInstagramFormat(): that is shaped for
+ * its platform — hashtags, @handles — none of which belong in a Discord embed.
  */
 class DiscordEmbedBuilder
 {

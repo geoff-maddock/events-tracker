@@ -102,12 +102,6 @@ class Kernel extends ConsoleKernel
         // a weekly test email to the admin; it ran daily, one of the volume levers in #2083
         $schedule->command('adminTest')->weekly()->mondays()->timezone('America/New_York')->at('12:00');
 
-        // send event tweets every day at 8AM
-        // unset means Twitter isn't configured, the same as the '999' placeholder
-        if (filled(config('app.twitter_consumer_key')) && config('app.twitter_consumer_key') !== '999') {
-            $schedule->command('dailyTweet')->daily()->timezone('America/New_York')->at('08:00');
-        }
-
         // update the sitemap once per week
         $schedule->command('sitemap:generate')->daily()->timezone('America/New_York')->at('5:00');
 

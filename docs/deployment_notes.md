@@ -193,7 +193,6 @@ npm run build
 - S3 Storage [RECOMMENDED]
 - Mailgun API key [RECOMMENDED]
 - Facebook API key [OPTIONAL]
-- Twitter API key  [OPTIONAL]
 - AI Provider API key [OPTIONAL]
 
 ## Log in to running app

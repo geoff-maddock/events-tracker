@@ -155,7 +155,6 @@ return [
     'name' => env('APP_NAME', 'Event Repo'),
     'tagline' => env('APP_TAGLINE', 'Event Repository'),
     'default_theme' => 'dark',
-    'twitter_consumer_key' => env('TWITTER_CONSUMER_KEY'),
     'default_hashtag' => env('APP_DEFAULT_HASHTAG', ''),
     'analytics' => env('GOOGLE_ANALYTICS', ''),
     'google_tags' => env('GOOGLE_TAGS', ''),
@@ -222,8 +221,6 @@ return [
 
         // laravel tinker provider
         Laravel\Tinker\TinkerServiceProvider::class,
-
-        NotificationChannels\Twitter\TwitterServiceProvider::class,
 
         // facebook service
         // App\Providers\FacebookServiceProvider::class

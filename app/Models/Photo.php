@@ -173,12 +173,6 @@ class Photo extends Eloquent
         return parent::delete();
     }
 
-    public function getTwitterPath(): string
-    {
-        // return 'storage/'.$this->path;
-        return $this->path;
-    }
-
     public function getStoragePath(): string
     {
         // changed for external / s3 storage

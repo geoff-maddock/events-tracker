@@ -1412,58 +1412,6 @@ class Entity extends Eloquent implements HasPhotos
         return ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $items];
     }
 
-    // Format the entity to post as a tweet
-    public function getBriefFormat(): string
-    {
-        // max length 280 chars
-        // URLs count as 23 chars
-
-        // add name and type
-        $format = $this->name.' | '.$this->entityType->name.' | ';
-        $format .= $this->short;
-
-        // Turn related tags into hashtags
-        if (!$this->tags->isEmpty()) {
-            foreach ($this->tags as $tag) {
-                // check the length of the tag and if there is enough room to add
-                if (strlen($format) + strlen($tag->name) > 244) {
-                    continue;
-                }
-                $format .= ' #'.Str::studly($tag->name);
-            }
-        }
-
-        // if there are more than 12 chars remaining, add default hashtag
-        if (strlen($format) < 246) {
-            $format .= ' #'.config('app.default_hashtag');
-        }
-
-        // add the arcane city URL
-        if (strlen($format) < 258) {
-            $format .= ' '.rtrim(config('app.url'), '/').'/entities/'.$this->slug;
-        }
-
-        // add the primary link
-        if (count($this->links) > 0) {
-            foreach ($this->links as $link) {
-                // if there are at least 23 chars remaining, add primary link
-                if (strlen($format) < 258) {
-                    $format .= ' '.$link->url;
-                }
-            }
-        }
-
-        // add the primary link
-        if ($this->futureEvents()->total() > 0) {
-            $event = $this->futureEvents()->items()[0];
-            $start = $event->start_at->format('m/d');
-            $format .= ' Next: '.$start.' '.$event->name.' at '.($event->venueLabel() ?? 'No venue specified');
-        }
-
-        // only return the first 280 chars
-        return substr($format, 0, 280);
-    }
-
  // Format the entity to post tp instagram
  public function getInstagramFormat(): ?string
  {
