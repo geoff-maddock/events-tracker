@@ -139,12 +139,6 @@ parameters:
 			path: app/Models/EventShare.php
 
 		-
-			message: '#^Method App\\Models\\Post\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Post.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:past\(\)\.$#'
 			identifier: method.notFound
 			count: 1

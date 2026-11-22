@@ -8,8 +8,8 @@
 	<meta property="og:type" content="@yield('og-type', 'website')">
 	<meta property="og:title" content="@yield('title', config('app.app_name'))">
 	<meta property="og:image" content="@yield('og-image', url('/').'/images/arcane-city-promo.jpg')">
-	<meta property="og:description" content="@yield('og-description', 'A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
-	<meta name="description" content="@yield('description', 'A calender of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
+	<meta property="og:description" content="@yield('og-description', 'A calendar of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
+	<meta name="description" content="@yield('description', 'A calendar of events, concerts, club nights, weekly and monthly events series, promoters, artists, producers, djs, venues and other entities.')">
 	<meta property="fb:app_id" content="{{ config('app.fb_app_id') }}">
 	@hasSection('canonical')
 	@yield('canonical')

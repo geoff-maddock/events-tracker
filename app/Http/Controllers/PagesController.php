@@ -430,7 +430,7 @@ class PagesController extends Controller
         // check that a user with that email does not already exist (exact match, not LIKE)
         $users = User::where('email', $email)->count();
         if ($users > 0) {
-            flash()->success('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.');
+            flash()->error('Error', 'No email sent - a user with the address - '.$email.' - already exists on the site.');
 
             return back();
         }
