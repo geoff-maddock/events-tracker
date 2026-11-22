@@ -37,8 +37,8 @@ class LoginFailureMailTest extends TestCase
             $this->getJson('/api/events', $header)->assertUnauthorized();
         }
 
-        Mail::assertSent(LoginFailure::class, 1);
-        Mail::assertSent(LoginFailure::class, fn (LoginFailure $mail) => $mail->hasTo($user->email));
+        Mail::assertQueued(LoginFailure::class, 1);
+        Mail::assertQueued(LoginFailure::class, fn (LoginFailure $mail) => $mail->hasTo($user->email));
     }
 
     public function test_the_warning_is_per_account(): void
@@ -52,7 +52,7 @@ class LoginFailureMailTest extends TestCase
             }
         }
 
-        Mail::assertSent(LoginFailure::class, 2);
+        Mail::assertQueued(LoginFailure::class, 2);
     }
 
     public function test_no_warning_below_the_limit(): void
@@ -63,6 +63,6 @@ class LoginFailureMailTest extends TestCase
             event(new Failed('web', $user, ['email' => $user->email, 'password' => 'wrong']));
         }
 
-        Mail::assertNotSent(LoginFailure::class);
+        Mail::assertNotQueued(LoginFailure::class);
     }
 }

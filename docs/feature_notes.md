@@ -4,6 +4,18 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Small fixes (#2398)
+- An event card showed "Buy Tickets" twice; it now shows it once, beside the price.
+- New pages for 403 (not allowed), 429 (too many requests) and 500 (server error), in place of
+  the framework's plain ones. The 500 page uses no layout, database or built assets, so it still
+  renders when one of those is what failed.
+- The warning email after repeated failed logins is queued instead of sent during the login
+  request.
+- Three error messages were shown as green "success" notices (purging users with none to
+  purge, inviting an address that already has an account, opening an embed loader directly).
+- "calender" is now "calendar" in the default page description and site subtitle.
+- `Post::getPrimaryPhoto()` is declared nullable, which it always was.
+
 ### Pruning: Twitter posting and the predis package removed (#2412)
 - Twitter posting is gone: the `dailyTweet` command and its schedule entry, the
   `events/{id}/tweet` and `entities/{id}/tweet` routes (no page linked to them), the
