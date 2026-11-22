@@ -61,8 +61,10 @@ class Alias extends Eloquent
 
             // only a string of digits can be an id: "808 State" is a name
             $alias = ctype_digit($item) ? static::find((int) $item) : null;
-            $alias ??= static::whereRaw('LOWER(name) = ?', [mb_strtolower($item)])->orderBy('id')->first();
-            $alias ??= static::create(['name' => ucwords(strtolower($item))]);
+            // by the column's own comparison (case-insensitive), the one the unique
+            // index on name uses; createOrFirst covers two requests adding it at once
+            $alias ??= static::where('name', $item)->orderBy('id')->first();
+            $alias ??= static::createOrFirst(['name' => ucwords(strtolower($item))]);
 
             if (!$resolved->has($alias->id)) {
                 $resolved->put($alias->id, $alias);

@@ -9,6 +9,9 @@ A more detailed description of new features and changes to the application.
   API. A name that starts with digits ("808 State") is a name, not an alias id; the API update
   used to treat it as the id. A name some alias already has, in any letter case, reuses that
   alias instead of adding a duplicate row.
+- A migration merges the alias rows that share a name: the earliest is kept, entities linked to
+  a later copy are linked to it instead, the copies are deleted, and the name gets a unique
+  index. No entity loses or gains an alias name. Run `php artisan migrate` on deploy.
 - Creating an event through the API relates its venue and promoter to the event, as the web
   form does.
 - Creating a series through the API from an event (`eventLinkId`) copies the event's photos to
