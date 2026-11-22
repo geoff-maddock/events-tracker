@@ -71,7 +71,7 @@ PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part 
 
 **Frontend bundling.** Vite, configured in `vite.config.mjs`, with Tailwind 4 via `@tailwindcss/postcss`. The bundle entry is `resources/assets/js/app.js` (axios, SweetAlert2). The hand-written jQuery scripts in `public/js` are loaded directly by the layout, and Alpine.js comes from a pinned CDN script there (used for small `x-data` menus and modals). There's no Vue. Confirmations use the one `data-confirm` handler in `resources/assets/js/bootstrap.js` (on a form, submit button or link). `npm run lint` covers both `resources/assets/js` and `public/js`.
 
-**Services.** Non-trivial integrations (Instagram, oEmbed embeds, calendar export, flyer analysis, RSS, image handling) live under `app/Services/`. Prefer extending a service over adding logic to controllers.
+**Services.** Non-trivial integrations (Instagram, oEmbed embeds, calendar export, flyer analysis, RSS, image handling) live under `app/Services/`. Prefer extending a service over adding logic to controllers. A series is created and changed only through `SeriesWriter` (`create` / `replace` / `patch`), which the web and API controllers both call; put write logic there, not in a controller.
 
 ## Things to avoid
 
