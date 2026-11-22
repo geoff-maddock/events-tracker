@@ -9,7 +9,6 @@ use App\Http\Requests\PostRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
-use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Thread;
@@ -284,25 +283,14 @@ class PostsController extends Controller
             return back();
         }
 
-        if (!$post = Post::find($id)) {
+        // a post is as visible as the thread it is in
+        if (!($post = Post::find($id)) || !Thread::find($post->thread_id)?->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such post');
 
             return back();
         }
 
-        // add the like response
-        $like = new Like();
-        $like->object_id = $id;
-        $like->user()->associate($this->user);
-        $like->object_type = 'post';
-        $like->save();
-
-        // update the likes
-        ++$post->likes;
-        $post->save();
-
-        // log the like
-        //Log::info('User '.$id.' is liking '.$post->name);
+        $post->addLike($this->user);
 
         flash()->success('Success', 'You are now liking the selected post.');
 
@@ -329,15 +317,7 @@ class PostsController extends Controller
             return back();
         }
 
-        // delete the like
-        $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'post')->first();
-        if ($response) {
-            $response->delete();
-
-            // update the likes
-            --$post->likes;
-            $post->save();
-        }
+        $post->removeLike($this->user);
 
         flash()->success('Success', 'You are no longer liking the post.');
 

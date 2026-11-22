@@ -254,18 +254,9 @@ class TagsController extends Controller
     {
         $user = $request->user();
 
-        $follow = Follow::where('object_type', 'tag')
-            ->where('object_id', $tag->id)
-            ->where('user_id', $user->id)
-            ->first();
+        $follow = Follow::firstOrCreate(['object_type' => 'tag', 'object_id' => $tag->id, 'user_id' => $user->id]);
 
-        if (!$follow) {
-            $follow = new Follow();
-            $follow->object_id = $tag->id;
-            $follow->user_id = $user->id;
-            $follow->object_type = 'tag';
-            $follow->save();
-
+        if ($follow->wasRecentlyCreated) {
             Activity::log($tag, $user, 6);
         }
 

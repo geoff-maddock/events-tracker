@@ -100,6 +100,13 @@ use Illuminate\Support\Str;
  */
 class Thread extends Eloquent
 {
+    use \App\Models\Concerns\HasLikeCounter;
+
+    protected function likeType(): string
+    {
+        return 'thread';
+    }
+
     use \App\Models\Concerns\HasVisibility;
     use HasFactory;
     use \App\Models\Concerns\SyncsEntities;
