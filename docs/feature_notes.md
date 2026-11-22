@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Pruning: leftover public files (#2412)
+- `/api/docs` loaded a committed 11.7 MB development build of Swagger UI. It now loads the
+  standard Swagger UI build (pinned version, integrity-checked, from the CDN the layout already
+  uses), about 1.7 MB before compression. The page shows the same spec. Swagger UI 5.35.1 was
+  tried and stopped rendering after the first tag with this spec, so 5.30.0 is pinned.
+- Removed files nothing loads: `public/mix-manifest.json`, `public/ui-preview.html`,
+  `public/css/select2.css`, `public/css/select2-bootstrap.min.css`.
 ### Pruning: dead code (#2412)
 - Removed code nothing calls: the old `EmbedExtractor` service with its test and its package
   (`jamband/ripple`; `OembedExtractor` is the one in use), the `UserBanned` event and its
