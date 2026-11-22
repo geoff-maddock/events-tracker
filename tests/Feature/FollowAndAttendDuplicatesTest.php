@@ -78,12 +78,11 @@ class FollowAndAttendDuplicatesTest extends TestCase
     }
 
     #[DataProvider('followables')]
-    public function test_unfollowing_removes_duplicate_rows(string $type, string $prefix): void
+    public function test_unfollowing_removes_the_follow(string $type, string $prefix): void
     {
+        // (this used to seed two rows; the table now refuses a second one, see FollowOnceTest)
         $id = $this->makeFollowable($type);
-        foreach ([1, 2] as $copy) {
-            Follow::create(['object_type' => $type, 'object_id' => $id, 'user_id' => $this->user->id]);
-        }
+        Follow::create(['object_type' => $type, 'object_id' => $id, 'user_id' => $this->user->id]);
 
         $this->post("/{$prefix}/{$id}/unfollow");
 

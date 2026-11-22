@@ -498,18 +498,9 @@ class SeriesController extends Controller
         $user = $request->user();
         abort_unless($series->isVisibleTo($user), 404);
 
-        $follow = Follow::where('object_type', 'series')
-            ->where('object_id', $series->id)
-            ->where('user_id', $user->id)
-            ->first();
+        $follow = Follow::firstOrCreate(['object_type' => 'series', 'object_id' => $series->id, 'user_id' => $user->id]);
 
-        if (!$follow) {
-            $follow = new Follow();
-            $follow->object_id = $series->id;
-            $follow->user_id = $user->id;
-            $follow->object_type = 'series';
-            $follow->save();
-
+        if ($follow->wasRecentlyCreated) {
             Activity::log($series, $user, 6);
         }
 

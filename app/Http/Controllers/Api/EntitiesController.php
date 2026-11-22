@@ -940,18 +940,9 @@ class EntitiesController extends Controller
     {
         $user = $request->user();
 
-        $follow = Follow::where('object_type', 'entity')
-            ->where('object_id', $entity->id)
-            ->where('user_id', $user->id)
-            ->first();
+        $follow = Follow::firstOrCreate(['object_type' => 'entity', 'object_id' => $entity->id, 'user_id' => $user->id]);
 
-        if (!$follow) {
-            $follow = new Follow();
-            $follow->object_id = $entity->id;
-            $follow->user_id = $user->id;
-            $follow->object_type = 'entity';
-            $follow->save();
-
+        if ($follow->wasRecentlyCreated) {
             Activity::log($entity, $user, 6);
         }
         

@@ -590,25 +590,14 @@ class ThreadsController extends Controller
             return back();
         }
 
-        if (!$thread = Thread::find($id)) {
+        // the same rule as the thread page
+        if (!($thread = Thread::find($id)) || !$thread->isVisibleTo($this->user)) {
             flash()->error('Error', 'No such thread');
 
             return back();
         }
 
-        // add the following response
-        $like = new Like();
-        $like->object_id = $id;
-        $like->user()->associate($this->user);
-        $like->object_type = 'thread';
-        $like->save();
-
-        // update the likes
-        ++$thread->likes;
-        $thread->save();
-
-        // log the like
-        // Log::info('User '.$id.' is liking '.$thread->name);
+        $thread->addLike($this->user);
 
         flash()->success('Success', 'You are now liking the thread - '.$thread->name);
 
@@ -635,15 +624,7 @@ class ThreadsController extends Controller
             return back();
         }
 
-        // delete the like
-        $response = Like::where('object_id', '=', $id)->where('user_id', '=', $this->user->id)->where('object_type', '=', 'thread')->first();
-        if ($response) {
-            $response->delete();
-
-            // update the likes
-            --$thread->likes;
-            $thread->save();
-        }
+        $thread->removeLike($this->user);
 
         flash()->success('Success', 'You are no longer liking the thread.');
 
