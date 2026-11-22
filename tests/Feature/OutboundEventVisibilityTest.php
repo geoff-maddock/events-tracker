@@ -17,17 +17,15 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
-use App\Notifications\EventPublished;
 use App\Services\FollowerNotifier;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 /**
  * What goes out of the site (emails to followers and contacts, digests,
- * tweets, captions) never includes someone else's private event (#2244).
+ * captions) never includes someone else's private event (#2244).
  */
 class OutboundEventVisibilityTest extends TestCase
 {
@@ -126,7 +124,6 @@ class OutboundEventVisibilityTest extends TestCase
         $this->events(Carbon::now()->addDays(3));
 
         $this->assertPublicOnly($this->entity->getInstagramFormat(), 'the Instagram caption');
-        $this->assertStringNotContainsString(self::PRIVATE_NAME, $this->entity->getBriefFormat(), 'the tweet includes a private event');
     }
 
     public function test_co_performers_and_venues_come_only_from_events_the_viewer_may_see(): void
@@ -144,29 +141,6 @@ class OutboundEventVisibilityTest extends TestCase
 
         // the private event's creator still sees it
         $this->assertContains('Zz Hidden Co-performer', $this->entity->getFrequentlyPerformsWith(10, $this->creator)->pluck('name'));
-    }
-
-    public function test_the_daily_tweet_skips_private_events(): void
-    {
-        Notification::fake();
-        $this->travelTo(Carbon::today()->setTime(12, 0));
-        [$private, $public] = $this->events(Carbon::now()->addHour());
-
-        $this->artisan('dailyTweet')->assertExitCode(0);
-
-        Notification::assertSentTo($public, EventPublished::class);
-        Notification::assertNotSentTo($private, EventPublished::class);
-    }
-
-    public function test_a_private_event_cannot_be_tweeted(): void
-    {
-        Notification::fake();
-        [$private] = $this->events(Carbon::now()->addDays(3));
-
-        $this->actingAs($this->creator)->post("/events/{$private->id}/tweet")
-            ->assertSessionHas('flash_message.message', 'Only public events can be tweeted.');
-
-        Notification::assertNothingSent();
     }
 
     public function test_emails_to_an_entitys_contact_leave_out_private_events(): void

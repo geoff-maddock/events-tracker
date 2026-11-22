@@ -21,7 +21,6 @@ use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use App\Mail\EntityUpdateSummary;
-use App\Notifications\EventPublished;
 use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\EntityStats;
@@ -1049,48 +1048,6 @@ class EntitiesController extends Controller
             ];
         }
         flash()->success('Success', 'You are no longer following the entity - '.$entity->name);
-
-        return back();
-    }
-
-    /**
-     * Tweet this event.
-     *
-     * @return Response
-     *
-     * @throws \Throwable
-     */
-    public function tweet(int $id)
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$entity = Entity::find($id)) {
-            flash()->error('Error', 'No such entity');
-
-            return back();
-        }
-
-        if (!$this->user->can('update', $entity)) {
-            flash()->error('Error', 'You are not authorized to tweet this entity.');
-
-            return back();
-        }
-
-        if (config('app.twitter_consumer_key') === '999') {
-            flash()->error('Error', 'Twitter is not configured.');
-        }
-        
-        // Add a twitter notification
-        $entity->notify(new EventPublished());
-
-        Log::info('User '.$id.' tweeted '.$entity->name);
-
-        flash()->success('Success', 'You tweeted the entity - '.$entity->name);
 
         return back();
     }

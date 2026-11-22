@@ -79,11 +79,4 @@ class FreeEventPriceTest extends TestCase
         // and the plain-text list
         $this->get('/events/brief-text')->assertOk()->assertSee('Free')->assertDontSee('$0');
     }
-
-    public function test_the_tweet_caption_says_free(): void
-    {
-        $event = Event::factory()->create(['door_price' => 0, 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
-
-        $this->assertStringContainsString(' Free', $event->getBriefFormat());
-    }
 }

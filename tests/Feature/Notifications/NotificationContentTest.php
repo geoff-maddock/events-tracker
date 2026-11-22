@@ -4,11 +4,8 @@ namespace Tests\Feature\Notifications;
 
 use App\Models\JobStatus;
 use App\Models\User;
-use App\Notifications\EventPublished;
 use App\Notifications\JobCompleted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Notifications\Messages\MailMessage;
-use NotificationChannels\Twitter\TwitterChannel;
 use stdClass;
 use Tests\TestCase;
 
@@ -31,23 +28,6 @@ class NotificationContentTest extends TestCase
             'label' => $label,
             'status' => JobStatus::STATUS_SUCCEEDED,
         ]);
-    }
-
-    public function test_event_published_uses_twitter_channel(): void
-    {
-        $notification = new EventPublished();
-
-        $this->assertSame([TwitterChannel::class], $notification->via(new stdClass()));
-        $this->assertSame([], $notification->toArray(new stdClass()));
-    }
-
-    public function test_event_published_mail_has_intro_lines(): void
-    {
-        $mail = (new EventPublished())->toMail(new stdClass());
-
-        $this->assertInstanceOf(MailMessage::class, $mail);
-        $this->assertContains('The introduction to the notification.', $mail->introLines);
-        $this->assertSame('Notification Action', $mail->actionText);
     }
 
     public function test_job_completed_sends_via_database_only_by_default(): void

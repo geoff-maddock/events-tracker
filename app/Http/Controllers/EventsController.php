@@ -27,7 +27,6 @@ use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Visibility;
-use App\Notifications\EventPublished;
 use App\Services\Calendar\CalendarRange;
 use App\Services\EventDateRange;
 use App\Services\ImageHandler;
@@ -42,12 +41,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Services\Calendar\ICalBuilder;
 use App\Services\Embeds\OembedExtractor;
@@ -1393,8 +1390,7 @@ class EventsController extends Controller
     }
 
     /**
-     * Tell followers about a new upcoming event, and tweet it when an admin
-     * created it; both only once it has a photo.
+     * Tell followers about a new upcoming event, once it has a photo.
      */
     private function announceNewEvent(Event $event): void
     {
@@ -1405,21 +1401,6 @@ class EventsController extends Controller
         // notify everyone following any of its tags/entities, if it starts in the future
         if ($event->start_at >= Carbon::now()) {
             NotifyFollowers::dispatch($event);
-        }
-
-        if (!Auth::user()->hasGroup('super_admin') || config('app.twitter_consumer_key') === '999') {
-            return;
-        }
-
-        // the event is already saved, so a Twitter API failure must not fail the request either
-        try {
-            $event->notify(new EventPublished());
-        } catch (\Throwable $e) {
-            Log::warning('EventsController@store: failed to post event to Twitter', [
-                'event_id' => $event->id,
-                'error' => $e->getMessage(),
-            ]);
-            report($e);
         }
     }
 
@@ -1546,55 +1527,6 @@ class EventsController extends Controller
         flash()->success('Success', 'Your event has been deleted!');
 
         return redirect('events');
-    }
-
-    /**
-     * Tweet this event.
-     *
-     * @throws \Throwable
-     */
-    public function tweet(int $id): RedirectResponse
-    {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$event = Event::find($id)) {
-            flash()->error('Error', 'No such event');
-
-            return back();
-        }
-
-        // owner or admin only, matching the Instagram share rule
-        if ($this->user->cannot('update', $event)) {
-            flash()->error('Error', 'You are not authorized to tweet this event.');
-
-            return back();
-        }
-
-        // a tweet is public, so only public events (as with Instagram)
-        if ((int) $event->visibility_id !== Visibility::VISIBILITY_PUBLIC) {
-            flash()->error('Error', 'Only public events can be tweeted.');
-
-            return back();
-        }
-
-        // add a twitter notification
-        $event->notify(new EventPublished());
-
-        // unlink the temp file
-        if ($photo = $event->getPrimaryPhoto()) {
-            unlink(storage_path().'/app/public/photos/temp/'.$photo->name);
-        };
-
-        Log::info('User '.$id.' tweeted '.$event->name);
-
-        flash()->success('Success', 'You tweeted the event - '.$event->name);
-
-        return back();
     }
 
     /**

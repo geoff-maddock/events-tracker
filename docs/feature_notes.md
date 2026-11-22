@@ -4,6 +4,19 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Pruning: Twitter posting and the predis package removed (#2412)
+- Twitter posting is gone: the `dailyTweet` command and its schedule entry, the
+  `events/{id}/tweet` and `entities/{id}/tweet` routes (no page linked to them), the
+  `EventPublished` notification, the tweet text builders on `Event` and `Entity`, the Twitter
+  config and the `laravel-notification-channels/twitter` package. Creating an event as a super
+  admin no longer attempts a tweet. The `TWITTER_*` settings in `.env` are no longer read and
+  can be deleted.
+- Twitter usernames on entities, series and profiles, and the footer link (`SOCIAL_TWITTER`),
+  are unchanged.
+- `predis/predis` is removed. No cache, session or queue driver uses Redis. The Redis
+  connection setting now names the phpredis extension (`REDIS_CLIENT`, default `phpredis`), for
+  if Redis is ever switched on.
+- The deploy needs `composer install` (five packages removed).
 ### Pruning: leftover public files (#2412)
 - `/api/docs` loaded a committed 11.7 MB development build of Swagger UI. It now loads the
   standard Swagger UI build (pinned version, integrity-checked, from the CDN the layout already

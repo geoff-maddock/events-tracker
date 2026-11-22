@@ -9,16 +9,14 @@ use App\Models\Photo;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
-use App\Notifications\EventPublished;
 use App\Services\Integrations\Instagram;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Tests\TestCase;
 
 /**
- * Posting to the site's Instagram/Twitter accounts: POST + auth, and only for
+ * Posting to the site's Instagram account: POST + auth, and only for
  * content the user may manage (public events for Instagram).
  */
 class SocialPostingAuthorizationTest extends TestCase
@@ -80,10 +78,8 @@ class SocialPostingAuthorizationTest extends TestCase
             '/events/instagram-post-week',
             '/events/instagram-weekend-preview',
             '/events/instagram-todays-preview',
-            '/events/'.$event->id.'/tweet',
             '/entities/'.$entity->id.'/instagram-post',
             '/entities/'.$entity->id.'/instagram-story-post',
-            '/entities/'.$entity->id.'/tweet',
         ] as $url) {
             $this->assertContains($this->get($url)->status(), [404, 405], $url);
         }
@@ -173,19 +169,5 @@ class SocialPostingAuthorizationTest extends TestCase
                 ->assertRedirect()
                 ->assertSessionHas('flash_message.message', 'You are not authorized to post this entity to Instagram.');
         }
-    }
-
-    public function test_non_owner_cannot_tweet_an_event_or_entity(): void
-    {
-        Notification::fake();
-        $event = $this->eventWithPhoto($this->makeUser());
-        $entity = Entity::factory()->create();
-        $member = $this->makeUser();
-
-        $this->post('/events/'.$event->id.'/tweet')->assertRedirect(route('login'));
-        $this->actingAs($member)->post('/events/'.$event->id.'/tweet')->assertRedirect();
-        $this->actingAs($member)->post('/entities/'.$entity->id.'/tweet')->assertRedirect();
-
-        Notification::assertNothingSent();
     }
 }

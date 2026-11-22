@@ -85,43 +85,15 @@ class EventShowingSocialTest extends TestCase
 
     public function test_captions_lead_with_the_next_showing_and_list_the_rest(): void
     {
-        $brief = $this->run->getBriefFormat();
-        $this->assertStringStartsWith('Thursday March 4th 2027 | ZZ Run Play', $brief);
-        $this->assertStringContainsString('at 7PM', $brief);
-        $this->assertStringContainsString('Dates: Thu Mar 4 7PM, Sat Mar 6 2PM', $brief);
-
         $this->assertStringContainsString('Showings: Thu Mar 4 7PM, Sat Mar 6 2PM', $this->run->getInstagramFormat());
         // the weekly carousel lists fewer, so a run can't crowd the others out
         $this->assertStringContainsString('Showings: Thu Mar 4 7PM + 1 more', $this->run->getInstagramFormat(1));
 
-        $single = $this->friday->getBriefFormat();
-        $this->assertStringStartsWith('Friday March 5th 2027 | ZZ Friday Gig', $single);
-        $this->assertStringNotContainsString('Dates:', $single);
         $this->assertStringNotContainsString('Showings:', $this->friday->getInstagramFormat());
 
         // down to its last date: the headline already says it
         Carbon::setTestNow('2027-03-05 12:00:00');
-        $last = $this->run->fresh()->getBriefFormat();
-        $this->assertStringStartsWith('Saturday March 6th 2027', $last);
-        $this->assertStringNotContainsString('Dates:', $last);
-    }
-
-    public function test_a_long_tweet_lists_fewer_dates_rather_than_lose_its_link(): void
-    {
-        $long = $this->event('ZZ '.str_repeat('A Very Long Play Title ', 5), '2027-03-01 20:00:00');
-        $long->syncShowings([
-            ['start_at' => '2027-03-04 19:00:00'],
-            ['start_at' => '2027-03-05 19:30:00'],
-            ['start_at' => '2027-03-06 14:00:00'],
-            ['start_at' => '2027-03-07 14:00:00'],
-            ['start_at' => '2027-03-08 19:00:00'],
-        ]);
-
-        $brief = $long->fresh()->getBriefFormat();
-
-        $this->assertStringContainsString('/events/'.$long->id, $brief);
-        $this->assertStringContainsString('Dates: Thu Mar 4 7PM', $brief);
-        $this->assertLessThanOrEqual(280, strlen($brief));
+        $this->assertStringNotContainsString('Showings:', $this->run->fresh()->getInstagramFormat());
     }
 
     public function test_the_discord_embed_leads_with_the_next_showing_and_lists_the_rest(): void
