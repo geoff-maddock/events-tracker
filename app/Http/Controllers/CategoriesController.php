@@ -163,8 +163,6 @@ class CategoriesController extends Controller
      */
     public function edit(ThreadCategory $category): View
     {
-        $this->middleware('auth');
-
         return view('categories.edit-tw', compact('category'))
             ->with($this->getFormOptions());
     }

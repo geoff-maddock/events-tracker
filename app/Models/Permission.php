@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -21,17 +20,5 @@ class Permission extends Model
     public function getGroupListAttribute(): array
     {
         return $this->groups->pluck('id')->all();
-    }
-
-    /**
-     * Return a collection of permissions related to the group.
-     *
-     **/
-    public static function getByGroup(string $group): Builder
-    {
-        // get a list of blogs that have the passed tag
-        return self::whereHas('groups', function ($q) use ($group) {
-            $q->where('name', '=', ucfirst($group));
-        });
     }
 }

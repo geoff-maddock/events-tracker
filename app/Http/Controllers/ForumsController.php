@@ -210,8 +210,6 @@ class ForumsController extends Controller
      */
     public function edit(Forum $forum): View
     {
-        $this->middleware('auth');
-
         return view('forums.edit-tw', compact('forum'))->with($this->getFormOptions());
     }
 

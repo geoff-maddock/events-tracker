@@ -1472,8 +1472,6 @@ class EventsController extends Controller
 
     public function edit(Event $event): View|RedirectResponse
     {
-        $this->middleware('auth');
-
         if ($this->user->cannot('update', $event)) {
             Session::flash('flash_message', ['title' => 'Access Denied', 'message' => 'You do not have permission to edit this event.', 'level' => 'error']);
 
