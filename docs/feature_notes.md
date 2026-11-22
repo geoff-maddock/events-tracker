@@ -12,6 +12,9 @@ A more detailed description of new features and changes to the application.
   (`user_id`, `object_type`, `object_id`) and sets the `likes` counters on threads and posts
   from the rows. Run `php artisan migrate` on deploy. Some like counts will change to the
   true number.
+- Follows get the same rule: a second migration removes duplicate follows and makes the index
+  on (`user_id`, `object_type`, `object_id`) unique. Every follow action now creates the row
+  only if it is not there, so a double click cannot fail on the index.
 
 ### Pruning: Twitter posting and the predis package removed (#2412)
 - Twitter posting is gone: the `dailyTweet` command and its schedule entry, the
