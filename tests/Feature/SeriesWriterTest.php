@@ -71,6 +71,7 @@ class SeriesWriterTest extends TestCase
             'web' => $this->actingAs($this->editor)->put('/series/'.$series->slug, $this->payload(['name' => 'ZZ Renamed']))->assertSessionHasNoErrors(),
             'put' => $this->actingAs($this->editor, 'sanctum')->putJson('/api/series/'.$series->slug, $this->payload(['name' => 'ZZ Renamed']))->assertOk(),
             'patch' => $this->actingAs($this->editor, 'sanctum')->patchJson('/api/series/'.$series->slug, ['name' => 'ZZ Renamed'])->assertOk(),
+            default => $this->fail('unknown write path '.$via),
         };
 
         $series->refresh();
