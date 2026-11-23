@@ -17,6 +17,7 @@ use App\Models\Photo;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Visibility;
+use App\Services\SeriesWriter;
 use App\Services\ImageHandler;
 use App\Services\RemoteImageFetcher;
 use Carbon\Carbon;
@@ -232,46 +233,22 @@ class SeriesController extends Controller
         return response()->json(new SeriesResource($series));
     }
 
-    public function store(SeriesRequest $request, Series $series): JsonResponse
+    public function store(SeriesRequest $request, SeriesWriter $writer): JsonResponse
     {
-        // Get the authenticated user
         $this->user = $request->user();
 
-        $msg = '';
+        // through the API a series always belongs to whoever creates it
         $input = $request->validated();
-        
-        // Set the user fields explicitly
-        $input['created_by'] = $this->user->id;
-        $input['updated_by'] = $this->user->id;
+        unset($input['created_by']);
 
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
+        $series = $writer->create(
+            $this->user,
+            $input,
+            $request->input('tag_list', []),
+            (array) $request->input('entity_list', []),
+            $request->eventLinkId ? (int) $request->eventLinkId : null,
+        );
 
-        $series = $series->create($input);
-
-        $series->tags()->attach($syncArray);
-        $series->entities()->attach($request->input('entity_list'));
-
-        // link the passed event if there was one to the series, but only one the user may edit (#2165)
-        if ($request->eventLinkId) {
-            $event = Event::find($request->eventLinkId);
-            if ($event && ($event->ownedBy($this->user) || $this->user->isAdmin())) {
-                $event->series_id = $series->id;
-                $event->save();
-
-                // the new series starts with the event's photos, as on the web form
-                $series->photos()->attach($event->photos->pluck('id')->toArray());
-            }
-        }
-
-        // add to activity log
-        Activity::log($series, $this->user, 1);
-
-        // return response()->json($series);
         return response()->json(new SeriesResource($series));
     }
 
@@ -282,33 +259,20 @@ class SeriesController extends Controller
      * relations (tags, entities) sync to the supplied arrays — missing keys
      * mean "detach all".
      */
-    public function update(Series $series, SeriesRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
+    public function update(Series $series, SeriesRequest $request, SeriesWriter $writer): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->user->cannot('update', $series)) {
             return $this->unauthorized($request);
         }
 
         $input = $request->validated();
-
-        // ownership only changes through an admin, as on the web (#2165); an empty
-        // owner is ignored
-        if (!$this->user->isAdmin() || empty($input['created_by'])) {
-            unset($input['created_by']);
-        }
-        $input['updated_by'] = $this->user->id;
-
         foreach ($this->optionalSeriesFields() as $field) {
             if (!array_key_exists($field, $input)) {
                 $input[$field] = null;
             }
         }
 
-        $series->fill($series->keepHiddenEntityRefs($input))->save();
-
-        $series->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
-        $series->syncEntities($request->input('entity_list', []));
-
-        Activity::log($series, $this->user, 2);
+        $writer->replace($series, $this->user, $input, $request->input('tag_list', []), $request->input('entity_list', []));
 
         return response()->json(new SeriesResource($series));
     }
@@ -317,35 +281,19 @@ class SeriesController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Series $series, SeriesPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
+    public function patch(Series $series, SeriesPatchRequest $request, SeriesWriter $writer): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->user->cannot('update', $series)) {
             return $this->unauthorized($request);
         }
 
-        $input = $request->validated();
-
-        // ownership only changes through an admin, as on the web (#2165); an empty
-        // owner is ignored
-        if (!$this->user->isAdmin() || empty($input['created_by'])) {
-            unset($input['created_by']);
-        }
-
-        $scalarInput = array_intersect_key($input, array_flip($series->getFillable()));
-        if (!empty($scalarInput)) {
-            $scalarInput['updated_by'] = $this->user->id;
-            $series->fill($series->keepHiddenEntityRefs($scalarInput))->save();
-        }
-
-        if ($request->has('tag_list')) {
-            $series->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
-        }
-
-        if ($request->has('entity_list')) {
-            $series->syncEntities((array) $request->input('entity_list', []));
-        }
-
-        Activity::log($series, $this->user, 2);
+        $writer->patch(
+            $series,
+            $this->user,
+            $request->validated(),
+            $request->has('tag_list') ? (array) $request->input('tag_list', []) : null,
+            $request->has('entity_list') ? (array) $request->input('entity_list', []) : null,
+        );
 
         return response()->json(new SeriesResource($series));
     }
@@ -381,15 +329,6 @@ class SeriesController extends Controller
             'instagram_username',
             'twitter_username',
         ];
-    }
-
-    /**
-     * Resolve a list of tag identifiers to ids, creating any tags that don't
-     * already exist by id. Accepts a mix of existing tag ids and new tag names.
-     */
-    private function resolveTagIds(array $tagArray): array
-    {
-        return Tag::resolveList($tagArray, $this->user)->modelKeys();
     }
 
     protected function unauthorized(Request $request): JsonResponse

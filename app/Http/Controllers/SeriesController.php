@@ -20,6 +20,7 @@ use App\Models\Series;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Visibility;
+use App\Services\SeriesWriter;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\ImageHandler;
 use App\Services\RssFeed;
@@ -555,52 +556,22 @@ class SeriesController extends Controller
         return view('series.show-tw', compact('series', 'events', 'threads', 'embeds', 'upcomingEvents', 'lineupEntities', 'festivalYear', 'playerAvailable'));
     }
 
-    public function store(SeriesRequest $request, Series $series, TempImageStore $tempImages): RedirectResponse
+    public function store(SeriesRequest $request, SeriesWriter $writer, TempImageStore $tempImages): RedirectResponse
     {
-        $msg = '';
         // validated() leaves out the photo-attachment tokens and anything else
         // the form carries that isn't a series attribute
-        $input = $request->validated();
-
-        // transform the slug passed in the request
-        $input['slug'] = Str::slug($request->input('slug', '-'));
-
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        // only admins may create a series on someone else's behalf (#2165)
-        if (!$this->user->isAdmin() || empty($input['created_by'])) {
-            $input['created_by'] = $this->user->id;
-        }
-
-        $series = $series->create($input);
-
-        $series->tags()->attach($syncArray);
-        $series->entities()->attach($request->input('entity_list', []));
-
-        // link the passed event if there was one to the series, but only one the user may edit
-        if ($request->eventLinkId) {
-            $event = Event::find($request->eventLinkId);
-            if ($event && ($event->ownedBy($this->user) || $this->user->isAdmin())) {
-                $event->series_id = $series->id;
-                $event->save();
-
-                // copy the event's photos over to the new series
-                $series->photos()->attach($event->photos->pluck('id')->toArray());
-            }
-        }
+        $series = $writer->create(
+            $this->user,
+            $request->validated(),
+            $request->input('tag_list', []),
+            $request->input('entity_list', []),
+            $request->eventLinkId ? (int) $request->eventLinkId : null,
+        );
 
         // Attach the image the user chose on the create form, whether or not they
-        // ran it through analysis. Done after the eventLink copy above so that
+        // ran it through analysis. Done after the writer copied a linked event's photos, so that
         // the user's own upload wins is_primary over any copied event photos.
         $tempImages->attachFromRequest($request, $series);
-
-        // add to activity log
-        Activity::log($series, $this->user, 1);
 
         flash()->success('Success', 'Your event series has been created');
 
@@ -675,34 +646,13 @@ class SeriesController extends Controller
         ->with(['series' => $series]);
     }
 
-    public function update(Series $series, SeriesRequest $request): RedirectResponse
+    public function update(Series $series, SeriesRequest $request, SeriesWriter $writer): RedirectResponse
     {
-        $msg = '';
-
         if ($this->user->cannot('update', $series)) {
             return $this->unauthorized($request);
         }
 
-        // ownership only changes through an admin (#2165); an empty owner is ignored
-        $input = $request->validated();
-        if (!$this->user->isAdmin() || empty($input['created_by'])) {
-            unset($input['created_by']);
-        }
-
-        $series->fill($series->keepHiddenEntityRefs($input))->save();
-
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        $series->tags()->sync($syncArray);
-        $series->syncEntities($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($series, $this->user, 2);
+        $writer->replace($series, $this->user, $request->validated(), $request->input('tag_list', []), $request->input('entity_list', []));
 
         flash('Success', 'Your event series has been updated');
 

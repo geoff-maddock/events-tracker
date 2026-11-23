@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One write path for series (#2407)
+- Creating, updating and patching a series is one implementation, `App\Services\SeriesWriter`,
+  called by the web form and the API. The two controllers keep authorization, the request and
+  the response. Events and entities follow in later changes.
+- One change in behaviour: a series now records who last updated it (`updated_by`). The API
+  tried to and the value was dropped; the web form never set it.
+
 ### Aliases and API creates match the web form (#2398)
 - Entity aliases are resolved in one place, `Alias::resolveList()`, for the web form and the
   API. A name that starts with digits ("808 State") is a name, not an alias id; the API update
