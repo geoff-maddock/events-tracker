@@ -58,8 +58,9 @@ class EntityWriter
      */
     public function quickCreate(User $user, string $name, string $role, ?string $short = null, ?string $description = null): Entity
     {
-        $baseSlug = Str::slug($name);
-        $slug = $baseSlug !== '' ? $baseSlug : 'entity';
+        // a name with nothing sluggable in it (all punctuation) still gets a slug
+        $baseSlug = Str::slug($name) ?: 'entity';
+        $slug = $baseSlug;
         $i = 1;
         // unlisted entities hold their slugs too
         while (Entity::withUnlisted()->where('slug', $slug)->exists()) {

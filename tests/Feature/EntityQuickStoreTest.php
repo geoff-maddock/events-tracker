@@ -99,6 +99,23 @@ class EntityQuickStoreTest extends TestCase
     }
 
     #[Test]
+    public function quick_create_gives_a_name_without_letters_a_usable_unique_slug()
+    {
+        $user = $this->activeUser();
+
+        $first = $this->actingAs($user)
+            ->postJson('/entities/quick-store', ['name' => '!!!', 'role' => 'Venue'])
+            ->json('slug');
+
+        $second = $this->actingAs($user)
+            ->postJson('/entities/quick-store', ['name' => '???', 'role' => 'Venue'])
+            ->json('slug');
+
+        $this->assertSame('entity', $first);
+        $this->assertSame('entity-1', $second);
+    }
+
+    #[Test]
     public function quick_create_requires_a_name_of_at_least_three_characters()
     {
         $user = $this->activeUser();
