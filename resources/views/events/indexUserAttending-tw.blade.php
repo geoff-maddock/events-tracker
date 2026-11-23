@@ -293,13 +293,6 @@
 @section('scripts.footer')
 <script>
 $(document).ready(function() {
-    // Auto-submit on select change
-    document.querySelectorAll('.auto-submit').forEach(function(select) {
-        select.addEventListener('change', function() {
-            this.form.submit();
-        });
-    });
-
     // Initialize Select2
     $('#filter_venue, #filter_tag, #filter_related, #filter_event_type').select2({
         theme: 'tailwind',

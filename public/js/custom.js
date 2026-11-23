@@ -3,7 +3,6 @@
 // App - some basic app functions for interactions
 var App = (function () {
     var init = function () {
-        this.initTooltip();
         this.setupControls();
         this.setupAjaxAction('body');
         this.setupPostLinks();
@@ -122,13 +121,6 @@ var App = (function () {
         });
     };
 
-    var initTooltip = function () {
-        // Only initialize tooltips if Bootstrap tooltip function exists
-        if (typeof $.fn.tooltip === 'function') {
-            $('[data-toggle="tooltip"]').tooltip();
-        }
-    };
-
     var select2Loading = null;
 
     var loadSelect2 = function () {
@@ -165,16 +157,6 @@ var App = (function () {
             loadSelect2().then(function () { setupSelect2($select2); });
         } else {
             setupSelect2($select2);
-        }
-
-        // enable tooltips (only if Bootstrap tooltip function exists)
-        if (typeof $.fn.tooltip === 'function') {
-            $(target).tooltip({
-                selector: '.tip',
-                container: 'body',
-                html: true,
-                delay: { show: 500 }
-            });
         }
 
     };
@@ -256,7 +238,6 @@ var App = (function () {
 
     return {
         init: init,
-        initTooltip: initTooltip,
         setupControls: setupControls,
         setupAjaxAction: setupAjaxAction,
         setupPostLinks: setupPostLinks,

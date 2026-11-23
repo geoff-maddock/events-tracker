@@ -170,14 +170,6 @@ Entities @include('entities.title-crumbs')
 
 @section('footer')
 <script>
-// Auto-submit on select change
-document.querySelectorAll('.auto-submit').forEach(select => {
-	select.addEventListener('change', function() {
-		this.form.submit();
-	});
-});
-</script>
-<script>
 	// Copy filter URL functionality
 	document.getElementById('copy-filter-url-btn')?.addEventListener('click', function() {
 		const filters = @json($filters ?? []);

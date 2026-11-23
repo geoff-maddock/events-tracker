@@ -173,13 +173,3 @@
     @endif
 </div>
 @stop
-
-@section('footer')
-<script>
-    document.querySelectorAll('.auto-submit').forEach(function(el) {
-        el.addEventListener('change', function() {
-            this.closest('form').submit();
-        });
-    });
-</script>
-@endsection
