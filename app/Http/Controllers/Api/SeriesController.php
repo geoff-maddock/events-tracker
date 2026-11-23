@@ -244,7 +244,7 @@ class SeriesController extends Controller
         $series = $writer->create(
             $this->user,
             $input,
-            $request->input('tag_list', []),
+            (array) $request->input('tag_list', []),
             (array) $request->input('entity_list', []),
             $request->eventLinkId ? (int) $request->eventLinkId : null,
         );
@@ -272,7 +272,7 @@ class SeriesController extends Controller
             }
         }
 
-        $writer->replace($series, $this->user, $input, $request->input('tag_list', []), $request->input('entity_list', []));
+        $writer->replace($series, $this->user, $input, (array) $request->input('tag_list', []), (array) $request->input('entity_list', []));
 
         return response()->json(new SeriesResource($series));
     }

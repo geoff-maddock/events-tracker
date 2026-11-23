@@ -563,8 +563,8 @@ class SeriesController extends Controller
         $series = $writer->create(
             $this->user,
             $request->validated(),
-            $request->input('tag_list', []),
-            $request->input('entity_list', []),
+            (array) $request->input('tag_list', []),
+            (array) $request->input('entity_list', []),
             $request->eventLinkId ? (int) $request->eventLinkId : null,
         );
 
@@ -652,7 +652,7 @@ class SeriesController extends Controller
             return $this->unauthorized($request);
         }
 
-        $writer->replace($series, $this->user, $request->validated(), $request->input('tag_list', []), $request->input('entity_list', []));
+        $writer->replace($series, $this->user, $request->validated(), (array) $request->input('tag_list', []), (array) $request->input('entity_list', []));
 
         flash('Success', 'Your event series has been updated');
 
