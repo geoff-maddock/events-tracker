@@ -86,6 +86,6 @@ PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part 
 
 - `docs/deployment_notes.md` — production deploy, queue worker, scheduler
 - `docs/api_notes.md` — API examples
-- `docs/feature_notes.md` — changelog/features
+- `docs/feature_notes.md` — changelog/features. A new entry is its own file in `docs/unreleased/` (`<issue>-<short-name>.md`, starting with a `### Title (#issue)` heading), not an edit to `feature_notes.md`, so open PRs don't conflict
 - `docs/discord-integration.md` — Discord auto-repost: targets, modes, rollout
 - `CONTRIBUTING.md`, `SECURITY.md`
