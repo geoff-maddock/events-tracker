@@ -18,7 +18,7 @@
 	<div class="grid grid-cols-1 lg:grid-cols-[16rem_1fr] gap-6">
 		<!-- Sticky Table of Contents (lg+) -->
 		<aside class="hidden lg:block">
-			<nav class="sticky top-20 card-tw p-4 text-sm">
+			<nav aria-label="On this page" class="sticky top-20 card-tw p-4 text-sm">
 				<h2 class="font-semibold text-foreground mb-3 uppercase tracking-wide text-xs text-muted-foreground">On this page</h2>
 				<ul class="space-y-1.5">
 					<li><a href="#quick-start" class="text-muted-foreground hover:text-primary">60-second start</a></li>

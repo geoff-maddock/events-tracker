@@ -1,11 +1,12 @@
 /**
  * The site's JavaScript entry point (built by Vite). bootstrap.js sets up
  * axios, SweetAlert and the confirm modal; filter-panel.js is the list pages'
- * "Show Filters" toggle.
+ * "Show Filters" toggle; dialog-focus.js keeps keyboard focus inside an open modal.
  */
 
 import './bootstrap';
 import './filter-panel';
+import './dialog-focus';
 
 // Note: Alpine.js is loaded via CDN in the layout file
 // SweetAlert2 (window.Swal) is loaded on demand by bootstrap.js (#2302)

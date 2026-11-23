@@ -69,6 +69,7 @@
 	</style>
 </head>
 <body>
+	<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[3000] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-card focus:text-foreground focus:border focus:border-border focus:shadow-lg">Skip to main content</a>
 	<script>
 		// Set body theme class from localStorage
 		(function() {
@@ -98,7 +99,7 @@
 			@include('partials.topbar-tw')
 
 			<!-- Main Content Area -->
-			<main class="flex-1 min-w-0 w-full mx-auto p-4 md:p-6 overflow-x-hidden overflow-y-auto bg-background max-w-[2400px]">
+			<main id="main-content" tabindex="-1" class="focus:outline-none flex-1 min-w-0 w-full mx-auto p-4 md:p-6 overflow-x-hidden overflow-y-auto bg-background max-w-[2400px]">
 				@sectionMissing('session-messages')
 					@include('partials.session-messages')
 				@endif

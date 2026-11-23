@@ -34,33 +34,3 @@
         </div>
     </div>
 </header>
-
-<script>
-    // Ensure hamburger menu button works
-    (function() {
-        function setupMobileMenu() {
-            const button = document.getElementById('mobile-menu-toggle-top');
-            if (button && !button.hasAttribute('data-listener-added')) {
-                button.setAttribute('data-listener-added', 'true');
-                button.addEventListener('click', function() {
-                    const sidebar = document.getElementById('mobile-sidebar');
-                    const overlay = document.getElementById('mobile-sidebar-overlay');
-                    if (sidebar && overlay) {
-                        const isOpen = !sidebar.classList.contains('-translate-x-full');
-                        sidebar.classList.toggle('-translate-x-full');
-                        overlay.classList.toggle('hidden');
-                        button.setAttribute('aria-expanded', String(isOpen ? 'false' : 'true'));
-                    }
-                });
-            }
-        }
-        
-        // Run immediately
-        setupMobileMenu();
-        
-        // Also run on DOMContentLoaded in case script runs before DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupMobileMenu);
-        }
-    })();
-</script>

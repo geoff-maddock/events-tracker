@@ -8,7 +8,7 @@
 
     <div class="grid md:grid-cols-4 gap-6">
         <!-- Table of Contents Sidebar -->
-        <nav class="md:col-span-1">
+        <nav aria-label="Table of contents" class="md:col-span-1">
             <div class="card-tw p-4 sticky top-4">
                 <h2 class="font-semibold text-foreground mb-3">Table of Contents</h2>
                 <ul class="space-y-2 text-sm">
