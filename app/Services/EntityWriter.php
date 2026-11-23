@@ -6,6 +6,9 @@ use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Alias;
 use App\Models\Entity;
+use App\Models\EntityStatus;
+use App\Models\EntityType;
+use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -45,6 +48,34 @@ class EntityWriter
         $entity->roles()->attach($roles);
 
         return $this->finish($entity, $user, Action::CREATE);
+    }
+
+    /**
+     * A minimal active venue or promoter from a name alone, for the event form's
+     * inline "add a missing venue / promoter". The slug is made unique.
+     *
+     * @param string $role 'Venue' or 'Promoter'
+     */
+    public function quickCreate(User $user, string $name, string $role, ?string $short = null, ?string $description = null): Entity
+    {
+        // a name with nothing sluggable in it (all punctuation) still gets a slug
+        $baseSlug = Str::slug($name) ?: 'entity';
+        $slug = $baseSlug;
+        $i = 1;
+        // unlisted entities hold their slugs too
+        while (Entity::withUnlisted()->where('slug', $slug)->exists()) {
+            $slug = $baseSlug.'-'.$i++;
+        }
+
+        return $this->create($user, [
+            'name' => $name,
+            'slug' => $slug,
+            'short' => $short ?? $name,
+            'description' => $description ?? $name,
+            'entity_type_id' => $role === 'Venue' ? EntityType::SPACE : EntityType::GROUP,
+            'entity_status_id' => EntityStatus::ACTIVE,
+            'started_at' => now(),
+        ], roles: Role::where('name', $role)->pluck('id')->all());
     }
 
     /**
