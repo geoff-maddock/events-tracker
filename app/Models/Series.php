@@ -787,10 +787,10 @@ class Series extends Eloquent implements HasPhotos
         foreach (self::publicWithNextDates() as $row) {
             $series = $row['series'];
             $occurrenceDate = $row['date'];
-            $cancelledAfterDate = null === $series->cancelled_at
-                || (null !== $occurrenceDate && $occurrenceDate <= $series->cancelled_at->format('Y-m-d'));
+            $beforeCancellation = null === $series->cancelled_at
+                || (null !== $occurrenceDate && $occurrenceDate < $series->cancelled_at->format('Y-m-d'));
 
-            if ($occurrenceDate === $date && $cancelledAfterDate && !in_array($series->id, $ids)) {
+            if ($occurrenceDate === $date && $beforeCancellation && !in_array($series->id, $ids)) {
                 $list[] = $series;
             }
         }
@@ -865,7 +865,18 @@ class Series extends Eloquent implements HasPhotos
      */
     public function nextOccurrenceDate(): ?Carbon
     {
-        return $this->cycleFromFoundedAt();
+        $next = $this->cycleFromFoundedAt();
+
+        return null === $next || $this->isCancelledBy($next) ? null : $next;
+    }
+
+    /**
+     * Whether the series has stopped by this date. A cancellation takes effect on
+     * its own day: the occurrence that day is off, and so is every later one.
+     */
+    public function isCancelledBy(\DateTimeInterface $date): bool
+    {
+        return null !== $this->cancelled_at && $date->format('Y-m-d') >= $this->cancelled_at->format('Y-m-d');
     }
 
     /**
@@ -891,7 +902,7 @@ class Series extends Eloquent implements HasPhotos
      */
     public function nextOccurrenceEndDate(): ?Carbon
     {
-        return $this->nextOccurrenceDate()->addHours($this->length);
+        return $this->nextOccurrenceDate()?->addHours($this->length);
     }
 
     /**

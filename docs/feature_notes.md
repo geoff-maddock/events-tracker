@@ -4,6 +4,13 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### A cancelled series no longer shows as upcoming (#2458)
+- A public series with a cancellation date kept appearing on its next scheduled day on the
+  home page, the upcoming, day and week views and the calendars. It is now left out from the
+  day it was cancelled; a series set to end on a later date still shows until then.
+- `series:create-events` no longer creates an event for a cancelled series.
+- The rule is one method, `Series::isCancelledBy()`, used by `nextOccurrenceDate()`.
+
 ### One write path for entities (#2407)
 - Creating, updating and patching an entity is one implementation, `App\Services\EntityWriter`,
   called by the web form and the API. The two controllers keep authorization, the request and

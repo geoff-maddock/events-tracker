@@ -21,6 +21,20 @@ class CreateSeriesEventsCommandTest extends TestCase
         $this->artisan('series:create-events')->assertExitCode(0);
     }
 
+    public function test_command_creates_nothing_for_a_cancelled_series(): void
+    {
+        $series = Series::factory()->create([
+            'occurrence_type_id' => OccurrenceType::where('name', 'Weekly')->firstOrFail()->id,
+            'founded_at' => Carbon::now()->addDays(2),
+            'cancelled_at' => Carbon::now()->subDay(),
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->artisan('series:create-events')->assertExitCode(0);
+
+        $this->assertSame(0, Event::where('series_id', $series->id)->count());
+    }
+
     public function test_command_skips_series_that_already_has_a_future_event(): void
     {
         $occurrence = OccurrenceType::where('name', '!=', 'No Schedule')->first();

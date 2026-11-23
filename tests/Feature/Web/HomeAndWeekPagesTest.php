@@ -93,22 +93,21 @@ class HomeAndWeekPagesTest extends TestCase
         }
     }
 
-    public function test_cancelled_series_are_only_listed_on_dates_before_or_on_cancellation(): void
+    public function test_cancelled_series_are_only_listed_before_their_cancellation_date(): void
     {
         $today = $this->homeToday();
         $this->weeklySeriesToday([
             'name' => 'ZZ Series Cancelled After Its Occurrence',
             'cancelled_at' => $today->copy()->addDay()->format('Y-m-d H:i:s'),
         ]);
-        $this->weeklySeriesToday([
-            'name' => 'ZZ Series Cancelled Before Its Occurrence',
-            'cancelled_at' => $today->copy()->subDay()->format('Y-m-d H:i:s'),
-        ]);
+        $this->weeklySeriesToday(['name' => 'ZZ Series Cancelled Today', 'cancelled_at' => $today->copy()]);
+        $this->weeklySeriesToday(['name' => 'ZZ Series Cancelled Yesterday', 'cancelled_at' => $today->copy()->subDay()]);
 
-        foreach (['/', '/events/upcoming/'.$today->format('Y-m-d')] as $url) {
+        foreach (['/', '/events/upcoming/'.$today->format('Y-m-d'), '/events/day/'.$today->format('Y-m-d'), route('events.week')] as $url) {
             $this->get($url)->assertOk()
                 ->assertSee('ZZ Series Cancelled After Its Occurrence')
-                ->assertDontSee('ZZ Series Cancelled Before Its Occurrence');
+                ->assertDontSee('ZZ Series Cancelled Today')
+                ->assertDontSee('ZZ Series Cancelled Yesterday');
         }
     }
 

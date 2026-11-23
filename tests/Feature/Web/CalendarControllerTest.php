@@ -129,6 +129,21 @@ class CalendarControllerTest extends TestCase
         $this->assertFalse($allAgesAndFree->contains('event-'.$barShow->id));
     }
 
+    public function test_feed_leaves_out_a_cancelled_series(): void
+    {
+        $weekly = \App\Models\OccurrenceType::where('name', 'Weekly')->firstOrFail()->id;
+        $scheduled = fn (array $attributes) => Series::factory()->create(array_merge([
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC, 'occurrence_type_id' => $weekly, 'founded_at' => now()->addDays(2),
+        ], $attributes));
+        $running = $scheduled(['cancelled_at' => null]);
+        $cancelled = $scheduled(['cancelled_at' => now()->subDay()]);
+
+        $ids = collect($this->getJson($this->feedUrl())->assertOk()->json())->pluck('id');
+
+        $this->assertTrue($ids->contains('series-'.$running->id));
+        $this->assertFalse($ids->contains('series-'.$cancelled->id));
+    }
+
     public function test_feed_applies_the_series_filter(): void
     {
         $series = Series::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC, 'slug' => 'zz-feed-series']);
