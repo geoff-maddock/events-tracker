@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activity;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Services\Signup\SignupRiskScorer;
+use App\Services\UserAccounts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -67,7 +67,7 @@ class SignupReviewController extends Controller
     /**
      * Approve or ban the selected accounts.
      */
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request, UserAccounts $accounts): RedirectResponse
     {
         $validated = $request->validate([
             'action' => ['required', 'in:approve,ban'],
@@ -84,7 +84,7 @@ class SignupReviewController extends Controller
                 continue;
             }
 
-            $validated['action'] === 'approve' ? $this->approve($user) : $this->ban($user);
+            $validated['action'] === 'approve' ? $accounts->approveSignup($user, $this->user) : $accounts->banAsSpam($user, $this->user);
             $names[] = $user->name;
         }
 
@@ -96,40 +96,5 @@ class SignupReviewController extends Controller
         }
 
         return back();
-    }
-
-    /**
-     * Trusted from now on: active, verified, and its profile shown to everyone.
-     */
-    private function approve(User $user): void
-    {
-        $user->trusted_at = now();
-        $user->user_status_id = UserStatus::ACTIVE;
-        $user->email_verified_at ??= now()->toDateTimeString();
-        $user->email_change_pending_at = null;
-        $user->save();
-
-        Activity::log($user, $this->user, 10, sprintf('Approved signup: %s', $user->name));
-    }
-
-    /**
-     * Banned, with the spam cleared from its profile. The row stays so the
-     * email address can't simply register again; no ban email is sent to a
-     * spam account.
-     */
-    private function ban(User $user): void
-    {
-        $user->user_status_id = UserStatus::BANNED;
-        $user->trusted_at = null;
-        $user->save();
-
-        $user->profile?->fill([
-            'bio' => null,
-            'facebook_username' => null,
-            'twitter_username' => null,
-            'instagram_username' => null,
-        ])->save();
-
-        Activity::log($user, $this->user, 11, sprintf('Banned as spam: %s', $user->name));
     }
 }
