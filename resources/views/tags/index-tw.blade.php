@@ -53,17 +53,16 @@
 		</div>
 	</x-filter-panel>
 
+	@php
+		// a sort or page-size change keeps the search and the filters
+		$toolbarCarry = collect($filters ?? [])
+			->filter(fn ($value) => is_scalar($value) && $value !== '')
+			->mapWithKeys(fn ($value, $name) => ["filters[{$name}]" => $value])
+			->when(!empty($search), fn ($carry) => $carry->prepend($search, 'search'))
+			->all();
+	@endphp
 	<x-list-toolbar :paginator="$tags ?? null" :limit="$limit ?? 25" :sort="$sort ?? 'name'" :direction="$direction ?? 'asc'"
-		:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions">
-		@if(!empty($search))
-		<input type="hidden" name="search" value="{{ $search }}">
-		@endif
-		@foreach($filters ?? [] as $name => $value)
-		@if(is_scalar($value) && $value !== '')
-		<input type="hidden" name="filters[{{ $name }}]" value="{{ $value }}">
-		@endif
-		@endforeach
-	</x-list-toolbar>
+		:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" :carry="$toolbarCarry" />
 
 	<!-- Tags Grid -->
 	<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -73,16 +72,7 @@
 	</div>
 
 	<x-list-toolbar :paginator="$tags ?? null" :limit="$limit ?? 25" :sort="$sort ?? 'name'" :direction="$direction ?? 'asc'"
-		:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions">
-		@if(!empty($search))
-		<input type="hidden" name="search" value="{{ $search }}">
-		@endif
-		@foreach($filters ?? [] as $name => $value)
-		@if(is_scalar($value) && $value !== '')
-		<input type="hidden" name="filters[{{ $name }}]" value="{{ $value }}">
-		@endif
-		@endforeach
-	</x-list-toolbar>
+		:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" :carry="$toolbarCarry" />
 </div>
 
 @stop

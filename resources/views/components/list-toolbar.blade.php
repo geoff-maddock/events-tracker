@@ -5,8 +5,9 @@
     <x-list-toolbar :paginator="$things ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'things.name'" :direction="$direction ?? 'asc'"
         :limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
-    The selects submit on change (the .auto-submit handler in custom.js). Hidden
-    inputs that must travel with them go in the slot.
+    The selects submit on change (the .auto-submit handler in custom.js). Values
+    that must travel with them (a search, the filters of a GET-filtered list) go
+    in :carry as input name => value.
 --}}
 @props([
     'paginator' => null,
@@ -16,6 +17,7 @@
     'limitOptions',
     'sortOptions',
     'directionOptions',
+    'carry' => [],
 ])
 <div class="flex flex-wrap items-center gap-4 mb-6">
 	<div class="text-sm text-muted-foreground w-full sm:w-auto">
@@ -26,7 +28,9 @@
 
 	<div class="flex items-center justify-center gap-4 w-full sm:flex-1">
 		<form action="{{ url()->current() }}" method="GET" class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
-			{{ $slot }}
+			@foreach($carry as $name => $value)
+			<input type="hidden" name="{{ $name }}" value="{{ $value }}">
+			@endforeach
 			<select name="limit" aria-label="Results per page" class="form-select-tw text-sm py-1.5 px-3 auto-submit flex-1 sm:flex-initial sm:max-w-[120px] min-w-0">
 				@foreach($limitOptions as $value => $label)
 				<option value="{{ $value }}" {{ $limit == $value ? 'selected' : '' }}>{{ $label }}</option>

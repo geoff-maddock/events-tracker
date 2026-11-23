@@ -61,6 +61,11 @@ class ListToolbarTest extends TestCase
         $html = $this->get('/tags?search=zz')->assertOk()->getContent();
 
         $this->assertSame(2, substr_count($html, '<input type="hidden" name="search" value="zz">'));
+
+        // and the filters of this GET-filtered list
+        $html = $this->get('/tags?filters[display_type]=all')->assertOk()->getContent();
+        $this->assertSame(2, substr_count($html, '<input type="hidden" name="filters[display_type]" value="all">'));
+        $this->assertStringNotContainsString('name="search" value=""', $html);
     }
 
     public function test_no_view_keeps_its_own_copy_of_the_toolbar(): void
