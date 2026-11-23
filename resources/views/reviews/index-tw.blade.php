@@ -90,10 +90,7 @@
 			</div>
 		</div>
 	@else
-		<div class="text-center py-12 bg-card rounded-lg border border-border">
-			<i class="bi bi-star text-4xl text-muted-foreground/50 mb-3 block"></i>
-			<p class="text-muted-foreground">No reviews found matching your criteria.</p>
-		</div>
+		<x-empty-state icon="bi-star" boxed>No reviews found matching your criteria.</x-empty-state>
 	@endif
 </div>
 

@@ -30,10 +30,7 @@
                 </div>
             </div>
         @empty
-            <div class="card-tw p-8 text-center text-muted-foreground">
-                <i class="bi bi-file-text text-4xl mb-3"></i>
-                <p>No blog posts</p>
-            </div>
+            <x-empty-state icon="bi-file-text" boxed compact>No blog posts.</x-empty-state>
         @endforelse
     </div>
 

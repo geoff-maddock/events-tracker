@@ -188,10 +188,7 @@
 <x-list-toolbar :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
 	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 @else
-	<div class="text-center py-12 bg-card rounded-lg border border-border">
-		<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
-		<p class="text-muted-foreground">No events found matching your criteria.</p>
-	</div>
+	<x-empty-state icon="bi-calendar-x" boxed>No events found matching your criteria.</x-empty-state>
 @endif
 
 @stop

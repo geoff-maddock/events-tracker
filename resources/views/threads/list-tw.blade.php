@@ -110,7 +110,5 @@
 </div>
 
 @else
-    <div class="text-center py-8 text-muted-foreground italic">
-        No threads listed
-    </div>
+    <x-empty-state compact>No threads listed.</x-empty-state>
 @endif

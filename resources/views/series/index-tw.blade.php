@@ -123,10 +123,7 @@
 <x-list-toolbar :paginator="$series ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'series.name'" :direction="$direction ?? 'asc'"
 	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 @else
-<div class="text-center py-12">
-	<i class="bi bi-collection-fill text-6xl text-muted-foreground/60 mb-4"></i>
-	<p class="text-muted-foreground">No series found.</p>
-</div>
+<x-empty-state icon="bi-collection-fill">No series found.</x-empty-state>
 @endif
 
 @stop

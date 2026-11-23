@@ -74,12 +74,12 @@
                     @endforeach
                 </div>
             @else
-                <div class="text-center py-8">
-                    <p class="text-muted-foreground mb-2">No recommendations found at this time.</p>
-                    <p class="text-sm text-muted-foreground">
-                        Check back later as new events are added!
-                    </p>
-                </div>
+                <x-empty-state compact>
+                    No recommendations found at this time.
+                    <x-slot:actions>
+                        <p class="text-sm text-muted-foreground">Check back later as new events are added!</p>
+                    </x-slot:actions>
+                </x-empty-state>
             @endif
         </section>
     @endif
@@ -129,9 +129,7 @@
                 </x-ui.button>
             </div>
         @else
-            <div class="text-center py-8">
-                <p class="text-muted-foreground">No recent events found.</p>
-            </div>
+            <x-empty-state compact>No recent events found.</x-empty-state>
         @endif
     </section>
 </div>

@@ -243,10 +243,7 @@ Tags
 
 			<!-- No Content Message -->
 			@if(count($series) == 0 && count($upcomingEvents) == 0 && count($pastEvents) == 0 && count($entities) == 0)
-			<div class="text-center py-12 bg-card rounded-lg border border-border">
-				<i class="bi bi-tag text-4xl text-muted-foreground/50 mb-3 block"></i>
-				<p class="text-muted-foreground">No content found for this tag.</p>
-			</div>
+			<x-empty-state icon="bi-tag" boxed>No content found for this tag.</x-empty-state>
 			@endif
 		</div>
 	</div>

@@ -78,6 +78,7 @@ PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part 
 - Don't edit existing migrations — always add a new one.
 - Don't edit `database/schema/mysql-schema.sql` by hand. It is the one schema dump a fresh install loads before running the migrations, written by `php artisan schema:dump`; a column added there and not in a migration never reaches an existing database. Every schema change is a migration. `php artisan db:schema-diff` compares a database with a fresh build.
 - Don't modify the `Prod*DatabaseSeeder` files casually; they're used for fresh production installs.
+- Don't hand-write the "nothing to show" block of a list; use `<x-empty-state>` (`icon`, `boxed`, `compact`, an `actions` slot).
 - Don't add guidance to `agents.md`; it only points other agents here. This file is the source of truth.
 - `app/Http/helpers.php` (now just `flash()`) and `app/Http/Flash.php` are autoloaded as files (see composer.json). Write markup in Blade rather than adding HTML-building helpers.
 

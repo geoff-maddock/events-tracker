@@ -7,7 +7,5 @@
 </ul>
 
 @else
-	<div class="text-center py-8 text-muted-foreground italic">
-		No reviews listed
-	</div>
+	<x-empty-state compact>No reviews listed.</x-empty-state>
 @endif

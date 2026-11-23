@@ -7,7 +7,5 @@
 </ul>
 
 @else
-	<div class="text-center py-8 text-muted-foreground">
-		<small>No events listed today.</small>
-	</div>
+	<x-empty-state compact>No events listed today.</x-empty-state>
 @endif
