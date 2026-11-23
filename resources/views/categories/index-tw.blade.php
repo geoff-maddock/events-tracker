@@ -17,43 +17,14 @@
 	</div>
 
 	<!-- Filters -->
-	<div class="card-tw mb-6">
-		<div class="p-4">
-			<div class="flex flex-wrap items-center gap-2">
-			<button type="button" id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-				<i class="bi bi-funnel text-lg"></i>
-				<span class="font-medium">Filters</span>
-				<i class="bi bi-chevron-down transition-transform" id="filters-chevron"></i>
-			</button>
-			@if($hasFilter)
-			<a id="filters-reset-closed" href="{{ route('categories.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hidden">
-				Reset <i class="bi bi-x ml-1"></i>
-			</a>
-			@endif
-			</div>
-
-			<div id="filter-panel" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
-				<form action="{{ route('categories.filter') }}" method="POST">
-					@csrf
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-						<div>
-							<label for="filter_name" class="block text-sm font-medium text-foreground mb-1">Name</label>
-							<input type="text" name="filters[name]" id="filter_name" value="{{ $filters['name'] ?? '' }}" class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
-						</div>
-					</div>
-
-					<div class="flex gap-2">
-						<button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-							Apply Filters
-						</button>
-						<a id="filters-reset-open" href="{{ route('categories.reset') }}" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors @if(!$hasFilter) hidden @endif">
-							Reset
-						</a>
-					</div>
-				</form>
+	<x-filter-panel :action="route('categories.filter')" :reset-url="route('categories.reset')" :has-filter="$hasFilter" :open="$hasFilter">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<div>
+				<label for="filter_name" class="block text-sm font-medium text-foreground mb-1">Name</label>
+				<input type="text" name="filters[name]" id="filter_name" value="{{ $filters['name'] ?? '' }}" class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
 			</div>
 		</div>
-	</div>
+	</x-filter-panel>
 
 	<!-- List Controls -->
 	<div class="card-tw mb-6">

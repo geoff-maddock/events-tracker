@@ -6,18 +6,12 @@
 	'series' => ['Series', $seriesOptions ?? []],
 ] as $field => [$badgeLabel, $badgeOptions])
 @if(!empty($filters[$field]) && is_scalar($filters[$field]))
-<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-	{{ $badgeLabel }}: {{ $badgeOptions[$filters[$field]] ?? 'Unknown' }}
-</span>
+<x-filter-badge>{{ $badgeLabel }}: {{ $badgeOptions[$filters[$field]] ?? 'Unknown' }}</x-filter-badge>
 @endif
 @endforeach
 @if(!empty($filters['has_tickets']))
-<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-	Has ticket link
-</span>
+<x-filter-badge>Has ticket link</x-filter-badge>
 @endif
 @if(!empty($filters['is_benefit']))
-<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-	Benefit
-</span>
+<x-filter-badge>Benefit</x-filter-badge>
 @endif

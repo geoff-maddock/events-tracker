@@ -26,76 +26,41 @@
 	</div>
 
 	<!-- Filters -->
-	<div class="card-tw mb-6">
-		<div class="p-4">
-			<div class="flex flex-wrap items-center gap-2">
-				<button type="button" id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-					<i class="bi bi-funnel mr-2"></i>
-					<span id="filters-toggle-text">Show Filters</span>
-					<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
-				</button>
+	<x-filter-panel :action="route('blogs.filter')" :reset-url="route('blogs.reset')" :has-filter="$hasFilter">
+		<x-slot:badges>
+			@if(!empty($filters['name']))
+			<x-filter-badge>Name: {{ $filters['name'] }}</x-filter-badge>
+			@endif
+			@if(!empty($filters['body']))
+			<x-filter-badge>Body: {{ $filters['body'] }}</x-filter-badge>
+			@endif
+			@if(!empty($filters['user']))
+			<x-filter-badge>User: {{ $userOptions[$filters['user']] ?? 'Unknown' }}</x-filter-badge>
+			@endif
+		</x-slot:badges>
 
-				@if($hasFilter)
-				<div id="active-filters-badges" class="inline-flex flex-wrap items-center gap-2">
-					@if(!empty($filters['name']))
-					<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-						Name: {{ $filters['name'] }}
-					</span>
-					@endif
-					@if(!empty($filters['body']))
-					<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-						Body: {{ $filters['body'] }}
-					</span>
-					@endif
-					@if(!empty($filters['user']))
-					<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-						User: {{ $userOptions[$filters['user']] ?? 'Unknown' }}
-					</span>
-					@endif
-				</div>
-				<a id="filters-reset-closed" href="{{ route('blogs.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-					Reset <i class="bi bi-x ml-1"></i>
-				</a>
-				@endif
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<div>
+				<label for="filter_name" class="block text-sm font-medium text-foreground mb-1">Name</label>
+				<input type="text" name="filters[name]" id="filter_name" value="{{ $filters['name'] ?? '' }}" class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
 			</div>
 
-			<div id="filter-panel" class="hidden mt-4">
-				<form action="{{ route('blogs.filter') }}" method="POST">
-					@csrf
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-						<div>
-							<label for="filter_name" class="block text-sm font-medium text-foreground mb-1">Name</label>
-							<input type="text" name="filters[name]" id="filter_name" value="{{ $filters['name'] ?? '' }}" class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
-						</div>
+			<div>
+				<label for="filter_body" class="block text-sm font-medium text-foreground mb-1">Body</label>
+				<input type="text" name="filters[body]" id="filter_body" value="{{ $filters['body'] ?? '' }}" class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
+			</div>
 
-						<div>
-							<label for="filter_body" class="block text-sm font-medium text-foreground mb-1">Body</label>
-							<input type="text" name="filters[body]" id="filter_body" value="{{ $filters['body'] ?? '' }}" class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
-						</div>
-
-						<div>
-							<label for="filter_user" class="block text-sm font-medium text-foreground mb-1">User</label>
-							<select name="filters[user]" id="filter_user" class="form-control select2 w-full">
-								<option value="">Select a user</option>
-								@foreach($userOptions as $id => $name)
-									<option value="{{ $id }}" {{ ($filters['user'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-								@endforeach
-							</select>
-						</div>
-					</div>
-
-					<div class="flex gap-2">
-						<button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-							Apply Filters
-						</button>
-						<a id="filters-reset-open" href="{{ route('blogs.reset') }}" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors hidden">
-							Reset
-						</a>
-					</div>
-				</form>
+			<div>
+				<label for="filter_user" class="block text-sm font-medium text-foreground mb-1">User</label>
+				<select name="filters[user]" id="filter_user" class="form-control select2 w-full">
+					<option value="">Select a user</option>
+					@foreach($userOptions as $id => $name)
+						<option value="{{ $id }}" {{ ($filters['user'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
+					@endforeach
+				</select>
 			</div>
 		</div>
-	</div>
+	</x-filter-panel>
 
 	<!-- List Controls -->
 	<div class="card-tw mb-6">

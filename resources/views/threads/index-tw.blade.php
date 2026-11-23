@@ -29,29 +29,8 @@
 	</a>
 </div>
 
-<!-- Filters Section -->
-<div class="mb-6">
-	<button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-		<i class="bi bi-funnel mr-2"></i>
-		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
-		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
-	</button>
-
-	<!-- Active Filters / Reset -->
-	@if($hasFilter)
-	<div class="inline-flex items-center gap-2 ml-4">
-		<a href="{{ url()->action([\App\Http\Controllers\ThreadsController::class, 'rppReset']) }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-			Clear All <i class="bi bi-x ml-1"></i>
-		</a>
-	</div>
-	@endif
-</div>
-
-<!-- Filter Panel -->
-<div id="filter-panel" class="@if(!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6">
-	<form method="POST" action="{{ route($filterRoute ?? 'threads.filter') }}" accept-charset="UTF-8" name="filters">
-	@csrf
-
+<!-- Filters -->
+<x-filter-panel :action="route($filterRoute ?? 'threads.filter')" :reset-url="route('threads.reset')" :has-filter="$hasFilter" :open="$hasFilter">
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 		<!-- Name Filter -->
 		<div>
@@ -85,20 +64,7 @@
 				class="form-select-tw select2" data-placeholder="Select a series" data-theme="tailwind" data-allow-clear="true" id="filter_series" />
 		</div>
 	</div>
-
-	<!-- Filter Actions -->
-	<div class="flex gap-2 mt-4">
-		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-			Apply
-		</button>
-		</form>
-		<form method="GET" action="{{ route('threads.reset') }}" accept-charset="UTF-8">
-		<button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
-			Reset
-		</button>
-		</form>
-	</div>
-</div>
+</x-filter-panel>
 
 <!-- Results Bar -->
 <div class="flex flex-wrap items-center gap-4 mb-6">

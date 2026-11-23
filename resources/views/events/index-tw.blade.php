@@ -101,77 +101,38 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 	</div>
 </div>
 
-<!-- Filters Section -->
-<div class="mb-6 flex flex-wrap items-start gap-2">
-	<button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-		<i class="bi bi-funnel mr-2"></i>
-		<span id="filters-toggle-text">Show Filters</span>
-		<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
-	</button>
-	
-	<!-- Active Filters Badges (shown when filters are hidden) -->
-	@if($hasFilter)
-	<div id="active-filters-badges" class="flex flex-wrap items-center gap-2">
+<!-- Filters -->
+<x-filter-panel :action="route($filterRoute ?? 'events.filter')" :reset-url="route('events.reset', ['redirect' => $redirect ?? 'events.index', 'key' => $key ?? 'internal_event_index'])" :has-filter="$hasFilter">
+	<x-slot:badges>
 		@if(!empty($filters['name']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Name: {{ $filters['name'] }}
-		</span>
+		<x-filter-badge>Name: {{ $filters['name'] }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['venue']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Venue: {{ $venueOptions[$filters['venue']] ?? 'Unknown' }}
-		</span>
+		<x-filter-badge>Venue: {{ $venueOptions[$filters['venue']] ?? 'Unknown' }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['tag']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Tag: {{ collect((array) $filters['tag'])->filter()->map(fn ($tag) => $tagOptions[$tag] ?? $tag)->implode(', ') }}
-		</span>
+		<x-filter-badge>Tag: {{ collect((array) $filters['tag'])->filter()->map(fn ($tag) => $tagOptions[$tag] ?? $tag)->implode(', ') }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['related']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Entity: {{ $relatedOptions[$filters['related']] ?? 'Unknown' }}
-		</span>
+		<x-filter-badge>Entity: {{ $relatedOptions[$filters['related']] ?? 'Unknown' }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['event_type']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Type: {{ $eventTypeOptions[$filters['event_type']] ?? 'Unknown' }}
-		</span>
+		<x-filter-badge>Type: {{ $eventTypeOptions[$filters['event_type']] ?? 'Unknown' }}</x-filter-badge>
 		@endif
 		@if(isset($filters['start_at']['start']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Date from: {{ $filters['start_at']['start'] }}
-		</span>
+		<x-filter-badge>Date from: {{ $filters['start_at']['start'] }}</x-filter-badge>
 		@endif
 		@if(isset($filters['start_at']['end']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Date to: {{ $filters['start_at']['end'] }}
-		</span>
+		<x-filter-badge>Date to: {{ $filters['start_at']['end'] }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['my_events']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			My Events
-		</span>
+		<x-filter-badge>My Events</x-filter-badge>
 		@endif
 		@include('events.filters.audience-badges')
 		@if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			{{ \App\Filters\EventFilters::DISPLAY_TYPES[$filters['display_type']] ?? $filters['display_type'] }}
-		</span>
+		<x-filter-badge>{{ \App\Filters\EventFilters::DISPLAY_TYPES[$filters['display_type']] ?? $filters['display_type'] }}</x-filter-badge>
 		@endif
-	</div>
-	@endif
-
-	@if($hasFilter)
-	<a id="filters-reset-closed" href="{{ route('events.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-		Reset <i class="bi bi-x ml-1"></i>
-	</a>
-	@endif
-</div>
-
-<!-- Filter Panel -->
-<div id="filter-panel" class="hidden bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-	<form method="POST" action="{{ route($filterRoute ?? 'events.filter') }}" accept-charset="UTF-8" name="filters">
-	@csrf
+	</x-slot:badges>
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
 		<!-- Name Filter -->
@@ -249,27 +210,15 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 		@endauth
 	</div>
 
-	<!-- Filter Actions -->
-	<div class="flex gap-2 mt-4">
-		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-			Apply
-		</button>
-		</form>
-		<form method="GET" action="{{ route('events.reset') }}" accept-charset="UTF-8">
-		<input type="hidden" name="redirect" value="{{ $redirect ?? 'events.index' }}">
-		<input type="hidden" name="key" value="{{ $key ?? 'internal_event_index' }}">
-		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors hidden">
-			Reset
-		</button>
-		</form>
+	<x-slot:actions>
 		@if($hasFilter)
 		<button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
 			<i class="bi bi-link-45deg"></i>
 			<span>Copy Filter URL</span>
 		</button>
 		@endif
-	</div>
-</div>
+	</x-slot:actions>
+</x-filter-panel>
 
 @include('events.index-sort-pagination')
 

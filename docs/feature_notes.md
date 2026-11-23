@@ -4,6 +4,18 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One filter panel component for every list page (#2410)
+- The filter section of the 16 list pages (button, active-filter badges, the panel with its
+  form, Apply and Reset) is now the `<x-filter-panel>` Blade component, with `<x-filter-badge>`
+  for each badge. About 600 lines of repeated markup are gone.
+- The pages now look the same. Groups, blogs, categories and a user's attending list had their
+  filters inside a card with a solid Apply button; they take the button-and-panel look of the
+  other twelve. Activity, photos, reviews and threads said "Clear All" where the others say
+  "Reset". The submit button is "Apply" everywhere.
+- Fixed: on an events list reached through another page (a tag's or venue's events), the Reset
+  link beside the badges went back to the main events list. It now returns to the list you
+  were on, as the Reset inside the panel already did.
+
 ### One "Show Filters" toggle for every list page (#2410)
 - The 16 list pages each carried their own copy of the filter toggle script, and the copies had
   drifted. They now share `resources/assets/js/filter-panel.js`, in the site bundle.
