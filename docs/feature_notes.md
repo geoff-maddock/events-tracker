@@ -4,6 +4,15 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One write path for entities (#2407)
+- Creating, updating and patching an entity is one implementation, `App\Services\EntityWriter`,
+  called by the web form and the API. The two controllers keep authorization, the request and
+  the response; the owners panel of the web form stays in its controller.
+- An entity now records who last updated it (`updated_by`). Both controllers tried to and the
+  value was dropped.
+- A change of roles through the API drops the cached venue and promoter option lists, as the
+  web form already did, so a new venue made through the API shows in the event form at once.
+
 ### One write path for events (#2407)
 - Creating, updating and patching an event is one implementation, `App\Services\EventWriter`,
   called by the web form and the API. The two controllers keep authorization, the request and

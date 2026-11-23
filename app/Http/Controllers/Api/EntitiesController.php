@@ -12,7 +12,6 @@ use App\Http\Resources\EntityResource;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Action;
 use App\Models\Activity;
-use App\Models\Alias;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
@@ -23,8 +22,8 @@ use App\Rules\LinkUrl;
 use App\Models\Location;
 use App\Models\Contact;
 use App\Models\Role;
-use App\Models\Tag;
 use App\Services\Embeds\OembedExtractor;
+use App\Services\EntityWriter;
 use App\Services\ImageHandler;
 use App\Services\RemoteImageFetcher;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -34,7 +33,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -260,45 +258,16 @@ class EntitiesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(EntityRequest $request, Entity $entity): JsonResponse
+    public function store(EntityRequest $request, EntityWriter $writer): JsonResponse
     {
-        $msg = '';
+        $entity = $writer->create(
+            $this->user,
+            $request->validated(),
+            (array) $request->input('tag_list', []),
+            (array) $request->input('alias_list', []),
+            (array) $request->input('role_list', [])
+        );
 
-        $input = $request->validated();
-
-        $input['slug'] = Str::slug($request->input('slug', '-'));
-
-        // Set the user fields explicitly
-        $input['created_by'] = $this->user->id;
-        $input['updated_by'] = $this->user->id;
-
-        $tagArray = $request->input('tag_list', []);
-        $aliasArray = $request->input('alias_list', []);
-        $syncArray = [];
-        $aliasSyncArray = [];
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        // ids and names both resolve to an alias; only an unknown name creates one
-        $aliases = Alias::resolveList($aliasArray);
-        $aliasSyncArray = $aliases->modelKeys();
-        foreach ($aliases->filter(fn (Alias $alias) => $alias->wasRecentlyCreated) as $alias) {
-            $msg .= ' Added alias '.$alias->name.'.';
-        }
-
-        $entity = $entity->create($input);
-
-        $entity->tags()->attach($syncArray);
-        $entity->aliases()->attach($aliasSyncArray);
-        $entity->roles()->attach($request->input('role_list', []));
-
-        // add to activity log
-        Activity::log($entity, $this->user, 1);
-
-        // return response()->json($entity);
         return response()->json(new EntityResource($entity));
     }
 
@@ -321,7 +290,7 @@ class EntitiesController extends Controller
      * relations (tags, aliases, roles) sync to the supplied arrays — missing
      * keys mean "detach all", per strict REST semantics.
      */
-    public function update(Entity $entity, EntityRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
+    public function update(Entity $entity, EntityRequest $request, EntityWriter $writer): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->user->cannot('update', $entity)) {
             return $this->unauthorized($request);
@@ -330,7 +299,6 @@ class EntitiesController extends Controller
         // created_by records who added the entity and is never reassigned (it has no rule,
         // so validated() never carries it); ownership lives in entity_owners
         $input = $request->validated();
-        $input['slug'] = Str::slug($request->input('slug', '-'));
 
         // Reset optional fillable scalars not present in the body to null so
         // PUT behaves as a full replacement.
@@ -346,13 +314,7 @@ class EntitiesController extends Controller
             }
         }
 
-        $entity->fill($input)->save();
-
-        $entity->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
-        $entity->aliases()->sync($this->resolveAliasIds($request->input('alias_list', [])));
-        $entity->roles()->sync($request->input('role_list', []));
-
-        Activity::log($entity, $this->user, 2);
+        $writer->replace($entity, $this->user, $input, (array) $request->input('tag_list', []), (array) $request->input('alias_list', []), (array) $request->input('role_list', []));
 
         return response()->json(new EntityResource($entity));
     }
@@ -361,7 +323,7 @@ class EntitiesController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Entity $entity, EntityPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
+    public function patch(Entity $entity, EntityPatchRequest $request, EntityWriter $writer): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->user->cannot('update', $entity)) {
             return $this->unauthorized($request);
@@ -369,53 +331,16 @@ class EntitiesController extends Controller
 
         // created_by records who added the entity and is never reassigned (it has no rule,
         // so validated() never carries it); ownership lives in entity_owners
-        $input = $request->validated();
-
-        if (array_key_exists('slug', $input)) {
-            $input['slug'] = Str::slug($request->input('slug', '-'));
-        }
-
-        // Only touch scalar fields that actually appeared in the body.
-        $scalarInput = array_intersect_key($input, array_flip($entity->getFillable()));
-        if (!empty($scalarInput)) {
-            $entity->fill($scalarInput)->save();
-        }
-
-        if ($request->has('tag_list')) {
-            $entity->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
-        }
-
-        if ($request->has('alias_list')) {
-            $entity->aliases()->sync($this->resolveAliasIds((array) $request->input('alias_list', [])));
-        }
-
-        if ($request->has('role_list')) {
-            $entity->roles()->sync((array) $request->input('role_list', []));
-        }
-
-        Activity::log($entity, $this->user, 2);
+        $writer->patch(
+            $entity,
+            $this->user,
+            $request->validated(),
+            $request->has('tag_list') ? (array) $request->input('tag_list', []) : null,
+            $request->has('alias_list') ? (array) $request->input('alias_list', []) : null,
+            $request->has('role_list') ? (array) $request->input('role_list', []) : null,
+        );
 
         return response()->json(new EntityResource($entity));
-    }
-
-    /**
-     * Resolve a list of tag identifiers to ids, creating any tags that don't
-     * already exist by id. Accepts a mix of existing tag ids and new tag names.
-     */
-    private function resolveTagIds(array $tagArray): array
-    {
-        return Tag::resolveList($tagArray, $this->user)->modelKeys();
-    }
-
-    /**
-     * Resolve a list of alias ids and names to ids, creating only the names
-     * that no alias has yet.
-     *
-     * @return array<int, int>
-     */
-    private function resolveAliasIds(array $aliasArray): array
-    {
-        return Alias::resolveList($aliasArray)->modelKeys();
     }
 
     /**

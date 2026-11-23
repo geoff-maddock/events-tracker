@@ -28,6 +28,7 @@ use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\InstagramEntityPoster;
 use App\Services\StringHelper;
+use App\Services\EntityWriter;
 use App\Services\TempImageStore;
 use Carbon\Carbon;
 use RuntimeException;
@@ -483,54 +484,23 @@ class EntitiesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(EntityRequest $request, Entity $entity, TempImageStore $tempImages): Response
+    public function store(EntityRequest $request, EntityWriter $writer, TempImageStore $tempImages): Response
     {
-        $msg = '';
-
         // validated() leaves out the photo-attachment tokens and anything else
         // the form carries that isn't an entity attribute
-        $input = $request->validated();
+        $entity = $writer->create(
+            $this->user,
+            $request->validated(),
+            (array) $request->input('tag_list', []),
+            (array) $request->input('alias_list', []),
+            (array) $request->input('role_list', [])
+        );
 
-        $input['slug'] = Str::slug($request->input('slug', '-'));
-        
-        // Set the user fields explicitly
-        $input['created_by'] = $this->user->id;
-        $input['updated_by'] = $this->user->id;
-
-        $tagArray = $request->input('tag_list', []);
-        $aliasArray = $request->input('alias_list', []);
-        $syncArray = [];
-        $aliasSyncArray = [];
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        // ids and names both resolve to an alias; only an unknown name creates one
-        $aliases = Alias::resolveList($aliasArray);
-        $aliasSyncArray = $aliases->modelKeys();
-        foreach ($aliases->filter(fn (Alias $alias) => $alias->wasRecentlyCreated) as $alias) {
-            $msg .= ' Added alias '.$alias->name.'.';
-        }
-
-        $entity = $entity->create($input);
-
-        $entity->tags()->attach($syncArray);
-        $entity->aliases()->attach($aliasSyncArray);
-        $entity->roles()->attach($request->input('role_list', []));
-
-        $msg .= $this->syncOwnersFromRequest($entity, $request);
+        $this->syncOwnersFromRequest($entity, $request);
 
         // Attach the image the user chose on the create form, whether or not
         // they ran it through analysis, as the primary photo.
         $tempImages->attachFromRequest($request, $entity);
-
-        // add to activity log
-        Activity::log($entity, $this->user, Action::CREATE);
-
-        // roles are synced after the save, so the option lists are dropped again here
-        Entity::forgetOptionCaches();
 
         flash()->success('Success', 'Your entity has been created');
         return redirect()->route('entities.show', compact('entity'));
@@ -810,57 +780,29 @@ class EntitiesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Entity $entity, EntityRequest $request): RedirectResponse|Response
+    public function update(Entity $entity, EntityRequest $request, EntityWriter $writer): RedirectResponse|Response
     {
-        $msg = '';
-
         if ($this->user->cannot('update', $entity)) {
             return $this->unauthorized($request);
         }
 
         // created_by records who added the entity and has no rule, so validated() never
         // carries it; ownership changes go through owner_list
-        $input = $request->validated();
+        $writer->replace(
+            $entity,
+            $this->user,
+            $request->validated(),
+            (array) $request->input('tag_list', []),
+            (array) $request->input('alias_list', []),
+            (array) $request->input('role_list', [])
+        );
 
-        $input['slug'] = Str::slug($request->input('slug', '-'));
-        $input['updated_by'] = $this->user->id;
-
-        $entity->fill($input)->save();
-
-        // if we got this far, it worked
         $msg = 'Updated entity. ';
-
-        $tagArray = $request->input('tag_list', []);
-        $aliasArray = $request->input('alias_list', []);
-
-        $syncArray = [];
-        $aliasSyncArray = [];
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
+        foreach ($writer->added() as $added) {
+            $msg .= ' Added '.$added.'.';
         }
-
-        // ids and names both resolve to an alias; only an unknown name creates one
-        $aliases = Alias::resolveList($aliasArray);
-        $aliasSyncArray = $aliases->modelKeys();
-        foreach ($aliases->filter(fn (Alias $alias) => $alias->wasRecentlyCreated) as $alias) {
-            $msg .= ' Added alias '.$alias->name.'.';
-        }
-
-        $entity->tags()->sync($syncArray);
-        $entity->aliases()->sync($aliasSyncArray);
-        $entity->roles()->sync($request->input('role_list', []));
-
         $msg .= $this->syncOwnersFromRequest($entity, $request);
 
-        // add to activity log
-        Activity::log($entity, $this->user, Action::UPDATE);
-
-        // roles are synced after the save, so the option lists are dropped again here
-        Entity::forgetOptionCaches();
-
-        // flash this message
         flash()->success('Success', $msg);
 
         return redirect()->route('entities.show', compact('entity'));
