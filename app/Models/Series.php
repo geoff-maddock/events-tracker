@@ -785,8 +785,13 @@ class Series extends Eloquent implements HasPhotos
 
         $list = [];
         foreach (self::publicWithNextDates() as $row) {
-            if ($row['date'] === $date && !in_array($row['series']->id, $ids)) {
-                $list[] = $row['series'];
+            $series = $row['series'];
+            $occurrenceDate = $row['date'];
+            $cancelledAfterDate = null === $series->cancelled_at
+                || (null !== $occurrenceDate && $occurrenceDate <= $series->cancelled_at->format('Y-m-d'));
+
+            if ($occurrenceDate === $date && $cancelledAfterDate && !in_array($series->id, $ids)) {
+                $list[] = $series;
             }
         }
 
