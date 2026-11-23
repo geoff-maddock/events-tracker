@@ -19,6 +19,7 @@ use App\Models\User;
 use App\Services\BestEffortMailer;
 use App\Services\EmailChangeVerifier;
 use App\Services\Signup\SignupRiskScorer;
+use App\Services\UserAccounts;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Carbon\Carbon;
 use Exception;
@@ -301,17 +302,14 @@ class UsersController extends Controller
     /**
      * @throws Exception
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy(User $user, UserAccounts $accounts): JsonResponse
     {
         // same rule as the web UsersController::authorizeUserChange
         if (!$this->user || ($this->user->id !== $user->id && !$this->user->can('grant_access'))) {
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 
-        // add to activity log
-        Activity::log($user, $this->user, 3);
-
-        $user->delete();
+        $accounts->delete($user, $this->user);
 
         return response()->json([], 204);
     }

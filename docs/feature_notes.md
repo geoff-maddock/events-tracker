@@ -8,6 +8,7 @@ A more detailed description of new features and changes to the application.
 - Activating, suspending, deleting and purging users, and the signup review's approve and ban,
   are in `App\Services\UserAccounts`. "Send Reminder" and "Send Weekly Update" on a profile
   are in `App\Services\DigestSender`. The controllers keep the authorization and the messages.
+- The API's user delete uses the same delete path as the two web ones.
 - Behaviour is the same, with two small differences: the list of purged users no longer ends
   with a stray comma, and deleting a user from the admin action no longer writes a "deleted"
   status to the row just before removing it.
