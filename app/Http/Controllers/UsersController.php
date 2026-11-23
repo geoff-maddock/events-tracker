@@ -8,11 +8,6 @@ use App\Http\Requests\AdminPasswordResetRequest;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
-use App\Mail\UserActivation;
-use App\Mail\UserSuspended;
-use App\Mail\UserUpdate;
-use App\Mail\WeeklyEssentials;
-use App\Mail\WeeklyUpdate;
 use App\Models\Action;
 use App\Models\Activity;
 use App\Models\Entity;
@@ -23,12 +18,11 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
 use App\Services\Signup\SignupRiskScorer;
-use App\Services\DigestBuilder;
-use App\Services\BestEffortMailer;
+use App\Services\DigestSender;
+use App\Services\DigestSendResult;
 use App\Services\EmailChangeVerifier;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,6 +35,7 @@ use Illuminate\View\View;
 use App\Services\Calendar\ICalBuilder;
 use App\Jobs\ExportUserDataJob;
 use App\Services\DataExportService;
+use App\Services\UserAccounts;
 use Throwable;
 
 class UsersController extends Controller
@@ -406,14 +401,11 @@ class UsersController extends Controller
     /**
      * @throws Exception
      */
-    public function destroy(User $user): RedirectResponse
+    public function destroy(User $user, UserAccounts $accounts): RedirectResponse
     {
         $this->authorizeUserChange($user);
 
-        // add to activity log
-        Activity::log($user, $this->user, 3);
-
-        $user->delete();
+        $accounts->delete($user, $this->user);
 
         return redirect('users');
     }
@@ -449,46 +441,37 @@ class UsersController extends Controller
     }
 
     /**
-     * Mark user as activated.
+     * The user an admin action is aimed at, or null (with the error flashed).
      */
-    public function activate(int $id, Request $request): Response|RedirectResponse
+    private function actionTarget(int $id): ?User
     {
-        // check if there is a logged in user
+        // the routes are behind 'auth'; guard anyway so a null user is never dereferenced
         if (!$this->user) {
             flash()->error('Error', 'No user is logged in.');
 
-            return back();
+            return null;
         }
 
         if (!$user = User::find($id)) {
             flash()->error('Error', 'No such user');
+        }
 
+        return $user;
+    }
+
+    /**
+     * Mark user as activated.
+     */
+    public function activate(int $id, UserAccounts $accounts): RedirectResponse
+    {
+        if (!$user = $this->actionTarget($id)) {
             return back();
         }
 
-        // add the following response
-        $user->user_status_id = UserStatus::ACTIVE;
-        $user->email_verified_at = Carbon::now();
-        $user->email_change_pending_at = null;
-        // an admin vouching for the account also trusts it (#2312)
-        $user->trusted_at = now();
-        $user->save();
-
-        Log::info('User '.$user->name.' is activated.');
-
-        // add to activity log
-        Activity::log($user, $this->user, 10);
+        $emailed = $accounts->activate($user, $this->user);
 
         flash()->success('Success', 'User '.$user->name.' is now activated.');
-
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // The account is already activated; if the courtesy email cannot be
-        // sent, say so rather than failing the request.
-        if (!(new BestEffortMailer())->send($user->email, new UserActivation($url, $site, $admin_email, $reply_email, $user), ['user_id' => $user->id])) {
+        if (!$emailed) {
             flash()->error('Email not sent', 'User '.$user->name.' was activated, but the notification email could not be sent.');
         }
 
@@ -498,40 +481,16 @@ class UsersController extends Controller
     /**
      * Mark user as suspended.
      */
-    public function suspend(int $id, Request $request): Response | RedirectResponse
+    public function suspend(int $id, UserAccounts $accounts): RedirectResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
+        if (!$user = $this->actionTarget($id)) {
             return back();
         }
 
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        // add the following response
-        $user->user_status_id = 3;
-        $user->save();
-
-        // add to activity log
-        Activity::log($user, $this->user, 11);
-
-        Log::info('User '.$user->name.' is suspended.');
+        $emailed = $accounts->suspend($user, $this->user);
 
         flash()->success('Success', 'User '.$user->name.' is now suspended.');
-
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // The account is already suspended; if the courtesy email cannot be
-        // sent, say so rather than failing the request.
-        if (!(new BestEffortMailer())->send($user->email, new UserSuspended($url, $site, $admin_email, $reply_email, $user), ['user_id' => $user->id])) {
+        if (!$emailed) {
             flash()->error('Email not sent', 'User '.$user->name.' was suspended, but the notification email could not be sent.');
         }
 
@@ -541,61 +500,28 @@ class UsersController extends Controller
     /**
      * Send a site update reminder to the user.
      */
-    public function reminder(int $id, Request $request, DigestBuilder $digests): RedirectResponse
+    public function reminder(int $id, DigestSender $sender): RedirectResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
+        if (!$user = $this->actionTarget($id)) {
             return back();
         }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        if ($user->profile?->setting_daily_update !== 1) {
-            flash()->error('Error', 'User has daily updates disabled');
-
-            return back();
-        }
-
-        // the daily digest, sent now even when it lists nothing
-        $digest = $digests->daily($user);
-        $mail = new UserUpdate(url('/').'/', config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
 
         // sending the email is the whole point of this action, so report the outcome honestly
-        if (!(new BestEffortMailer())->send($user->email, $mail, ['user_id' => $user->id])) {
-            flash()->error('Email not sent', 'The daily-style notification email to '.$user->email.' could not be sent.');
-
-            return back();
-        }
-
-        Activity::log($user, $this->user, 12);
-        Log::info('User '.$user->name.' was sent a reminder');
-        flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email);
+        match ($sender->daily($user, $this->user)) {
+            DigestSendResult::Disabled => flash()->error('Error', 'User has daily updates disabled'),
+            DigestSendResult::Failed => flash()->error('Email not sent', 'The daily-style notification email to '.$user->email.' could not be sent.'),
+            default => flash()->success('Success', 'A reminder email was sent to  '.$user->name.' at '.$user->email),
+        };
 
         return back();
     }
 
-
     /**
      * Send a weekly site update reminder to the user.
      */
-    public function weekly(int $id, Request $request, DigestBuilder $digests): RedirectResponse
+    public function weekly(int $id, DigestSender $sender): RedirectResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
-            return back();
-        }
-
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
+        if (!$user = $this->actionTarget($id)) {
             return back();
         }
 
@@ -604,70 +530,28 @@ class UsersController extends Controller
             abort(403);
         }
 
-        if ($user->profile?->setting_weekly_update !== 1) {
-            flash()->error('Error', 'User has weekly updates disabled');
-
-            return back();
-        }
-
-        // the same digest the scheduled notifyWeekly command sends, including its
-        // Essential Events fallback when there is nothing personal (#2102)
-        $digest = $digests->weekly($user);
-        $essentials = $digest->isEmpty() ? $digests->essentials($user) : null;
-        if ($essentials?->isEmpty()) {
-            flash()->message('Nothing to send', 'There is nothing in the week ahead for '.$user->name.', so no weekly update was sent.');
-
-            return back();
-        }
-
-        $mail = $essentials
-            ? new WeeklyEssentials(url('/').'/', config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $essentials)
-            : new WeeklyUpdate(url('/').'/', config('app.app_name'), config('app.admin'), config('app.noreplyemail'), $user, $digest->attending, $digest->series, $digest->interests);
-        if (!(new BestEffortMailer())->send($user->email, $mail, ['user_id' => $user->id])) {
-            flash()->error('Email not sent', 'The weekly notification email to '.$user->email.' could not be sent.');
-
-            return back();
-        }
-
-        Activity::log($user, $this->user, 12);
-        Log::info('User '.$user->name.' was sent a weekly reminder');
-        flash()->success('Success', 'A weekly reminder email was sent to  '.$user->name.' at '.$user->email);
+        match ($sender->weekly($user, $this->user)) {
+            DigestSendResult::Disabled => flash()->error('Error', 'User has weekly updates disabled'),
+            DigestSendResult::NothingToSend => flash()->message('Nothing to send', 'There is nothing in the week ahead for '.$user->name.', so no weekly update was sent.'),
+            DigestSendResult::Failed => flash()->error('Email not sent', 'The weekly notification email to '.$user->email.' could not be sent.'),
+            DigestSendResult::Sent => flash()->success('Success', 'A weekly reminder email was sent to  '.$user->name.' at '.$user->email),
+        };
 
         return back();
     }
 
     /**
-     * Mark user as deleted.
-     *
-     * @return Response|RedirectResponse
+     * Delete the user.
      */
-    public function delete(int $id, Request $request)
+    public function delete(int $id, UserAccounts $accounts): RedirectResponse
     {
-        // check if there is a logged in user
-        if (!$this->user) {
-            flash()->error('Error', 'No user is logged in.');
-
+        if (!$user = $this->actionTarget($id)) {
             return back();
         }
 
-        if (!$user = User::find($id)) {
-            flash()->error('Error', 'No such user');
-
-            return back();
-        }
-
-        // add the following response
-        $user->user_status_id = 5;
-        $user->save();
-
-        Log::info('User '.$user->name.' is deleted.');
+        $accounts->delete($user, $this->user);
 
         flash()->success('Success', 'User '.$user->name.' is now deleted.');
-
-        // add to activity log
-        Activity::log($user, $this->user, 3);
-
-        $user->delete();
 
         return back();
     }
@@ -708,36 +592,17 @@ class UsersController extends Controller
         return $calendar;
     }
 
-    /**
-     * @return View|RedirectResponse
-     */
-    public function purge(Request $request)
+    public function purge(Request $request, UserAccounts $accounts): RedirectResponse
     {
         abort_unless($request->user()?->can('grant_access'), 403);
 
-        // pending users who never verified their email. A verified signup that the
-        // risk score holds at Pending waits in the signup review instead (#2312),
-        // even after changing its email (#2321)
-        $users = User::where('user_status_id', '=', UserStatus::PENDING)
-            ->whereNull('email_verified_at')
-            ->whereNull('email_change_pending_at')
-            ->orderBy('name', 'ASC')
-            ->get();
+        $names = $accounts->purgeUnverified();
 
-        if (count($users) < 1) {
+        if ($names === []) {
             flash()->error('Error', 'There are no users to purge.');
-
-            return back();
+        } else {
+            flash()->success('Success', 'These users have been purged: '.implode(', ', $names));
         }
-
-        $list = '';
-        Log::info('Purging users.');
-        foreach ($users as $user) {
-            $list .= $user->name.', ';
-            $user->delete();
-        }
-
-        flash()->success('Success', 'These users have been purged: '.$list);
 
         return back();
     }
