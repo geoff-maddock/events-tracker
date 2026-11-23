@@ -4,6 +4,14 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Entity quick-add, duplicate check and update summary moved out of the controller (#2407)
+- The event form's inline "add a venue / promoter" creates its entity through
+  `EntityWriter::quickCreate()`, the same write path as the entity form and the API.
+- The duplicate-name check behind that modal and the entity form is
+  `App\Services\EntityDuplicateFinder`.
+- "Send update summary" on an entity page is `App\Services\EntityUpdateSummarySender`.
+- No change in behaviour.
+
 ### User account actions moved out of the controller (#2407)
 - Activating, suspending, deleting and purging users, and the signup review's approve and ban,
   are in `App\Services\UserAccounts`. "Send Reminder" and "Send Weekly Update" on a profile

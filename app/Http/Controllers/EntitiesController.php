@@ -11,7 +11,6 @@ use App\Http\Response\ResultSet\ListResultSet;
 use App\Models\Activity;
 use App\Models\Action;
 use App\Models\Alias;
-use App\Models\EmailOptOut;
 use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
@@ -20,14 +19,15 @@ use App\Models\Follow;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
-use App\Mail\EntityUpdateSummary;
-use App\Services\BestEffortMailer;
 use App\Services\Embeds\OembedExtractor;
 use App\Services\EntityStats;
 use App\Services\ImageHandler;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\InstagramEntityPoster;
 use App\Services\StringHelper;
+use App\Services\EntityDuplicateFinder;
+use App\Services\EntitySummaryResult;
+use App\Services\EntityUpdateSummarySender;
 use App\Services\EntityWriter;
 use App\Services\OptionLists;
 use App\Services\TempImageStore;
@@ -39,8 +39,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class EntitiesController extends Controller
@@ -510,7 +508,7 @@ class EntitiesController extends Controller
      * Quickly create a minimal entity (venue or promoter) from the event form and return JSON.
      * Lets users add a missing venue/promoter inline without leaving the event form.
      */
-    public function quickStore(Request $request, ImageHandler $imageHandler): JsonResponse
+    public function quickStore(Request $request, ImageHandler $imageHandler, EntityWriter $writer): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
@@ -520,36 +518,11 @@ class EntitiesController extends Controller
             'image' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:10240',
         ]);
 
-        $roleName = in_array($request->input('role'), ['Venue', 'Promoter'], true)
+        $role = in_array($request->input('role'), ['Venue', 'Promoter'], true)
             ? $request->input('role')
             : 'Venue';
 
-        // Generate a unique slug from the name
-        $baseSlug = Str::slug($validated['name']);
-        $slug = $baseSlug !== '' ? $baseSlug : 'entity';
-        $i = 1;
-        // unlisted entities hold their slugs too
-        while (Entity::withUnlisted()->where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$i++;
-        }
-
-        $entity = Entity::create([
-            'name' => $validated['name'],
-            'slug' => $slug,
-            'short' => $validated['short'] ?? $validated['name'],
-            'description' => $validated['description'] ?? $validated['name'],
-            'entity_type_id' => $roleName === 'Venue' ? EntityType::SPACE : EntityType::GROUP,
-            'entity_status_id' => EntityStatus::ACTIVE,
-            'created_by' => $this->user->id,
-            'started_at' => Carbon::now(),
-        ]);
-
-        $entity->updated_by = $this->user->id;
-        $entity->save();
-
-        if ($role = Role::where('name', $roleName)->first()) {
-            $entity->roles()->attach($role->id);
-        }
+        $entity = $writer->quickCreate($this->user, $validated['name'], $role, $validated['short'] ?? null, $validated['description'] ?? null);
 
         if ($request->hasFile('image')) {
             $photo = $imageHandler->makePhoto($request->file('image'));
@@ -557,11 +530,6 @@ class EntitiesController extends Controller
             $photo->save();
             $entity->addPhoto($photo);
         }
-
-        Activity::log($entity, $this->user, Action::CREATE);
-
-        // roles are synced after the save, so the option lists are dropped again here
-        OptionLists::forgetEntities();
 
         return response()->json([
             'id' => $entity->id,
@@ -574,7 +542,7 @@ class EntitiesController extends Controller
      * Check for existing entities whose name or alias matches the one being entered,
      * so the event quick-add modal and the entity form can warn about likely duplicates.
      */
-    public function quickCheck(Request $request): JsonResponse
+    public function quickCheck(Request $request, EntityDuplicateFinder $finder): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
@@ -586,53 +554,7 @@ class EntitiesController extends Controller
             'exclude_id' => 'nullable|integer',
         ]);
 
-        $name = $validated['name'];
-        $typeId = $validated['entity_type_id'] ?? null;
-        $excludeId = $validated['exclude_id'] ?? null;
-
-        $candidates = Entity::where(function (Builder $query) use ($name) {
-            $query->where('name', 'like', '%'.$name.'%')
-                ->orWhereRaw('SOUNDEX(name) = SOUNDEX(?)', [$name])
-                ->orWhereHas('aliases', function ($q) use ($name) {
-                    $q->where('name', $name);
-                });
-        })
-            ->when($typeId, fn (Builder $query) => $query->where('entity_type_id', $typeId))
-            ->when($excludeId, fn (Builder $query) => $query->where('id', '!=', $excludeId))
-            ->with(['entityType', 'aliases'])
-            ->limit(25)
-            ->get();
-
-        $matches = $candidates
-            ->map(function (Entity $entity) use ($name) {
-                $matchedAlias = $entity->aliases->first(
-                    fn ($alias) => 0 === strcasecmp($alias->name, $name)
-                );
-                similar_text(mb_strtolower($name), mb_strtolower($entity->name), $percent);
-
-                return [
-                    'entity' => $entity,
-                    'alias' => $matchedAlias?->name,
-                    'score' => $matchedAlias ? 100.0 : $percent,
-                    'keep' => $matchedAlias
-                        || $percent >= 60
-                        || false !== mb_stripos($entity->name, $name)
-                        || false !== mb_stripos($name, $entity->name),
-                ];
-            })
-            ->filter(fn (array $match) => $match['keep'])
-            ->sortByDesc('score')
-            ->take(5)
-            ->values()
-            ->map(fn (array $match) => [
-                'id' => $match['entity']->id,
-                'name' => $match['entity']->name,
-                'slug' => $match['entity']->slug,
-                'entity_type' => $match['entity']->entityType?->name,
-                // Set when the input matched one of the entity's aliases rather
-                // than its name, so the UI can explain why it surfaced.
-                'alias' => $match['alias'],
-            ]);
+        $matches = $finder->matches($validated['name'], $validated['entity_type_id'] ?? null, $validated['exclude_id'] ?? null);
 
         return response()->json(['data' => $matches]);
     }
@@ -1026,7 +948,7 @@ class EntitiesController extends Controller
     /**
      * Send an update summary email to the entity's contact email address.
      */
-    public function sendUpdateSummary(int $id): RedirectResponse
+    public function sendUpdateSummary(int $id, EntityUpdateSummarySender $sender): RedirectResponse
     {
         // only super_admins may trigger this action
         if (!$this->user || !$this->user->hasGroup('super_admin')) {
@@ -1041,74 +963,15 @@ class EntitiesController extends Controller
             return back();
         }
 
-        // find a contact email to send to
-        $contact = $entity->contacts()->whereNotNull('email')->where('email', '!=', '')->first();
-
-        if (!$contact || !$contact->email) {
-            flash()->error('Error', 'This entity has no contact email address on file.');
-
-            return back();
-        }
-
-        if (EmailOptOut::isOptedOut($contact->email, EmailOptOut::LIST_ENTITY_CONTACT)) {
-            flash()->error('Email not sent', $contact->email.' has unsubscribed from entity emails.');
-
-            return back();
-        }
-
-        $reply_email = config('app.noreplyemail');
-        $admin_email = config('app.admin');
-        $site = config('app.app_name');
-        $url = config('app.url');
-
-        // upcoming events; this goes to the entity's outside contact, so public events only
-        $upcomingEvents = $entity->events()
-            ->visible(null)
-            ->with(['venue', 'eventType', 'visibility'])
-            ->occurringBetween(Carbon::now())
-            ->orderByNextStart(Carbon::now())
-            ->limit(10)
-            ->get();
-
-        // past events (most recent first, up to 10)
-        $pastEvents = $entity->events()
-            ->visible(null)
-            ->with(['venue'])
-            ->where('events.last_start_at', '<', Carbon::now())
-            ->orderBy('start_at', 'DESC')
-            ->limit(10)
-            ->get();
-
-        // entities frequently performing with
-        $frequentlyPerformsWith = $entity->getFrequentlyPerformsWith(10);
-
-        // venues frequently performed at
-        $frequentlyPerformsAt = $entity->getFrequentlyPerformsAt(10);
-
-        $sent = (new BestEffortMailer())->attempt(fn () => Mail::to($contact->email, $contact->name ?? $entity->name)
-            ->send(new EntityUpdateSummary(
-                $url,
-                $site,
-                $admin_email,
-                $reply_email,
-                $entity,
-                $upcomingEvents,
-                $pastEvents,
-                $frequentlyPerformsWith,
-                $frequentlyPerformsAt
-            )), ['entity_id' => $entity->id]);
-
         // Sending the summary is the point of this action — do not claim it
         // was delivered when the transport rejected it.
-        if (!$sent) {
-            flash()->error('Email not sent', 'The update summary to ' . $contact->email . ' could not be sent.');
-
-            return back();
-        }
-
-        Log::info('Entity update summary sent for entity ' . $entity->id . ' (' . $entity->name . ') to ' . $contact->email);
-
-        flash()->success('Success', 'Update summary sent to ' . $contact->email);
+        $result = $sender->send($entity);
+        match ($result->outcome) {
+            EntitySummaryResult::NO_CONTACT => flash()->error('Error', 'This entity has no contact email address on file.'),
+            EntitySummaryResult::OPTED_OUT => flash()->error('Email not sent', $result->email.' has unsubscribed from entity emails.'),
+            EntitySummaryResult::FAILED => flash()->error('Email not sent', 'The update summary to '.$result->email.' could not be sent.'),
+            default => flash()->success('Success', 'Update summary sent to '.$result->email),
+        };
 
         return back();
     }
