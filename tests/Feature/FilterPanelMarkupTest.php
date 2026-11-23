@@ -80,6 +80,35 @@ class FilterPanelMarkupTest extends TestCase
         $this->assertSame(0, substr_count(explode('id="filter-panel"', $html)[1], 'name="_token"'));
     }
 
+    public function test_every_list_page_renders_its_filter_panel_plain_and_filtered(): void
+    {
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        $this->actingAs($admin);
+
+        $pages = [
+            'events.index' => 'events.filter', 'events.grid' => 'events.grid', 'entities.index' => 'entities.filter',
+            'series.index' => 'series.filter', 'threads.index' => 'threads.filter', 'posts.index' => 'posts.filter',
+            'blogs.index' => 'blogs.filter', 'photos.index' => 'photos.filter', 'reviews.index' => 'reviews.filter',
+            'users.index' => 'users.filter', 'groups.index' => 'groups.filter', 'categories.index' => 'categories.filter',
+            'activities.index' => 'activities.filter',
+        ];
+
+        foreach ($pages as $index => $filter) {
+            $this->get(route($index))->assertOk()
+                ->assertSee('id="filters-toggle-btn" data-has-filter="0"', false)
+                ->assertSee('id="filter-panel"', false);
+
+            $this->followingRedirects()->post(route($filter), ['filters' => ['name' => 'Zzfiltered']])->assertOk()
+                ->assertSee('id="filter-panel"', false);
+        }
+
+        $this->get(route('calendar'))->assertOk()->assertSee('data-has-filter="0" aria-expanded="true"', false);
+        $this->get(route('calendar', ['filters' => ['name' => 'Zzfiltered']]))->assertOk()
+            ->assertSee('data-has-filter="1"', false)->assertSee('Name: Zzfiltered');
+        $this->get(route('users.attending', $admin->id))->assertOk()->assertSee('id="filter-panel"', false);
+    }
+
     public function test_a_reset_that_needs_a_post_is_a_button_for_its_own_form(): void
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
