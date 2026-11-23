@@ -121,10 +121,7 @@
 		</div>
 	</div>
 	@else
-	<div class="card-tw p-6 text-center">
-		<i class="bi bi-calendar-x text-4xl text-muted-foreground mb-3"></i>
-		<p class="text-muted-foreground">No matching events found.</p>
-	</div>
+	<x-empty-state icon="bi-calendar-x" boxed compact>No matching events found.</x-empty-state>
 	@endif
 
 	<!-- Pages / Modules Results -->
@@ -183,10 +180,7 @@
 		</div>
 	</div>
 	@else
-	<div class="card-tw p-6 text-center">
-		<i class="bi bi-people text-4xl text-muted-foreground mb-3"></i>
-		<p class="text-muted-foreground">No matching entities found.</p>
-	</div>
+	<x-empty-state icon="bi-people" boxed compact>No matching entities found.</x-empty-state>
 	@endif
 
 	<!-- Series Results -->

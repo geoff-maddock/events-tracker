@@ -49,10 +49,7 @@
                 </x-ui.button>
             </div>
         @else
-            <div class="text-center py-8">
-                <i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
-                <p class="text-muted-foreground">No popular events found at this time.</p>
-            </div>
+            <x-empty-state icon="bi-calendar-x" compact>No popular events found at this time.</x-empty-state>
         @endif
     </section>
 
@@ -77,10 +74,7 @@
                 </x-ui.button>
             </div>
         @else
-            <div class="text-center py-8">
-                <i class="bi bi-people text-4xl text-muted-foreground/50 mb-3 block"></i>
-                <p class="text-muted-foreground">No popular entities found at this time.</p>
-            </div>
+            <x-empty-state icon="bi-people" compact>No popular entities found at this time.</x-empty-state>
         @endif
     </section>
 
@@ -131,10 +125,7 @@
                 </x-ui.button>
             </div>
         @else
-            <div class="text-center py-8">
-                <i class="bi bi-tags text-4xl text-muted-foreground/50 mb-3 block"></i>
-                <p class="text-muted-foreground">No popular tags found at this time.</p>
-            </div>
+            <x-empty-state icon="bi-tags" compact>No popular tags found at this time.</x-empty-state>
         @endif
     </section>
 </div>

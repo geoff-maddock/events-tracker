@@ -121,10 +121,7 @@
 		</div>
 		@endif
 	@else
-		<div class="text-center py-12 bg-card rounded-lg border border-border">
-			<i class="bi bi-image text-4xl text-muted-foreground/50 mb-3 block"></i>
-			<p class="text-muted-foreground">No photos found matching your criteria.</p>
-		</div>
+		<x-empty-state icon="bi-image" boxed>No photos found matching your criteria.</x-empty-state>
 	@endif
 </div>
 

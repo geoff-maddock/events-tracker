@@ -50,10 +50,7 @@
                 @endunless
             </div>
         @empty
-            <div class="card-tw p-8 text-center text-muted-foreground">
-                <i class="bi bi-bell-slash text-3xl mb-2"></i>
-                <p>No notifications yet.</p>
-            </div>
+            <x-empty-state icon="bi-bell-slash" boxed compact>No notifications yet.</x-empty-state>
         @endforelse
     </div>
 
@@ -76,10 +73,7 @@
                 </div>
             </div>
         @empty
-            <div class="card-tw p-8 text-center text-muted-foreground">
-                <i class="bi bi-inbox text-3xl mb-2"></i>
-                <p>No background jobs yet.</p>
-            </div>
+            <x-empty-state icon="bi-inbox" boxed compact>No background jobs yet.</x-empty-state>
         @endforelse
     </div>
 </div>

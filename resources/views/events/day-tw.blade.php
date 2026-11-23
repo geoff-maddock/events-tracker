@@ -21,10 +21,7 @@
                 @endforeach
             </ul>
             @else
-            <div class="text-center py-8 text-muted-foreground">
-                <i class="bi bi-calendar-x text-3xl mb-2 block"></i>
-                <small>No events listed today.</small>
-            </div>
+            <x-empty-state icon="bi-calendar-x" compact>No events listed today.</x-empty-state>
             @endif
 
             <!-- Series Section -->

@@ -166,10 +166,7 @@
         </div>
         @endif
     @else
-        <div class="card-tw p-8 text-center text-muted-foreground">
-            <i class="bi bi-image text-4xl mb-3"></i>
-            <p>No event photos found</p>
-        </div>
+        <x-empty-state icon="bi-image" boxed compact>No event photos found.</x-empty-state>
     @endif
 </div>
 @stop

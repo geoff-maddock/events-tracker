@@ -125,10 +125,7 @@
 		@endforeach
 	</div>
 	@else
-	<div class="text-center py-12 bg-card rounded-lg border border-border">
-		<i class="bi bi-people text-4xl text-muted-foreground/50 mb-3 block"></i>
-		<p class="text-muted-foreground">No users found.</p>
-	</div>
+	<x-empty-state icon="bi-people" boxed>No users found.</x-empty-state>
 	@endif
 </div>
 

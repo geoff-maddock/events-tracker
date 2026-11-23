@@ -83,22 +83,15 @@
 	{!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
 </div>
 @else
-<div class="text-center py-12">
-	<i class="bi bi-calendar-x text-6xl text-muted-foreground/60 mb-4"></i>
-	@if ($activeTag)
-	<p class="text-muted-foreground">No {{ $activeTag->name }} events found for this window yet.</p>
-	<a href="{{ url($window->path()) }}" class="mt-4 inline-flex items-center text-primary hover:text-primary/90">
-		<i class="bi bi-arrow-left mr-2"></i>
-		View all {{ strtolower($window->label()) }} events
-	</a>
-	@else
-	<p class="text-muted-foreground">No events found for this window yet.</p>
-	<a href="{{ url('/events') }}" class="mt-4 inline-flex items-center text-primary hover:text-primary/90">
-		<i class="bi bi-arrow-left mr-2"></i>
-		View all events
-	</a>
-	@endif
-</div>
+<x-empty-state icon="bi-calendar-x">
+	No {{ $activeTag ? $activeTag->name.' ' : '' }}events found for this window yet.
+	<x-slot:actions>
+		<a href="{{ $activeTag ? url($window->path()) : url('/events') }}" class="inline-flex items-center text-primary hover:text-primary/90">
+			<i class="bi bi-arrow-left mr-2" aria-hidden="true"></i>
+			View all {{ $activeTag ? strtolower($window->label()).' ' : '' }}events
+		</a>
+	</x-slot:actions>
+</x-empty-state>
 @endif
 
 @endsection

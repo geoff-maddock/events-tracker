@@ -129,10 +129,7 @@
         </div>
     </div>
     @empty
-    <div class="p-8 text-center text-muted-foreground">
-        <i class="bi bi-inbox text-4xl mb-2 block"></i>
-        <p>No activity found.</p>
-    </div>
+    <x-empty-state icon="bi-inbox" compact>No activity found.</x-empty-state>
     @endforelse
 </div>
 

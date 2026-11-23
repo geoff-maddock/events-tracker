@@ -54,7 +54,5 @@
 </ul>
 
 @else
-    <div class="text-center py-8 text-muted-foreground italic">
-        No tags listed
-    </div>
+    <x-empty-state compact>No tags listed.</x-empty-state>
 @endif

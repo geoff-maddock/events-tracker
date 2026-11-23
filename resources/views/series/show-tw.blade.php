@@ -414,10 +414,7 @@
 		</div>
 		@endif
 	@else
-		<div class="text-center py-12">
-			<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>
-			<p class="text-muted-foreground">No past events for this series.</p>
-		</div>
+		<x-empty-state icon="bi-calendar-x">No past events for this series.</x-empty-state>
 	@endif
 </div>
 

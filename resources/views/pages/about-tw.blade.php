@@ -26,17 +26,11 @@
                     </div>
                 </div>
             @empty
-                <div class="card-tw p-8 text-center text-muted-foreground">
-                    <i class="bi bi-info-circle text-4xl mb-3"></i>
-                    <p>No content available yet.</p>
-                </div>
+                <x-empty-state icon="bi-info-circle" boxed compact>No content available yet.</x-empty-state>
             @endforelse
         </div>
     @else
-        <div class="card-tw p-8 text-center text-muted-foreground">
-            <i class="bi bi-exclamation-circle text-4xl mb-3"></i>
-            <p>About page content not configured.</p>
-        </div>
+        <x-empty-state icon="bi-exclamation-circle" boxed compact>About page content not configured.</x-empty-state>
     @endif
 
     <div class="card-tw p-4 md:p-6 mt-4 md:mt-6">

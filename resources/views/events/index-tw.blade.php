@@ -231,14 +231,15 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 	@endforeach
 </div>
 @else
-<div class="text-center py-12">
-	<i class="bi bi-calendar-x text-6xl text-muted-foreground/60 mb-4"></i>
-	<p class="text-muted-foreground">No matching events found.</p>
-	<a href="{{ url('/events') }}" class="mt-4 inline-flex items-center text-primary hover:text-primary/90">
-		<i class="bi bi-arrow-left mr-2"></i>
-		View all events
-	</a>
-</div>
+<x-empty-state icon="bi-calendar-x">
+	No matching events found.
+	<x-slot:actions>
+		<a href="{{ url('/events') }}" class="inline-flex items-center text-primary hover:text-primary/90">
+			<i class="bi bi-arrow-left mr-2" aria-hidden="true"></i>
+			View all events
+		</a>
+	</x-slot:actions>
+</x-empty-state>
 @endif
 
 <br>

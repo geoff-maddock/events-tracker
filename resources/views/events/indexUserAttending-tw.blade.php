@@ -236,10 +236,7 @@
             </div>
         @else
             <div class="card-tw">
-                <div class="p-8 text-center text-muted-foreground">
-                    <i class="bi bi-calendar-x text-4xl mb-3"></i>
-                    <p>No matching events found.</p>
-                </div>
+                <x-empty-state icon="bi-calendar-x" compact>No matching events found.</x-empty-state>
             </div>
         @endif
     @endif

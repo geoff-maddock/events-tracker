@@ -70,7 +70,5 @@
 </ul>
 
 @else
-    <div class="text-center py-8 text-muted-foreground italic">
-        No entities found
-    </div>
+    <x-empty-state compact>No entities found.</x-empty-state>
 @endif

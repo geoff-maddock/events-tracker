@@ -89,10 +89,7 @@
 	</div>
 </div>
 @else
-<div class="text-center py-12">
-	<i class="bi bi-chat-dots text-6xl text-muted-foreground/60 mb-4"></i>
-	<p class="text-muted-foreground">No threads found.</p>
-</div>
+<x-empty-state icon="bi-chat-dots">No threads found.</x-empty-state>
 @endif
 
 @stop

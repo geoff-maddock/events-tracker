@@ -88,10 +88,7 @@
             @endforeach
         </div>
     @else
-        <div class="card-tw p-8 text-center text-muted-foreground">
-            <i class="bi bi-calendar-x text-4xl mb-3"></i>
-            <p>No events listed</p>
-        </div>
+        <x-empty-state icon="bi-calendar-x" boxed compact>No events listed.</x-empty-state>
     @endif
 </div>
 @stop

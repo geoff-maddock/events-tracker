@@ -14,7 +14,5 @@
 	@endforeach
 </ul>
 @else
-<div class="text-center py-8 text-muted-foreground">
-	<small>No series listed today.</small>
-</div>
+<x-empty-state compact>No series listed today.</x-empty-state>
 @endif

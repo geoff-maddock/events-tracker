@@ -5,8 +5,5 @@
 	@endforeach
 </div>
 @else
-<div class="text-center py-8">
-	<i class="bi bi-building text-4xl text-muted-foreground/60 mb-2"></i>
-	<p class="text-muted-foreground">No entities found.</p>
-</div>
+<x-empty-state icon="bi-building" compact>No entities found.</x-empty-state>
 @endif
