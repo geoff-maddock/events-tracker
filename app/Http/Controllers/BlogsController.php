@@ -264,7 +264,7 @@ class BlogsController extends Controller
         abort_unless($this->user !== null, 401);
         // matches the upload form in blogs/show-tw: the author or a super_admin
         $blog = Blog::findOrFail($id);
-        abort_unless($this->user->hasGroup('super_admin') || $this->user->can('update', $blog), 403);
+        abort_unless($this->user->isSuperAdmin() || $this->user->can('update', $blog), 403);
 
         $this->validate($request, [
             'file' => 'required|mimes:jpg,jpeg,png,gif,webp|max:5120', // KB; matches Dropzone maxFilesize

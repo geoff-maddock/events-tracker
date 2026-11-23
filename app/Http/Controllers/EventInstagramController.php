@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Concerns\ChecksInstagramPosting;
 use App\Jobs\Instagram\PostEventStoryToInstagram;
 use App\Jobs\Instagram\PostEventToInstagram;
@@ -120,14 +119,20 @@ class EventInstagramController extends Controller
     }
 
     /**
+     * The refusal for a super-admin-only action, or null when the user may go on.
+     */
+    private function denyUnlessSuperAdmin(string $message): RedirectResponse|JsonResponse|null
+    {
+        return $this->user?->isSuperAdmin() ? null : $this->instagramActionResponse(false, 'Error', $message);
+    }
+
+    /**
      * Queue an event to be posted to Instagram as a STORY.
      */
     public function postStoryToInstagram(int $id, Instagram $instagram): RedirectResponse|JsonResponse
     {
-        // admin-only action
-        $user = Auth::user();
-        if (!$user || !$user->hasGroup('super_admin')) {
-            return $this->instagramActionResponse(false, 'Error', 'You are not authorized to post stories to Instagram.');
+        if ($denied = $this->denyUnlessSuperAdmin('You are not authorized to post stories to Instagram.')) {
+            return $denied;
         }
 
         if (!$event = Event::find($id)) {
@@ -138,7 +143,7 @@ class EventInstagramController extends Controller
             return $this->instagramActionResponse(false, 'Error', $error);
         }
 
-        PostEventStoryToInstagram::dispatch($event, $user->id);
+        PostEventStoryToInstagram::dispatch($event, $this->user->id);
 
         return $this->instagramActionResponse(true, 'Queued', 'This story is being posted to Instagram in the background. You will be notified when it finishes.');
     }
@@ -148,7 +153,7 @@ class EventInstagramController extends Controller
      */
     public function postWeekToInstagram(InstagramEventPoster $poster, ImageHandler $imageHandler): RedirectResponse
     {
-        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+        if (!$this->user?->isSuperAdmin()) {
             flash()->error('Error', 'You must be an admin to post the week to Instagram.');
 
             return back();
@@ -174,9 +179,8 @@ class EventInstagramController extends Controller
      */
     public function postWeekendPreviewToInstagram(Instagram $instagram): RedirectResponse|JsonResponse
     {
-        // Admin-only guard
-        if (!$this->user || !$this->user->hasGroup('super_admin')) {
-            return $this->instagramActionResponse(false, 'Error', 'You must be an admin to post the weekend preview to Instagram.');
+        if ($denied = $this->denyUnlessSuperAdmin('You must be an admin to post the weekend preview to Instagram.')) {
+            return $denied;
         }
 
         // Fail fast when Instagram is not linked; the job re-checks at run time.
@@ -195,9 +199,8 @@ class EventInstagramController extends Controller
      */
     public function postTodaysPreviewToInstagram(Instagram $instagram): RedirectResponse|JsonResponse
     {
-        // Admin-only guard
-        if (!$this->user || !$this->user->hasGroup('super_admin')) {
-            return $this->instagramActionResponse(false, 'Error', "You must be an admin to post today's preview to Instagram.");
+        if ($denied = $this->denyUnlessSuperAdmin("You must be an admin to post today's preview to Instagram.")) {
+            return $denied;
         }
 
         // Fail fast when Instagram is not linked; the job re-checks at run time.
@@ -216,8 +219,8 @@ class EventInstagramController extends Controller
      */
     public function postTagToInstagram(string $tag, Instagram $instagram): RedirectResponse|JsonResponse
     {
-        if (!$this->user || !$this->user->hasGroup('super_admin')) {
-            return $this->instagramActionResponse(false, 'Error', 'You must be an admin to post a tag to Instagram.');
+        if ($denied = $this->denyUnlessSuperAdmin('You must be an admin to post a tag to Instagram.')) {
+            return $denied;
         }
 
         if ($error = $this->instagramCredentialError($instagram)) {
@@ -237,8 +240,8 @@ class EventInstagramController extends Controller
      */
     public function postTagStoriesToInstagram(string $tag, Instagram $instagram): RedirectResponse|JsonResponse
     {
-        if (!$this->user || !$this->user->hasGroup('super_admin')) {
-            return $this->instagramActionResponse(false, 'Error', 'You must be an admin to post tag stories to Instagram.');
+        if ($denied = $this->denyUnlessSuperAdmin('You must be an admin to post tag stories to Instagram.')) {
+            return $denied;
         }
 
         if ($error = $this->instagramCredentialError($instagram)) {

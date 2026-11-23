@@ -93,7 +93,7 @@ trait ChecksInstagramPosting
         }
 
         $isOwner = (int) $event->created_by === $user->id;
-        $isAdmin = $user->hasGroup('admin') || $user->hasGroup('super_admin');
+        $isAdmin = $user->isAdmin();
 
         return ($isOwner || $isAdmin) ? null : 'You are not authorized to post this event to Instagram.';
     }

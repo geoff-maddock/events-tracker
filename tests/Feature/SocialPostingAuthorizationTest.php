@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\Instagram\PostEventStoryToInstagram;
 use App\Jobs\Instagram\PostEventToInstagram;
 use App\Models\Entity;
 use App\Models\Event;
@@ -144,6 +145,23 @@ class SocialPostingAuthorizationTest extends TestCase
             ->assertSee('action="'.route('events.instagramPost', ['id' => $event->id]).'" method="POST" class="block" data-ajax-action', false)
             ->assertSee('action="'.route('events.instagramStoryPost', ['id' => $event->id]).'" method="POST" class="block" data-ajax-action', false)
             ->assertSee('form[data-ajax-action]', false);
+    }
+
+    public function test_an_event_story_is_queued_for_a_super_admin_only(): void
+    {
+        Queue::fake();
+        $event = $this->eventWithPhoto($this->makeUser());
+        $url = '/events/'.$event->id.'/instagram-story-post';
+
+        // a plain admin is not a super admin
+        $this->actingAs($this->makeUser('admin'))->postJson($url)
+            ->assertStatus(422)
+            ->assertJson(['success' => false, 'message' => 'You are not authorized to post stories to Instagram.']);
+        Queue::assertNothingPushed();
+
+        $superAdmin = $this->makeUser('super_admin');
+        $this->actingAs($superAdmin)->postJson($url)->assertOk()->assertJson(['success' => true]);
+        Queue::assertPushed(PostEventStoryToInstagram::class, fn ($job) => $job->userId === $superAdmin->id);
     }
 
     public function test_week_post_is_super_admin_only(): void
