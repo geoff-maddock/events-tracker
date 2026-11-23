@@ -17,10 +17,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filters\SeriesFilters;
+use App\Services\OptionLists;
 
 /**
  * App\Models\Series.
@@ -147,10 +147,6 @@ class Series extends Eloquent implements HasPhotos
         $this->attributes['hold_date'] = (bool) $value;
     }
 
-    public const FORM_OPTIONS_CACHE_KEY = 'form-opts-series';
-
-    public const FILTER_OPTIONS_CACHE_KEY = 'filter-opts-series-slug';
-
     /**
      * Relations series/card-tw reads for each card; list pages eager-load these
      * so a page of cards costs a fixed number of queries (#2173).
@@ -166,45 +162,10 @@ class Series extends Eloquent implements HasPhotos
         parent::boot();
 
         // keep the cached series dropdown options (event/thread forms) in sync
-        static::saved(fn () => static::refreshFormOptionsCache());
-        static::deleted(fn () => static::refreshFormOptionsCache());
+        static::saved(fn () => OptionLists::refreshSeries());
+        static::deleted(fn () => OptionLists::refreshSeries());
         // Discord targets filtering on it (#2240)
         static::deleted(fn (Series $series) => DiscordTargetCriterion::forgetSubject($series));
-    }
-
-    /**
-     * Cached name-by-id options for series dropdowns.
-     *
-     * @return array<int, string>
-     */
-    public static function getFormOptions(): array
-    {
-        return Cache::remember(self::FORM_OPTIONS_CACHE_KEY, 3600, fn () => static::orderBy('name', 'ASC')->pluck('name', 'id')->all());
-    }
-
-    /**
-     * Cached name-by-slug options for the event list series filter (#2361):
-     * public series only, since everyone sees the filter panel.
-     *
-     * @return array<string, string>
-     */
-    public static function getFilterOptions(): array
-    {
-        return Cache::remember(self::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => static::public()
-            ->orderBy('name', 'ASC')->pluck('name', 'slug')->all());
-    }
-
-    /**
-     * Bust and immediately re-warm the cached series dropdown options.
-     *
-     * @return array<int, string>
-     */
-    public static function refreshFormOptionsCache(): array
-    {
-        Cache::forget(self::FORM_OPTIONS_CACHE_KEY);
-        Cache::forget(self::FILTER_OPTIONS_CACHE_KEY);
-
-        return static::getFormOptions();
     }
 
     protected $with = ['occurrenceType', 'occurrenceWeek', 'occurrenceDay'];

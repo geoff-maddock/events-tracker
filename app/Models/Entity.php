@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Str;
 use Storage;
+use App\Services\OptionLists;
 
 /**
  * App\Models\Entity.
@@ -139,8 +140,8 @@ class Entity extends Eloquent implements HasPhotos
         static::addGlobalScope(new UnlistedEntityScope());
 
         // the cached form and filter option lists name entities
-        static::saved(fn () => self::forgetOptionCaches());
-        static::deleted(fn () => self::forgetOptionCaches());
+        static::saved(fn () => OptionLists::forgetEntities());
+        static::deleted(fn () => OptionLists::forgetEntities());
 
         // Discord targets filtering on it as an entity, venue or promoter (#2240)
         static::deleted(fn (Entity $entity) => DiscordTargetCriterion::forgetSubject($entity));
@@ -154,18 +155,6 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     
-    /**
-     * Cached name-by-slug options for the event list promoter filter (#2361).
-     *
-     * @return array<string, string>
-     */
-    public static function getPromoterFilterOptions(): array
-    {
-        return Cache::remember(self::optionCacheKey('filter-opts-promoters-slug'), 3600, fn () => self::whereHas('roles', function ($q) {
-            $q->where('name', '=', 'Promoter');
-        })->orderBy('name', 'ASC')->pluck('name', 'slug')->all());
-    }
-
     /**
      * Return a collection of entities with the role venue.
      * @return Builder<Entity>
@@ -273,21 +262,6 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * Cache keys of the entity option lists used by forms and filters.
-     */
-    private const OPTION_CACHE_KEYS = [
-        'form-opts-venues',
-        'form-opts-promoters',
-        'form-opts-entities-active',
-        'form-opts-entities-all',
-        'filter-opts-venues-slug',
-        'filter-opts-promoters-slug',
-        'filter-opts-entities-slug',
-        'filter-opts-venues-name',
-        'filter-opts-entities-name',
-    ];
-
-    /**
      * Every entity, unlisted ones included, whoever is asking. For code that
      * maintains the data; anything shown to a user goes through the default scope.
      *
@@ -336,26 +310,6 @@ class Entity extends Eloquent implements HasPhotos
     public static function publicName(int|string|null $id): ?string
     {
         return $id ? static::withUnlisted()->whereKey($id)->value('name') : null;
-    }
-
-    /**
-     * The cache key for an entity option list. Admins get their own copy,
-     * because theirs includes unlisted entities.
-     */
-    public static function optionCacheKey(string $key): string
-    {
-        return UnlistedEntityScope::viewerSeesUnlisted() ? $key.':admin' : $key;
-    }
-
-    /**
-     * Drop the cached entity option lists, for both kinds of viewer.
-     */
-    public static function forgetOptionCaches(): void
-    {
-        foreach (self::OPTION_CACHE_KEYS as $key) {
-            Cache::forget($key);
-            Cache::forget($key.':admin');
-        }
     }
 
     /**

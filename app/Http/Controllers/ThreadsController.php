@@ -9,7 +9,6 @@ use App\Http\Requests\ThreadRequest;
 use App\Http\Response\ResultSet\ListResultSet;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
-use App\Models\Entity;
 use App\Models\Follow;
 use App\Models\Forum;
 use App\Models\Like;
@@ -19,8 +18,8 @@ use App\Models\TagType;
 use App\Models\Thread;
 use App\Models\ThreadCategory;
 use App\Models\User;
-use App\Models\Visibility;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\OptionLists;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -341,9 +340,9 @@ class ThreadsController extends Controller
     {
         return [
             'threadCategoryOptions' => ['' => ''] + ThreadCategory::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + OptionLists::visibilities(),
+            'tagOptions' => OptionLists::tags(),
+            'entityOptions' => OptionLists::entities(),
             'forumOptions' => ['' => ''] + Forum::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
         ];
     }
@@ -387,7 +386,7 @@ class ThreadsController extends Controller
         // thread and a guest can't open anyone's (#2342)
         abort_unless($thread->isVisibleTo($this->user), 404);
 
-        $tags = Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $tags = OptionLists::tags();
 
         $thread->load(['user', 'entities', 'tags', 'series', 'event', 'posts.user', 'posts.entities', 'posts.tags']);
 
@@ -634,8 +633,8 @@ class ThreadsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'userOptions' => ['' => '&nbsp;'] + User::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
+            'userOptions' => ['' => '&nbsp;'] + OptionLists::users('name'),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('slug'),
             'seriesOptions' => ['' => ''] + Series::visible($this->user)->orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
         ];
     }

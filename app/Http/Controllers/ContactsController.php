@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ContactRequest;
 use App\Models\Contact;
 use App\Models\Entity;
-use App\Models\Visibility;
+use App\Services\OptionLists;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -36,7 +36,7 @@ class ContactsController extends Controller
     {
         $this->authorize('update', $entity);
 
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $visibilities = ['' => ''] + OptionLists::visibilities();
 
         return view('contacts.create-tw', compact('entity', 'contact', 'visibilities'));
     }
@@ -76,7 +76,7 @@ class ContactsController extends Controller
         $this->authorize('update', $entity);
         $this->ensureBelongsToEntity($entity, $contact);
 
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $visibilities = ['' => ''] + OptionLists::visibilities();
 
         return view('contacts.edit-tw', compact('entity', 'contact', 'visibilities'));
     }

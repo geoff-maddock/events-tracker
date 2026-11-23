@@ -15,16 +15,11 @@ use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
-use App\Models\EventType;
-use App\Models\OccurrenceDay;
-use App\Models\OccurrenceType;
-use App\Models\OccurrenceWeek;
 use App\Models\ResponseType;
 use App\Models\Series;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Models\User;
-use App\Models\Visibility;
 use App\Services\Calendar\CalendarRange;
 use App\Services\EventDateRange;
 use App\Services\ImageHandler;
@@ -39,7 +34,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -47,6 +41,7 @@ use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Services\Calendar\ICalBuilder;
 use App\Services\Embeds\OembedExtractor;
+use App\Services\OptionLists;
 
 class EventsController extends Controller
 {
@@ -432,12 +427,12 @@ class EventsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-slug', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
-            'venueOptions' => ['' => ''] + Cache::remember(Entity::optionCacheKey('filter-opts-venues-slug'), 3600, fn () => Entity::getVenues()->pluck('name', 'slug')->all()),
-            'relatedOptions' => ['' => ''] + Cache::remember(Entity::optionCacheKey('filter-opts-entities-slug'), 3600, fn () => Entity::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
-            'eventTypeOptions' => ['' => ''] + Cache::remember('filter-opts-event-types-slug', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
-            'promoterOptions' => ['' => ''] + Entity::getPromoterFilterOptions(),
-            'seriesOptions' => ['' => ''] + Series::getFilterOptions(),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('slug'),
+            'venueOptions' => ['' => ''] + OptionLists::venues('slug'),
+            'relatedOptions' => ['' => ''] + OptionLists::entities('slug'),
+            'eventTypeOptions' => ['' => ''] + OptionLists::eventTypes('slug'),
+            'promoterOptions' => ['' => ''] + OptionLists::promoters('slug'),
+            'seriesOptions' => ['' => ''] + OptionLists::publicSeries(),
             'ageOptions' => ['' => 'Any'] + AudienceFilter::AGE_OPTIONS,
             'priceOptions' => ['' => 'Any'] + AudienceFilter::PRICE_OPTIONS,
         ];
@@ -446,16 +441,14 @@ class EventsController extends Controller
     protected function getFormOptions(): array
     {
         return [
-            'venueOptions' => ['' => ''] + Cache::remember(Entity::optionCacheKey('form-opts-venues'), 3600, fn () => Entity::getVenues()->pluck('name', 'id')->all()),
-            'promoterOptions' => ['' => ''] + Cache::remember(Entity::optionCacheKey('form-opts-promoters'), 3600, fn () => Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'eventTypeOptions' => ['' => ''] + Cache::remember('form-opts-event-types', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'seriesOptions' => ['' => ''] + Series::getFormOptions(),
-            'visibilityOptions' => ['' => ''] + Cache::remember('form-opts-visibilities', 86400, fn () => Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'entityOptions' => Cache::remember(Entity::optionCacheKey('form-opts-entities-active'), 3600, fn () => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'userOptions' => ['' => ''] + Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'venueOptions' => ['' => ''] + OptionLists::venues(),
+            'promoterOptions' => ['' => ''] + OptionLists::promoters(),
+            'eventTypeOptions' => ['' => ''] + OptionLists::eventTypes(),
+            'seriesOptions' => ['' => ''] + OptionLists::series(),
+            'visibilityOptions' => ['' => ''] + OptionLists::visibilities(),
+            'tagOptions' => OptionLists::tags(),
+            'entityOptions' => OptionLists::activeEntities(),
+            'userOptions' => ['' => ''] + OptionLists::users(),
         ];
     }
 
@@ -1883,18 +1876,16 @@ class EventsController extends Controller
     protected function getSeriesFormOptions(): array
     {
         return [
-            'venueOptions' => ['' => ''] + Cache::remember(Entity::optionCacheKey('form-opts-venues'), 3600, fn () => Entity::getVenues()->pluck('name', 'id')->all()),
-            'promoterOptions' => ['' => ''] + Cache::remember(Entity::optionCacheKey('form-opts-promoters'), 3600, fn () => Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'eventTypeOptions' => ['' => ''] + Cache::remember('form-opts-event-types', 3600, fn () => EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'visibilityOptions' => ['' => ''] + Cache::remember('form-opts-visibilities', 86400, fn () => Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'entityOptions' => Cache::remember(Entity::optionCacheKey('form-opts-entities-active'), 3600, fn () => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'occurrenceTypeOptions' => ['' => ''] + Cache::remember('form-opts-occurrence-types', 86400, fn () => OccurrenceType::pluck('name', 'id')->all()),
-            'dayOptions' => ['' => ''] + Cache::remember('form-opts-occurrence-days', 86400, fn () => OccurrenceDay::pluck('name', 'id')->all()),
-            'weekOptions' => ['' => ''] + Cache::remember('form-opts-occurrence-weeks', 86400, fn () => OccurrenceWeek::pluck('name', 'id')->all()),
-            'userOptions' => Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'venueOptions' => ['' => ''] + OptionLists::venues(),
+            'promoterOptions' => ['' => ''] + OptionLists::promoters(),
+            'eventTypeOptions' => ['' => ''] + OptionLists::eventTypes(),
+            'visibilityOptions' => ['' => ''] + OptionLists::visibilities(),
+            'tagOptions' => OptionLists::tags(),
+            'entityOptions' => OptionLists::activeEntities(),
+            'occurrenceTypeOptions' => ['' => ''] + OptionLists::occurrenceTypes(),
+            'dayOptions' => ['' => ''] + OptionLists::occurrenceDays(),
+            'weekOptions' => ['' => ''] + OptionLists::occurrenceWeeks(),
+            'userOptions' => OptionLists::users(),
         ];
     }
 

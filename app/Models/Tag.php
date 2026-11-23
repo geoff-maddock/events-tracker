@@ -14,9 +14,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Filters\TagFilters;
+use App\Services\OptionLists;
 
 /**
  * @property int      $id
@@ -52,16 +52,10 @@ class Tag extends Eloquent
 
         // the tag dropdowns on the event/entity forms and list filters are cached;
         // a new tag missing from a form's options would be dropped when it's saved
-        static::saved(fn () => static::forgetOptionCaches());
-        static::deleted(fn () => static::forgetOptionCaches());
+        static::saved(fn () => OptionLists::forgetTags());
+        static::deleted(fn () => OptionLists::forgetTags());
         // Discord targets filtering on it (#2240)
         static::deleted(fn (Tag $tag) => DiscordTargetCriterion::forgetSubject($tag));
-    }
-
-    public static function forgetOptionCaches(): void
-    {
-        Cache::forget('form-opts-tags');
-        Cache::forget('filter-opts-tags-slug');
     }
 
     public function getRouteKeyName()
