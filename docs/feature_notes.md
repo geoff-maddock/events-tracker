@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One write path for events (#2407)
+- Creating, updating and patching an event is one implementation, `App\Services\EventWriter`,
+  called by the web form and the API. The two controllers keep authorization, the request and
+  the response.
+- An event's venue and promoter stay among its related entities when the event is updated.
+  Before, an update removed them unless they were also sent in the related list, though a
+  create added them.
+- An event now records who last updated it (`updated_by`). Both controllers tried to and the
+  value was dropped.
+
 ### One write path for series (#2407)
 - Creating, updating and patching a series is one implementation, `App\Services\SeriesWriter`,
   called by the web form and the API. The two controllers keep authorization, the request and
