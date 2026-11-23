@@ -4,6 +4,10 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+New entries go in `docs/unreleased/`, one file per change (see the README there), not in
+this section: every pull request adding to the same spot here made them conflict with each
+other. The entries below were written before that.
+
 ### One list toolbar component (#2410)
 - The bar with the result count, the per-page / sort / direction selects and the page links is
   the `<x-list-toolbar>` Blade component. It replaces four `index-sort-pagination` partials
