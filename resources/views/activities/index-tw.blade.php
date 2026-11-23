@@ -14,27 +14,8 @@
     <p class="text-muted-foreground">Recent activity and changes across the site.</p>
 </div>
 
-<!-- Filters Section -->
-<div class="mb-6">
-    <button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-        <i class="bi bi-funnel mr-2"></i>
-        <span id="filters-toggle-text">@if ($hasFilter) Hide @else Show @endif Filters</span>
-        <i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
-    </button>
-
-    @if($hasFilter)
-    <div class="inline-flex items-center gap-2 ml-4">
-        <a href="{{ route('activities.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-            Clear All <i class="bi bi-x ml-1"></i>
-        </a>
-    </div>
-    @endif
-</div>
-
-<!-- Filter Panel -->
-<div id="filter-panel" class="@if (!$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-    <form method="POST" action="{{ route($filterRoute ?? 'activities.filter') }}" accept-charset="UTF-8" name="filters">
-    @csrf
+<!-- Filters -->
+<x-filter-panel :action="route($filterRoute ?? 'activities.filter')" :reset-url="route('activities.reset')" :has-filter="$hasFilter" :open="$hasFilter">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="min-w-0">
             <label for="filter_message" class="block text-sm font-medium text-muted-foreground mb-1">Message</label>
@@ -58,20 +39,7 @@
                 class="form-select-tw select2" data-placeholder="Select a user" data-theme="tailwind" data-allow-clear="true" id="filter_user" />
         </div>
     </div>
-
-    <!-- Filter Actions -->
-    <div class="flex gap-2 mt-4">
-        <button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-            Apply
-        </button>
-        </form>
-        <form method="GET" action="{{ route('activities.reset') }}" accept-charset="UTF-8">
-        <button type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors">
-            Reset
-        </button>
-        </form>
-    </div>
-</div>
+</x-filter-panel>
 
 <!-- Results Bar -->
 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">

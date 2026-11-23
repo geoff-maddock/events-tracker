@@ -99,135 +99,94 @@
         </div>
     </div>
 
-    <!-- Filters Section -->
-    <div class="mb-6">
-        <div class="flex items-center flex-wrap gap-2">
-        <button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-            <i class="bi bi-funnel mr-2"></i>
-            <span id="filters-toggle-text">@if(isset($hasFilter) && $hasFilter) Hide @else Show @endif Filters</span>
-            <i class="bi bi-chevron-down ml-2 transition-transform @if(isset($hasFilter) && $hasFilter) rotate-180 @endif" id="filters-chevron"></i>
-        </button>
-        @if(isset($hasFilter) && $hasFilter)
-        <a id="filters-reset-closed" href="{{ route('calendar') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hidden">
-            Reset <i class="bi bi-x ml-1"></i>
-        </a>
-        @endif
-        </div>
-        
-        <!-- Active Filters Badges (shown when filters are hidden) -->
-        @if(isset($hasFilter) && $hasFilter)
-        <div id="active-filters-badges" class="@if(isset($hasFilter) && $hasFilter) hidden @endif inline-flex flex-wrap items-center gap-2 ml-4">
+    <!-- Filters -->
+    <x-filter-panel :action="route('calendar')" method="GET" :reset-url="route('calendar')" :has-filter="!empty($hasFilter)" :open="true">
+        <x-slot:badges>
             @if(!empty($filters['name']))
-            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-                Name: {{ $filters['name'] }}
-            </span>
+            <x-filter-badge>Name: {{ $filters['name'] }}</x-filter-badge>
             @endif
             @if(!empty($filters['venue']))
-            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-                Venue: {{ $filters['venue'] }}
-            </span>
+            <x-filter-badge>Venue: {{ $filters['venue'] }}</x-filter-badge>
             @endif
             @if(!empty($filters['tag']))
-            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-                Tag: {{ collect((array) $filters['tag'])->filter()->map(fn ($tag) => $tagOptions[$tag] ?? $tag)->implode(', ') }}
-            </span>
+            <x-filter-badge>Tag: {{ collect((array) $filters['tag'])->filter()->map(fn ($tag) => $tagOptions[$tag] ?? $tag)->implode(', ') }}</x-filter-badge>
             @endif
             @if(!empty($filters['related']))
-            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-                Entity: {{ $filters['related'] }}
-            </span>
+            <x-filter-badge>Entity: {{ $filters['related'] }}</x-filter-badge>
             @endif
             @if(!empty($filters['event_type']))
-            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-                Type: {{ $filters['event_type'] }}
-            </span>
+            <x-filter-badge>Type: {{ $filters['event_type'] }}</x-filter-badge>
             @endif
             @include('events.filters.audience-badges')
             @if(!empty($filters['display_type']) && $filters['display_type'] !== 'all')
-            <span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-                {{ \App\Filters\EventFilters::DISPLAY_TYPES[$filters['display_type']] ?? $filters['display_type'] }}
-            </span>
+            <x-filter-badge>{{ \App\Filters\EventFilters::DISPLAY_TYPES[$filters['display_type']] ?? $filters['display_type'] }}</x-filter-badge>
             @endif
+        </x-slot:badges>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            <!-- Name Filter -->
+            <div class="min-w-0">
+                <label for="filter_name" class="block text-sm font-medium text-muted-foreground mb-1">Name</label>
+                <input type="text" 
+                    name="filters[name]" 
+                    id="filter_name" 
+                    value="{{ $filters['name'] ?? '' }}"
+                    placeholder="Event name..."
+                    class="form-input-tw">
+            </div>
+
+            <!-- Tag Filter -->
+            <div class="min-w-0">
+                <label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
+                <x-ui.select-field name="filters[tag][]" :options="array_filter($tagOptions ?? [], fn($key) => $key !== '', ARRAY_FILTER_USE_KEY)" :selected="$filters['tag'] ?? null"
+                    data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select tags" id="filter_tag" multiple />
+            </div>
+
+            <!-- Venue Filter -->
+            <div class="min-w-0">
+                <label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
+                <x-ui.select-field name="filters[venue]" :options="$venueOptions ?? ['' => '']" :selected="$filters['venue'] ?? null"
+                    data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a venue" id="filter_venue" />
+            </div>
+
+            <!-- Related Entity Filter -->
+            <div class="min-w-0">
+                <label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
+                <x-ui.select-field name="filters[related]" :options="$relatedOptions ?? ['' => '']" :selected="$filters['related'] ?? null"
+                    data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select an entity" id="filter_related" />
+            </div>
+
+            <!-- Event Type Filter -->
+            <div class="min-w-0">
+                <label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Event Type</label>
+                <x-ui.select-field name="filters[event_type]" :options="$eventTypeOptions ?? ['' => '']" :selected="$filters['event_type'] ?? null"
+                    data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a type" id="filter_event_type" />
+            </div>
+
+            @include('events.filters.audience-fields')
+
+            @auth
+            <!-- Display Type Filter -->
+            <div class="min-w-0">
+                <label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
+                <select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
+                    @foreach(\App\Filters\EventFilters::DISPLAY_TYPES as $value => $label)
+                    <option value="{{ $value }}" {{ ($filters['display_type'] ?? 'all') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @endauth
         </div>
-        @endif
-    </div>
 
-    <!-- Filter Panel -->
-    {{-- open unless the visitor closed it --}}
-    <div id="filter-panel" class="bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-        <form method="GET" action="{{ route('calendar') }}">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                <!-- Name Filter -->
-                <div class="min-w-0">
-                    <label for="filter_name" class="block text-sm font-medium text-muted-foreground mb-1">Name</label>
-                    <input type="text" 
-                        name="filters[name]" 
-                        id="filter_name" 
-                        value="{{ $filters['name'] ?? '' }}"
-                        placeholder="Event name..."
-                        class="form-input-tw">
-                </div>
-
-                <!-- Tag Filter -->
-                <div class="min-w-0">
-                    <label for="filter_tag" class="block text-sm font-medium text-muted-foreground mb-1">Tags</label>
-                    <x-ui.select-field name="filters[tag][]" :options="array_filter($tagOptions ?? [], fn($key) => $key !== '', ARRAY_FILTER_USE_KEY)" :selected="$filters['tag'] ?? null"
-                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select tags" id="filter_tag" multiple />
-                </div>
-
-                <!-- Venue Filter -->
-                <div class="min-w-0">
-                    <label for="filter_venue" class="block text-sm font-medium text-muted-foreground mb-1">Venue</label>
-                    <x-ui.select-field name="filters[venue]" :options="$venueOptions ?? ['' => '']" :selected="$filters['venue'] ?? null"
-                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a venue" id="filter_venue" />
-                </div>
-
-                <!-- Related Entity Filter -->
-                <div class="min-w-0">
-                    <label for="filter_related" class="block text-sm font-medium text-muted-foreground mb-1">Related Entity</label>
-                    <x-ui.select-field name="filters[related]" :options="$relatedOptions ?? ['' => '']" :selected="$filters['related'] ?? null"
-                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select an entity" id="filter_related" />
-                </div>
-
-                <!-- Event Type Filter -->
-                <div class="min-w-0">
-                    <label for="filter_event_type" class="block text-sm font-medium text-muted-foreground mb-1">Event Type</label>
-                    <x-ui.select-field name="filters[event_type]" :options="$eventTypeOptions ?? ['' => '']" :selected="$filters['event_type'] ?? null"
-                        data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a type" id="filter_event_type" />
-                </div>
-
-                @include('events.filters.audience-fields')
-
-                @auth
-                <!-- Display Type Filter -->
-                <div class="min-w-0">
-                    <label for="filter_display_type" class="block text-sm font-medium text-muted-foreground mb-1">Display Type</label>
-                    <select name="filters[display_type]" id="filter_display_type" class="form-select-tw">
-                        @foreach(\App\Filters\EventFilters::DISPLAY_TYPES as $value => $label)
-                        <option value="{{ $value }}" {{ ($filters['display_type'] ?? 'all') === $value ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endauth
-            </div>
-
-            <!-- Filter Actions -->
-            <div class="flex gap-2 mt-4">
-                <button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-                    Apply
-                </button>
-                <a id="filters-reset-open" href="{{ route('calendar') }}" class="inline-flex items-center px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors @if(!isset($hasFilter) || !$hasFilter) hidden @endif">
-                    Reset
-                </a>
-                @if(isset($hasFilter) && $hasFilter)
-                <button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>Copy Filter URL</span>
-                </button>
-                @endif
-            </div>
-        </form>
-    </div>
+        <x-slot:actions>
+            @if(isset($hasFilter) && $hasFilter)
+            <button type="button" id="copy-filter-url-btn" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
+                <i class="bi bi-link-45deg"></i>
+                <span>Copy Filter URL</span>
+            </button>
+            @endif
+        </x-slot:actions>
+    </x-filter-panel>
 
     <div class="bg-card rounded-lg border border-border shadow-sm p-4">
         <div id='calendar'></div>

@@ -117,105 +117,80 @@
         </div>
     </div>
 
-    <!-- Filters Panel -->
-    <div class="card-tw mb-6">
-        <div class="p-4">
-            <button type="button" id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-                <i class="bi bi-funnel text-lg"></i>
-                <span class="font-medium">Filters</span>
-                <i class="bi bi-chevron-down transition-transform {{ $hasFilter ? 'rotate-180' : '' }}" id="filters-chevron"></i>
-            </button>
-
-            <div id="filter-panel" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
-                <form action="{{ route('users.attending', $user->id) }}" method="POST">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4">
-                        <!-- Name -->
-                        <div>
-                            <label for="filter_name" class="block text-sm font-medium text-foreground mb-1">Name</label>
-                            <input type="text" name="filters[name]" id="filter_name" value="{{ $filters['name'] ?? '' }}"
-                                class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
-                        </div>
-
-                        <!-- Venue -->
-                        <div>
-                            <label for="filter_venue" class="block text-sm font-medium text-foreground mb-1">Venue</label>
-                            <select name="filters[venue]" id="filter_venue" class="select2 w-full" data-placeholder="Select a venue" data-theme="tailwind">
-                                <option value=""></option>
-                                @foreach($venueOptions as $id => $name)
-                                    <option value="{{ $id }}" {{ ($filters['venue'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Tags -->
-                        <div>
-                            <label for="filter_tag" class="block text-sm font-medium text-foreground mb-1">Tags</label>
-                            <select name="filters[tag][]" id="filter_tag" class="select2 w-full" data-placeholder="Select tags" data-theme="tailwind" multiple>
-                                <option value=""></option>
-                                @foreach($tagOptions as $id => $name)
-                                    <option value="{{ $id }}" {{ (is_array($filters['tag'] ?? null) && in_array($id, $filters['tag'])) || ($filters['tag'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Related Entity -->
-                        <div>
-                            <label for="filter_related" class="block text-sm font-medium text-foreground mb-1">Related Entity</label>
-                            <select name="filters[related]" id="filter_related" class="select2 w-full" data-placeholder="Select an entity" data-theme="tailwind">
-                                <option value=""></option>
-                                @foreach($relatedOptions as $id => $name)
-                                    <option value="{{ $id }}" {{ ($filters['related'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Event Type -->
-                        <div>
-                            <label for="filter_event_type" class="block text-sm font-medium text-foreground mb-1">Type</label>
-                            <select name="filters[event_type]" id="filter_event_type" class="select2 w-full" data-placeholder="Select a type" data-theme="tailwind">
-                                <option value=""></option>
-                                @foreach($eventTypeOptions as $id => $name)
-                                    <option value="{{ $id }}" {{ ($filters['event_type'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Start Date Range -->
-                        <div>
-                            <label class="block text-sm font-medium text-foreground mb-1">Start Date</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm text-muted-foreground w-10">From:</span>
-                                    <input type="date" name="filters[start_at][start]" value="{{ $filters['start_at']['start'] ?? '' }}"
-                                        class="flex-1 px-3 py-1.5 bg-input border border-input rounded-lg text-foreground text-sm">
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm text-muted-foreground w-10">To:</span>
-                                    <input type="date" name="filters[start_at][end]" value="{{ $filters['start_at']['end'] ?? '' }}"
-                                        class="flex-1 px-3 py-1.5 bg-input border border-input rounded-lg text-foreground text-sm">
-                                </div>
-                            </div>
-                        </div>
-
-                        @include('events.filters.audience-fields')
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                            Apply Filters
-                        </button>
-                </form>
-                        <form action="{{ route('users.resetUserAttending', $user->id) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors">
-                                Reset
-                            </button>
-                        </form>
-                    </div>
+    <!-- Filters -->
+    <x-filter-panel :action="route('users.attending', $user->id)" :reset-url="route('users.resetUserAttending', $user->id)" reset-method="POST" :has-filter="$hasFilter" :open="$hasFilter">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <!-- Name -->
+            <div>
+                <label for="filter_name" class="block text-sm font-medium text-foreground mb-1">Name</label>
+                <input type="text" name="filters[name]" id="filter_name" value="{{ $filters['name'] ?? '' }}"
+                    class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
             </div>
+
+            <!-- Venue -->
+            <div>
+                <label for="filter_venue" class="block text-sm font-medium text-foreground mb-1">Venue</label>
+                <select name="filters[venue]" id="filter_venue" class="select2 w-full" data-placeholder="Select a venue" data-theme="tailwind">
+                    <option value=""></option>
+                    @foreach($venueOptions as $id => $name)
+                        <option value="{{ $id }}" {{ ($filters['venue'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Tags -->
+            <div>
+                <label for="filter_tag" class="block text-sm font-medium text-foreground mb-1">Tags</label>
+                <select name="filters[tag][]" id="filter_tag" class="select2 w-full" data-placeholder="Select tags" data-theme="tailwind" multiple>
+                    <option value=""></option>
+                    @foreach($tagOptions as $id => $name)
+                        <option value="{{ $id }}" {{ (is_array($filters['tag'] ?? null) && in_array($id, $filters['tag'])) || ($filters['tag'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Related Entity -->
+            <div>
+                <label for="filter_related" class="block text-sm font-medium text-foreground mb-1">Related Entity</label>
+                <select name="filters[related]" id="filter_related" class="select2 w-full" data-placeholder="Select an entity" data-theme="tailwind">
+                    <option value=""></option>
+                    @foreach($relatedOptions as $id => $name)
+                        <option value="{{ $id }}" {{ ($filters['related'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Event Type -->
+            <div>
+                <label for="filter_event_type" class="block text-sm font-medium text-foreground mb-1">Type</label>
+                <select name="filters[event_type]" id="filter_event_type" class="select2 w-full" data-placeholder="Select a type" data-theme="tailwind">
+                    <option value=""></option>
+                    @foreach($eventTypeOptions as $id => $name)
+                        <option value="{{ $id }}" {{ ($filters['event_type'] ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Start Date Range -->
+            <div>
+                <label class="block text-sm font-medium text-foreground mb-1">Start Date</label>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-muted-foreground w-10">From:</span>
+                        <input type="date" name="filters[start_at][start]" value="{{ $filters['start_at']['start'] ?? '' }}"
+                            class="flex-1 px-3 py-1.5 bg-input border border-input rounded-lg text-foreground text-sm">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-muted-foreground w-10">To:</span>
+                        <input type="date" name="filters[start_at][end]" value="{{ $filters['start_at']['end'] ?? '' }}"
+                            class="flex-1 px-3 py-1.5 bg-input border border-input rounded-lg text-foreground text-sm">
+                    </div>
+                </div>
+            </div>
+
+            @include('events.filters.audience-fields')
         </div>
-    </div>
+    </x-filter-panel>
 
     <!-- Sort Controls -->
     <div class="card-tw mb-6">

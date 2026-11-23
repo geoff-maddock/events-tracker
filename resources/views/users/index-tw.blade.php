@@ -18,46 +18,19 @@
 		</div>
 	</div>
 
-<!-- Filters Section -->
-<div class="mb-6 flex flex-wrap items-start gap-2">
-	<button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-		<i class="bi bi-funnel mr-2"></i>
-		<span id="filters-toggle-text">Show Filters</span>
-		<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
-	</button>
-	
-	<!-- Active Filters Badges (shown when filters are hidden) -->
-	@if($hasFilter)
-	<div id="active-filters-badges" class="inline-flex flex-wrap items-center gap-2 ml-4">
+<!-- Filters -->
+<x-filter-panel :action="route('users.filter')" :reset-url="route('users.reset')" :has-filter="$hasFilter">
+	<x-slot:badges>
 		@if(!empty($filters['email']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Email: {{ $filters['email'] }}
-		</span>
+		<x-filter-badge>Email: {{ $filters['email'] }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['name']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Name: {{ $filters['name'] }}
-		</span>
+		<x-filter-badge>Name: {{ $filters['name'] }}</x-filter-badge>
 		@endif
 		@if(!empty($filters['status']))
-		<span class="px-3 py-1 text-sm bg-muted text-muted-foreground rounded-lg border border-border">
-			Status: {{ $userStatusOptions[$filters['status']] ?? 'Unknown' }}
-		</span>
+		<x-filter-badge>Status: {{ $userStatusOptions[$filters['status']] ?? 'Unknown' }}</x-filter-badge>
 		@endif
-	</div>
-	@endif
-
-	@if($hasFilter)
-	<a id="filters-reset-closed" href="{{ route('users.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
-		Reset <i class="bi bi-x ml-1"></i>
-	</a>
-	@endif
-</div>
-
-<!-- Filter Panel -->
-<div id="filter-panel" class="hidden bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
-	<form method="POST" action="{{ route('users.filter') }}" accept-charset="UTF-8" name="filters">
-	@csrf
+	</x-slot:badges>
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 		<!-- Email Filter -->
@@ -89,20 +62,7 @@
 				data-theme="tailwind" class="form-select-tw select2" data-placeholder="Select a status" id="filter_status" />
 		</div>
 	</div>
-
-	<!-- Filter Actions -->
-	<div class="flex gap-2 mt-4">
-		<button type="submit" class="px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
-			Apply
-		</button>
-		</form>
-		<form method="GET" action="{{ route('users.reset') }}" accept-charset="UTF-8">
-		<button id="filters-reset-open" type="submit" class="px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-accent transition-colors hidden">
-			Reset
-		</button>
-		</form>
-	</div>
-</div>
+</x-filter-panel>
 
 <!-- Results Bar -->
 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
