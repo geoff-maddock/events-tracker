@@ -220,7 +220,8 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 	</x-slot:actions>
 </x-filter-panel>
 
-@include('events.index-sort-pagination')
+<x-list-toolbar :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 <!-- Events Grid -->
 @if (isset($events) && count($events) > 0)
@@ -241,7 +242,8 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 @endif
 
 <br>
-@include('events.index-sort-pagination')
+<x-list-toolbar :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 @stop
 
