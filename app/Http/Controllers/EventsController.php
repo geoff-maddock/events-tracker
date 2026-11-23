@@ -1378,8 +1378,8 @@ class EventsController extends Controller
         $event = $writer->create(
             $this->user,
             $input,
-            $request->input('tag_list', []),
-            $request->input('entity_list', []),
+            (array) $request->input('tag_list', []),
+            (array) $request->input('entity_list', []),
             $showings,
             // Attach the image the user chose on the create form, whether or not
             // they ran it through analysis, as the primary photo.
@@ -1416,7 +1416,7 @@ class EventsController extends Controller
         // the form always sends its showings, so none means they were all removed
         $showings = Arr::pull($input, 'showings') ?? [];
 
-        $writer->replace($event, $this->user, $input, $request->input('tag_list', []), $request->input('entity_list', []), $showings);
+        $writer->replace($event, $this->user, $input, (array) $request->input('tag_list', []), (array) $request->input('entity_list', []), $showings);
 
         flash()->success('Success', 'Your event has been updated');
 

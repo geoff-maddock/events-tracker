@@ -536,7 +536,7 @@ class EventsController extends Controller
         $input = $request->validated();
         $showings = Arr::pull($input, 'showings') ?? [];
 
-        $event = $writer->create($request->user(), $input, $request->input('tag_list', []), $request->input('entity_list', []), $showings);
+        $event = $writer->create($request->user(), $input, (array) $request->input('tag_list', []), (array) $request->input('entity_list', []), $showings);
 
         return response()->json(new EventResource($event));
     }
@@ -579,7 +579,7 @@ class EventsController extends Controller
             }
         }
 
-        $writer->replace($event, $this->user, $input, $request->input('tag_list', []), $request->input('entity_list', []), $showings);
+        $writer->replace($event, $this->user, $input, (array) $request->input('tag_list', []), (array) $request->input('entity_list', []), $showings);
 
         return response()->json(new EventResource($event));
     }

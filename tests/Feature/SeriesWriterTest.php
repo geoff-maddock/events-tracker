@@ -95,4 +95,17 @@ class SeriesWriterTest extends TestCase
             $this->assertSame($member->id, $series->updated_by, $slug);
         }
     }
+
+    public function test_a_null_list_means_an_empty_one(): void
+    {
+        $nulls = ['tag_list' => null, 'entity_list' => null];
+
+        $this->actingAs($this->editor, 'sanctum')->postJson('/api/series', $this->payload(['slug' => 'zz-null-lists'] + $nulls))->assertOk();
+
+        $series = $this->series();
+        $series->entities()->attach(\App\Models\Entity::factory()->create()->id);
+        $this->actingAs($this->editor, 'sanctum')->putJson('/api/series/'.$series->slug, $this->payload($nulls))->assertOk();
+
+        $this->assertSame([], $series->entities()->pluck('entities.id')->all(), 'a full replacement with no list clears it');
+    }
 }

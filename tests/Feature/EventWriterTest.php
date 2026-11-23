@@ -121,4 +121,18 @@ class EventWriterTest extends TestCase
             $this->assertSame([$venue->id], $event->entities()->pluck('entities.id')->all(), $slug);
         }
     }
+
+    public function test_a_null_list_means_an_empty_one(): void
+    {
+        $other = Entity::factory()->create();
+        $nulls = ['tag_list' => null, 'entity_list' => null];
+
+        $this->actingAs($this->editor, 'sanctum')->postJson('/api/events', $this->payload(['slug' => 'zz-null-lists'] + $nulls))->assertOk();
+
+        $event = $this->event();
+        $event->entities()->attach($other->id);
+        $this->actingAs($this->editor, 'sanctum')->putJson('/api/events/'.$event->slug, $this->payload($nulls))->assertOk();
+
+        $this->assertSame([], $event->entities()->pluck('entities.id')->all(), 'a full replacement with no list clears it');
+    }
 }
