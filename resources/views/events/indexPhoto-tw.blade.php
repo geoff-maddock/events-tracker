@@ -182,5 +182,4 @@
         });
     });
 </script>
-@include('partials.filter-js')
 @endsection

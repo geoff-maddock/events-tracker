@@ -120,13 +120,13 @@
     <!-- Filters Panel -->
     <div class="card-tw mb-6">
         <div class="p-4">
-            <button type="button" id="filters-toggle-btn" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+            <button type="button" id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
                 <i class="bi bi-funnel text-lg"></i>
                 <span class="font-medium">Filters</span>
-                <i class="bi bi-chevron-down transition-transform {{ $hasFilter ? 'rotate-180' : '' }}" id="filters-icon"></i>
+                <i class="bi bi-chevron-down transition-transform {{ $hasFilter ? 'rotate-180' : '' }}" id="filters-chevron"></i>
             </button>
 
-            <div id="filters-content" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
+            <div id="filter-panel" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
                 <form action="{{ route('users.attending', $user->id) }}" method="POST">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4">
@@ -318,18 +318,6 @@
 @section('scripts.footer')
 <script>
 $(document).ready(function() {
-    // Filters toggle
-    const toggleBtn = document.getElementById('filters-toggle-btn');
-    const filtersContent = document.getElementById('filters-content');
-    const filtersIcon = document.getElementById('filters-icon');
-
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', function() {
-            filtersContent.classList.toggle('hidden');
-            filtersIcon.classList.toggle('rotate-180');
-        });
-    }
-
     // Auto-submit on select change
     document.querySelectorAll('.auto-submit').forEach(function(select) {
         select.addEventListener('change', function() {

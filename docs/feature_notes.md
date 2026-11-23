@@ -4,6 +4,18 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One "Show Filters" toggle for every list page (#2410)
+- The 16 list pages each carried their own copy of the filter toggle script, and the copies had
+  drifted. They now share `resources/assets/js/filter-panel.js`, in the site bundle.
+- Every list page now remembers whether you left its filters open or closed. Nine pages
+  (activity, photos, reviews, threads, tags, categories, the events grid, the calendar and a
+  user's attending list) did not before.
+- A page that has a filter applied and no badges to show it always opens its filters.
+- The toggle button says whether it is expanded (`aria-expanded`, `aria-controls`).
+- Removed `partials/filter-js.blade.php`, which 11 views included and which acted on elements
+  that no longer exist.
+- Deploy: this changes the JavaScript bundle, so run `npm run build`.
+
 ### Fewer inline group checks (#2407)
 - The role admin pages check for an admin once, as `can:admin` middleware on the controller,
   instead of at the top of each of nine actions. A non-admin is now refused before the form is

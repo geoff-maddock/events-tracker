@@ -102,7 +102,7 @@
     <!-- Filters Section -->
     <div class="mb-6">
         <div class="flex items-center flex-wrap gap-2">
-        <button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
+        <button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
             <i class="bi bi-funnel mr-2"></i>
             <span id="filters-toggle-text">@if(isset($hasFilter) && $hasFilter) Hide @else Show @endif Filters</span>
             <i class="bi bi-chevron-down ml-2 transition-transform @if(isset($hasFilter) && $hasFilter) rotate-180 @endif" id="filters-chevron"></i>
@@ -153,7 +153,8 @@
     </div>
 
     <!-- Filter Panel -->
-    <div id="filter-panel" class="@if(!isset($hasFilter) || !$hasFilter) hidden @endif bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
+    {{-- open unless the visitor closed it --}}
+    <div id="filter-panel" class="bg-card border border-border rounded-lg p-4 mb-6 overflow-hidden">
         <form method="GET" action="{{ route('calendar') }}">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 <!-- Name Filter -->
@@ -256,55 +257,6 @@
         });
     })();
 
-    // Toggle filter section with localStorage persistence
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterToggleBtn = document.getElementById('filters-toggle-btn');
-        const filterPanel = document.getElementById('filter-panel');
-        const filterChevron = document.getElementById('filters-chevron');
-        const filterToggleText = document.getElementById('filters-toggle-text');
-        const activeBadges = document.getElementById('active-filters-badges');
-        const resetClosed = document.getElementById('filters-reset-closed');
-        const resetOpen = document.getElementById('filters-reset-open');
-        
-        if (filterToggleBtn && filterPanel && filterChevron && filterToggleText) {
-            // Check localStorage for saved state or keep open if filters are active
-            const hasActiveFilters = {{ isset($hasFilter) && $hasFilter ? 'true' : 'false' }};
-            const isCollapsed = localStorage.getItem('calendarFiltersCollapsed') === 'true' && !hasActiveFilters;
-            
-            // Set initial state
-            if (!isCollapsed || hasActiveFilters) {
-                filterPanel.classList.remove('hidden');
-                filterChevron.classList.add('rotate-180');
-                filterToggleText.textContent = 'Hide Filters';
-                if (activeBadges) activeBadges.classList.add('hidden');
-                if (resetClosed) resetClosed.classList.add('hidden');
-                if (resetOpen) resetOpen.classList.remove('hidden');
-            }
-
-            // Toggle functionality
-            filterToggleBtn.addEventListener('click', function() {
-                const willBeCollapsed = !filterPanel.classList.contains('hidden');
-                
-                filterPanel.classList.toggle('hidden');
-                filterChevron.classList.toggle('rotate-180');
-
-                if (willBeCollapsed) {
-                    filterToggleText.textContent = 'Show Filters';
-                    if (activeBadges) activeBadges.classList.remove('hidden');
-                    if (resetClosed) resetClosed.classList.remove('hidden');
-                    if (resetOpen) resetOpen.classList.add('hidden');
-                    localStorage.setItem('calendarFiltersCollapsed', 'true');
-                } else {
-                    filterToggleText.textContent = 'Hide Filters';
-                    if (activeBadges) activeBadges.classList.add('hidden');
-                    if (resetClosed) resetClosed.classList.add('hidden');
-                    if (resetOpen) resetOpen.classList.remove('hidden');
-                    localStorage.setItem('calendarFiltersCollapsed', 'false');
-                }
-            });
-        }
-    });
-
     // Check the current viewport size for initial view
     function checkViewport() {
         if (window.innerWidth < 768) {
@@ -406,5 +358,4 @@
         });
     });
 </script>
-@include('partials.filter-js')
 @endsection

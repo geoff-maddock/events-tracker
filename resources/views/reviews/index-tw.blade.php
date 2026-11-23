@@ -12,7 +12,7 @@
 
 	<!-- Filters Section -->
 	<div class="mb-6">
-		<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
+		<button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border-2 border-primary rounded-lg hover:bg-accent/80 transition-colors">
 			<i class="bi bi-funnel mr-2"></i>
 			<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
 			<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
@@ -133,24 +133,3 @@
 
 @stop
 
-@section('footer')
-<script>
-	// Filter toggle functionality
-	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
-		const panel = document.getElementById('filter-panel');
-		const text = document.getElementById('filters-toggle-text');
-		const chevron = document.getElementById('filters-chevron');
-
-		panel.classList.toggle('hidden');
-
-		if (panel.classList.contains('hidden')) {
-			text.textContent = 'Show Filters';
-			chevron.classList.remove('rotate-180');
-		} else {
-			text.textContent = 'Hide Filters';
-			chevron.classList.add('rotate-180');
-		}
-	});
-</script>
-@include('partials.filter-js')
-@endsection

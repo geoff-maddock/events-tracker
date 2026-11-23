@@ -57,7 +57,7 @@ Entities @include('entities.title-crumbs')
 
 <!-- Filters Section -->
 <div class="mb-6 flex flex-wrap items-start gap-2">
-	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
+	<button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
 		<span id="filters-toggle-text">Show Filters</span>
 		<i class="bi bi-chevron-down ml-2 transition-transform" id="filters-chevron"></i>
@@ -215,36 +215,6 @@ Entities @include('entities.title-crumbs')
 
 @section('footer')
 <script>
-// Filter toggle with localStorage persistence
-(function() {
-	const storageKey = 'filter-open:' + window.location.pathname;
-	const panel = document.getElementById('filter-panel');
-	const badges = document.getElementById('active-filters-badges');
-	const text = document.getElementById('filters-toggle-text');
-	const chevron = document.getElementById('filters-chevron');
-	const resetClosed = document.getElementById('filters-reset-closed');
-	const resetOpen = document.getElementById('filters-reset-open');
-	const hasFilter = @json($hasFilter);
-
-	function applyState(open) {
-		panel.classList.toggle('hidden', !open);
-		if (text) text.textContent = open ? 'Hide Filters' : 'Show Filters';
-		if (chevron) chevron.classList.toggle('rotate-180', open);
-		if (badges) badges.classList.toggle('hidden', open);
-		if (resetClosed) resetClosed.classList.toggle('hidden', open || !hasFilter);
-		if (resetOpen) resetOpen.classList.toggle('hidden', !open || !hasFilter);
-	}
-
-	const saved = localStorage.getItem(storageKey);
-	if (saved !== null) applyState(saved === '1');
-
-	document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
-		const open = panel.classList.contains('hidden');
-		applyState(open);
-		localStorage.setItem(storageKey, open ? '1' : '0');
-	});
-})();
-
 // Auto-submit on select change
 document.querySelectorAll('.auto-submit').forEach(select => {
 	select.addEventListener('change', function() {
@@ -325,5 +295,4 @@ document.querySelectorAll('.auto-submit').forEach(select => {
 		.catch(function() { copyToClipboard(fullUrl); });
 	});
 </script>
-@include('partials.filter-js')
 @endsection

@@ -20,10 +20,10 @@
 	<div class="card-tw mb-6">
 		<div class="p-4">
 			<div class="flex flex-wrap items-center gap-2">
-			<button type="button" id="filters-toggle-btn" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+			<button type="button" id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
 				<i class="bi bi-funnel text-lg"></i>
 				<span class="font-medium">Filters</span>
-				<i class="bi bi-chevron-down transition-transform" id="filters-icon"></i>
+				<i class="bi bi-chevron-down transition-transform" id="filters-chevron"></i>
 			</button>
 			@if($hasFilter)
 			<a id="filters-reset-closed" href="{{ route('categories.reset') }}" class="inline-flex items-center px-3 py-1 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hidden">
@@ -32,7 +32,7 @@
 			@endif
 			</div>
 
-			<div id="filters-content" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
+			<div id="filter-panel" class="{{ $hasFilter ? '' : 'hidden' }} mt-4">
 				<form action="{{ route('categories.filter') }}" method="POST">
 					@csrf
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -103,24 +103,6 @@
 @section('scripts.footer')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-	// Filters toggle
-	const toggleBtn = document.getElementById('filters-toggle-btn');
-	const filtersContent = document.getElementById('filters-content');
-	const filtersIcon = document.getElementById('filters-icon');
-	const resetClosed = document.getElementById('filters-reset-closed');
-	const resetOpen = document.getElementById('filters-reset-open');
-	const hasFilter = @json($hasFilter);
-
-	if (toggleBtn) {
-		toggleBtn.addEventListener('click', function() {
-			filtersContent.classList.toggle('hidden');
-			filtersIcon.classList.toggle('rotate-180');
-			const isHidden = filtersContent.classList.contains('hidden');
-			if (resetClosed) resetClosed.classList.toggle('hidden', !isHidden || !hasFilter);
-			if (resetOpen) resetOpen.classList.toggle('hidden', isHidden || !hasFilter);
-		});
-	}
-
 	// Auto-submit on select change
 	document.querySelectorAll('.auto-submit').forEach(function(select) {
 		select.addEventListener('change', function() {

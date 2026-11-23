@@ -40,7 +40,7 @@
 
 <!-- Filters Section -->
 <div class="mb-6 flex flex-wrap items-start gap-2">
-	<button id="filters-toggle-btn" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
+	<button id="filters-toggle-btn" data-has-filter="{{ !empty($hasFilter) ? 1 : 0 }}" aria-expanded="false" class="inline-flex items-center px-4 py-2 bg-accent text-foreground border border-primary rounded-lg hover:bg-accent/80 transition-colors">
 		<i class="bi bi-funnel mr-2"></i>
 		<span id="filters-toggle-text">@if($hasFilter) Hide @else Show @endif Filters</span>
 		<i class="bi bi-chevron-down ml-2 transition-transform @if($hasFilter) rotate-180 @endif" id="filters-chevron"></i>
@@ -266,39 +266,6 @@
         });
     })();
 
-    // Filter toggle functionality
-    document.getElementById('filters-toggle-btn')?.addEventListener('click', function() {
-        const panel = document.getElementById('filter-panel');
-        const badges = document.getElementById('active-filters-badges');
-        const text = document.getElementById('filters-toggle-text');
-        const chevron = document.getElementById('filters-chevron');
-        const resetClosed = document.getElementById('filters-reset-closed');
-        const resetOpen = document.getElementById('filters-reset-open');
-        const hasFilter = @json($hasFilter);
-
-        panel.classList.toggle('hidden');
-
-        if (panel.classList.contains('hidden')) {
-            text.textContent = 'Show Filters';
-            chevron.classList.remove('rotate-180');
-            // Show badges when filters are hidden
-            if (badges) {
-                badges.classList.remove('hidden');
-            }
-            if (resetClosed && hasFilter) resetClosed.classList.remove('hidden');
-            if (resetOpen) resetOpen.classList.add('hidden');
-        } else {
-            text.textContent = 'Hide Filters';
-            chevron.classList.add('rotate-180');
-            // Hide badges when filters are shown
-            if (badges) {
-                badges.classList.add('hidden');
-            }
-            if (resetClosed) resetClosed.classList.add('hidden');
-            if (resetOpen && hasFilter) resetOpen.classList.remove('hidden');
-        }
-    });
-
 	// Copy filter URL functionality
 	document.getElementById('copy-filter-url-btn')?.addEventListener('click', function() {
 		const filters = @json($filters ?? []);
@@ -371,5 +338,4 @@
 		.catch(function() { copyToClipboard(fullUrl); });
 	});
 </script>
-@include('partials.filter-js')
 @endsection
