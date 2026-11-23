@@ -4,6 +4,16 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### One list toolbar component (#2410)
+- The bar with the result count, the per-page / sort / direction selects and the page links is
+  the `<x-list-toolbar>` Blade component. It replaces four `index-sort-pagination` partials
+  (events, entities, series, tags) that differed only in a variable name, and the copy inside
+  the threads page.
+- The three selects now have labels for screen readers, and the page links are a labelled
+  `<nav>` that marks the current page.
+- On the threads page the page links moved from beside the selects to the right-hand end of
+  the bar, where the other lists have them.
+
 ### One filter panel component for every list page (#2410)
 - The filter section of the 16 list pages (button, active-filter badges, the panel with its
   form, Apply and Reset) is now the `<x-filter-panel>` Blade component, with `<x-filter-badge>`

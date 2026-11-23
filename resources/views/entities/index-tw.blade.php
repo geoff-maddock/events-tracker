@@ -153,7 +153,8 @@ Entities @include('entities.title-crumbs')
 	</x-slot:actions>
 </x-filter-panel>
 
-@include('entities.index-sort-pagination')
+<x-list-toolbar :paginator="$entities ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'entities.name'" :direction="$direction ?? 'asc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 
 <!-- Main Entity List -->
@@ -162,7 +163,8 @@ Entities @include('entities.title-crumbs')
 </div>
 
 <br>
-@include('entities.index-sort-pagination')
+<x-list-toolbar :paginator="$entities ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'entities.name'" :direction="$direction ?? 'asc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 @stop
 

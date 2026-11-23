@@ -53,7 +53,17 @@
 		</div>
 	</x-filter-panel>
 
-	@include('tags.index-sort-pagination')
+	<x-list-toolbar :paginator="$tags ?? null" :limit="$limit ?? 25" :sort="$sort ?? 'name'" :direction="$direction ?? 'asc'"
+		:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions">
+		@if(!empty($search))
+		<input type="hidden" name="search" value="{{ $search }}">
+		@endif
+		@foreach($filters ?? [] as $name => $value)
+		@if(is_scalar($value) && $value !== '')
+		<input type="hidden" name="filters[{{ $name }}]" value="{{ $value }}">
+		@endif
+		@endforeach
+	</x-list-toolbar>
 
 	<!-- Tags Grid -->
 	<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -62,7 +72,17 @@
 		@endforeach
 	</div>
 
-	@include('tags.index-sort-pagination')
+	<x-list-toolbar :paginator="$tags ?? null" :limit="$limit ?? 25" :sort="$sort ?? 'name'" :direction="$direction ?? 'asc'"
+		:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions">
+		@if(!empty($search))
+		<input type="hidden" name="search" value="{{ $search }}">
+		@endif
+		@foreach($filters ?? [] as $name => $value)
+		@if(is_scalar($value) && $value !== '')
+		<input type="hidden" name="filters[{{ $name }}]" value="{{ $value }}">
+		@endif
+		@endforeach
+	</x-list-toolbar>
 </div>
 
 @stop

@@ -161,7 +161,8 @@
 
 <!-- Grid Content -->
 @if (isset($events) && count($events) > 0)
-@include('events.index-sort-pagination')
+<x-list-toolbar :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 	<div class="grid gap-4 w-full" style="grid-template-columns: repeat(auto-fill, minmax(max(120px, calc((100% - 15 * 1rem) / 16)), 1fr));">
 		@php $lastDate = ''; @endphp
 		@foreach ($events as $event)
@@ -184,7 +185,8 @@
 	</div>
 
 	<br>
-@include('events.index-sort-pagination')
+<x-list-toolbar :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 @else
 	<div class="text-center py-12 bg-card rounded-lg border border-border">
 		<i class="bi bi-calendar-x text-4xl text-muted-foreground/50 mb-3 block"></i>

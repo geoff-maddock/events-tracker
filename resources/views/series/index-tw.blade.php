@@ -112,14 +112,16 @@
 
 <!-- Series Grid -->
 @if (isset($series) && count($series) > 0)
-@include('series.index-sort-pagination')
+<x-list-toolbar :paginator="$series ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'series.name'" :direction="$direction ?? 'asc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
 	@foreach ($series as $s)
 	@include('series.card-tw', ['series' => $s])
 	@endforeach
 </div>
 <br>
-@include('series.index-sort-pagination')
+<x-list-toolbar :paginator="$series ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'series.name'" :direction="$direction ?? 'asc'"
+	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 @else
 <div class="text-center py-12">
 	<i class="bi bi-collection-fill text-6xl text-muted-foreground/60 mb-4"></i>
