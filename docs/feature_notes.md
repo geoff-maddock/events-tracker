@@ -7,11 +7,14 @@ A more detailed description of new features and changes to the application.
 ### One home for the cached option lists (#2407)
 - The lists behind the form selects and list filters (tags, venues, promoters, entities, event
   types, users, series and the small lookup tables) come from `App\Services\OptionLists`. It
-  replaces 37 inline cache calls in five controllers and the key lists kept on four models, and
+  replaces the inline cache calls in the controllers and the key lists kept on four models, and
   it alone names the cache keys. The keys themselves are unchanged.
-- A new or renamed tag now also refreshes the forum list's tag filter, which was left out and
-  could stay stale for up to an hour.
-- The visibility select is in name order on the blog form too, as on the event form.
+- The series, thread, forum, contact and group pages built the same lists with a query each on
+  every request; they now use the cached ones.
+- On a forum's page, the tag and series filters did not match anything: their options were
+  keyed by name and id, and the thread filters match by slug. They now offer the same options
+  as the thread list, and only public series.
+- The visibility select is in name order on the blog and forum forms too, as on the event form.
 
 ### A cancelled series no longer shows as upcoming (#2458)
 - A public series with a cancellation date kept appearing on its next scheduled day on the

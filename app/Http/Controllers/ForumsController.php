@@ -133,7 +133,7 @@ class ForumsController extends Controller
      */
     public function create(): View
     {
-        $visibilities = ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $visibilities = ['' => ''] + OptionLists::visibilities();
 
         $forum = new Forum();
         $forum->visibility_id = Visibility::VISIBILITY_PUBLIC;
@@ -278,8 +278,8 @@ class ForumsController extends Controller
     {
         return [
             'userOptions' => ['' => '&nbsp;'] + OptionLists::users('name'),
-            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('name'),
-            'seriesOptions' => ['' => ''] + OptionLists::series(),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('slug'),
+            'seriesOptions' => ['' => ''] + OptionLists::publicSeries(),
         ];
     }
 
@@ -295,7 +295,7 @@ class ForumsController extends Controller
     protected function getFormOptions(): array
     {
         return [
-            'visibilities' => ['' => ''] + Visibility::pluck('name', 'id')->all(),
+            'visibilities' => ['' => ''] + OptionLists::visibilities(),
         ];
     }
 }

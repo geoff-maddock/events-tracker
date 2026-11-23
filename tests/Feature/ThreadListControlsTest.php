@@ -108,4 +108,22 @@ class ThreadListControlsTest extends TestCase
         $this->assertSame(['name' => 'Alpha Listed'], session(self::FILTERS));
         $this->assertNull(session(self::SORT));
     }
+
+    public function test_a_forums_thread_list_offers_filters_the_thread_filters_can_match(): void
+    {
+        $forum = \App\Models\Forum::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $series = \App\Models\Series::factory()->create(['name' => 'ZZ Forum Filter Series', 'slug' => 'zz-forum-filter-series', 'visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $hidden = \App\Models\Series::factory()->create(['name' => 'ZZ Private Filter Series', 'visibility_id' => Visibility::VISIBILITY_PRIVATE]);
+
+        // the forum page needs the show_forum permission
+        $admin = User::factory()->create(['user_status_id' => \App\Models\UserStatus::ACTIVE]);
+        $admin->groups()->attach(\App\Models\Group::where('name', 'admin')->firstOrFail()->id);
+
+        $response = $this->actingAs($admin)->get('/forums/'.$forum->id)->assertOk();
+
+        // the thread filters match tags and series by slug, as on /threads
+        $this->assertSame('Zzthreadlisttag', $response->viewData('tagOptions')['zzthreadlisttag'] ?? null);
+        $this->assertSame('ZZ Forum Filter Series', $response->viewData('seriesOptions')['zz-forum-filter-series'] ?? null);
+        $this->assertNotContains($hidden->name, $response->viewData('seriesOptions'));
+    }
 }

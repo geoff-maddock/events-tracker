@@ -11,7 +11,6 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
-use App\Models\EventType;
 use App\Models\Follow;
 use App\Models\OccurrenceDay;
 use App\Models\OccurrenceType;
@@ -27,6 +26,7 @@ use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
 use App\Services\TempImageStore;
+use App\Services\OptionLists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -305,14 +305,14 @@ class SeriesController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'tagOptions' => ['' => '&nbsp;'] + Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all(),
-            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'name')->all(),
-            'relatedOptions' => ['' => ''] + Entity::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('slug'),
+            'venueOptions' => ['' => ''] + OptionLists::venues('name'),
+            'relatedOptions' => ['' => ''] + OptionLists::entities('name'),
+            'eventTypeOptions' => ['' => ''] + OptionLists::eventTypes('name'),
             'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'occurrenceWeekOptions' => ['' => ''] + OccurrenceWeek::orderBy('id', 'ASC')->pluck('name', 'name')->all(),
             'occurrenceDayOptions' => ['' => ''] + OccurrenceDay::orderBy('id', 'ASC')->pluck('name', 'name')->all(),
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'visibilityOptions' => ['' => ''] + OptionLists::visibilities(),
         ];
     }
 
@@ -410,18 +410,16 @@ class SeriesController extends Controller
     protected function getSeriesFormOptions(): array
     {
         return [
-            'venueOptions' => ['' => ''] + Entity::getVenues()->pluck('name', 'id')->all(),
-            'promoterOptions' => ['' => ''] + Entity::whereHas('roles', function ($q) {
-                $q->where('name', '=', 'Promoter');
-            })->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'eventTypeOptions' => ['' => ''] + EventType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'visibilityOptions' => ['' => ''] + Visibility::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'tagOptions' => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'entityOptions' => Entity::active()->orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'occurrenceTypeOptions' => ['' => ''] + OccurrenceType::pluck('name', 'id')->all(),
-            'dayOptions' => ['' => ''] + OccurrenceDay::pluck('name', 'id')->all(),
-            'weekOptions' => ['' => ''] + OccurrenceWeek::pluck('name', 'id')->all(),
-            'userOptions' => User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'venueOptions' => ['' => ''] + OptionLists::venues(),
+            'promoterOptions' => ['' => ''] + OptionLists::promoters(),
+            'eventTypeOptions' => ['' => ''] + OptionLists::eventTypes(),
+            'visibilityOptions' => ['' => ''] + OptionLists::visibilities(),
+            'tagOptions' => OptionLists::tags(),
+            'entityOptions' => OptionLists::activeEntities(),
+            'occurrenceTypeOptions' => ['' => ''] + OptionLists::occurrenceTypes(),
+            'dayOptions' => ['' => ''] + OptionLists::occurrenceDays(),
+            'weekOptions' => ['' => ''] + OptionLists::occurrenceWeeks(),
+            'userOptions' => OptionLists::users(),
         ];
     }
 
@@ -615,7 +613,7 @@ class SeriesController extends Controller
         abort_unless($series && $series->isVisibleTo($this->user), 404);
 
         $seriesOptions = ['' => ''] + Series::visible($this->user)->orderBy('name', 'ASC')->pluck('name', 'id')->all();
-        $userOptions = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+        $userOptions = ['' => ''] + OptionLists::users();
 
         // calculate the next occurrence date based on template settings
         // (the schedule's next date, even for a cancelled series: this form is a deliberate one-off)

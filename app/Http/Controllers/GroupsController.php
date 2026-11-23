@@ -8,8 +8,8 @@ use App\Http\Requests\GroupRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Group;
 use App\Models\Permission;
-use App\Models\User;
 use App\Services\SessionStore\ListParameterSessionStore;
+use App\Services\OptionLists;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -217,7 +217,7 @@ class GroupsController extends Controller
     {
         return [
             'permissionOptions' => Permission::orderBy('name')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
+            'userOptions' => ['' => ''] + OptionLists::users(),
         ];
     }
 

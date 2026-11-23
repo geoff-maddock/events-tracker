@@ -37,7 +37,7 @@ class OptionLists
 
     /** Cache key of each list, by what its options are keyed by. */
     private const KEYS = [
-        'tags' => ['id' => 'form-opts-tags', 'slug' => 'filter-opts-tags-slug', 'name' => 'filter-opts-tags-name'],
+        'tags' => ['id' => 'form-opts-tags', 'slug' => 'filter-opts-tags-slug'],
         'venues' => ['id' => 'form-opts-venues', 'slug' => 'filter-opts-venues-slug', 'name' => 'filter-opts-venues-name'],
         'promoters' => ['id' => 'form-opts-promoters', 'slug' => 'filter-opts-promoters-slug'],
         'entities' => ['id' => 'form-opts-entities-all', 'slug' => 'filter-opts-entities-slug', 'name' => 'filter-opts-entities-name'],
