@@ -114,4 +114,17 @@ class EntityWriterTest extends TestCase
         $this->assertStringContainsString('Added tag Zz New Tag.', $message);
         $this->assertStringContainsString('Added alias Zz New Alias.', $message);
     }
+
+    public function test_a_null_list_means_an_empty_one(): void
+    {
+        $nulls = ['tag_list' => null, 'alias_list' => null, 'role_list' => null];
+
+        $this->actingAs($this->editor, 'sanctum')->postJson('/api/entities', $this->payload(['slug' => 'zz-null-lists', 'name' => 'ZZ Null Lists'] + $nulls))->assertOk();
+
+        $entity = Entity::factory()->create(['slug' => 'zz-writer-entity', 'entity_status_id' => EntityStatus::ACTIVE]);
+        $entity->roles()->attach(Role::firstOrFail()->id);
+        $this->actingAs($this->editor, 'sanctum')->putJson('/api/entities/'.$entity->slug, $this->payload($nulls))->assertOk();
+
+        $this->assertSame([], $entity->roles()->pluck('roles.id')->all(), 'a full replacement with no list clears it');
+    }
 }

@@ -491,9 +491,9 @@ class EntitiesController extends Controller
         $entity = $writer->create(
             $this->user,
             $request->validated(),
-            $request->input('tag_list', []),
-            $request->input('alias_list', []),
-            $request->input('role_list', [])
+            (array) $request->input('tag_list', []),
+            (array) $request->input('alias_list', []),
+            (array) $request->input('role_list', [])
         );
 
         $this->syncOwnersFromRequest($entity, $request);
@@ -792,9 +792,9 @@ class EntitiesController extends Controller
             $entity,
             $this->user,
             $request->validated(),
-            $request->input('tag_list', []),
-            $request->input('alias_list', []),
-            $request->input('role_list', [])
+            (array) $request->input('tag_list', []),
+            (array) $request->input('alias_list', []),
+            (array) $request->input('role_list', [])
         );
 
         $msg = 'Updated entity. ';

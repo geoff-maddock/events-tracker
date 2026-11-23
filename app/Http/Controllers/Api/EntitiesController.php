@@ -263,9 +263,9 @@ class EntitiesController extends Controller
         $entity = $writer->create(
             $this->user,
             $request->validated(),
-            $request->input('tag_list', []),
-            $request->input('alias_list', []),
-            $request->input('role_list', [])
+            (array) $request->input('tag_list', []),
+            (array) $request->input('alias_list', []),
+            (array) $request->input('role_list', [])
         );
 
         return response()->json(new EntityResource($entity));
@@ -314,7 +314,7 @@ class EntitiesController extends Controller
             }
         }
 
-        $writer->replace($entity, $this->user, $input, $request->input('tag_list', []), $request->input('alias_list', []), $request->input('role_list', []));
+        $writer->replace($entity, $this->user, $input, (array) $request->input('tag_list', []), (array) $request->input('alias_list', []), (array) $request->input('role_list', []));
 
         return response()->json(new EntityResource($entity));
     }
