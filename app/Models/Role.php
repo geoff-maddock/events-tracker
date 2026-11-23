@@ -47,11 +47,12 @@ class Role extends Eloquent
     }
 
     /**
-     * Convert all role names to ucfirst.
+     * Convert all role names to ucfirst. A role that isn't saved yet (the
+     * create form) has no name.
      */
-    public function getNameAttribute(string $value): string
+    public function getNameAttribute(?string $value): string
     {
-        return ucfirst(strtolower($value));
+        return ucfirst(strtolower($value ?? ''));
     }
 
     /**

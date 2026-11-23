@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -43,6 +44,25 @@ class AdminListControlsTest extends TestCase
         $this->actingAs(User::factory()->create())->get('/roles')->assertForbidden();
         $this->get('/roles/filter')->assertForbidden();
         $this->get('/roles/reset')->assertForbidden();
+    }
+
+    public function test_every_role_action_is_for_admins(): void
+    {
+        $role = Role::firstOrFail();
+        $this->actingAs(User::factory()->create(['user_status_id' => UserStatus::ACTIVE]));
+
+        foreach (['/roles', '/roles/filter', '/roles/reset', '/roles/rpp-reset', '/roles/create', "/roles/{$role->id}", "/roles/{$role->id}/edit"] as $url) {
+            $this->get($url)->assertForbidden();
+        }
+        // refused before validation, not with a validation error
+        $this->post('/roles', [])->assertForbidden();
+        $this->put("/roles/{$role->id}", [])->assertForbidden();
+        $this->delete("/roles/{$role->id}")->assertForbidden();
+        $this->assertNotNull($role->fresh());
+
+        $this->actingAs($this->admin());
+        $this->get('/roles/create')->assertOk();
+        $this->get("/roles/{$role->id}/edit")->assertOk();
     }
 
     public function test_a_role_filter_is_remembered_and_reset(): void

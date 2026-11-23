@@ -48,7 +48,7 @@ class EventInstagramController extends Controller
 
         // Check if user owns the event OR has admin permission
         $isOwner = $event->created_by === $user->id;
-        $isAdmin = $user->hasGroup('admin') || $user->hasGroup('super_admin');
+        $isAdmin = $user->isAdmin();
 
         if (!$isOwner && !$isAdmin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);

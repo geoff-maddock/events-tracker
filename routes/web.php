@@ -158,7 +158,7 @@ Route::bind('users', function ($id) {
 
 Route::post('impersonate/{user}', function (User $user) {
     // an admin may not become another admin or a super_admin; only a super_admin can (#2166)
-    abort_if($user->isAdmin() && !Auth::user()?->hasGroup('super_admin'), 403);
+    abort_if($user->isAdmin() && !Auth::user()?->isSuperAdmin(), 403);
 
     Auth::login($user);
 

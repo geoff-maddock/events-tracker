@@ -812,6 +812,16 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Whether this user is in the super_admin group, which a plain admin is not.
+     * Gates pass every admin (Gate::before), so super-admin-only actions check
+     * this rather than a gate.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasGroup('super_admin');
+    }
+
+    /**
      * Whether the viewer can see this user's full profile and the lists hung off
      * it (attending, following): the user, an admin, or anyone when the profile
      * is public.

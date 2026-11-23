@@ -951,7 +951,7 @@ class EntitiesController extends Controller
     public function sendUpdateSummary(int $id, EntityUpdateSummarySender $sender): RedirectResponse
     {
         // only super_admins may trigger this action
-        if (!$this->user || !$this->user->hasGroup('super_admin')) {
+        if (!$this->user?->isSuperAdmin()) {
             flash()->error('Error', 'You are not authorized to perform this action.');
 
             return back();

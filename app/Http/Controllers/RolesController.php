@@ -42,6 +42,8 @@ class RolesController extends Controller
     public function __construct(RoleFilters $filter)
     {
         $this->middleware('auth');
+        // roles are admin-only, every action
+        $this->middleware('can:admin');
         $this->filter = $filter;
 
         // prefix for session storage
@@ -71,11 +73,6 @@ class RolesController extends Controller
         ListParameterSessionStore $listParamSessionStore,
         ListEntityResultBuilder $listEntityResultBuilder
     ): string {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         $listResultSet = $this->startList(
             $listParamSessionStore,
             $listEntityResultBuilder,
@@ -118,11 +115,6 @@ class RolesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): RedirectResponse {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         $this->clearList($listParamSessionStore, 'internal_role', $request->get('key') ?? 'internal_role_index', filters: false);
 
         return redirect()->route('roles.index');
@@ -139,11 +131,6 @@ class RolesController extends Controller
         Request $request,
         ListParameterSessionStore $listParamSessionStore
     ): Response {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         $this->clearList($listParamSessionStore, 'internal_role', $request->get('key') ?? 'internal_role_index', filters: true);
 
         return redirect()->route('roles.index');
@@ -155,11 +142,6 @@ class RolesController extends Controller
      */
     public function create(Request $request): View
     {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         return view('roles.create-tw');
     }
 
@@ -169,12 +151,6 @@ class RolesController extends Controller
      */
     public function store(RoleRequest $request, Role $role): RedirectResponse
     {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
-
         $role->create($request->validated());
 
         flash()->success('Success', 'Your role has been created!');
@@ -187,11 +163,6 @@ class RolesController extends Controller
      */
     public function show(Request $request, Role $role): View
     {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         return view('roles.show', compact('role'));
     }
 
@@ -200,11 +171,6 @@ class RolesController extends Controller
      */
     public function edit(Request $request, Role $role): View
     {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         return view('roles.edit-tw', compact('role'));
     }
 
@@ -214,11 +180,6 @@ class RolesController extends Controller
      */
     public function update(Role $role, RoleRequest $request): RedirectResponse
     {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         $role->fill($request->validated())->save();
 
         flash()->success('Success', 'Your role has been updated!');
@@ -231,11 +192,6 @@ class RolesController extends Controller
      */
     public function destroy(Request $request, Role $role): RedirectResponse
     {
-        // Check admin permission
-        if (!$request->user()?->hasGroup('admin')) {
-            abort(403, 'Unauthorized access');
-        }
-
         $name = $role->name;
 
         if (!$role->deleteIfUnused()) {

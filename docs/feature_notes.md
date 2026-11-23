@@ -4,6 +4,15 @@ A more detailed description of new features and changes to the application.
 
 ## Unreleased
 
+### Fewer inline group checks (#2407)
+- The role admin pages check for an admin once, as `can:admin` middleware on the controller,
+  instead of at the top of each of nine actions. A non-admin is now refused before the form is
+  validated.
+- `User::isSuperAdmin()` joins `isAdmin()`. Controllers and routes use the two instead of
+  spelling out the group names, and the Instagram actions for super admins share one refusal.
+- Fixed: the "Add Role" page failed with a server error, because a role that isn't saved yet has
+  no name for the name accessor to format.
+
 ### Entity quick-add, duplicate check and update summary moved out of the controller (#2407)
 - The event form's inline "add a venue / promoter" creates its entity through
   `EntityWriter::quickCreate()`, the same write path as the entity form and the API.

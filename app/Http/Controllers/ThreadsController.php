@@ -512,7 +512,7 @@ class ThreadsController extends Controller
         $this->authorize('update', $thread);
 
         // if not created by the user or super_admin
-        if ((null !== $thread->user) && ($thread->created_by !== auth()->id()) && !$this->user->hasGroup('super_admin')) {
+        if ((null !== $thread->user) && ($thread->created_by !== auth()->id()) && !$this->user->isSuperAdmin()) {
             if ($request->wantsJson()) {
                 return response(['status' => 'Permission Denied'], 403);
             }
