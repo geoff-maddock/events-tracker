@@ -17,7 +17,7 @@
             @if (count($events) > 0)
             <ul class="grid gap-3">
                 @foreach ($events as $event)
-                    @include('events.single-card-tw', ['event' => $event])
+                    @include('events.single-tw', ['event' => $event, 'card' => true])
                 @endforeach
             </ul>
             @else
@@ -40,7 +40,7 @@
                             </li>
                             <?php $type = $s->occurrence_type_id; ?>
                         @endif
-                        @include('series.single-card-tw', ['series' => $s])
+                        @include('series.single-tw', ['series' => $s, 'card' => true])
                     @endforeach
                 </ul>
             </div>
