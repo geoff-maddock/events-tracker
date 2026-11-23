@@ -8,17 +8,14 @@ use App\Http\Requests\ForumRequest;
 use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Forum;
-use App\Models\Series;
-use App\Models\Tag;
 use App\Models\Thread;
-use App\Models\User;
 use App\Models\Visibility;
+use App\Services\OptionLists;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View as ViewView;
 
@@ -280,9 +277,9 @@ class ForumsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'userOptions' => ['' => '&nbsp;'] + Cache::remember(User::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
-            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-name', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
-            'seriesOptions' => ['' => ''] + Series::getFormOptions(),
+            'userOptions' => ['' => '&nbsp;'] + OptionLists::users('name'),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('name'),
+            'seriesOptions' => ['' => ''] + OptionLists::series(),
         ];
     }
 

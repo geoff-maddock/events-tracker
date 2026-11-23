@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Services\OptionLists;
 use App\Models\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -19,13 +20,13 @@ class UserOptionsCacheInvalidationTest extends TestCase
     #[Test]
     public function creating_a_user_forgets_the_cached_user_option_lists(): void
     {
-        Cache::put(User::FORM_OPTIONS_CACHE_KEY, ['stale'], 3600);
-        Cache::put(User::FILTER_OPTIONS_CACHE_KEY, ['stale'], 3600);
+        Cache::put(OptionLists::key('users'), ['stale'], 3600);
+        Cache::put(OptionLists::key('users', 'name'), ['stale'], 3600);
 
         User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
 
-        $this->assertFalse(Cache::has(User::FORM_OPTIONS_CACHE_KEY));
-        $this->assertFalse(Cache::has(User::FILTER_OPTIONS_CACHE_KEY));
+        $this->assertFalse(Cache::has(OptionLists::key('users')));
+        $this->assertFalse(Cache::has(OptionLists::key('users', 'name')));
     }
 
     #[Test]
@@ -33,13 +34,13 @@ class UserOptionsCacheInvalidationTest extends TestCase
     {
         $user = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
 
-        Cache::put(User::FORM_OPTIONS_CACHE_KEY, ['stale'], 3600);
+        Cache::put(OptionLists::key('users'), ['stale'], 3600);
         $user->update(['name' => 'Renamed User']);
-        $this->assertFalse(Cache::has(User::FORM_OPTIONS_CACHE_KEY));
+        $this->assertFalse(Cache::has(OptionLists::key('users')));
 
-        Cache::put(User::FORM_OPTIONS_CACHE_KEY, ['stale'], 3600);
+        Cache::put(OptionLists::key('users'), ['stale'], 3600);
         $user->delete();
-        $this->assertFalse(Cache::has(User::FORM_OPTIONS_CACHE_KEY));
+        $this->assertFalse(Cache::has(OptionLists::key('users')));
     }
 
     #[Test]
@@ -52,7 +53,7 @@ class UserOptionsCacheInvalidationTest extends TestCase
 
         // Warm the owner-options cache by rendering the edit form once.
         $this->actingAs($admin)->get(route('events.edit', $event->slug))->assertStatus(200);
-        $this->assertTrue(Cache::has(User::FORM_OPTIONS_CACHE_KEY));
+        $this->assertTrue(Cache::has(OptionLists::key('users')));
 
         $newUser = User::factory()->create([
             'name' => 'Zed Freshly Registered',

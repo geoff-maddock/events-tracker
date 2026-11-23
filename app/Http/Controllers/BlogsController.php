@@ -9,16 +9,13 @@ use App\Http\ResultBuilder\ListEntityResultBuilder;
 use App\Models\Activity;
 use App\Models\Blog;
 use App\Models\ContentType;
-use App\Models\Entity;
-use App\Models\Menu;
 use App\Models\Tag;
-use App\Models\User;
 use App\Models\Visibility;
 use App\Services\ImageHandler;
+use App\Services\OptionLists;
 use App\Services\SessionStore\ListParameterSessionStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use App\Models\Action;
 
@@ -299,19 +296,19 @@ class BlogsController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'userOptions' => ['' => '&nbsp;'] + Cache::remember(User::FILTER_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'name')->all()),
-            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-slug', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
+            'userOptions' => ['' => '&nbsp;'] + OptionLists::users('name'),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('slug'),
         ];
     }
 
     protected function getFormOptions(): array
     {
         return [
-            'visibilityOptions' => ['' => ''] + Cache::remember('form-opts-visibilities', 86400, fn () => Visibility::pluck('name', 'id')->all()),
-            'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'entityOptions' => Cache::remember(Entity::optionCacheKey('form-opts-entities-all'), 3600, fn () => Entity::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'menuOptions' => ['' => ''] + Cache::remember('form-opts-menus', 3600, fn () => Menu::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
-            'contentTypeOptions' => ['' => ''] + Cache::remember('form-opts-content-types', 86400, fn () => ContentType::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'visibilityOptions' => ['' => ''] + OptionLists::visibilities(),
+            'tagOptions' => OptionLists::tags(),
+            'entityOptions' => OptionLists::entities(),
+            'menuOptions' => ['' => ''] + OptionLists::menus(),
+            'contentTypeOptions' => ['' => ''] + OptionLists::contentTypes(),
         ];
     }
 }

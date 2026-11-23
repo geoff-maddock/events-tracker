@@ -117,7 +117,7 @@ class EntityWriter
         Activity::log($entity, $user, $action);
 
         // roles change after the save, so the cached option lists are dropped again here
-        Entity::forgetOptionCaches();
+        OptionLists::forgetEntities();
 
         return $entity;
     }

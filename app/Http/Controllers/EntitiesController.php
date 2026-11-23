@@ -29,6 +29,7 @@ use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\Integrations\InstagramEntityPoster;
 use App\Services\StringHelper;
 use App\Services\EntityWriter;
+use App\Services\OptionLists;
 use App\Services\TempImageStore;
 use Carbon\Carbon;
 use RuntimeException;
@@ -37,7 +38,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -561,7 +561,7 @@ class EntitiesController extends Controller
         Activity::log($entity, $this->user, Action::CREATE);
 
         // roles are synced after the save, so the option lists are dropped again here
-        Entity::forgetOptionCaches();
+        OptionLists::forgetEntities();
 
         return response()->json([
             'id' => $entity->id,
@@ -1239,7 +1239,7 @@ class EntitiesController extends Controller
     protected function getFilterOptions(): array
     {
         return [
-            'tagOptions' => ['' => '&nbsp;'] + Cache::remember('filter-opts-tags-slug', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'slug')->all()),
+            'tagOptions' => ['' => '&nbsp;'] + OptionLists::tags('slug'),
             'roleOptions' => ['' => ''] + Role::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
             'entityStatusOptions' => ['' => ''] +  EntityStatus::orderBy('name', 'ASC')->pluck('name', 'name')->all(),
@@ -1251,10 +1251,10 @@ class EntitiesController extends Controller
         return [
             'entityTypeOptions' => ['' => ''] + EntityType::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'entityStatusOptions' => EntityStatus::formOptionsFor($this->user),
-            'tagOptions' => Cache::remember('form-opts-tags', 3600, fn () => Tag::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'tagOptions' => OptionLists::tags(),
             'aliasOptions' => Alias::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
             'roleOptions' => Role::orderBy('name', 'ASC')->pluck('name', 'id')->all(),
-            'userOptions' => ['' => ''] + Cache::remember(User::FORM_OPTIONS_CACHE_KEY, 3600, fn () => User::orderBy('name', 'ASC')->pluck('name', 'id')->all()),
+            'userOptions' => ['' => ''] + OptionLists::users(),
         ];
     }
 

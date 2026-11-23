@@ -229,10 +229,13 @@ class ListPagesQueryCountTest extends TestCase
     {
         Cache::put('form-opts-tags', ['stale'], 3600);
         Cache::put('filter-opts-tags-slug', ['stale'], 3600);
+        // the forum filter's list, which a new tag used to leave stale
+        Cache::put('filter-opts-tags-name', ['stale'], 3600);
 
         Tag::factory()->create(['name' => 'Zznewtag', 'slug' => 'zznewtag']);
 
         $this->assertFalse(Cache::has('form-opts-tags'));
         $this->assertFalse(Cache::has('filter-opts-tags-slug'));
+        $this->assertFalse(Cache::has('filter-opts-tags-name'));
     }
 }
