@@ -618,7 +618,8 @@ class SeriesController extends Controller
         $userOptions = ['' => ''] + User::orderBy('name', 'ASC')->pluck('name', 'id')->all();
 
         // calculate the next occurrence date based on template settings
-        $nextDate = $series->nextOccurrenceDate();
+        // (the schedule's next date, even for a cancelled series: this form is a deliberate one-off)
+        $nextDate = $series->cycleFromFoundedAt();
         $endDate = $nextDate->copy()->addHours($series->length);
 
         // initialize the form object with the values from the template
