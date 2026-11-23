@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\BuildsListPages;
 use App\Http\Controllers\Concerns\LoadsEmbeds;
-use App\Events\EventCreated;
 use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
-use App\Events\EventUpdated;
 use App\Filters\AudienceFilter;
 use App\Filters\EventFilters;
 use App\Http\Requests\EventRequest;
@@ -33,6 +31,7 @@ use App\Services\ImageHandler;
 use App\Services\RssFeed;
 use App\Services\SessionStore\ListParameterSessionStore;
 use App\Services\StringHelper;
+use App\Services\EventWriter;
 use App\Services\TempImageStore;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -1369,84 +1368,29 @@ class EventsController extends Controller
             ->render();
     }
 
-    /**
-     * Attach a new event's tags, its listed entities, and its venue and promoter.
-     *
-     * @param array<int, int> $tagIds
-     */
-    private function attachEntities(Event $event, EventRequest $request, array $tagIds): void
+    public function store(EventRequest $request, EventWriter $writer, TempImageStore $tempImages): RedirectResponse
     {
-        $event->tags()->attach($tagIds);
-        $event->entities()->attach($request->input('entity_list'));
-
-        // also attach the venue and promoter if set
-        if ($request->input('venue_id')) {
-            $event->entities()->syncWithoutDetaching($request->input('venue_id'));
-        }
-
-        if ($request->input('promoter_id')) {
-            $event->entities()->syncWithoutDetaching($request->input('promoter_id'));
-        }
-    }
-
-    /**
-     * Tell followers about a new upcoming event, once it has a photo.
-     */
-    private function announceNewEvent(Event $event): void
-    {
-        if ($event->getPrimaryPhoto() === null) {
-            return;
-        }
-
-        // notify everyone following any of its tags/entities, if it starts in the future
-        if ($event->start_at >= Carbon::now()) {
-            NotifyFollowers::dispatch($event);
-        }
-    }
-
-    public function store(EventRequest $request, Event $event, TempImageStore $tempImages): RedirectResponse
-    {
-        $msg = '';
-
         // validated() leaves out the photo-attachment tokens and anything else
         // the form carries that isn't an event attribute
         $input = $request->validated();
         $showings = Arr::pull($input, 'showings') ?? [];
 
-        // transform the slug passed in the request
-        $input['slug'] = Str::slug($request->input('slug', '-'));
-        
-        // Set the user fields explicitly
-        $input['created_by'] = $this->user->id;
-        $input['updated_by'] = $this->user->id;
-
-        // validation happening in EventRequest->rules
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        $event = $event->create($input);
-        $this->attachEntities($event, $request, $syncArray);
-        $event->syncShowings($showings);
-
-        // Attach the image the user chose on the create form, whether or not
-        // they ran it through analysis, as the primary photo.
-        if ($tempImages->attachFromRequest($request, $event) !== null) {
-            EventPhotoAdded::dispatch($event, true);
-        }
-
-        // add to activity log
-        Activity::log($event, $this->user, 1);
-
-        // let listeners know the event was created
-        EventCreated::dispatch($event);
+        $event = $writer->create(
+            $this->user,
+            $input,
+            $request->input('tag_list', []),
+            $request->input('entity_list', []),
+            $showings,
+            // Attach the image the user chose on the create form, whether or not
+            // they ran it through analysis, as the primary photo.
+            function (Event $event) use ($tempImages, $request): void {
+                if ($tempImages->attachFromRequest($request, $event) !== null) {
+                    EventPhotoAdded::dispatch($event, true);
+                }
+            }
+        );
 
         flash()->success('Success', 'Your event has been created');
-
-        $this->announceNewEvent($event);
 
         return redirect()->route('events.show', compact('event'));
     }
@@ -1462,42 +1406,17 @@ class EventsController extends Controller
         return view('events.edit', compact('event'))->with($this->getFormOptions());
     }
 
-    public function update(Event $event, EventRequest $request): RedirectResponse
+    public function update(Event $event, EventRequest $request, EventWriter $writer): RedirectResponse
     {
-        $msg = '';
-
         if ($this->user->cannot('update', $event)) {
             return $this->unauthorized($request);
         }
 
         $input = $request->validated();
-        $input['updated_by'] = $this->user->id;
+        // the form always sends its showings, so none means they were all removed
         $showings = Arr::pull($input, 'showings') ?? [];
 
-        // The Owner select may reassign created_by (an event's owner can transfer it),
-        // but an empty value (coerced to null by ConvertEmptyStringsToNull) must not
-        // overwrite it and trip the NOT NULL constraint (EVENTREPO-VM).
-        if (empty($input['created_by'])) {
-            unset($input['created_by']);
-        }
-
-        $event->fill($event->keepHiddenEntityRefs($input))->save();
-        // the form always sends its showings, so none means they were all removed
-        $event->syncShowings($showings);
-
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, auth()->user());
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        $event->tags()->sync($syncArray);
-        $event->syncEntities($request->input('entity_list', []));
-
-        // add to activity log
-        Activity::log($event, $this->user, 2);
-        EventUpdated::dispatch($event);
+        $writer->replace($event, $this->user, $input, $request->input('tag_list', []), $request->input('entity_list', []), $showings);
 
         flash()->success('Success', 'Your event has been updated');
 

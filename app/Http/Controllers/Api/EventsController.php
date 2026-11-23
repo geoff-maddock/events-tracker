@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\EventCreated;
 use App\Jobs\NotifyFollowers;
 use App\Events\EventPhotoAdded;
-use App\Events\EventUpdated;
 use App\Exceptions\RemoteImageException;
 use App\Filters\EventFilters;
 use App\Http\Controllers\Controller;
@@ -21,8 +19,8 @@ use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\EventType;
 use App\Models\Photo;
-use App\Models\Tag;
 use App\Services\Embeds\OembedExtractor;
+use App\Services\EventWriter;
 use App\Services\ImageHandler;
 use App\Services\RemoteImageFetcher;
 use App\Services\SessionStore\ListParameterSessionStore;
@@ -33,7 +31,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class EventsController extends Controller
 {
@@ -534,60 +531,12 @@ class EventsController extends Controller
         return response()->json($embeds);
     }
 
-    public function store(EventRequest $request, Event $event): JsonResponse
+    public function store(EventRequest $request, EventWriter $writer): JsonResponse
     {
-        // check who the authenticated user is
-        $this->user = $request->user();
-
-        $msg = '';
-
         $input = $request->validated();
         $showings = Arr::pull($input, 'showings') ?? [];
 
-        // transform the slug passed in the request
-        $input['slug'] = Str::slug($request->input('slug', '-'));
-        
-        // Set the user fields explicitly
-        $input['created_by'] = $this->user->id;
-        $input['updated_by'] = $this->user->id;
-
-        // validation happening in EventRequest->rules
-        $tagArray = $request->input('tag_list', []);
-        $tags = Tag::resolveList($tagArray, $this->user);
-        $syncArray = $tags->modelKeys();
-        foreach ($tags->filter(fn (Tag $tag) => $tag->wasRecentlyCreated) as $tag) {
-            $msg .= ' Added tag '.$tag->name.'.';
-        }
-
-        $event = $event->create($input);
-
-        $event->tags()->attach($syncArray);
-        $event->entities()->attach($request->input('entity_list'));
-
-        // the venue and promoter are related entities too, as on the web form
-        foreach (['venue_id', 'promoter_id'] as $field) {
-            if ($request->input($field)) {
-                $event->entities()->syncWithoutDetaching($request->input($field));
-            }
-        }
-
-        $event->syncShowings($showings);
-
-        // add to activity log
-        Activity::log($event, $this->user, 1);
-
-        // dispatch notifications that the event was created
-        EventCreated::dispatch($event);
-
-        $photo = $event->getPrimaryPhoto();
-
-        // make a call to notify all users who are following any of the tags/keywords if the event starts in the future
-        if ($event->start_at >= Carbon::now()) {
-            // only do the notification if there is a photo
-            if ($photo !== null) {
-                NotifyFollowers::dispatch($event);
-            }
-        }
+        $event = $writer->create($request->user(), $input, $request->input('tag_list', []), $request->input('entity_list', []), $showings);
 
         return response()->json(new EventResource($event));
     }
@@ -599,7 +548,7 @@ class EventsController extends Controller
      * relations (tags, entities) sync to the supplied arrays — missing keys
      * mean "detach all".
      */
-    public function update(Event $event, EventRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
+    public function update(Event $event, EventRequest $request, EventWriter $writer): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         $this->user = $request->user();
 
@@ -609,12 +558,7 @@ class EventsController extends Controller
 
         $input = $request->validated();
 
-        // an owner may transfer the event, but a null created_by must not reach the
-        // NOT NULL column (EVENTREPO-VM)
-        if (empty($input['created_by'])) {
-            unset($input['created_by']);
-        }
-        $input['updated_by'] = $this->user->id;
+        // a full replacement: showings left out of the body are removed
         $showings = Arr::pull($input, 'showings') ?? [];
 
         $nonNullableBooleans = $this->nonNullableBooleanEventFields();
@@ -635,15 +579,7 @@ class EventsController extends Controller
             }
         }
 
-        $event->fill($event->keepHiddenEntityRefs($input))->save();
-        // a full replacement: showings left out of the body are removed
-        $event->syncShowings($showings);
-
-        $event->tags()->sync($this->resolveTagIds($request->input('tag_list', [])));
-        $event->syncEntities($request->input('entity_list', []));
-
-        Activity::log($event, $this->user, 2);
-        EventUpdated::dispatch($event);
+        $writer->replace($event, $this->user, $input, $request->input('tag_list', []), $request->input('entity_list', []), $showings);
 
         return response()->json(new EventResource($event));
     }
@@ -652,7 +588,7 @@ class EventsController extends Controller
      * PATCH: partial update. Only fields present in the body are touched;
      * scalars and relations not in the request are left untouched.
      */
-    public function patch(Event $event, EventPatchRequest $request): JsonResponse|\Symfony\Component\HttpFoundation\Response
+    public function patch(Event $event, EventPatchRequest $request, EventWriter $writer): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         $this->user = $request->user();
 
@@ -662,35 +598,14 @@ class EventsController extends Controller
 
         $input = $request->validated();
 
-        // an owner may transfer the event, but a null created_by must not reach the
-        // NOT NULL column (EVENTREPO-VM)
-        if (empty($input['created_by'])) {
-            unset($input['created_by']);
-        }
-
-        $scalarInput = array_intersect_key($input, array_flip($event->getFillable()));
-        if (!empty($scalarInput)) {
-            $scalarInput['updated_by'] = $this->user->id;
-            $event->fill($event->keepHiddenEntityRefs($scalarInput))->save();
-        }
-
-        if ($request->has('showings')) {
-            $event->syncShowings($input['showings'] ?? []);
-        } elseif ($event->wasChanged('start_at')) {
-            // a moved first date may have overtaken some of the stored showings
-            $event->syncShowings($event->showings->map->only(['start_at', 'end_at', 'door_at'])->all());
-        }
-
-        if ($request->has('tag_list')) {
-            $event->tags()->sync($this->resolveTagIds((array) $request->input('tag_list', [])));
-        }
-
-        if ($request->has('entity_list')) {
-            $event->syncEntities((array) $request->input('entity_list', []));
-        }
-
-        Activity::log($event, $this->user, 2);
-        EventUpdated::dispatch($event);
+        $writer->patch(
+            $event,
+            $this->user,
+            $input,
+            $request->has('tag_list') ? (array) $request->input('tag_list', []) : null,
+            $request->has('entity_list') ? (array) $request->input('entity_list', []) : null,
+            $request->has('showings') ? ($input['showings'] ?? []) : null,
+        );
 
         return response()->json(new EventResource($event));
     }
@@ -735,15 +650,6 @@ class EventsController extends Controller
             'is_benefit',
             'do_not_repost',
         ];
-    }
-
-    /**
-     * Resolve a list of tag identifiers to ids, creating any tags that don't
-     * already exist by id. Accepts a mix of existing tag ids and new tag names.
-     */
-    private function resolveTagIds(array $tagArray): array
-    {
-        return Tag::resolveList($tagArray, $this->user)->modelKeys();
     }
 
     protected function unauthorized(Request $request): JsonResponse
