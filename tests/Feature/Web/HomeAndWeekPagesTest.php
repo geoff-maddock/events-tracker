@@ -93,6 +93,25 @@ class HomeAndWeekPagesTest extends TestCase
         }
     }
 
+    public function test_cancelled_series_are_only_listed_on_dates_before_or_on_cancellation(): void
+    {
+        $today = $this->homeToday();
+        $this->weeklySeriesToday([
+            'name' => 'ZZ Series Cancelled After Its Occurrence',
+            'cancelled_at' => $today->copy()->addDay()->format('Y-m-d H:i:s'),
+        ]);
+        $this->weeklySeriesToday([
+            'name' => 'ZZ Series Cancelled Before Its Occurrence',
+            'cancelled_at' => $today->copy()->subDay()->format('Y-m-d H:i:s'),
+        ]);
+
+        foreach (['/', '/events/upcoming/'.$today->format('Y-m-d')] as $url) {
+            $this->get($url)->assertOk()
+                ->assertSee('ZZ Series Cancelled After Its Occurrence')
+                ->assertDontSee('ZZ Series Cancelled Before Its Occurrence');
+        }
+    }
+
     public function test_week_page_loads_series_once_and_events_in_one_query(): void
     {
         $this->weeklySeriesToday(['name' => 'ZZ Weekly Series']);
