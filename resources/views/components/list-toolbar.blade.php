@@ -18,7 +18,12 @@
     'sortOptions',
     'directionOptions',
     'carry' => [],
+    // names the list for screen readers, where the cards' headings would otherwise follow the page title directly; on the first toolbar only
+    'heading' => null,
 ])
+@if($heading)
+<h2 class="sr-only">{{ $heading }}</h2>
+@endif
 <div class="flex flex-wrap items-center gap-4 mb-6">
 	<div class="text-sm text-muted-foreground w-full sm:w-auto">
 		@if($paginator)

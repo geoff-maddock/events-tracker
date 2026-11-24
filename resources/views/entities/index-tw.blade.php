@@ -19,7 +19,7 @@ Entities @include('entities.title-crumbs')
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Entity Listings @include('events.crumbs-tw')</h1>
+	<div class="text-3xl font-bold text-primary mb-2"><h1 class="inline">Entity Listings</h1> @include('events.crumbs-tw')</div>
 	<p class="text-muted-foreground">Discover venues, artists, promoters, and more.</p>
 </div>
 
@@ -153,7 +153,7 @@ Entities @include('entities.title-crumbs')
 	</x-slot:actions>
 </x-filter-panel>
 
-<x-list-toolbar :paginator="$entities ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'entities.name'" :direction="$direction ?? 'asc'"
+<x-list-toolbar heading="Entities" :paginator="$entities ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'entities.name'" :direction="$direction ?? 'asc'"
 	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 
