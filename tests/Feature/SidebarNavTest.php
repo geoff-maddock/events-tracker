@@ -28,7 +28,7 @@ class SidebarNavTest extends TestCase
      */
     private function navLinks(string $html): array
     {
-        preg_match_all('/<nav class="flex-1[^>]*>(.*?)<\/nav>/s', $html, $navs);
+        preg_match_all('/<nav aria-label="Main"[^>]*>(.*?)<\/nav>/s', $html, $navs);
         $this->assertCount(2, $navs[1]);
 
         return array_map(function (string $nav): array {

@@ -106,6 +106,7 @@
              role="dialog"
              aria-modal="true"
              aria-label="Search"
+             data-focus-return="false"
              class="fixed inset-0 z-[2000] bg-background flex flex-col">
             <div class="flex items-center gap-2 px-3 py-2 border-b border-border bg-card">
                 <form role="search" action="/search" x-on:submit="onSubmit($event)" class="flex-1">

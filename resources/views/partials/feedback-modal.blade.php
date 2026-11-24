@@ -39,9 +39,9 @@
                           x-text="index + ' of ' + total"></span>
                 </div>
                 @unless($isStandalone)
-                    <button type="button" @click="dismiss()" title="Not now"
+                    <button type="button" @click="dismiss()" title="Not now" aria-label="Not now"
                             class="shrink-0 p-1 -mt-1 rounded-md hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
-                        <i class="bi bi-x-lg"></i>
+                        <i class="bi bi-x-lg" aria-hidden="true"></i>
                     </button>
                 @endunless
             </div>

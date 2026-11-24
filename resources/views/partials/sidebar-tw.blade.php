@@ -19,7 +19,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-1 space-y-1">
+    <nav aria-label="Main" class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-1 space-y-1">
         @include('partials.nav-items-tw', ['mobile' => false])
     </nav>
 
@@ -74,12 +74,12 @@
 
 
 <!-- Mobile Sidebar Overlay -->
-<div id="mobile-sidebar-overlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-40" onclick="closeMobileSidebar()"></div>
+<div id="mobile-sidebar-overlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-40"></div>
 
 <!-- Mobile Sidebar -->
-<aside id="mobile-sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out lg:hidden bg-card border-r border-border flex flex-col">
+<div id="mobile-sidebar" inert role="dialog" aria-modal="true" aria-label="Navigation menu" class="sidebar fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-200 ease-in-out lg:hidden bg-card border-r border-border flex flex-col">
     <!-- Close button -->
-    <button onclick="closeMobileSidebar()" class="absolute top-4 right-4 p-2 rounded text-muted-foreground hover:text-foreground" aria-label="Close navigation">
+    <button type="button" id="mobile-sidebar-close" class="absolute top-4 right-4 p-2 rounded text-muted-foreground hover:text-foreground" aria-label="Close navigation menu">
         <i class="bi bi-x-lg text-xl" aria-hidden="true"></i>
     </button>
 
@@ -92,7 +92,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+    <nav aria-label="Main" class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
         @include('partials.nav-items-tw', ['mobile' => true])
     </nav>
 
@@ -136,24 +136,37 @@
             @endauth
         </div>
     </div>
-</aside>
+</div>
 
+{{-- The drawer is off-screen by transform only, so while closed it is `inert`:
+     its links are out of the tab order and hidden from screen readers (#2411).
+     Focus moving in and back out is resources/assets/js/dialog-focus.js. --}}
 <script>
-    function toggleMobileSidebar() {
-        const sidebar = document.getElementById('mobile-sidebar');
+    (function () {
+        const drawer = document.getElementById('mobile-sidebar');
         const overlay = document.getElementById('mobile-sidebar-overlay');
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    }
-    
-    function closeMobileSidebar() {
-        const sidebar = document.getElementById('mobile-sidebar');
-        const overlay = document.getElementById('mobile-sidebar-overlay');
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-    }
-    
-    // Support both menu toggle buttons
-    document.getElementById('mobile-menu-toggle')?.addEventListener('click', toggleMobileSidebar);
-    document.getElementById('mobile-menu-toggle-top')?.addEventListener('click', toggleMobileSidebar);
+        const isOpen = () => !drawer.inert;
+
+        function setOpen(open) {
+            drawer.classList.toggle('-translate-x-full', !open);
+            overlay.classList.toggle('hidden', !open);
+            drawer.inert = !open;
+            // the menu button is in the top bar, which is rendered after this script
+            document.getElementById('mobile-menu-toggle-top')?.setAttribute('aria-expanded', String(open));
+        }
+
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('#mobile-menu-toggle-top')) {
+                setOpen(!isOpen());
+            } else if (event.target.closest('#mobile-sidebar-close') || event.target === overlay) {
+                setOpen(false);
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && isOpen()) {
+                setOpen(false);
+            }
+        });
+    })();
 </script>

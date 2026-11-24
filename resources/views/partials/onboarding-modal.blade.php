@@ -16,9 +16,9 @@
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-border">
             <h2 id="onboarding-title" class="text-lg font-semibold text-foreground">Get to know your scene</h2>
-            <button type="button" @click="dismiss()" title="Skip for now"
+            <button type="button" @click="dismiss()" title="Skip for now" aria-label="Skip for now"
                     class="p-1 rounded-md hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
-                <i class="bi bi-x-lg"></i>
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
         </div>
 

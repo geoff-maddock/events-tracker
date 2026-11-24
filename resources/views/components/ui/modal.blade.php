@@ -34,8 +34,9 @@ $sizeClass = $sizeClasses[$size] ?? $sizeClasses['md'];
             <h2 id="{{ $id }}-title" class="text-lg font-semibold text-foreground">{{ $title }}</h2>
             <button type="button"
                     class="p-1 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label="Close"
                     onclick="document.getElementById('{{ $id }}').classList.add('hidden')">
-                <i class="bi bi-x-lg"></i>
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
         </div>
         @endif
