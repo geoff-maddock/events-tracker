@@ -1,6 +1,5 @@
-# Documentation
+# Deployment Notes
 
-## Deploment Notes
 Follow these steps to configure and deploy the application
 0. Verify pre-requisites and set up environment
 1. Clone code from Github repository into environment
@@ -11,20 +10,20 @@ Follow these steps to configure and deploy the application
 6. Open app and login
 
 ## Platform / Pre-requisites
-* Provision environment that can run Laravel code [unix?]
+* A Linux server that can run Laravel: NGINX, PHP-FPM, MySQL. Production is:
 	 ```
     Digital Ocean Droplet
-		Ubuntu LEMP on 16.014
+		Ubuntu 22.04 LTS
 		2vCPUs
 		4GB / 80 GB Disk
   ```
-* PHP 8.4+ [verify version]
+* PHP 8.4 (the code needs 8.2 or newer)
 	```
 	gmaddock@Wrecked:/var/www/events-tracker$ php -v
   PHP 8.4.17 (cli) (built: Jan 18 2026 14:18:33) (NTS)
 	```
 * Verify required extensions are installed:  pdo_mysql, zip
-* MySQL 8 [verify version - may not require 8]
+* MySQL 8
   ```
   gmaddock@Wrecked:/var/www/events-tracker$ mysql -V
   mysql  Ver 8.0.45-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
@@ -147,10 +146,13 @@ $ npm install
     `sudo certbot --nginx -d your-domain.com`
 * Modify permissions
 ```
-	sudo chmod 777 /var/www/project-name/storage/logs/laravel.log
 	sudo chgrp -R www-data storage bootstrap/cache
 	sudo chmod -R ug+rwx storage bootstrap/cache
 ```
+
+That covers `storage/logs/laravel.log`: the web server writes it through the group. Don't make
+it world-writable (`chmod 777`). If the deploying user and `www-data` both write under
+`storage`, give the deploying user a `umask 002` so the files it creates stay group-writable.
 
 The scheduled `sitemap:generate` command writes `sitemap*.xml` straight into
 `public/`, so the **sitemap files must be writable by the user that runs
@@ -191,7 +193,9 @@ npm run build
 
 ### Optional Configurations
 - S3 Storage [RECOMMENDED]
-- Mailgun API key [RECOMMENDED]
+- A mail service: Amazon SES or Mailgun, chosen with `MAIL_MAILER` [RECOMMENDED]. The example `.env` writes mail to the log.
+- Sentry DSN for error reports and the monitoring below [RECOMMENDED]
+- Discord, see `docs/discord-integration.md` [OPTIONAL]
 - Facebook API key [OPTIONAL]
 - AI Provider API key [OPTIONAL]
 
@@ -282,69 +286,6 @@ cover.
 Run it against production before rebuilding the server or moving the database, and after any
 change made to a database by hand.
 
-## Environments:  Dev, Testing, Production
-* Dev environment notes
-* Testing environment notes
-* Prod environment notes
-
----
-
-## Upgrading to v2026.05.01
-
-This is a major release with a full UI refresh (Tailwind CSS / Vite), new features, and database schema changes. Follow these steps to upgrade an existing installation.
-
-### Pre-upgrade checklist
-- [ ] Back up the database before making any changes
-- [ ] Put the app into maintenance mode: `php artisan down`
-- [ ] Confirm you are on PHP 8.4+ and Node 24+
-
-### 1. Pull the latest code
-```bash
-git pull origin master
-```
-
-### 2. Update PHP dependencies
-```bash
-composer install --no-dev --optimize-autoloader
-```
-
-### 3. Update Node dependencies and rebuild assets
-The build pipeline has migrated from Laravel Mix/webpack to Vite. If you have old `webpack.mix.js`-based build artifacts, they will be replaced.
-```bash
-npm install
-npm run build
-```
-
-### 4. Run database migrations
-Five new migrations are included. Run them against the existing database — **do not use `migrate:fresh`** as that will drop all data.
-```bash
-php artisan migrate
-```
-
-Migrations included in this release:
-- `add_description_to_tags_table`
-- `create_event_shares_table`
-- `create_click_tracks_table`
-- `add_user_id_to_click_tracks_table`
-- `create_blog_photo_table`
-
-### 5. Clear caches
-```bash
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
-### 6. Bring the app back online
-```bash
-php artisan up
-```
-
-### 7. Verify
-- Log in and confirm the UI loads correctly (dark theme by default)
-- Check that events, entities, and series pages render as expected
-- Confirm click-tracking redirects (`/go/evt-{id}`, `/go/ser-{id}`) are working if you use ticket links
-
 ## Background queue worker
 
 Long-running actions (Instagram posting, account data exports) run as queued jobs
@@ -394,9 +335,9 @@ the sidebar (`/job-status`).
 ## Scheduled tasks
 
 Everything registered in `app/Console/Kernel::schedule()` — weekly notifications,
-entity notifications, user cleanup, export cleanup, series event creation, feedback
-invitations, the admin activity summary, and the Discord reminder and digest commands
-— runs from a **single** cron entry:
+entity notifications, user cleanup, export cleanup, feedback invitations, the admin
+activity summary, the nightly housekeeping, the sitemap, `monitor:check`, and the Discord
+reminder and digest commands — runs from a **single** cron entry:
 
 ```crontab
 * * * * * php /var/www/events/artisan schedule:run >> /dev/null 2>&1
@@ -445,6 +386,16 @@ Session files are not a leak: PHP's session garbage collection already deletes t
 Some scheduled commands queue jobs rather than doing the work inline, so they also
 need the queue worker above to be running.
 
+### Not scheduled: creating the next event of each series
+
+`series:create-events` is in the Kernel but commented out, by choice (#2112). Run it by hand,
+first with `--dry-run` to see what it would create:
+
+```bash
+php artisan series:create-events --dry-run
+php artisan series:create-events
+```
+
 ## Monitoring (#2399)
 
 What tells you something has stopped, and what you have to set up once.
@@ -476,8 +427,39 @@ Not covered: mail delivery. A send that throws is reported like any error, but m
 accepted and never arrives is not noticed; the weekly `adminTest` email is still the only
 end-to-end check.
 
-Database backups are made on the server by `automysqlbackup`, outside the app; nothing here
-checks that they ran.
+Database backups are made outside the app (see "Backups" below); nothing here checks that
+they ran.
+
+## Backups
+
+The app does not back anything up. What needs a backup:
+
+- **The database.** Everything except the uploaded image files is in it.
+- **`.env`.** `APP_KEY` signs the unsubscribe links in every email already sent, and the
+  file holds the credentials of every integration.
+- **Uploaded images.** With S3 storage they are in the bucket, not on the server.
+
+Production makes two sets of database dumps from cron, both on the server itself:
+
+- a nightly `mysqldump` of the app database, gzipped, kept 60 days;
+- the Ubuntu `automysqlbackup` package (daily, weekly and monthly dumps of every database,
+  configured in `/etc/default/automysqlbackup`).
+
+Both are on the same disk as the database. They cover a bad migration or a mistaken delete,
+not the loss of the server: copy the dumps somewhere else as well. Watch the disk too; old
+dumps and MySQL binary logs are what fill it.
+
+To restore a dump into an empty database, then bring it up to the code:
+
+```bash
+gunzip -c events_tracker-YYYYMMDD-HHMMSS.sql.gz | mysql -u <user> -p <database>
+php artisan migrate --force
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+Try a restore into a scratch database now and then; a dump that has never been restored is
+not known to work. `php artisan db:schema-diff` (above) confirms the result has the expected
+structure.
 ## Email unsubscribe and SES bounce handling (#2103)
 
 Bulk mail (weekly/daily digests, follower and forum alerts, entity contact mail) carries

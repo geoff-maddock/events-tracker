@@ -1,0 +1,58 @@
+# Release process
+
+`main` is always what production runs: every merged pull request is deployed with `bin/deploy`
+(see `docs/deployment_notes.md`). A release is a named point on `main` for people running their
+own install. It changes nothing in production.
+
+Versions are dates: `vYYYY.MM.NN`, where `NN` counts the releases of that month. `v2026.05.01`
+is the first release of May 2026.
+
+## Before the release
+
+- [ ] CI is green on the commit of `main` being released.
+- [ ] Fold the unreleased notes into `docs/feature_notes.md`: add a `## YYYY.MM.NN` heading at
+      the top, move the entries of the "Unreleased" section and the content of every file in
+      `docs/unreleased/` (except its `README.md`) under it, and delete those files.
+- [ ] Add a `## [YYYY.MM.NN] - YYYY-MM-DD` section to `CHANGELOG.md` with the summary of the
+      release, and update the comparison links at the bottom of the file.
+- [ ] Write `docs/release_vYYYY.MM.NN.md`: what changed, and what someone upgrading has to do
+      (PHP or Node version changes, new required `.env` settings, migrations that take long or
+      remove data, new cron or worker set-up). `docs/release_v2026.05.01.md` is the model.
+- [ ] Merge that as a pull request.
+
+## Tag and publish
+
+```bash
+git checkout main
+git pull --ff-only origin main
+
+git tag -a vYYYY.MM.NN -m "Release vYYYY.MM.NN"
+git push origin vYYYY.MM.NN
+
+gh release create vYYYY.MM.NN \
+  --title "vYYYY.MM.NN" \
+  --notes-file docs/release_vYYYY.MM.NN.md \
+  --latest
+```
+
+Or on the web: https://github.com/geoff-maddock/events-tracker/releases/new, choose the tag,
+target `main`, and paste the release notes.
+
+## After
+
+- [ ] The release is listed at https://github.com/geoff-maddock/events-tracker/releases.
+- [ ] `docs/unreleased/` holds only its `README.md`.
+
+## If a release is broken
+
+Fix it on `main` like any other bug and publish the next number (`vYYYY.MM.02`). There are no
+release branches. Someone who must go back checks out the previous tag; migrations that the
+newer release ran are not undone by that and have to be rolled back first
+(`php artisan migrate:rollback --step=N`, before checking out the older code).
+
+## Past releases
+
+| Version | Notes |
+| --- | --- |
+| v2026.05.01 | `docs/release_v2026.05.01.md` |
+| v2025.01.01, v2022.09.01, v2021.11.28 | GitHub releases page |

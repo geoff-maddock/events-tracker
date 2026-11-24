@@ -4,7 +4,7 @@
 The `/api/register` endpoint supports an optional `frontend-url` parameter that allows you to specify a custom frontend URL for the email verification link sent to the newly registered user.
 
 ## Use Case
-This feature is useful when you have a separate frontend application (e.g., a React or Vue.js SPA) that needs to handle email verification, while the backend API handles user registration and verification logic.
+This is for a separate client application (for example a single-page app on its own domain) that registers users through the API and wants the verification link to open in that client. The site itself does not use it: its own pages are server-rendered and register through the web form.
 
 ## Endpoint
 ```
