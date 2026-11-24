@@ -229,6 +229,7 @@
                 {!! $events->onEachSide(2)->links('vendor.pagination.tailwind') !!}
             </div>
 
+            <h2 class="sr-only">Events</h2>
             @include('events.list-tw', ['events' => $events])
 
             <div class="mt-4">
@@ -247,9 +248,9 @@
             @if (isset($past_events) && count($past_events) > 0)
                 <div class="card-tw">
                     <div class="border-b border-border px-6 py-4">
-                        <h3 class="text-lg font-semibold text-foreground">
+                        <h2 class="text-lg font-semibold text-foreground">
                             <a href="{{ url('/events/past') }}" class="hover:text-primary transition-colors">Past Events</a>
-                        </h3>
+                        </h2>
                     </div>
                     <div class="p-6">
                         <div class="mb-4">
@@ -266,9 +267,9 @@
             @if (isset($future_events) && count($future_events) > 0)
                 <div class="card-tw">
                     <div class="border-b border-border px-6 py-4">
-                        <h3 class="text-lg font-semibold text-foreground">
+                        <h2 class="text-lg font-semibold text-foreground">
                             <a href="{{ url('/events/future') }}" class="hover:text-primary transition-colors">Future Events</a>
-                        </h3>
+                        </h2>
                     </div>
                     <div class="p-6">
                         <div class="mb-4">

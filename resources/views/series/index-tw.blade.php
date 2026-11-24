@@ -17,7 +17,7 @@
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Series Listings @include('events.crumbs-tw')</h1>
+	<div class="text-3xl font-bold text-primary mb-2"><h1 class="inline">Series Listings</h1> @include('events.crumbs-tw')</div>
 	<p class="text-muted-foreground">Discover and explore event series.</p>
 </div>
 
@@ -112,7 +112,7 @@
 
 <!-- Series Grid -->
 @if (isset($series) && count($series) > 0)
-<x-list-toolbar :paginator="$series ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'series.name'" :direction="$direction ?? 'asc'"
+<x-list-toolbar heading="Series" :paginator="$series ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'series.name'" :direction="$direction ?? 'asc'"
 	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
 	@foreach ($series as $s)

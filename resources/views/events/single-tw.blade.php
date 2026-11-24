@@ -111,11 +111,11 @@
         </div>
 
         <!-- Title -->
-        <h3 @class(['font-bold text-foreground break-words', $card ? 'text-base sm:text-lg mb-2 line-clamp-2' : 'text-lg sm:text-xl mb-1'])>
+        <{{ $heading ?? 'h3' }} @class(['font-bold text-foreground break-words', $card ? 'text-base sm:text-lg mb-2 line-clamp-2' : 'text-lg sm:text-xl mb-1'])>
             <a href='/events/{{ $event->slug }}' class="hover:text-primary transition-colors">
                 {{ $event->name }}
             </a>
-        </h3>
+        </{{ $heading ?? 'h3' }}>
 
         <!-- Venue -->
         @if ($event->venue || $event->venueLabel())

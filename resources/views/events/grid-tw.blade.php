@@ -11,7 +11,7 @@
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Event Grid @include('events.crumbs-tw')</h1>
+	<div class="text-3xl font-bold text-primary mb-2"><h1 class="inline">Event Grid</h1> @include('events.crumbs-tw')</div>
 	<p class="text-muted-foreground">Browse upcoming events in a compact grid layout.</p>
 </div>
 

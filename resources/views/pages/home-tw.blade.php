@@ -40,7 +40,7 @@
 						<i class="bi bi-calendar-event text-primary text-xl"></i>
 					</div>
 					<div>
-						<h3 class="font-semibold text-foreground mb-1">Discover Events</h3>
+						<h2 class="font-semibold text-foreground mb-1">Discover Events</h2>
 						<p class="text-sm text-muted-foreground">Find concerts, shows, and happenings across Pittsburgh</p>
 					</div>
 				</div>
@@ -50,7 +50,7 @@
 						<i class="bi bi-people text-primary text-xl"></i>
 					</div>
 					<div>
-						<h3 class="font-semibold text-foreground mb-1">Connect</h3>
+						<h2 class="font-semibold text-foreground mb-1">Connect</h2>
 						<p class="text-sm text-muted-foreground">Follow artists, venues, and promoters you love</p>
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 						<i class="bi bi-plus-circle text-primary text-xl"></i>
 					</div>
 					<div>
-						<h3 class="font-semibold text-foreground mb-1">Contribute</h3>
+						<h2 class="font-semibold text-foreground mb-1">Contribute</h2>
 						<p class="text-sm text-muted-foreground">Add events and help grow the community</p>
 					</div>
 				</div>

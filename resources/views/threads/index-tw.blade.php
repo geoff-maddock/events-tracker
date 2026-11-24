@@ -66,7 +66,7 @@
 	</div>
 </x-filter-panel>
 
-<x-list-toolbar :paginator="$threads ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'threads.created_at'" :direction="$direction ?? 'desc'"
+<x-list-toolbar heading="Threads" :paginator="$threads ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'threads.created_at'" :direction="$direction ?? 'desc'"
 	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 <!-- Threads List -->

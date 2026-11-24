@@ -23,9 +23,9 @@ Forum Thread "{{ $thread->name }}"
 
 	<!-- Header -->
 	<div>
-		<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-			Forum @include('threads.crumbs')
-		</h1>
+		<div class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+			<h1 class="inline">Forum</h1> @include('threads.crumbs')
+		</div>
 	</div>
 
 	<!-- Action Menu -->

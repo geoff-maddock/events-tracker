@@ -30,13 +30,13 @@
             @php $day = \Carbon\Carbon::parse($today)->addDay($i); @endphp
             <div class="card-tw">
                 <div class="bg-primary text-primary-foreground px-4 py-3 rounded-t-lg">
-                    <h3 class="font-semibold text-center">
+                    <h2 class="font-semibold text-center">
                         @if ($i == 0)
                             Today
                         @else
                             {{ $day->format('l') }}
                         @endif
-                    </h3>
+                    </h2>
                     <p class="text-xs text-center opacity-80">{{ $day->format('M j') }}</p>
                 </div>
 
@@ -45,7 +45,7 @@
 
                     @if (count($events) > 0)
                         <div>
-                            <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Events</h4>
+                            <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Events</h3>
                             <ul class="space-y-2">
                                 @foreach ($events as $event)
                                     <li class="text-sm">
@@ -72,7 +72,7 @@
 
                     @if (count($series) > 0)
                         <div>
-                            <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Series</h4>
+                            <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Series</h3>
                             <ul class="space-y-2">
                                 @php $type = null; @endphp
                                 @foreach ($series as $s)

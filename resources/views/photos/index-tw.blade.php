@@ -7,9 +7,9 @@
 <div class="flex flex-col gap-6">
 	<!-- Header & Actions -->
 	<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-		<h1 class="text-2xl font-bold text-foreground flex items-center gap-2">
-			Photos @include('photos.crumbs')
-		</h1>
+		<div class="text-2xl font-bold text-foreground flex items-center gap-2">
+			<h1>Photos</h1> @include('photos.crumbs')
+		</div>
 	</div>
 
 	<!-- Filters -->

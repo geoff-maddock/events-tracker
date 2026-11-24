@@ -50,7 +50,7 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 
 <!-- Page Header -->
 <div class="mb-6">
-	<h1 class="text-3xl font-bold text-primary mb-2">Event Listings @include('events.crumbs-tw')</h1>
+	<div class="text-3xl font-bold text-primary mb-2"><h1 class="inline">Event Listings</h1> @include('events.crumbs-tw')</div>
 	@isset($tag)
 	<p class="text-muted-foreground">Discover and explore all events tagged with <strong>{{ ucfirst($tag->name) }}</strong>.</p>
 	@else
@@ -220,7 +220,7 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 	</x-slot:actions>
 </x-filter-panel>
 
-<x-list-toolbar :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
+<x-list-toolbar heading="Events" :paginator="$events ?? null" :limit="$limit ?? 10" :sort="$sort ?? 'events.start_at'" :direction="$direction ?? 'desc'"
 	:limit-options="$limitOptions" :sort-options="$sortOptions" :direction-options="$directionOptions" />
 
 <!-- Events Grid -->

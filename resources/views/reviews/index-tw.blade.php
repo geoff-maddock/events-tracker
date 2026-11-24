@@ -7,7 +7,7 @@
 <div class="flex flex-col gap-6">
 	<!-- Header -->
 	<div>
-		<h1 class="text-2xl font-bold text-foreground">Reviews @include('reviews.crumbs')</h1>
+		<div class="text-2xl font-bold text-foreground"><h1 class="inline">Reviews</h1> @include('reviews.crumbs')</div>
 	</div>
 
 	<!-- Filters -->
@@ -82,6 +82,7 @@
 			</div>
 
 			<!-- Reviews -->
+			<h2 class="sr-only">Reviews</h2>
 			@include('reviews.list-tw', ['reviews' => $reviews])
 
 			<!-- Bottom Pagination -->
