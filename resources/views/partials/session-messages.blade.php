@@ -1,7 +1,8 @@
 {{--
     Messages a redirect left in the session with ->with('error', ...) or ->with('status', ...):
     the expired-session notice, account and email-verification results. Unlike the flash()
-    toast they stay on the page until the next one. The layout shows them above the content;
+    toast they stay on the page until the next one. A form's validation errors are summarised
+    here too. The layout shows them above the content;
     a page that places them itself includes this partial and sets
     @section('session-messages', 'inline').
 --}}
@@ -22,3 +23,5 @@
         </div>
     </div>
 @endif
+
+@include('partials.form-errors')

@@ -157,7 +157,7 @@
                 <input type="hidden" name="hold_date" value="0">
                 <input type="checkbox"
                     name="hold_date"
-                    id="hold_date"
+                    id="hold_date" @if($errors->has('hold_date')) aria-invalid="true" aria-describedby="hold_date-error" @endif
                     value="1"
                     {{ old('hold_date', $series->hold_date ?? false) ? 'checked' : '' }}
                     class="w-4 h-4 text-primary bg-background border-input rounded focus:ring-ring focus:ring-2">

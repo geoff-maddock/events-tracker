@@ -76,7 +76,7 @@
 			['venue', 'Venues', $venueOptions],
 			['series', 'Series', $seriesOptions],
 		] as [$type, $label, $options])
-			<x-ui.form-group :name="'include.' . $type" :label="'Include ' . strtolower($label)">
+			<x-ui.form-group :name="'include.' . $type" :for="'include_' . $type" :label="'Include ' . strtolower($label)">
 				<select name="include[{{ $type }}][]" id="include_{{ $type }}" multiple size="6"
 					class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
 					@foreach($options as $id => $optionLabel)
@@ -89,7 +89,7 @@
 		@endforeach
 	</div>
 
-	<x-ui.form-group name="exclude.tag" label="Exclude tags">
+	<x-ui.form-group name="exclude.tag" for="exclude_tag" label="Exclude tags">
 		<select name="exclude[tag][]" id="exclude_tag" multiple size="4"
 			class="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground">
 			@foreach($tagOptions as $id => $optionLabel)
@@ -134,7 +134,7 @@
 		</label>
 
 		<div class="ml-7">
-			<x-ui.form-group name="reminder_offsets" label="Days before the event">
+			<x-ui.form-group name="reminder_offsets" for="reminder_offsets_csv" label="Days before the event">
 				<input type="text" name="reminder_offsets_csv" id="reminder_offsets_csv"
 					value="{{ old('reminder_offsets_csv', implode(', ', $target->reminder_offsets ?? [])) }}"
 					placeholder="{{ implode(', ', config('discord.default_reminder_offsets')) }}"

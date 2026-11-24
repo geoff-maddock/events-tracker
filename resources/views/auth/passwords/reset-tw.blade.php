@@ -46,7 +46,7 @@
                         required />
                 </x-ui.form-group>
 
-                <x-ui.form-group name="password_confirmation" label="Confirm New Password" :error="$errors->first('password_confirmation')" required>
+                <x-ui.form-group name="password_confirmation" for="password-confirm" label="Confirm New Password" :error="$errors->first('password_confirmation')" required>
                     <x-ui.input
                         type="password"
                         name="password_confirmation"

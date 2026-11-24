@@ -451,7 +451,7 @@
             :error="$errors->first('entities')">
             <select
                 name="entity_list[]"
-                id="entity_list"
+                id="entity_list" @if($errors->has('entities')) aria-invalid="true" aria-describedby="entity_list-error" @endif
                 class="select2"
                 data-theme="tailwind"
                 data-placeholder="Choose related artists, producers, djs, bands, etc."
@@ -482,7 +482,7 @@
             :error="$errors->first('tags')">
             <select
                 name="tag_list[]"
-                id="tag_list"
+                id="tag_list" @if($errors->has('tags')) aria-invalid="true" aria-describedby="tag_list-error" @endif
                 class="select2"
                 data-theme="tailwind"
                 data-placeholder="Choose a keyword tag that describes this event"
@@ -559,7 +559,7 @@
 <x-ui.modal id="quick-add-entity-modal" title="Add Entity" size="md">
     <input type="hidden" id="quick-add-role">
     <input type="hidden" id="quick-add-target">
-    <x-ui.form-group name="quick_add_name" label="Name">
+    <x-ui.form-group name="quick_add_name" for="quick-add-name" label="Name">
         <x-ui.input type="text" id="quick-add-name" placeholder="e.g. The Smiling Moose" />
     </x-ui.form-group>
 
@@ -581,13 +581,13 @@
         </div>
     </div>
 
-    <x-ui.form-group name="quick_add_short" label="Short description (optional)" class="mt-3">
+    <x-ui.form-group name="quick_add_short" for="quick-add-short" label="Short description (optional)" class="mt-3">
         <x-ui.input type="text" id="quick-add-short" maxlength="255" placeholder="One-line summary" />
     </x-ui.form-group>
-    <x-ui.form-group name="quick_add_description" label="Description (optional)" class="mt-3">
+    <x-ui.form-group name="quick_add_description" for="quick-add-description" label="Description (optional)" class="mt-3">
         <x-ui.textarea id="quick-add-description" rows="3" placeholder="A fuller description"></x-ui.textarea>
     </x-ui.form-group>
-    <x-ui.form-group name="quick_add_image" label="Default image (optional)" class="mt-3">
+    <x-ui.form-group name="quick_add_image" for="quick-add-image" label="Default image (optional)" class="mt-3">
         <input type="file" id="quick-add-image" accept="image/jpeg,image/png,image/gif,image/webp"
                class="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:opacity-90" />
     </x-ui.form-group>
