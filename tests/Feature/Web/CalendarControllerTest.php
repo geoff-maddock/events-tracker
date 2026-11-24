@@ -211,13 +211,11 @@ class CalendarControllerTest extends TestCase
         $start = urlencode(now()->subDay()->toIso8601String());
         $end = urlencode(now()->addDays(10)->toIso8601String());
 
-        $ids = collect($this->getJson("/api/calendar-events?start={$start}&end={$end}")->assertOk()->json())->pluck('id');
+        $ids = collect($this->getJson("/api/tag-calendar-events?start={$start}&end={$end}")->assertOk()->json())->pluck('id');
         $this->assertTrue($ids->contains('event-'.$event->id));
 
-        $this->getJson("/api/tag-calendar-events?start={$start}&end={$end}")->assertOk();
-
         // garbage dates fall back to the current month instead of reaching the query
-        $this->getJson('/api/calendar-events?start=not-a-date&end=1)%20OR%201=1')->assertOk();
+        $this->getJson('/api/tag-calendar-events?start=not-a-date&end=1)%20OR%201=1')->assertOk();
     }
 
     public function test_api_calendar_feed_query_count_does_not_grow_with_series(): void

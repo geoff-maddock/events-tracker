@@ -403,22 +403,6 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Display an entity when passed the slug.
-     *
-     * @return Response|string
-     *
-     * @throws \Throwable
-     */
-    public function indexSlug(string $slug)
-    {
-        $entity = Entity::getBySlug(strtolower($slug))->firstOrFail();
-
-        return view('entities.show-tw')
-            ->with(compact('entity'))
-            ->render();
-    }
-
-    /**
      * Display a specific entity by role and slug.
      * This provides semantic routes like /venue/brillobox or /dj/cutups
      *
