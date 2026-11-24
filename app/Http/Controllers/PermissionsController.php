@@ -161,7 +161,8 @@ class PermissionsController extends Controller
 
         $permission = $permission->create($this->validatedFields($request));
 
-        $permission->groups()->attach($request->input('group_list', []));
+        // a repeated id would be the same link twice
+        $permission->groups()->attach(array_unique((array) $request->input('group_list', [])));
 
         flash()->success('Success', 'Your permission has been created');
 

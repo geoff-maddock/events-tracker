@@ -44,7 +44,8 @@ class EventWriter
         $event->save();
 
         $event->tags()->attach(Tag::resolveList($tags, $user)->modelKeys());
-        $event->entities()->attach($entities);
+        // a repeated id would be the same link twice
+        $event->entities()->attach(array_unique($entities));
         $this->relateVenueAndPromoter($event);
         $event->syncShowings($showings);
 

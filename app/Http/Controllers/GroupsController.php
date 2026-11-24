@@ -145,8 +145,9 @@ class GroupsController extends Controller
 
         $group = $group->create($this->validatedFields($request));
 
-        $group->permissions()->attach($request->input('permission_list', []));
-        $group->users()->attach($request->input('user_list', []));
+        // a repeated id would be the same link twice
+        $group->permissions()->attach(array_unique((array) $request->input('permission_list', [])));
+        $group->users()->attach(array_unique((array) $request->input('user_list', [])));
 
         flash()->success('Success', 'Your group has been created');
 

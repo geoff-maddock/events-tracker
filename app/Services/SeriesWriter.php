@@ -35,7 +35,8 @@ class SeriesWriter
         $series->save();
 
         $series->tags()->attach(Tag::resolveList($tags, $user)->modelKeys());
-        $series->entities()->attach($entities);
+        // a repeated id would be the same link twice
+        $series->entities()->attach(array_unique($entities));
 
         if ($eventLinkId !== null) {
             $this->linkEvent($series, $eventLinkId, $user);

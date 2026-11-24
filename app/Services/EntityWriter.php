@@ -45,7 +45,8 @@ class EntityWriter
 
         $entity->tags()->attach($this->tagIds($tags, $user));
         $entity->aliases()->attach($this->aliasIds($aliases));
-        $entity->roles()->attach($roles);
+        // a repeated id would be the same link twice
+        $entity->roles()->attach(array_unique($roles));
 
         return $this->finish($entity, $user, Action::CREATE);
     }
