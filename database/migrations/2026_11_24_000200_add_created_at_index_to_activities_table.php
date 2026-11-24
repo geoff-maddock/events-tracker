@@ -25,9 +25,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasIndex('activities', ['created_at'])) {
+        // by name: an index that was already there under another name is not this migration's
+        if (Schema::hasIndex('activities', 'activities_created_at_index')) {
             Schema::table('activities', function (Blueprint $table) {
-                $table->dropIndex(['created_at']);
+                $table->dropIndex('activities_created_at_index');
             });
         }
     }

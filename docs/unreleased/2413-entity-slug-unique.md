@@ -1,6 +1,6 @@
 ### One entity per slug, and an index for the activity log (#2413)
 
-An entity page is found by its slug, but nothing stopped two entities having the same one; the second could then never be opened. A migration gives any repeated slug a number and makes the index unique.
+An entity page is found by its slug, but nothing stopped two entities having the same one; the second could then never be opened. A migration gives any repeated slug a number and makes the index unique. The entity people could already open keeps the slug: the earliest one that is not unlisted.
 
 In production one slug was repeated: `karma`, held by two venues. The active one (id 291), which is the one `/entities/karma` already showed, keeps it. The inactive one (id 296) becomes `karma-2` and can be opened again.
 

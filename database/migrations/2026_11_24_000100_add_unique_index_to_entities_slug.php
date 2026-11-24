@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\OptionLists;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -7,9 +8,9 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Entity pages are found by slug, but the slug index was not unique (#2413).
- * Where a slug is held by more than one entity the earliest keeps it (that is
- * the one the page already showed) and the others get a numbered slug. Then
- * the plain index is replaced by a unique one.
+ * Where a slug is held by more than one entity, the one the page already
+ * showed keeps it (the earliest that is not unlisted) and the others get a
+ * numbered slug. Then the plain index is replaced by a unique one.
  */
 return new class extends Migration
 {
@@ -19,7 +20,10 @@ return new class extends Migration
             return;
         }
 
-        $this->renameDuplicates();
+        if ($this->renameDuplicates()) {
+            // the cached filter options are keyed by slug
+            OptionLists::forgetEntities();
+        }
 
         Schema::table('entities', function (Blueprint $table) {
             // by column: the plain index may have been added under another name
@@ -37,7 +41,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (!Schema::hasIndex('entities', ['slug'], 'unique')) {
+        // by name: a unique index that was already there under another name is not this migration's
+        if (!Schema::hasIndex('entities', 'entities_slug_unique')) {
             return;
         }
 
@@ -49,10 +54,15 @@ return new class extends Migration
 
     /**
      * Raw queries on purpose: the Entity model hides unlisted entities, and
-     * they hold their slugs too.
+     * they hold their slugs too. An unlisted entity gives way, though: for
+     * everyone but an admin the page showed the other one.
+     *
+     * @return bool whether a slug was changed
      */
-    private function renameDuplicates(): void
+    private function renameDuplicates(): bool
     {
+        $unlisted = DB::table('entity_statuses')->where('name', 'Unlisted')->value('id') ?? 0;
+
         $repeated = DB::table('entities')
             ->select('slug')
             ->groupBy('slug')
@@ -60,7 +70,11 @@ return new class extends Migration
             ->pluck('slug');
 
         foreach ($repeated as $slug) {
-            $ids = DB::table('entities')->where('slug', $slug)->orderBy('id')->pluck('id');
+            $ids = DB::table('entities')
+                ->where('slug', $slug)
+                ->orderByRaw('entity_status_id <=> ?', [$unlisted])
+                ->orderBy('id')
+                ->pluck('id');
             $n = 2;
 
             // the first keeps the slug
@@ -72,5 +86,7 @@ return new class extends Migration
                 DB::table('entities')->where('id', $id)->update(['slug' => $slug.'-'.$n]);
             }
         }
+
+        return $repeated->isNotEmpty();
     }
 };
