@@ -49,6 +49,11 @@ class AutomateInstagramPosts extends Command
     public const RUN_REPOST_AFTER_DAYS = 2;
 
     /**
+     * The most images Instagram takes in one carousel.
+     */
+    private const MAX_CAROUSEL_ITEMS = 10;
+
+    /**
      * Execute the console command.
      *
      * @return int
@@ -249,6 +254,9 @@ class AutomateInstagramPosts extends Command
 
             // Add other photos related to the event to the carousel
             foreach ($event->getOtherPhotos() as $otherPhoto) {
+                if (count($igContainerIds) >= self::MAX_CAROUSEL_ITEMS) {
+                    break;
+                }
                 $otherImageUrl = Storage::disk('external')->url($otherPhoto->getStoragePath());
 
                 if (!$otherImageUrl) {
@@ -269,6 +277,9 @@ class AutomateInstagramPosts extends Command
             // Add primary photos from related entities to the carousel
             foreach ($event->entities as $entity) {
                 foreach ($entity->photos as $entityPhoto) {
+                    if (count($igContainerIds) >= self::MAX_CAROUSEL_ITEMS) {
+                        break 2;
+                    }
                     if ($entityPhoto->is_primary) {
                         $entityImageUrl = Storage::disk('external')->url($entityPhoto->getStoragePath());
 
@@ -289,22 +300,29 @@ class AutomateInstagramPosts extends Command
                 }
             }
 
-            // Check status of all uploaded photos in batch
-            if ($instagram->checkBatchStatus($igContainerIds) === false) {
-                throw new Exception('Instagram batch status check failed');
+            if (count($igContainerIds) < 2) {
+                // Instagram refuses a carousel of one: an event whose only
+                // picture is its primary photo goes out as a single photo
+                $igMediaId = $instagram->uploadPhoto($imageUrl, urlencode(mb_substr($caption, 0, 2200)));
+                Log::info("AutomateInstagramPosts: Uploaded single photo for event #{$event->id}, container ID: {$igMediaId}");
+            } else {
+                // Check status of all uploaded photos in batch
+                if ($instagram->checkBatchStatus($igContainerIds) === false) {
+                    throw new Exception('Instagram batch status check failed');
+                }
+
+                // Create the carousel container with all uploaded photos
+                $igMediaId = $instagram->createCarousel($igContainerIds, $caption);
+                Log::info("AutomateInstagramPosts: Created carousel for event #{$event->id}, carousel ID: {$igMediaId}");
             }
 
-            // Create the carousel container with all uploaded photos
-            $igCarouselId = $instagram->createCarousel($igContainerIds, $caption);
-            Log::info("AutomateInstagramPosts: Created carousel for event #{$event->id}, carousel ID: {$igCarouselId}");
-
-            // Check the carousel container status
-            if ($instagram->checkStatus($igCarouselId) === false) {
-                throw new Exception('Instagram carousel status check failed');
+            // Check the container status
+            if ($instagram->checkStatus($igMediaId) === false) {
+                throw new Exception('Instagram '.(count($igContainerIds) < 2 ? 'photo' : 'carousel').' status check failed');
             }
 
-            // Publish the carousel
-            $result = $instagram->publishMedia($igCarouselId);
+            // Publish the photo or carousel
+            $result = $instagram->publishMedia($igMediaId);
             
             if ($result === false) {
                 throw new Exception('Failed to publish media to Instagram');
@@ -319,7 +337,7 @@ class AutomateInstagramPosts extends Command
                 'posted_at' => Carbon::now(),
             ]);
 
-            Log::info("AutomateInstagramPosts: Successfully posted event #{$event->id} with " . count($igContainerIds) . " images, Instagram ID: {$result}");
+            Log::info("AutomateInstagramPosts: Successfully posted event #{$event->id} with " . count($igContainerIds) . " image(s), Instagram ID: {$result}");
 
             return [
                 'success' => true,
