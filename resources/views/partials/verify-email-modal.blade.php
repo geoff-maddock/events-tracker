@@ -50,7 +50,7 @@
             <p class="text-xs">Can't find it? Check your spam or promotions folder.</p>
 
             <p x-show="status" x-cloak class="text-xs"
-               :class="statusIsError ? 'text-destructive' : 'text-green-500'"
+               :class="statusIsError ? 'text-destructive' : 'text-success'"
                x-text="status"></p>
         </div>
 

@@ -34,6 +34,7 @@ module.exports = {
           foreground: 'hsl(var(--destructive-foreground))',
         },
         success: 'hsl(var(--success-text))',
+        warning: 'hsl(var(--warning-text))',
       },
       colors: {
         border: 'hsl(var(--border))',

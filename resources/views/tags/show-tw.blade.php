@@ -60,7 +60,7 @@ Tags
 					class="p-2 rounded-md hover:bg-accent transition-colors"
 					aria-label="{{ $isFollowing ? 'Unfollow' : 'Follow' }}"
 					title="{{ $isFollowing ? 'Unfollow' : 'Follow' }}">
-					<i class="bi {{ $isFollowing ? 'bi-star-fill text-yellow-500' : 'bi-star text-muted-foreground' }} text-xl"></i>
+					<i class="bi {{ $isFollowing ? 'bi-star-fill text-warning' : 'bi-star text-muted-foreground' }} text-xl"></i>
 				</a>
 
 				<!-- Edit/Delete Menu (creator or admin; delete is admin-only) -->

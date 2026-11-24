@@ -25,7 +25,7 @@
 
             @if ($hasFollowedContent)
                 <a href="#recommended-events" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-accent transition-colors">
-                    <i class="bi bi-tags text-green-500"></i>
+                    <i class="bi bi-tags text-success"></i>
                     <span>Recommended</span>
                 </a>
             @endif
@@ -36,7 +36,7 @@
             </a>
 
             <a href="{{ route('events.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-accent transition-colors">
-                <i class="bi bi-calendar-event text-yellow-500"></i>
+                <i class="bi bi-calendar-event text-warning"></i>
                 <span>All Events</span>
             </a>
         </div>
@@ -61,7 +61,7 @@
     @if ($hasFollowedContent)
         <section id="recommended-events" class="card-tw p-6">
             <h2 class="text-2xl font-semibold text-foreground mb-2 flex items-center gap-2">
-                <i class="bi bi-tags text-green-500"></i>
+                <i class="bi bi-tags text-success"></i>
                 Recommended for You
             </h2>
             <p class="text-sm text-muted-foreground mb-4">

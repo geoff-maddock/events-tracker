@@ -49,7 +49,7 @@
 							class="p-2 rounded-md hover:bg-accent"
 							title="Following - click to unfollow"
 							aria-label="Unfollow {{ $entity->name }}">
-							<i class="bi bi-star-fill text-yellow-500 text-xl" aria-hidden="true"></i>
+							<i class="bi bi-star-fill text-warning text-xl" aria-hidden="true"></i>
 						</a>
 						@else
 						<a data-method="post" href="{!! route('entities.follow', ['id' => $entity->id]) !!}"

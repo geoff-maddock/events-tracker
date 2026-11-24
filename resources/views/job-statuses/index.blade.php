@@ -4,10 +4,10 @@
 
 @php
     $statusStyles = [
-        'queued'    => ['bi-hourglass-split', 'text-amber-600', 'Queued'],
-        'running'   => ['bi-arrow-repeat',    'text-blue-600',  'Running'],
-        'succeeded' => ['bi-check-circle',    'text-green-600', 'Succeeded'],
-        'failed'    => ['bi-x-circle',        'text-red-600',   'Failed'],
+        'queued'    => ['bi-hourglass-split', 'text-warning', 'Queued'],
+        'running'   => ['bi-arrow-repeat',    'text-primary',  'Running'],
+        'succeeded' => ['bi-check-circle',    'text-success', 'Succeeded'],
+        'failed'    => ['bi-x-circle',        'text-destructive',   'Failed'],
     ];
     $hasActiveJobs = $jobStatuses->whereIn('status', ['queued', 'running'])->isNotEmpty();
 @endphp
@@ -33,7 +33,7 @@
         @forelse ($notifications as $notification)
             @php $data = $notification->data; @endphp
             <div class="card-tw p-4 flex items-start gap-3 {{ $notification->read_at ? 'opacity-60' : '' }}">
-                <i class="bi {{ ($data['succeeded'] ?? false) ? 'bi-check-circle text-green-600' : 'bi-x-circle text-red-600' }} text-xl mt-0.5"></i>
+                <i class="bi {{ ($data['succeeded'] ?? false) ? 'bi-check-circle text-success' : 'bi-x-circle text-destructive' }} text-xl mt-0.5"></i>
                 <div class="flex-1 min-w-0 break-words">
                     <p class="text-foreground font-medium">{{ $data['label'] ?? 'Background job' }}</p>
                     <p class="text-sm text-muted-foreground">{{ $data['message'] ?? '' }}</p>

@@ -284,7 +284,7 @@
                 const escaped = this.escape(text);
                 const pattern = q.split(/\s+/).filter(Boolean).map(this.escapeRegex).join('|');
                 if (!pattern) return escaped;
-                return escaped.replace(new RegExp('(' + pattern + ')', 'gi'), '<mark class="bg-yellow-200 text-inherit">$1</mark>');
+                return escaped.replace(new RegExp('(' + pattern + ')', 'gi'), '<mark class="bg-yellow-500/30 text-inherit">$1</mark>');
             },
 
             escape(s) {

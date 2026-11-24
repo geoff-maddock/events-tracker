@@ -15,7 +15,7 @@
                 <form action="{{ route('threads.destroy', $thread) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this thread?">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="text-muted-foreground hover:text-red-500" title="Delete the thread">
+                    <button type="submit" class="text-muted-foreground hover:text-destructive" title="Delete the thread">
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </form>
@@ -43,11 +43,11 @@
                 @endif
                 
                 @if ($like = $thread->likedBy($user))
-                    <a data-method="post" href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Unlike" class="text-yellow-500 hover:text-yellow-400">
+                    <a data-method="post" href="{!! route('threads.unlike', ['id' => $thread->id]) !!}" title="Unlike" class="text-warning hover:text-warning/80">
                         <i class="bi bi-star-fill"></i>
                     </a>
                 @else
-                    <a data-method="post" href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Like" class="text-muted-foreground hover:text-yellow-500">
+                    <a data-method="post" href="{!! route('threads.like', ['id' => $thread->id]) !!}" title="Like" class="text-muted-foreground hover:text-warning">
                         <i class="bi bi-star"></i>
                     </a>
                 @endif

@@ -18,11 +18,11 @@
                 <span>Popular Events</span>
             </a>
             <a href="#popular-entities" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-accent transition-colors">
-                <i class="bi bi-people text-green-500"></i>
+                <i class="bi bi-people text-success"></i>
                 <span>Popular Entities</span>
             </a>
             <a href="#popular-tags" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-accent transition-colors">
-                <i class="bi bi-tags text-yellow-500"></i>
+                <i class="bi bi-tags text-warning"></i>
                 <span>Popular Tags</span>
             </a>
         </div>
@@ -56,7 +56,7 @@
     <!-- Popular Entities -->
     <section id="popular-entities" class="card-tw p-6">
         <h2 class="text-2xl font-semibold text-foreground mb-2 flex items-center gap-2">
-            <i class="bi bi-people text-green-500"></i>
+            <i class="bi bi-people text-success"></i>
             Popular Entities
         </h2>
         <p class="text-sm text-muted-foreground mb-4">
@@ -81,7 +81,7 @@
     <!-- Popular Tags -->
     <section id="popular-tags" class="card-tw p-6">
         <h2 class="text-2xl font-semibold text-foreground mb-2 flex items-center gap-2">
-            <i class="bi bi-tags text-yellow-500"></i>
+            <i class="bi bi-tags text-warning"></i>
             Popular Tags
         </h2>
         <p class="text-sm text-muted-foreground mb-4">
