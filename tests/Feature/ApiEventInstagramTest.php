@@ -53,6 +53,8 @@ class ApiEventInstagramTest extends TestCase
         $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
         $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
+        // an event with one photo goes out as a single photo, not a carousel of one
+        $instagram->shouldReceive('uploadPhoto')->andReturn(999);
         $instagram->shouldReceive('checkBatchStatus')->andReturn(true);
         $instagram->shouldReceive('createCarousel')->andReturn(999);
         $instagram->shouldReceive('checkStatus')->andReturn(true);
@@ -181,6 +183,8 @@ class ApiEventInstagramTest extends TestCase
         $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
         $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
+        // an event with one photo goes out as a single photo, not a carousel of one
+        $instagram->shouldReceive('uploadPhoto')->andReturn(999);
         $instagram->shouldReceive('checkBatchStatus')->andReturn(true);
         $instagram->shouldReceive('createCarousel')->andReturn(999);
         $instagram->shouldReceive('checkStatus')->andReturn(true);
@@ -234,6 +238,8 @@ class ApiEventInstagramTest extends TestCase
         $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
         $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
+        // an event with one photo goes out as a single photo, not a carousel of one
+        $instagram->shouldReceive('uploadPhoto')->andReturn(999);
         $instagram->shouldReceive('checkBatchStatus')->andReturn(true);
         $instagram->shouldReceive('createCarousel')->andReturn(999);
         $instagram->shouldReceive('checkStatus')->andReturn(true);
@@ -278,6 +284,8 @@ class ApiEventInstagramTest extends TestCase
         $instagram->shouldReceive('getIgUserId')->andReturn(123);
         $instagram->shouldReceive('getPageAccessToken')->andReturn('token');
         $instagram->shouldReceive('uploadCarouselPhoto')->andReturn(111);
+        // an event with one photo goes out as a single photo, not a carousel of one
+        $instagram->shouldReceive('uploadPhoto')->andReturn(999);
         $instagram->shouldReceive('checkBatchStatus')->andReturn(true);
         $instagram->shouldReceive('createCarousel')->andReturn(999);
         $instagram->shouldReceive('checkStatus')->andReturn(true);

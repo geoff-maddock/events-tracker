@@ -113,7 +113,10 @@ class InstagramEventPoster extends InstagramPoster
             }
         }
 
-        $result = $this->publishCarousel($igContainerIds, $caption);
+        // Instagram refuses a carousel of one: with no other picture, post the photo by itself
+        $result = count($igContainerIds) < 2
+            ? $this->publishSinglePhoto($imageUrl, urlEncode($caption))
+            : $this->publishCarousel($igContainerIds, $caption);
 
         $this->recordShare($event, $result, $userId);
 
