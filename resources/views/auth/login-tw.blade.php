@@ -13,22 +13,6 @@
                 <p class="text-muted-foreground mt-2">Sign in to your account</p>
             </div>
 
-            @if (count($errors) > 0)
-                <div class="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <div class="flex items-start gap-3">
-                        <i class="bi bi-exclamation-triangle text-destructive text-lg mt-0.5"></i>
-                        <div>
-                            <p class="font-semibold text-destructive">There were some problems with your input.</p>
-                            <ul class="mt-2 text-sm text-destructive/90 list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
             @include('partials.session-messages')
 
             @if (session('sign_in_reason'))

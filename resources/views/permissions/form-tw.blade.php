@@ -66,7 +66,7 @@
     helpText="Assign this permission to groups">
     <select
         name="group_list[]"
-        id="group_list"
+        id="group_list" @if($errors->has('groups')) aria-invalid="true" aria-describedby="group_list-error" @else aria-describedby="group_list-help" @endif
         class="form-control select2 {{ $errors->has('groups') ? 'border-destructive' : '' }}"
         data-placeholder="Choose a group"
         data-tags="true"

@@ -1,6 +1,11 @@
 @props([
     'hasError' => false,
 ])
+@aware([
+    'error' => null,
+    'helpText' => null,
+    'required' => false,
+])
 
 @php
 $classes = 'flex h-9 w-full rounded-md border border-input bg-input px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
@@ -11,12 +16,14 @@ $isPassword = $attributes->get('type') === 'password';
 if ($isPassword) {
     $classes .= ' pr-10'; // Add right padding for toggle button
 }
+// what the form group around this control says about it
+$state = \App\View\FieldState::attributes($attributes->get('id'), (bool) $hasError, $error, $helpText, $required);
 @endphp
 
 {{-- Password inputs are wrapped with a toggle button. Note: id attribute is required for password inputs --}}
 @if($isPassword)
 <div class="relative">
-    <input {{ $attributes->merge(['class' => $classes]) }} />
+    <input {{ $attributes->merge($state)->merge(['class' => $classes]) }} />
     <button 
         type="button" 
         data-password-toggle="{{ $attributes->get('id') }}"
@@ -27,5 +34,5 @@ if ($isPassword) {
     </button>
 </div>
 @else
-<input {{ $attributes->merge(['class' => $classes]) }} />
+<input {{ $attributes->merge($state)->merge(['class' => $classes]) }} />
 @endif

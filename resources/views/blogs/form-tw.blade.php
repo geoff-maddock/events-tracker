@@ -118,7 +118,7 @@
     helpText="Choose related artists, producers, or DJs">
     <select
         name="entity_list[]"
-        id="entity_list"
+        id="entity_list" @if($errors->has('entities')) aria-invalid="true" aria-describedby="entity_list-error" @else aria-describedby="entity_list-help" @endif
         class="select2"
         data-theme="tailwind"
         data-placeholder="Choose a related artist, producer, dj"
@@ -140,7 +140,7 @@
     helpText="Add or create tags">
     <select
         name="tag_list[]"
-        id="tag_list"
+        id="tag_list" @if($errors->has('tags')) aria-invalid="true" aria-describedby="tag_list-error" @else aria-describedby="tag_list-help" @endif
         class="select2"
         data-theme="tailwind"
         data-placeholder="Choose a tag"
