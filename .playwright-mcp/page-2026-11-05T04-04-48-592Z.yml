@@ -1,0 +1,1108 @@
+- generic [active] [ref=f25e1]:
+  - generic [ref=f25e2]:
+    - text:                    
+    - complementary [ref=f25e3]:
+      - button "Close navigation" [ref=f25e4]:
+        - generic [aria-hidden] [ref=f25e5]: 
+      - generic [ref=f25e6]:
+        - link "DEV Arcane City" [ref=f25e7] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - text: pittsburgh events guide
+      - navigation [ref=f25e9]:
+        - generic [ref=f25e10]:
+          - link " Events" [ref=f25e11] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=f25e12]: 
+            - generic [ref=f25e13]: Events
+          - generic [ref=f25e14]:
+            - link " Tonight" [ref=f25e15] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=f25e16]: 
+              - generic [ref=f25e17]: Tonight
+            - link " This Week" [ref=f25e18] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=f25e19]: 
+              - generic [ref=f25e20]: This Week
+            - link " This Weekend" [ref=f25e21] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=f25e22]: 
+              - generic [ref=f25e23]: This Weekend
+            - link " Event Grid" [ref=f25e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=f25e25]: 
+              - generic [ref=f25e26]: Event Grid
+        - link " Event Calendar" [ref=f25e28] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=f25e29]: 
+          - generic [ref=f25e30]: Event Calendar
+        - link "Listen" [ref=f25e32] [cursor=pointer]:
+          - /url: https://dev.arcane.city/player?source=upcoming
+          - generic [aria-hidden] [ref=f25e33]: 
+        - link " Entities" [ref=f25e36] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=f25e37]: 
+          - generic [ref=f25e38]: Entities
+        - link " Series" [ref=f25e39] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=f25e40]: 
+          - generic [ref=f25e41]: Series
+        - link " Tags" [ref=f25e42] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=f25e43]: 
+          - generic [ref=f25e44]: Tags
+        - link " Forum" [ref=f25e45] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=f25e46]: 
+          - generic [ref=f25e47]: Forum
+        - link " About" [ref=f25e49] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=f25e50]: 
+          - generic [ref=f25e51]: About
+        - link " Help" [ref=f25e52] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=f25e53]: 
+          - generic [ref=f25e54]: Help
+      - generic [ref=f25e55]:
+        - link " My Account" [ref=f25e56] [cursor=pointer]:
+          - /url: https://dev.arcane.city/login
+          - generic [ref=f25e57]: 
+          - generic [ref=f25e58]: My Account
+        - link " Register" [ref=f25e59] [cursor=pointer]:
+          - /url: https://dev.arcane.city/register
+          - generic [ref=f25e60]: 
+          - generic [ref=f25e61]: Register
+      - button "Switch to light mode" [ref=f25e65]:
+        - generic [ref=f25e66]: 
+    - generic [ref=f25e67]:
+      - banner [ref=f25e68]:
+        - generic [ref=f25e69]:
+          - button "Open navigation menu" [ref=f25e70]:
+            - generic [aria-hidden] [ref=f25e71]: 
+          - link "DEV Arcane City pittsburgh events guide" [ref=f25e72] [cursor=pointer]:
+            - /url: https://dev.arcane.city
+            - generic [ref=f25e73]: DEV Arcane City
+            - generic [ref=f25e74]: pittsburgh events guide
+          - search [ref=f25e77]:
+            - generic [ref=f25e78]:
+              - combobox "Search" [ref=f25e79]
+              - generic [ref=f25e80]: 
+          - generic [ref=f25e82]:
+            - button "Add something" [ref=f25e83]:
+              - generic [aria-hidden] [ref=f25e84]: 
+            - text:   
+      - main [ref=f25e85]:
+        - generic [ref=f25e86]:
+          - heading "Entity Listings / Venue" [level=1] [ref=f25e87]
+          - paragraph [ref=f25e88]: Discover venues, artists, promoters, and more.
+        - generic [ref=f25e89]:
+          - link " Add Entity" [ref=f25e90] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/create
+            - generic [ref=f25e91]: 
+            - text: Add Entity
+          - link "Artists" [ref=f25e92] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/artist
+          - link "Bands" [ref=f25e93] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/band
+          - link "DJs" [ref=f25e94] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/dj
+          - link "Producers" [ref=f25e95] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/producer
+          - link "Promoters" [ref=f25e96] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/promoter
+          - link "Shops" [ref=f25e97] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/shop
+          - link "Venues" [ref=f25e98] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/role/venue
+        - button " Show Filters " [ref=f25e100]:
+          - generic [ref=f25e101]: 
+          - generic [ref=f25e102]: Show Filters
+          - generic [ref=f25e103]: 
+        - text:  
+        - generic [ref=f25e104]:
+          - generic [ref=f25e105]: Showing 1 to 25 of 535 results
+          - generic [ref=f25e107]:
+            - combobox [ref=f25e108]:
+              - option "5"
+              - option "10"
+              - option "25" [selected]
+              - option "100"
+              - option "1000"
+            - generic [ref=f25e109]: "Sort by:"
+            - combobox [ref=f25e110]:
+              - option "Name"
+              - option "Entity Type"
+              - option "Created At"
+              - option "Popularity" [selected]
+            - combobox [ref=f25e111]:
+              - option "asc"
+              - option "desc" [selected]
+          - generic [ref=f25e112]:
+            - link "1" [ref=f25e113] [cursor=pointer]:
+              - /url: https://dev.arcane.city/entities/role/venue?page=1
+            - link "2" [ref=f25e114] [cursor=pointer]:
+              - /url: https://dev.arcane.city/entities/role/venue?page=2
+            - link "3" [ref=f25e115] [cursor=pointer]:
+              - /url: https://dev.arcane.city/entities/role/venue?page=3
+        - generic [ref=f25e117]:
+          - article [ref=f25e118]:
+            - generic [ref=f25e119]:
+              - link [ref=f25e120] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785703689_spirit-pittsburgh-wedding-photos-121%28pp_w768_h511%29.webp
+                - img "Spirit" [ref=f25e121]
+              - link "" [ref=f25e123] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e125]:
+              - heading [level=3] [ref=f25e126]:
+                - link "Spirit" [ref=f25e127] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/spirit
+              - generic [ref=f25e128]: "Also known as: Spirit Hall, Spirit Lodge"
+              - generic [ref=f25e129]:
+                - generic [ref=f25e130]: 
+                - text: Space
+              - generic [ref=f25e131]:
+                - generic [ref=f25e132]: 
+                - generic [ref=f25e133]: 242 51st Street Pittsburgh - Lawrenceville
+              - generic [ref=f25e134]:
+                - link "Venue" [ref=f25e135] [cursor=pointer]:
+                  - /url: /entities/role/Venue
+                - link "Promoter" [ref=f25e136] [cursor=pointer]:
+                  - /url: /entities/role/Promoter
+              - generic [ref=f25e137]:
+                - generic [ref=f25e138]:
+                  - link "Bar" [ref=f25e139] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/bar
+                  - link "View details for Bar" [ref=f25e140] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/bar
+                    - generic [aria-hidden] [ref=f25e141]: 
+                - generic [ref=f25e142]:
+                  - link "Restaurant" [ref=f25e143] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/restaurant
+                  - link "View details for Restaurant" [ref=f25e144] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/restaurant
+                    - generic [aria-hidden] [ref=f25e145]: 
+              - generic [ref=f25e146]:
+                - link "" [ref=f25e148] [cursor=pointer]:
+                  - /url: /events/related-to/spirit
+                - generic [ref=f25e150]:
+                  - link "" [ref=f25e151] [cursor=pointer]:
+                    - /url: https://twitter.com/spiritpgh
+                  - link "" [ref=f25e153] [cursor=pointer]:
+                    - /url: https://instagram.com/spiritpgh
+          - article [ref=f25e155]:
+            - generic [ref=f25e156]:
+              - link [ref=f25e157] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785600245_brillobox_1200xx3024-3024-504-0.webp
+                - img "Brillobox" [ref=f25e158]
+              - link "" [ref=f25e160] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e162]:
+              - heading [level=3] [ref=f25e163]:
+                - link "Brillobox" [ref=f25e164] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/brillobox
+              - generic [ref=f25e165]: "Also known as: Brillo"
+              - generic [ref=f25e166]:
+                - generic [ref=f25e167]: 
+                - text: Space
+              - generic [ref=f25e168]:
+                - generic [ref=f25e169]: 
+                - generic [ref=f25e170]: 4104 Penn Ave Pittsburgh - Bloomfield
+              - link "Venue" [ref=f25e172] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e173]:
+                - generic [ref=f25e174]:
+                  - link "Bar" [ref=f25e175] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/bar
+                  - link "View details for Bar" [ref=f25e176] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/bar
+                    - generic [aria-hidden] [ref=f25e177]: 
+                - generic [ref=f25e178]:
+                  - link "Restaurant" [ref=f25e179] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/restaurant
+                  - link "View details for Restaurant" [ref=f25e180] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/restaurant
+                    - generic [aria-hidden] [ref=f25e181]: 
+              - generic [ref=f25e182]:
+                - link "" [ref=f25e184] [cursor=pointer]:
+                  - /url: /events/related-to/brillobox
+                - generic [ref=f25e186]:
+                  - link "" [ref=f25e187] [cursor=pointer]:
+                    - /url: https://facebook.com/brilloboxpgh
+                  - link "" [ref=f25e189] [cursor=pointer]:
+                    - /url: https://twitter.com/brilloboxpgh
+                  - link "" [ref=f25e191] [cursor=pointer]:
+                    - /url: https://instagram.com/brilloboxpgh
+          - article [ref=f25e193]:
+            - generic [ref=f25e194]:
+              - link [ref=f25e195] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1735580358_cutups_record_shop_in_pittsburgh_--ar_11_--v_6.1_cae81ee6-32df-4a91-b129-a869d2f579c2.webp
+                - img "The Government Center" [ref=f25e196]
+              - link "" [ref=f25e198] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e200]:
+              - heading [level=3] [ref=f25e201]:
+                - link "The Government Center" [ref=f25e202] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/the-government-center
+              - generic [ref=f25e203]:
+                - generic [ref=f25e204]: 
+                - text: Space
+              - generic [ref=f25e205]:
+                - generic [ref=f25e206]: 
+                - generic [ref=f25e207]: 715 East Street Pittsburgh - Deutchtown
+              - generic [ref=f25e208]:
+                - link "Shop" [ref=f25e209] [cursor=pointer]:
+                  - /url: /entities/role/Shop
+                - link "Venue" [ref=f25e210] [cursor=pointer]:
+                  - /url: /entities/role/Venue
+              - generic [ref=f25e211]:
+                - link "" [ref=f25e213] [cursor=pointer]:
+                  - /url: /events/related-to/the-government-center
+                - generic [ref=f25e215]:
+                  - link "" [ref=f25e216] [cursor=pointer]:
+                    - /url: https://twitter.com/govtcenter
+                  - link "" [ref=f25e218] [cursor=pointer]:
+                    - /url: https://instagram.com/thegovernmentcenter
+          - article [ref=f25e220]:
+            - generic [ref=f25e221]:
+              - link [ref=f25e222] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1754921838_6616e838413b88ea418dafa7_Roboto%20and%20Bunker.webp
+                - img "Roboto Project" [ref=f25e223]
+              - link "" [ref=f25e225] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e227]:
+              - heading [level=3] [ref=f25e228]:
+                - link "Roboto Project" [ref=f25e229] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/roboto-project
+              - generic [ref=f25e230]: "Also known as: Roboto, The Mr. Roboto Project, Mr. Roboto Project"
+              - generic [ref=f25e231]:
+                - generic [ref=f25e232]: 
+                - text: Space
+              - generic [ref=f25e233]:
+                - generic [ref=f25e234]: 
+                - generic [ref=f25e235]: 5106 Penn Ave. Pittsburgh - Garfield
+              - link "Venue" [ref=f25e237] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e238]:
+                - generic [ref=f25e239]:
+                  - link "Diy" [ref=f25e240] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/diy
+                  - link "View details for Diy" [ref=f25e241] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/diy
+                    - generic [aria-hidden] [ref=f25e242]: 
+                - generic [ref=f25e243]:
+                  - link "Punk" [ref=f25e244] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/punk
+                  - link "View details for Punk" [ref=f25e245] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f25e246]: 
+              - generic [ref=f25e247]:
+                - link "" [ref=f25e249] [cursor=pointer]:
+                  - /url: /events/related-to/roboto-project
+                - generic [ref=f25e251]:
+                  - link "" [ref=f25e252] [cursor=pointer]:
+                    - /url: https://facebook.com/mr_roboto_project
+                  - link "" [ref=f25e254] [cursor=pointer]:
+                    - /url: https://twitter.com/RobotoProject
+                  - link "" [ref=f25e256] [cursor=pointer]:
+                    - /url: https://instagram.com/mr_roboto_project
+          - article [ref=f25e258]:
+            - generic [ref=f25e259]:
+              - link [ref=f25e260] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1659554773_287706291_309117191437688_6425037793441004757_n.jpg
+                - img "Bottlerocket Social Hall" [ref=f25e261]
+              - link "" [ref=f25e263] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e265]:
+              - heading [level=3] [ref=f25e266]:
+                - link "Bottlerocket Social Hall" [ref=f25e267] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/bottlerocket-social-hall
+              - generic [ref=f25e268]: "Also known as: Bottlerocket, Bottle Rocket"
+              - generic [ref=f25e269]:
+                - generic [ref=f25e270]: 
+                - text: Space
+              - generic [ref=f25e271]:
+                - generic [ref=f25e272]: 
+                - generic [ref=f25e273]: 1226 Arlington Ave Pittsburgh - Allentown
+              - link "Venue" [ref=f25e275] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e277]:
+                - link "Comedy" [ref=f25e278] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/comedy
+                - link "View details for Comedy" [ref=f25e279] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/comedy
+                  - generic [aria-hidden] [ref=f25e280]: 
+              - generic [ref=f25e281]:
+                - link "" [ref=f25e283] [cursor=pointer]:
+                  - /url: /events/related-to/bottlerocket-social-hall
+                - generic [ref=f25e285]:
+                  - link "" [ref=f25e286] [cursor=pointer]:
+                    - /url: https://facebook.com/bottlerocketpgh
+                  - link "" [ref=f25e288] [cursor=pointer]:
+                    - /url: https://twitter.com/bottlerocketpgh
+                  - link "" [ref=f25e290] [cursor=pointer]:
+                    - /url: https://instagram.com/bottlerocketpgh
+          - article [ref=f25e292]:
+            - generic [ref=f25e293]:
+              - link [ref=f25e294] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1776457281_cattivo-closing.webp
+                - img "Cattivo" [ref=f25e295]
+              - link "" [ref=f25e297] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e299]:
+              - heading [level=3] [ref=f25e300]:
+                - link "Cattivo" [ref=f25e301] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/cattivo
+              - generic [ref=f25e302]:
+                - generic [ref=f25e303]: 
+                - text: Space
+              - generic [ref=f25e304]:
+                - generic [ref=f25e305]: 
+                - generic [ref=f25e306]: 146 44th Street Pittsburgh - Lawrenceville
+              - link "Venue" [ref=f25e308] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e309]:
+                - generic [ref=f25e310]:
+                  - link "Electronic" [ref=f25e311] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/electronic
+                  - link "View details for Electronic" [ref=f25e312] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f25e313]: 
+                - generic [ref=f25e314]:
+                  - link "Goth" [ref=f25e315] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/goth
+                  - link "View details for Goth" [ref=f25e316] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/goth
+                    - generic [aria-hidden] [ref=f25e317]: 
+                - generic [ref=f25e318]:
+                  - link "Punk" [ref=f25e319] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/punk
+                  - link "View details for Punk" [ref=f25e320] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f25e321]: 
+              - generic [ref=f25e322]:
+                - link "" [ref=f25e324] [cursor=pointer]:
+                  - /url: /events/related-to/cattivo
+                - link "" [ref=f25e327] [cursor=pointer]:
+                  - /url: https://instagram.com/cattivo44
+          - article [ref=f25e329]:
+            - generic [ref=f25e330]:
+              - link [ref=f25e331] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1463587542-6945927820_3847bc9fa3_b.jpg
+                - img "Mr. Smalls" [ref=f25e332]
+              - link "" [ref=f25e334] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e336]:
+              - heading [level=3] [ref=f25e337]:
+                - link "Mr. Smalls" [ref=f25e338] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/mr-smalls
+              - generic [ref=f25e339]:
+                - generic [ref=f25e340]: 
+                - text: Space
+              - generic [ref=f25e341]:
+                - generic [ref=f25e342]: 
+                - generic [ref=f25e343]: 400 Lincoln Ave Millvale - Millvale
+              - generic [ref=f25e344]:
+                - link "Venue" [ref=f25e345] [cursor=pointer]:
+                  - /url: /entities/role/Venue
+                - link "Promoter" [ref=f25e346] [cursor=pointer]:
+                  - /url: /entities/role/Promoter
+              - generic [ref=f25e347]:
+                - link "" [ref=f25e349] [cursor=pointer]:
+                  - /url: /events/related-to/mr-smalls
+                - generic [ref=f25e351]:
+                  - link "" [ref=f25e352] [cursor=pointer]:
+                    - /url: https://twitter.com/mrsmallstheatre
+                  - link "" [ref=f25e354] [cursor=pointer]:
+                    - /url: https://instagram.com/mrsmallstheatre
+          - article [ref=f25e356]:
+            - generic [ref=f25e357]:
+              - link [ref=f25e358] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1738018375_cutups_hot_mass_scene_with_a_black_background_--ar_11_--v_6.1_bc86cc01-9ad6-493e-b508-181b4d7b739b.webp
+                - img "Hot Mass" [ref=f25e359]
+              - link "" [ref=f25e361] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e363]:
+              - heading [level=3] [ref=f25e364]:
+                - link "Hot Mass" [ref=f25e365] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/hot-mass
+              - generic [ref=f25e366]:
+                - generic [ref=f25e367]: 
+                - text: Space
+              - generic [ref=f25e368]:
+                - generic [ref=f25e369]: 
+                - generic [ref=f25e370]: 1139 Penn Ave Pittsburgh - Downtown
+              - generic [ref=f25e371]:
+                - link "Venue" [ref=f25e372] [cursor=pointer]:
+                  - /url: /entities/role/Venue
+                - link "Promoter" [ref=f25e373] [cursor=pointer]:
+                  - /url: /entities/role/Promoter
+              - generic [ref=f25e374]:
+                - generic [ref=f25e375]:
+                  - link "House" [ref=f25e376] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/house
+                  - link "View details for House" [ref=f25e377] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=f25e378]: 
+                - generic [ref=f25e379]:
+                  - link "Techno" [ref=f25e380] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/techno
+                  - link "View details for Techno" [ref=f25e381] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=f25e382]: 
+              - generic [ref=f25e383]:
+                - link "" [ref=f25e385] [cursor=pointer]:
+                  - /url: /events/related-to/hot-mass
+                - generic [ref=f25e387]:
+                  - link "" [ref=f25e388] [cursor=pointer]:
+                    - /url: https://twitter.com/HotMassPgh
+                  - link "" [ref=f25e390] [cursor=pointer]:
+                    - /url: https://instagram.com/hotmasspgh
+          - article [ref=f25e392]:
+            - generic [ref=f25e393]:
+              - link [ref=f25e394] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456511380-belvederes.jpg
+                - img "Belvederes" [ref=f25e395]
+              - link "" [ref=f25e397] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e399]:
+              - heading [level=3] [ref=f25e400]:
+                - link "Belvederes" [ref=f25e401] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/belvederes
+              - generic [ref=f25e402]: "Also known as: Belvedere's Ultra Dive"
+              - generic [ref=f25e403]:
+                - generic [ref=f25e404]: 
+                - text: Space
+              - generic [ref=f25e405]:
+                - generic [ref=f25e406]: 
+                - generic [ref=f25e407]: 4016 Penn Ave Pittsburgh - Lawrenceville
+              - link "Venue" [ref=f25e409] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e410]:
+                - generic [ref=f25e411]:
+                  - link "Club" [ref=f25e412] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/club
+                  - link "View details for Club" [ref=f25e413] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/club
+                    - generic [aria-hidden] [ref=f25e414]: 
+                - generic [ref=f25e415]:
+                  - link "Hip Hop" [ref=f25e416] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/hip-hop
+                  - link "View details for Hip Hop" [ref=f25e417] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hip-hop
+                    - generic [aria-hidden] [ref=f25e418]: 
+                - generic [ref=f25e419]:
+                  - link "Pop" [ref=f25e420] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/pop
+                  - link "View details for Pop" [ref=f25e421] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/pop
+                    - generic [aria-hidden] [ref=f25e422]: 
+              - generic [ref=f25e423]:
+                - link "" [ref=f25e425] [cursor=pointer]:
+                  - /url: /events/related-to/belvederes
+                - link "" [ref=f25e428] [cursor=pointer]:
+                  - /url: https://instagram.com/belvederesultradive
+          - article [ref=f25e430]:
+            - generic [ref=f25e431]:
+              - link [ref=f25e432] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1554823761-tn-1485826037-icon-publicentities-big.png
+                - img "Collision" [ref=f25e433]
+              - link "" [ref=f25e435] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+              - generic [ref=f25e437]: Inactive
+            - generic [ref=f25e439]:
+              - heading [level=3] [ref=f25e440]:
+                - link "Collision" [ref=f25e441] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/collision
+              - generic [ref=f25e442]:
+                - generic [ref=f25e443]: 
+                - text: Space
+              - generic [ref=f25e444]:
+                - generic [ref=f25e445]: 
+                - generic [ref=f25e446]: PIttsburgh
+              - link "Venue" [ref=f25e448] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e449]:
+                - generic [ref=f25e450]:
+                  - link "Diy" [ref=f25e451] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/diy
+                  - link "View details for Diy" [ref=f25e452] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/diy
+                    - generic [aria-hidden] [ref=f25e453]: 
+                - generic [ref=f25e454]:
+                  - link "Electronic" [ref=f25e455] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/electronic
+                  - link "View details for Electronic" [ref=f25e456] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f25e457]: 
+                - generic [ref=f25e458]:
+                  - link "Noise" [ref=f25e459] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/noise
+                  - link "View details for Noise" [ref=f25e460] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/noise
+                    - generic [aria-hidden] [ref=f25e461]: 
+                - generic [ref=f25e462]:
+                  - link "Punk" [ref=f25e463] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/punk
+                  - link "View details for Punk" [ref=f25e464] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f25e465]: 
+              - generic [ref=f25e466]:
+                - link "" [ref=f25e468] [cursor=pointer]:
+                  - /url: /events/related-to/collision
+                - link "" [ref=f25e471] [cursor=pointer]:
+                  - /url: https://instagram.com/collisionpgh
+          - article [ref=f25e473]:
+            - generic [ref=f25e474]:
+              - link [ref=f25e475] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456819407-IMG_4251.JPG
+                - img "Remedy" [ref=f25e476]
+              - link "" [ref=f25e478] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e480]:
+              - heading [level=3] [ref=f25e481]:
+                - link "Remedy" [ref=f25e482] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/remedy
+              - generic [ref=f25e483]:
+                - generic [ref=f25e484]: 
+                - text: Space
+              - generic [ref=f25e485]:
+                - generic [ref=f25e486]: 
+                - generic [ref=f25e487]: 5121 Butler Street Pittsburgh - Lawrenceville
+              - link "Venue" [ref=f25e489] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e491]:
+                - link "Bar" [ref=f25e492] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/bar
+                - link "View details for Bar" [ref=f25e493] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/bar
+                  - generic [aria-hidden] [ref=f25e494]: 
+              - generic [ref=f25e495]:
+                - link "" [ref=f25e497] [cursor=pointer]:
+                  - /url: /events/related-to/remedy
+                - generic [ref=f25e499]:
+                  - link "" [ref=f25e500] [cursor=pointer]:
+                    - /url: https://facebook.com/remedypittsburgh
+                  - link "" [ref=f25e502] [cursor=pointer]:
+                    - /url: https://instagram.com/remedypgh
+          - article [ref=f25e504]:
+            - generic [ref=f25e505]:
+              - link [ref=f25e506] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456855748-13730246.jpg
+                - img "Rock Room" [ref=f25e507]
+              - link "" [ref=f25e509] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e511]:
+              - heading [level=3] [ref=f25e512]:
+                - link "Rock Room" [ref=f25e513] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/rock-room
+              - generic [ref=f25e514]: "Also known as: The Rock Room"
+              - generic [ref=f25e515]:
+                - generic [ref=f25e516]: 
+                - text: Space
+              - generic [ref=f25e517]:
+                - generic [ref=f25e518]: 
+                - generic [ref=f25e519]: 1054 Herron Ave, Pittsburgh, PA 15219 Pittsburgh - Polish Hill
+              - link "Venue" [ref=f25e521] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e522]:
+                - generic [ref=f25e523]:
+                  - link "Bar" [ref=f25e524] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/bar
+                  - link "View details for Bar" [ref=f25e525] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/bar
+                    - generic [aria-hidden] [ref=f25e526]: 
+                - generic [ref=f25e527]:
+                  - link "Crust" [ref=f25e528] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/crust
+                  - link "View details for Crust" [ref=f25e529] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/crust
+                    - generic [aria-hidden] [ref=f25e530]: 
+                - generic [ref=f25e531]:
+                  - link "Punk" [ref=f25e532] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/punk
+                  - link "View details for Punk" [ref=f25e533] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f25e534]: 
+              - generic [ref=f25e535]:
+                - link "" [ref=f25e537] [cursor=pointer]:
+                  - /url: /events/related-to/rock-room
+                - link "" [ref=f25e540] [cursor=pointer]:
+                  - /url: https://instagram.com/rockroompgh
+          - article [ref=f25e542]:
+            - generic [ref=f25e543]:
+              - link [ref=f25e544] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1636134686_17039386_1330332250367507_8779675692617612003_o.jpg
+                - img "Bantha Tea Bar" [ref=f25e545]
+              - link "" [ref=f25e547] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e549]:
+              - heading [level=3] [ref=f25e550]:
+                - link "Bantha Tea Bar" [ref=f25e551] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/bantha-tea-bar
+              - generic [ref=f25e552]: "Also known as: Bantha, Bantha Tea House"
+              - generic [ref=f25e553]:
+                - generic [ref=f25e554]: 
+                - text: Space
+              - generic [ref=f25e555]:
+                - generic [ref=f25e556]: 
+                - generic [ref=f25e557]: 5002 Penn Ave Pittsburgh - Garfield
+              - generic [ref=f25e558]:
+                - link "Shop" [ref=f25e559] [cursor=pointer]:
+                  - /url: /entities/role/Shop
+                - link "Venue" [ref=f25e560] [cursor=pointer]:
+                  - /url: /entities/role/Venue
+              - generic [ref=f25e562]:
+                - link "Tea" [ref=f25e563] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/tea
+                - link "View details for Tea" [ref=f25e564] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/tea
+                  - generic [aria-hidden] [ref=f25e565]: 
+              - generic [ref=f25e566]:
+                - link "" [ref=f25e568] [cursor=pointer]:
+                  - /url: /events/related-to/bantha-tea-bar
+                - generic [ref=f25e570]:
+                  - link "" [ref=f25e571] [cursor=pointer]:
+                    - /url: https://facebook.com/banthateabar
+                  - link "" [ref=f25e573] [cursor=pointer]:
+                    - /url: https://twitter.com/banthateabar
+                  - link "" [ref=f25e575] [cursor=pointer]:
+                    - /url: https://instagram.com/banthateabar
+          - article [ref=f25e577]:
+            - generic [ref=f25e578]:
+              - link [ref=f25e579] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1457653097-photo-5.jpg
+                - img "Thunderbird" [ref=f25e580]
+              - link "" [ref=f25e582] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e584]:
+              - heading [level=3] [ref=f25e585]:
+                - link "Thunderbird" [ref=f25e586] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/thunderbird
+              - generic [ref=f25e587]: "Also known as: Thunderbird Music Hall, Thunderbird Cafe"
+              - generic [ref=f25e588]:
+                - generic [ref=f25e589]: 
+                - text: Space
+              - generic [ref=f25e590]:
+                - generic [ref=f25e591]: 
+                - generic [ref=f25e592]: 4053 Butler Street Pittsburgh - Lawrenceville
+              - link "Venue" [ref=f25e594] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e596]:
+                - link "Live Sets" [ref=f25e597] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/live-sets
+                - link "View details for Live Sets" [ref=f25e598] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/live-sets
+                  - generic [aria-hidden] [ref=f25e599]: 
+              - generic [ref=f25e600]:
+                - link "" [ref=f25e602] [cursor=pointer]:
+                  - /url: /events/related-to/thunderbird
+                - generic [ref=f25e604]:
+                  - link "" [ref=f25e605] [cursor=pointer]:
+                    - /url: https://twitter.com/ThunderbirdMH
+                  - link "" [ref=f25e607] [cursor=pointer]:
+                    - /url: https://instagram.com/thunderbirdmusichall
+          - article [ref=f25e609]:
+            - generic [ref=f25e610]:
+              - link [ref=f25e611] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1738609543_cutups_old_bar_exterior_--ar_11_--v_6.1_b75f53dc-3e7d-4977-8a75-199a0fa179d4.webp
+                - img "Poetry Lounge" [ref=f25e612]
+              - link "" [ref=f25e614] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e616]:
+              - heading [level=3] [ref=f25e617]:
+                - link "Poetry Lounge" [ref=f25e618] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/poetry-lounge
+              - generic [ref=f25e619]:
+                - generic [ref=f25e620]: 
+                - text: Space
+              - link "Venue" [ref=f25e622] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e624]:
+                - link "Bar" [ref=f25e625] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/bar
+                - link "View details for Bar" [ref=f25e626] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/bar
+                  - generic [aria-hidden] [ref=f25e627]: 
+              - generic [ref=f25e628]:
+                - link "" [ref=f25e630] [cursor=pointer]:
+                  - /url: /events/related-to/poetry-lounge
+                - link "" [ref=f25e633] [cursor=pointer]:
+                  - /url: https://instagram.com/poetrypgh
+          - article [ref=f25e635]:
+            - generic [ref=f25e636]:
+              - link [ref=f25e637] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1738707092_sidequest111.webp
+                - img "Side Quest" [ref=f25e638]
+              - link "" [ref=f25e640] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e642]:
+              - heading [level=3] [ref=f25e643]:
+                - link "Side Quest" [ref=f25e644] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/side-quest
+              - generic [ref=f25e645]: "Also known as: Sidequest, Sidequest On 44th"
+              - generic [ref=f25e646]:
+                - generic [ref=f25e647]: 
+                - text: Space
+              - generic [ref=f25e648]:
+                - generic [ref=f25e649]: 
+                - generic [ref=f25e650]: 146 44th St Pittsburgh - Lawrenceville
+              - link "Venue" [ref=f25e652] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e653]:
+                - generic [ref=f25e654]:
+                  - link "Bar" [ref=f25e655] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/bar
+                  - link "View details for Bar" [ref=f25e656] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/bar
+                    - generic [aria-hidden] [ref=f25e657]: 
+                - generic [ref=f25e658]:
+                  - link "Food" [ref=f25e659] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/food
+                  - link "View details for Food" [ref=f25e660] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/food
+                    - generic [aria-hidden] [ref=f25e661]: 
+              - generic [ref=f25e662]:
+                - link "" [ref=f25e664] [cursor=pointer]:
+                  - /url: /events/related-to/side-quest
+                - link "" [ref=f25e667] [cursor=pointer]:
+                  - /url: https://instagram.com/sidequestpgh
+          - article [ref=f25e669]:
+            - generic [ref=f25e670]:
+              - link [ref=f25e671] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1578505677-75456970_495754061016943_1143590765465698304_n.jpg
+                - img "Cobra" [ref=f25e672]
+              - link "" [ref=f25e674] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+              - generic [ref=f25e676]: Inactive
+            - generic [ref=f25e678]:
+              - heading [level=3] [ref=f25e679]:
+                - link "Cobra" [ref=f25e680] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/cobra
+              - generic [ref=f25e681]:
+                - generic [ref=f25e682]: 
+                - text: Space
+              - generic [ref=f25e683]:
+                - generic [ref=f25e684]: 
+                - generic [ref=f25e685]: 4305 Main St Pittsburgh - Bloomfield
+              - link "Venue" [ref=f25e687] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e688]:
+                - generic [ref=f25e689]:
+                  - link "Bar" [ref=f25e690] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/bar
+                  - link "View details for Bar" [ref=f25e691] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/bar
+                    - generic [aria-hidden] [ref=f25e692]: 
+                - generic [ref=f25e693]:
+                  - link "Food" [ref=f25e694] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/food
+                  - link "View details for Food" [ref=f25e695] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/food
+                    - generic [aria-hidden] [ref=f25e696]: 
+              - generic [ref=f25e697]:
+                - link "" [ref=f25e699] [cursor=pointer]:
+                  - /url: /events/related-to/cobra
+                - generic [ref=f25e701]:
+                  - link "" [ref=f25e702] [cursor=pointer]:
+                    - /url: https://facebook.com/cobrapgh
+                  - link "" [ref=f25e704] [cursor=pointer]:
+                    - /url: https://instagram.com/cobrapgh
+          - article [ref=f25e706]:
+            - generic [ref=f25e707]:
+              - link [ref=f25e708] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1672896815_301761330_492932012839920_2162884895653953694_n.webp
+                - img "Mixtape" [ref=f25e709]
+              - link "" [ref=f25e711] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e713]:
+              - heading [level=3] [ref=f25e714]:
+                - link "Mixtape" [ref=f25e715] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/mixtape
+              - generic [ref=f25e716]:
+                - generic [ref=f25e717]: 
+                - text: Space
+              - link "Venue" [ref=f25e719] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e721]:
+                - link "Bar" [ref=f25e722] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/bar
+                - link "View details for Bar" [ref=f25e723] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/bar
+                  - generic [aria-hidden] [ref=f25e724]: 
+              - generic [ref=f25e725]:
+                - link "" [ref=f25e727] [cursor=pointer]:
+                  - /url: /events/related-to/mixtape
+                - generic [ref=f25e729]:
+                  - link "" [ref=f25e730] [cursor=pointer]:
+                    - /url: https://facebook.com/mixtapePGH
+                  - link "" [ref=f25e732] [cursor=pointer]:
+                    - /url: https://instagram.com/mixtapepgh
+          - article [ref=f25e734]:
+            - generic [ref=f25e735]:
+              - link [ref=f25e736] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1738608209_goldmark.webp
+                - img "Goldmark" [ref=f25e737]
+              - link "" [ref=f25e739] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e741]:
+              - heading [level=3] [ref=f25e742]:
+                - link "Goldmark" [ref=f25e743] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/goldmark
+              - generic [ref=f25e744]: "Also known as: The Goldmark"
+              - generic [ref=f25e745]:
+                - generic [ref=f25e746]: 
+                - text: Space
+              - generic [ref=f25e747]:
+                - generic [ref=f25e748]: 
+                - generic [ref=f25e749]: 4517 Butler Street Pittburgh - Lawrenceville
+              - link "Venue" [ref=f25e751] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e752]:
+                - link "" [ref=f25e754] [cursor=pointer]:
+                  - /url: /events/related-to/goldmark
+                - generic [ref=f25e756]:
+                  - link "" [ref=f25e757] [cursor=pointer]:
+                    - /url: https://twitter.com/TheGoldmark
+                  - link "" [ref=f25e759] [cursor=pointer]:
+                    - /url: https://instagram.com/thegoldmark
+          - article [ref=f25e761]:
+            - generic [ref=f25e762]:
+              - link [ref=f25e763] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1573667108-40529503_10156635990781382_5151179905609760768_n.png
+                - img "222 Ormsby" [ref=f25e764]
+              - link "" [ref=f25e766] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e768]:
+              - heading [level=3] [ref=f25e769]:
+                - link "222 Ormsby" [ref=f25e770] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/222-ormsby
+              - generic [ref=f25e771]:
+                - generic [ref=f25e772]: 
+                - text: Space
+              - link "Venue" [ref=f25e774] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e775]:
+                - generic [ref=f25e776]:
+                  - link "Diy" [ref=f25e777] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/diy
+                  - link "View details for Diy" [ref=f25e778] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/diy
+                    - generic [aria-hidden] [ref=f25e779]: 
+                - generic [ref=f25e780]:
+                  - link "Punk" [ref=f25e781] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/tag/punk
+                  - link "View details for Punk" [ref=f25e782] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f25e783]: 
+              - generic [ref=f25e784]:
+                - link "" [ref=f25e786] [cursor=pointer]:
+                  - /url: /events/related-to/222-ormsby
+                - generic [ref=f25e788]:
+                  - link "" [ref=f25e789] [cursor=pointer]:
+                    - /url: https://facebook.com/222Ormsby
+                  - link "" [ref=f25e791] [cursor=pointer]:
+                    - /url: https://twitter.com/222ormsby
+                  - link "" [ref=f25e793] [cursor=pointer]:
+                    - /url: https://instagram.com/222Ormsby
+          - article [ref=f25e795]:
+            - generic [ref=f25e796]:
+              - link [ref=f25e797] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1637027322_shsb.jpg
+                - img "Squirrel Hill Sports Bar" [ref=f25e798]
+              - link "" [ref=f25e800] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e802]:
+              - heading [level=3] [ref=f25e803]:
+                - link "Squirrel Hill Sports Bar" [ref=f25e804] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/squirrel-hill-sports-bar
+              - generic [ref=f25e805]:
+                - generic [ref=f25e806]: 
+                - text: Space
+              - generic [ref=f25e807]:
+                - generic [ref=f25e808]: 
+                - generic [ref=f25e809]: 5832 Forward Ave Pittsburgh - Squirrel Hill
+              - link "Venue" [ref=f25e811] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e812]:
+                - link "" [ref=f25e814] [cursor=pointer]:
+                  - /url: /events/related-to/squirrel-hill-sports-bar
+                - link "" [ref=f25e817] [cursor=pointer]:
+                  - /url: https://instagram.com/sqhillsportsbar
+          - article [ref=f25e819]:
+            - generic [ref=f25e820]:
+              - link [ref=f25e821] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1739312708_shredshed.webp
+                - img "Shred Shed" [ref=f25e822]
+              - link "" [ref=f25e824] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e826]:
+              - heading [level=3] [ref=f25e827]:
+                - link "Shred Shed" [ref=f25e828] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/shred-shed
+              - generic [ref=f25e829]:
+                - generic [ref=f25e830]: 
+                - text: Space
+              - generic [ref=f25e831]:
+                - generic [ref=f25e832]: 
+                - generic [ref=f25e833]: 732 Warrington Pittsburgh - Allentown
+              - link "Venue" [ref=f25e835] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e837]:
+                - link "Metal" [ref=f25e838] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/metal
+                - link "View details for Metal" [ref=f25e839] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/metal
+                  - generic [aria-hidden] [ref=f25e840]: 
+              - generic [ref=f25e841]:
+                - link "" [ref=f25e843] [cursor=pointer]:
+                  - /url: /events/related-to/shred-shed
+                - generic [ref=f25e845]:
+                  - link "" [ref=f25e846] [cursor=pointer]:
+                    - /url: https://facebook.com/shred_shed_pgh
+                  - link "" [ref=f25e848] [cursor=pointer]:
+                    - /url: https://instagram.com/shred_shed_pgh
+          - article [ref=f25e850]:
+            - generic [ref=f25e851]:
+              - link [ref=f25e852] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1655911531_108185243_117769220000363_7757162733175903159_n.jpg
+                - img "Green Beacon Gallery" [ref=f25e853]
+              - link "" [ref=f25e855] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e857]:
+              - heading [level=3] [ref=f25e858]:
+                - link "Green Beacon Gallery" [ref=f25e859] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/green-beacon-gallery
+              - generic [ref=f25e860]: "Also known as: Greenbeacongallery, Green Beacon Gallery, Gbg"
+              - generic [ref=f25e861]:
+                - generic [ref=f25e862]: 
+                - text: Space
+              - generic [ref=f25e863]:
+                - generic [ref=f25e864]: 
+                - generic [ref=f25e865]: 235 W. Pittsburgh St Greensburg
+              - link "Venue" [ref=f25e867] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e869]:
+                - link "Art" [ref=f25e870] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/art
+                - link "View details for Art" [ref=f25e871] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/art
+                  - generic [aria-hidden] [ref=f25e872]: 
+              - generic [ref=f25e873]:
+                - link "" [ref=f25e875] [cursor=pointer]:
+                  - /url: /events/related-to/green-beacon-gallery
+                - generic [ref=f25e877]:
+                  - link "" [ref=f25e878] [cursor=pointer]:
+                    - /url: https://facebook.com/GreenBeaconGallery
+                  - link "" [ref=f25e880] [cursor=pointer]:
+                    - /url: https://instagram.com/greenbeacongallery
+          - article [ref=f25e882]:
+            - generic [ref=f25e883]:
+              - link [ref=f25e884] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456813904-howlersNEWYEARS-e1388367631178.jpg
+                - img "Howlers" [ref=f25e885]
+              - link "" [ref=f25e887] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e889]:
+              - heading [level=3] [ref=f25e890]:
+                - link "Howlers" [ref=f25e891] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/howlers
+              - generic [ref=f25e892]:
+                - generic [ref=f25e893]: 
+                - text: Space
+              - generic [ref=f25e894]:
+                - generic [ref=f25e895]: 
+                - generic [ref=f25e896]: 4509 Liberty Ave, Pittsburgh - Bloomfield
+              - link "Venue" [ref=f25e898] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e900]:
+                - link "Bar" [ref=f25e901] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/bar
+                - link "View details for Bar" [ref=f25e902] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/bar
+                  - generic [aria-hidden] [ref=f25e903]: 
+              - generic [ref=f25e904]:
+                - link "" [ref=f25e906] [cursor=pointer]:
+                  - /url: /events/related-to/howlers
+                - generic [ref=f25e908]:
+                  - link "" [ref=f25e909] [cursor=pointer]:
+                    - /url: https://twitter.com/HowlersPGH
+                  - link "" [ref=f25e911] [cursor=pointer]:
+                    - /url: https://instagram.com/howlers_pgh
+          - article [ref=f25e913]:
+            - generic [ref=f25e914]:
+              - link [ref=f25e915] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1461774748-home_sign.jpg
+                - img "Tiki Lounge" [ref=f25e916]
+              - link "" [ref=f25e918] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+            - generic [ref=f25e920]:
+              - heading [level=3] [ref=f25e921]:
+                - link "Tiki Lounge" [ref=f25e922] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tiki-lounge
+              - generic [ref=f25e923]:
+                - generic [ref=f25e924]: 
+                - text: Space
+              - generic [ref=f25e925]:
+                - generic [ref=f25e926]: 
+                - generic [ref=f25e927]: 2003 Carson Street Pittsburgh - Southside
+              - link "Venue" [ref=f25e929] [cursor=pointer]:
+                - /url: /entities/role/Venue
+              - generic [ref=f25e931]:
+                - link "Bar" [ref=f25e932] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/tag/bar
+                - link "View details for Bar" [ref=f25e933] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/bar
+                  - generic [aria-hidden] [ref=f25e934]: 
+              - generic [ref=f25e935]:
+                - link "" [ref=f25e937] [cursor=pointer]:
+                  - /url: /events/related-to/tiki-lounge
+                - link "" [ref=f25e940] [cursor=pointer]:
+                  - /url: https://instagram.com/tikiloungepgh
+        - generic [ref=f25e942]:
+          - generic [ref=f25e943]: Showing 1 to 25 of 535 results
+          - generic [ref=f25e945]:
+            - combobox [ref=f25e946]:
+              - option "5"
+              - option "10"
+              - option "25" [selected]
+              - option "100"
+              - option "1000"
+            - generic [ref=f25e947]: "Sort by:"
+            - combobox [ref=f25e948]:
+              - option "Name"
+              - option "Entity Type"
+              - option "Created At"
+              - option "Popularity" [selected]
+            - combobox [ref=f25e949]:
+              - option "asc"
+              - option "desc" [selected]
+          - generic [ref=f25e950]:
+            - link "1" [ref=f25e951] [cursor=pointer]:
+              - /url: https://dev.arcane.city/entities/role/venue?page=1
+            - link "2" [ref=f25e952] [cursor=pointer]:
+              - /url: https://dev.arcane.city/entities/role/venue?page=2
+            - link "3" [ref=f25e953] [cursor=pointer]:
+              - /url: https://dev.arcane.city/entities/role/venue?page=3
+        - generic [ref=f25e955]:
+          - generic [ref=f25e956]: DEV Arcane City
+          - generic [aria-hidden] [ref=f25e957]: ·
+          - link "Tonight" [ref=f25e958] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=f25e959]: ·
+          - link "This Week" [ref=f25e960] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=f25e961]: ·
+          - link "This Weekend" [ref=f25e962] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=f25e963]: ·
+          - link "Events" [ref=f25e964] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=f25e965]: ·
+          - link "Entities" [ref=f25e966] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f25e967]: ·
+          - link "Series" [ref=f25e968] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f25e969]: ·
+          - link "Tags" [ref=f25e970] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

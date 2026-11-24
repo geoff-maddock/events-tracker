@@ -1,0 +1,14 @@
+[    1862ms] [LOG] 02:07:17.571: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    1883ms] [LOG] 02:07:17.592: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2131ms] [LOG] 02:07:17.840: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2267ms] [LOG] 02:07:17.976: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2295ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    2298ms] [LOG] 02:07:18.007: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2333ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    2426ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    2514ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    3231ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    4387ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    4408ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    4488ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    4540ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54

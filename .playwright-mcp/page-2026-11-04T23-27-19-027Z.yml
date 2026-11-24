@@ -1,0 +1,26 @@
+- generic [ref=f17e2]:
+  - banner [ref=f17e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=f17e4]:
+      - generic [aria-hidden] [ref=f17e5]: 
+    - paragraph [ref=f17e7]: "Shows · tag: goth"
+  - region [ref=f17e8]:
+    - generic [ref=f17e9]:
+      - generic [ref=f17e10]:
+        - heading [level=2] [ref=f17e11]:
+          - link "Loading…" [ref=f17e12] [cursor=pointer]:
+            - /url: "#"
+        - paragraph
+        - paragraph:
+          - link:
+            - /url: "#"
+      - button "Sign in to follow this artist" [ref=f17e13]:
+        - generic [aria-hidden] [ref=f17e14]: 
+    - group "Player controls" [ref=f17e15]:
+      - button "Previous artist" [ref=f17e16]:
+        - generic [aria-hidden] [ref=f17e17]: 
+      - button "Next artist" [ref=f17e18]:
+        - generic [aria-hidden] [ref=f17e19]: 
+    - status [ref=f17e20]: Building your queue…
+  - region [ref=f17e21]:
+    - heading "Up next" [level=2] [ref=f17e22]
+    - list

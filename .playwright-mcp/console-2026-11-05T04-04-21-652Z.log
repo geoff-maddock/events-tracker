@@ -1,0 +1,21 @@
+[    4812ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5166ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5359ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5371ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5706ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5733ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5745ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5835ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    5928ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    6196ms] [WARNING] Exception: %s Script error. @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    6196ms] [WARNING] constructor @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    6243ms] Uncaught InvalidStateError: Failed to execute 'createPattern' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.
+    at f (https://widget.sndcdn.com/widget-0-9e8bbd0a882d.js:1:90676)
+    at draw (https://widget.sndcdn.com/widget-0-9e8bbd0a882d.js:1:89610)
+    at i (https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:53:50453)
+    at e.each.t.<computed> (https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:53:51647)
+    at update (https://widget.sndcdn.com/widget-0-9e8bbd0a882d.js:1:69501)
+    at update (https://widget.sndcdn.com/widget-0-9e8bbd0a882d.js:1:68807)
+[    6322ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    6420ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[    6721ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54

@@ -1,0 +1,108 @@
+- generic [ref=f4e2]:
+  - banner [ref=f4e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=f4e4]:
+      - generic [aria-hidden] [ref=f4e5]: 
+    - paragraph [ref=f4e7]: Upcoming shows
+  - region [ref=f4e8]:
+    - generic [ref=f4e9]:
+      - generic [ref=f4e10]:
+        - heading [level=2] [ref=f4e11]:
+          - link "Thunder Vest" [ref=f4e12] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/thunder-vest
+        - paragraph
+        - paragraph [ref=f4e13]:
+          - link "Fri, Nov 6 · Flipper with Justin Pearson (The Locust) on Lead Vocals" [ref=f4e14] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/flipper-with-justin-pearson-the-locust-on-lead-vocals
+      - button "Sign in to follow this artist" [ref=f4e15]:
+        - generic [aria-hidden] [ref=f4e16]: 
+    - generic [ref=f4e17]:
+      - generic [aria-hidden] [ref=f4e18]: 0:00
+      - slider "Seek within the track" [disabled] [ref=f4e19]: "0"
+      - generic [aria-hidden] [ref=f4e20]: 0:00
+    - group "Player controls" [ref=f4e21]:
+      - button "Previous artist" [ref=f4e22]:
+        - generic [aria-hidden] [ref=f4e23]: 
+      - button "Back 15 seconds" [ref=f4e24]:
+        - generic [aria-hidden] [ref=f4e25]: 
+      - button "Play" [ref=f4e26]:
+        - generic [aria-hidden] [ref=f4e27]: 
+      - button "Forward 15 seconds" [ref=f4e28]:
+        - generic [aria-hidden] [ref=f4e29]: 
+      - button "Next artist" [ref=f4e30]:
+        - generic [aria-hidden] [ref=f4e31]: 
+    - status [ref=f4e32]
+  - region [ref=f4e33]:
+    - heading "Up next" [level=2] [ref=f4e34]
+    - list [ref=f4e35]:
+      - listitem [ref=f4e36]:
+        - button "1 Thunder Vest Fri, Nov 6 · Flipper with Justin Pearson (The Locust) on Lead Vocals Bandcamp" [ref=f4e37]:
+          - generic [ref=f4e38]: "1"
+          - generic [ref=f4e39]:
+            - generic [ref=f4e40]: Thunder Vest
+            - generic [ref=f4e41]: Fri, Nov 6 · Flipper with Justin Pearson (The Locust) on Lead Vocals
+          - generic [aria-hidden] [ref=f4e42]: 
+          - generic [ref=f4e43]: Bandcamp
+      - listitem [ref=f4e44]:
+        - button "2 Mires Sun, Nov 8 · Stalemate of Wills, Mires, Passing Bell at Remedy Bandcamp" [ref=f4e45]:
+          - generic [ref=f4e46]: "2"
+          - generic [ref=f4e47]:
+            - generic [ref=f4e48]: Mires
+            - generic [ref=f4e49]: Sun, Nov 8 · Stalemate of Wills, Mires, Passing Bell at Remedy
+          - text: 
+          - generic [ref=f4e50]: Bandcamp
+      - listitem [ref=f4e51]:
+        - button "3 Spitbite Tue, Nov 10 · The Queers with Spitbite and Right on Warriors Bandcamp" [ref=f4e52]:
+          - generic [ref=f4e53]: "3"
+          - generic [ref=f4e54]:
+            - generic [ref=f4e55]: Spitbite
+            - generic [ref=f4e56]: Tue, Nov 10 · The Queers with Spitbite and Right on Warriors
+          - text: 
+          - generic [ref=f4e57]: Bandcamp
+      - listitem [ref=f4e58]:
+        - 'button "4 Hemlock for Socrates Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=f4e59]':
+          - generic [ref=f4e60]: "4"
+          - generic [ref=f4e61]:
+            - generic [ref=f4e62]: Hemlock for Socrates
+            - generic [ref=f4e63]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=f4e64]: Bandcamp
+      - listitem [ref=f4e65]:
+        - 'button "5 Millie Dread Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=f4e66]':
+          - generic [ref=f4e67]: "5"
+          - generic [ref=f4e68]:
+            - generic [ref=f4e69]: Millie Dread
+            - generic [ref=f4e70]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=f4e71]: Bandcamp
+      - listitem [ref=f4e72]:
+        - button "6 Perimeter Junk Sun, Nov 15 · Ultraviolet w/ Veronica Vasicka, Formosa Bandcamp" [ref=f4e73]:
+          - generic [ref=f4e74]: "6"
+          - generic [ref=f4e75]:
+            - generic [ref=f4e76]: Perimeter Junk
+            - generic [ref=f4e77]: Sun, Nov 15 · Ultraviolet w/ Veronica Vasicka, Formosa
+          - text: 
+          - generic [ref=f4e78]: Bandcamp
+      - listitem [ref=f4e79]:
+        - button "7 Short Fictions Mon, Nov 16 · Worst Party Ever + Equipment w/ Ogbert the Nerd + Short Fictions Bandcamp" [ref=f4e80]:
+          - generic [ref=f4e81]: "7"
+          - generic [ref=f4e82]:
+            - generic [ref=f4e83]: Short Fictions
+            - generic [ref=f4e84]: Mon, Nov 16 · Worst Party Ever + Equipment w/ Ogbert the Nerd + Short Fictions
+          - text: 
+          - generic [ref=f4e85]: Bandcamp
+      - listitem [ref=f4e86]:
+        - button "8 Peace Talks Mon, Nov 16 · Deerhoof with Peace Talks Bandcamp" [ref=f4e87]:
+          - generic [ref=f4e88]: "8"
+          - generic [ref=f4e89]:
+            - generic [ref=f4e90]: Peace Talks
+            - generic [ref=f4e91]: Mon, Nov 16 · Deerhoof with Peace Talks
+          - text: 
+          - generic [ref=f4e92]: Bandcamp
+      - listitem [ref=f4e93]:
+        - button "9 Arie Cole Sun, Jan 17 · Slappers N Bangers vs Union SoundCloud" [ref=f4e94]:
+          - generic [ref=f4e95]: "9"
+          - generic [ref=f4e96]:
+            - generic [ref=f4e97]: Arie Cole
+            - generic [ref=f4e98]: Sun, Jan 17 · Slappers N Bangers vs Union
+          - text: 
+          - generic [ref=f4e99]: SoundCloud

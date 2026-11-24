@@ -1,0 +1,14 @@
+[    1772ms] [LOG] 01:56:13.580: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2029ms] [LOG] 01:56:13.840: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2159ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    2247ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    3508ms] [LOG] 01:56:15.319: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3644ms] [LOG] 01:56:15.453: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3801ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    4303ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    4357ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    4661ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    4676ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    4707ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-98da480ea19c.js:54
+[    6458ms] [LOG] 01:56:18.270: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    6485ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0

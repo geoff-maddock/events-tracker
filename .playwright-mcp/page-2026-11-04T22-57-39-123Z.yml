@@ -1,0 +1,36 @@
+- generic [ref=f14e2]:
+  - banner [ref=f14e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=f14e4]:
+      - generic [aria-hidden] [ref=f14e5]: 
+    - paragraph [ref=f14e7]: "Shows · tag: goth"
+  - region [ref=f14e8]:
+    - generic [ref=f14e9]:
+      - generic [ref=f14e10]:
+        - heading [level=2] [ref=f14e11]:
+          - link "Loading…" [ref=f14e12] [cursor=pointer]:
+            - /url: "#"
+        - paragraph
+        - paragraph:
+          - link:
+            - /url: "#"
+      - button "Sign in to follow this artist" [ref=f14e13]:
+        - generic [aria-hidden] [ref=f14e14]: 
+    - generic [ref=f14e15]:
+      - generic [aria-hidden] [ref=f14e16]: 0:00
+      - slider "Seek within the track" [disabled] [ref=f14e17]: "0"
+      - generic [aria-hidden] [ref=f14e18]: 0:00
+    - group "Player controls" [ref=f14e19]:
+      - button "Previous artist" [ref=f14e20]:
+        - generic [aria-hidden] [ref=f14e21]: 
+      - button "Back 15 seconds" [ref=f14e22]:
+        - generic [aria-hidden] [ref=f14e23]: 
+      - button "Play" [ref=f14e24]:
+        - generic [aria-hidden] [ref=f14e25]: 
+      - button "Forward 15 seconds" [ref=f14e26]:
+        - generic [aria-hidden] [ref=f14e27]: 
+      - button "Next artist" [ref=f14e28]:
+        - generic [aria-hidden] [ref=f14e29]: 
+    - status [ref=f14e30]: Building your queue…
+  - region [ref=f14e31]:
+    - heading "Up next" [level=2] [ref=f14e32]
+    - list [ref=f14e33]

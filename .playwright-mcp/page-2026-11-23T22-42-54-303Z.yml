@@ -1,0 +1,118 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - complementary [ref=f4e3]:
+      - generic [ref=f4e4]:
+        - link "DEV Arcane City" [ref=f4e5] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - generic [ref=f4e7]: pittsburgh events guide
+      - generic [ref=f4e8]:
+        - search [ref=f4e11]:
+          - generic [ref=f4e12]:
+            - combobox "Search" [ref=f4e13]: zzqqxxnothing
+            - generic [ref=f4e14]: 
+        - generic [ref=f4e15]:
+          - button "Add something" [ref=f4e16]:
+            - generic [aria-hidden] [ref=f4e17]: 
+          - text:   
+      - navigation [ref=f4e18]:
+        - generic [ref=f4e19]:
+          - link " Events" [ref=f4e20] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=f4e21]: 
+            - generic [ref=f4e22]: Events
+          - generic [ref=f4e23]:
+            - link " Tonight" [ref=f4e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=f4e25]: 
+              - generic [ref=f4e26]: Tonight
+            - link " This Week" [ref=f4e27] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=f4e28]: 
+              - generic [ref=f4e29]: This Week
+            - link " This Weekend" [ref=f4e30] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=f4e31]: 
+              - generic [ref=f4e32]: This Weekend
+            - link " Event Grid" [ref=f4e33] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=f4e34]: 
+              - generic [ref=f4e35]: Event Grid
+        - link " Event Calendar" [ref=f4e36] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=f4e37]: 
+          - generic [ref=f4e38]: Event Calendar
+        - link "Listen" [ref=f4e39] [cursor=pointer]:
+          - /url: https://dev.arcane.city/player?source=upcoming
+          - generic [aria-hidden] [ref=f4e40]: 
+        - link " Entities" [ref=f4e42] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=f4e43]: 
+          - generic [ref=f4e44]: Entities
+        - link " Series" [ref=f4e45] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=f4e46]: 
+          - generic [ref=f4e47]: Series
+        - link " Tags" [ref=f4e48] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=f4e49]: 
+          - generic [ref=f4e50]: Tags
+        - link " Forum" [ref=f4e51] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=f4e52]: 
+          - generic [ref=f4e53]: Forum
+        - link " About" [ref=f4e55] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=f4e56]: 
+          - generic [ref=f4e57]: About
+        - link " Help" [ref=f4e58] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=f4e59]: 
+          - generic [ref=f4e60]: Help
+      - generic [ref=f4e61]:
+        - generic [ref=f4e62]:
+          - link " Log in" [ref=f4e63] [cursor=pointer]:
+            - /url: https://dev.arcane.city/login
+            - generic [ref=f4e64]: 
+            - generic [ref=f4e65]: Log in
+          - link "Register" [ref=f4e66] [cursor=pointer]:
+            - /url: https://dev.arcane.city/register
+        - button "Switch to light mode" [ref=f4e69]:
+          - generic [ref=f4e70]: 
+    - text:                 
+    - generic [ref=f4e71]:
+      - text:      
+      - main [ref=f4e72]:
+        - generic [ref=f4e73]:
+          - heading "Search Results" [level=1] [ref=f4e74]
+          - paragraph [ref=f4e75]: "Results for: \"zzqqxxnothing\""
+        - generic [ref=f4e76]:
+          - generic [ref=f4e77]:
+            - generic [aria-hidden] [ref=f4e78]: 
+            - paragraph [ref=f4e79]: No matching events found.
+          - generic [ref=f4e80]:
+            - generic [aria-hidden] [ref=f4e81]: 
+            - paragraph [ref=f4e82]: No matching entities found.
+        - generic [ref=f4e84]:
+          - generic [ref=f4e85]: DEV Arcane City
+          - generic [aria-hidden] [ref=f4e86]: ·
+          - link "Tonight" [ref=f4e87] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=f4e88]: ·
+          - link "This Week" [ref=f4e89] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=f4e90]: ·
+          - link "This Weekend" [ref=f4e91] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=f4e92]: ·
+          - link "Events" [ref=f4e93] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=f4e94]: ·
+          - link "Entities" [ref=f4e95] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f4e96]: ·
+          - link "Series" [ref=f4e97] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f4e98]: ·
+          - link "Tags" [ref=f4e99] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    
