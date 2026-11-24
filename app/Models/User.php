@@ -129,6 +129,14 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
             }
         });
 
+        // A suspended or banned account loses its API tokens there and then.
+        static::updated(function (self $user): void {
+            if ($user->wasChanged('user_status_id')
+                && in_array((int) $user->user_status_id, [UserStatus::SUSPENDED, UserStatus::BANNED], true)) {
+                $user->tokens()->delete();
+            }
+        });
+
         // Any create, rename or delete changes the cached user option lists.
         static::saved(fn () => OptionLists::forgetUsers());
         static::deleted(fn () => OptionLists::forgetUsers());
