@@ -201,19 +201,19 @@
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
 
-                <select name="limit" class="px-3 py-2 bg-input border border-input rounded-lg text-foreground auto-submit">
+                <select name="limit" aria-label="Results per page" class="px-3 py-2 bg-input border border-input rounded-lg text-foreground auto-submit">
                     @foreach($limitOptions as $value => $label)
                         <option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }} per page</option>
                     @endforeach
                 </select>
 
-                <select name="sort" class="px-3 py-2 bg-input border border-input rounded-lg text-foreground auto-submit">
+                <select name="sort" aria-label="Sort by" class="px-3 py-2 bg-input border border-input rounded-lg text-foreground auto-submit">
                     @foreach($sortOptions as $value => $label)
                         <option value="{{ $value }}" {{ ($sort ?? 'events.start_at') == $value ? 'selected' : '' }}>Sort: {{ $label }}</option>
                     @endforeach
                 </select>
 
-                <select name="direction" class="px-3 py-2 bg-input border border-input rounded-lg text-foreground auto-submit">
+                <select name="direction" aria-label="Sort direction" class="px-3 py-2 bg-input border border-input rounded-lg text-foreground auto-submit">
                     @foreach($directionOptions as $value => $label)
                         <option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ ucfirst($label) }}</option>
                     @endforeach

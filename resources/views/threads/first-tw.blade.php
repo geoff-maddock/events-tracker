@@ -48,7 +48,7 @@
             <form method="POST" action="{{ route('threads.destroy', $thread->id) }}" style="display: inline;" data-confirm="You will not be able to recover this thread!">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="no-button py-0 my-0"><i class="bi bi-trash-fill text-destructive" title="Delete"></i></button>
+                <button type="submit" class="no-button py-0 my-0" title="Delete" aria-label="Delete the thread"><i class="bi bi-trash-fill text-destructive" aria-hidden="true"></i></button>
             </form>
             @if (!$thread->is_locked)
             <a data-method="post" href="{!! route('threads.lock', ['id' => $thread->id]) !!}"

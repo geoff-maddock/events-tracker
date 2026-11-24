@@ -30,8 +30,9 @@
         <a href="/images/event-placeholder.png"
             data-title="{{ $lightboxTitle }}"
             data-lightbox="/images/event-placeholder.png"
+            aria-label="{{ $event->name }}"
             @class(['block aspect-square rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors flex items-center justify-center', $thumbSize, $card ? 'bg-muted' : 'bg-card'])>
-            <i @class(['bi bi-calendar-event text-muted-foreground/40', $card ? 'text-5xl' : 'text-4xl'])></i>
+            <i @class(['bi bi-calendar-event text-muted-foreground/40', $card ? 'text-5xl' : 'text-4xl']) aria-hidden="true"></i>
         </a>
         @endif
 

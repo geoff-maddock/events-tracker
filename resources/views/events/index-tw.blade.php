@@ -68,8 +68,8 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 	@include('player.launch-tw', ['query' => $playerQuery, 'label' => 'Play this list'])
 	@endif
 	<div class="ml-auto relative" id="actions-menu-container">
-		<button id="actions-menu-btn" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-accent transition-colors text-sm" aria-haspopup="true" aria-expanded="false">
-			<i class="bi bi-three-dots"></i>
+		<button id="actions-menu-btn" class="inline-flex items-center px-3 py-2 bg-card border border-border text-muted-foreground rounded-lg hover:bg-accent transition-colors text-sm" aria-haspopup="true" aria-expanded="false" aria-controls="actions-menu-dropdown" aria-label="More actions" title="More actions">
+			<i class="bi bi-three-dots" aria-hidden="true"></i>
 		</button>
 		<div id="actions-menu-dropdown" class="hidden absolute right-0 mt-1 w-44 bg-card border border-border rounded-lg shadow-lg z-10">
 			<a href="{!! URL::route('events.export') !!}" class="flex items-center px-4 py-2 text-sm text-muted-foreground hover:bg-accent rounded-t-lg transition-colors" target="_blank">

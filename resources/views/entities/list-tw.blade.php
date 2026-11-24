@@ -22,8 +22,8 @@
                     @endif
 
                     @if ($signedIn && $entity->isOwnedBy($user))
-                        <a href="{{ route('entities.edit', ['entity' => $entity->slug]) }}" class="text-muted-foreground hover:text-foreground transition-colors">
-                            <i class="bi bi-pencil text-sm"></i>
+                        <a href="{{ route('entities.edit', ['entity' => $entity->slug]) }}" class="text-muted-foreground hover:text-foreground transition-colors" title="Edit" aria-label="Edit {{ $entity->name }}">
+                            <i class="bi bi-pencil text-sm" aria-hidden="true"></i>
                         </a>
                     @endif
 

@@ -28,8 +28,9 @@
         <a href="/images/event-placeholder.png"
             data-title="{{ $series->occurrenceType->name }}  {{ $series->occurrence_repeat }}  <a href='{{ route('series.show', $series) }}'>{{ $series->name }}</a> @ <a href='/entities/{{ $series->venue ? $series->venue->slug : '' }}'>{{ $series->venueLabel() ?? '' }}</a>"
             data-lightbox="/images/event-placeholder.png"
+            aria-label="{{ $series->name }}"
             @class(['block aspect-square rounded-lg overflow-hidden border border-border group-hover:border-primary transition-colors flex items-center justify-center', $thumbSize, $card ? 'bg-muted' : 'bg-card'])>
-            <i @class(['bi bi-collection text-muted-foreground/40', $card ? 'text-5xl' : 'text-4xl'])></i>
+            <i @class(['bi bi-collection text-muted-foreground/40', $card ? 'text-5xl' : 'text-4xl']) aria-hidden="true"></i>
         </a>
         @endif
     </div>
