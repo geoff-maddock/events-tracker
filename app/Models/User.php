@@ -91,6 +91,7 @@ use App\Services\OptionLists;
  */
 class User extends Authenticatable implements AuthorizableContract, CanResetPasswordContract, MustVerifyEmailContract
 {
+    use \App\Models\Concerns\OwnsPhotos;
     use Authorizable;
     use CanResetPassword;
     use MustVerifyEmail;
@@ -278,31 +279,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     public function status(): HasOne
     {
         return $this->hasOne(UserStatus::class, 'id', 'user_status_id');
-    }
-
-    /**
-     * Return the primary photo for this user.
-     *
-     * @return Photo $photo
-     *
-     **/
-    public function getPrimaryPhoto(): ?Photo
-    {
-        // Use the eager-loaded photos when available to avoid an N+1 query when
-        // rendering many users' avatars in a list (EVENTREPO-WE).
-        if ($this->relationLoaded('photos')) {
-            return $this->photos->firstWhere('is_primary', 1);
-        }
-
-        return $this->photos()->where('photos.is_primary', '=', '1')->first();
-    }
-
-    /**
-     * Get all of the events photos.
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany(Photo::class)->withTimestamps();
     }
 
     /**
@@ -790,11 +766,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     public function events(): HasMany
     {
         return $this->hasMany(Event::class, 'created_by')->orderBy('start_at', 'DESC');
-    }
-
-    public function addPhoto(Photo $photo): void
-    {
-        $this->photos()->attach($photo->id);
     }
 
     public function hasGroup(string $group): bool

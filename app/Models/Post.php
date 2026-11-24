@@ -43,7 +43,6 @@ use Illuminate\Support\Facades\Auth;
  * @property mixed                                                         $entity_list
  * @property mixed                                                         $tag_list
  * @property int|null                                                      $likes_count
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Photo[]  $photos
  * @property int|null                                                      $photos_count
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[]    $tags
  * @property int|null                                                      $tags_count
@@ -207,14 +206,6 @@ class Post extends Eloquent
     }
 
     /**
-     * Get all of the posts photos.
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany(Photo::class)->withTimestamps();
-    }
-
-    /**
      * An post has one visibility.
      */
     public function visibility(): HasOne
@@ -284,24 +275,6 @@ class Post extends Eloquent
         return self::whereHas('entities', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-    }
-
-    public function addPhoto(Photo $photo): void
-    {
-        $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Return the primary photo for this post.
-     *
-     **/
-    public function getPrimaryPhoto(): ?Photo
-    {
-        // a post need not have a photo
-        /** @var Photo|null $photo */
-        $photo = $this->photos()->where('photos.is_primary', '=', '1')->first();
-
-        return $photo;
     }
 
     /**

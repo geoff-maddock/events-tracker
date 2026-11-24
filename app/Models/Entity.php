@@ -104,6 +104,7 @@ use App\Services\OptionLists;
  */
 class Entity extends Eloquent implements HasPhotos
 {
+    use \App\Models\Concerns\OwnsPhotos;
     use HasFactory;
     use Notifiable;
 
@@ -861,21 +862,6 @@ class Entity extends Eloquent implements HasPhotos
         return $this->roles->pluck('id')->all();
     }
 
-    public function addPhoto(Photo $photo): void
-    {
-        $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Get all of the entities photos.
-     *
-     * @return BelongsToMany<Photo, $this>
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany(Photo::class)->withTimestamps();
-    }
-
     /**
      * Get gallery photos for the entity page.
      *
@@ -917,45 +903,6 @@ class Entity extends Eloquent implements HasPhotos
             ->unique('id')
             ->take($limit)
             ->values();
-    }
-
-    /**
-     * Return the primary photo for this entity.
-     *
-     **/
-    public function getPrimaryPhoto(): ?Photo
-    {
-        if ($this->relationLoaded('photos')) {
-            return $this->photos->firstWhere('is_primary', 1);
-        }
-        // get a list of events that start on the passed date
-        $primary = $this->photos()->where('photos.is_primary', '=', '1')->first();
-
-        return $primary;
-    }
-
-    // returns the actual path to the primary photo
-    public function getPrimaryPhotoPath(): ?string
-    {
-        $photo = $this->getPrimaryPhoto();
-
-        if ($photo) {
-            return Storage::disk('external')->url($photo->getStoragePath());
-        }                    
-
-        return null;
-    }
-
-    // returns the actual path to the thumbnail
-    public function getPrimaryPhotoThumbnailPath(): ?string
-    {
-        $photo = $this->getPrimaryPhoto();
-
-        if ($photo) {
-            return Storage::disk('external')->url($photo->getStorageThumbnail());
-        }                    
-
-        return null;
     }
 
     /**
