@@ -53,14 +53,10 @@ use App\Services\OptionLists;
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Follow[]                                             $follows
  * @property int|null                                                                                                  $follows_count
  * @property mixed                                                                                                     $attending_count
- * @property mixed                                                                                                     $entities_following_count
  * @property mixed                                                                                                     $event_count
  * @property mixed                                                                                                     $full_name
  * @property mixed                                                                                                     $group_list
  * @property mixed                                                                                                     $is_active
- * @property mixed                                                                                                     $series_following_count
- * @property mixed                                                                                                     $tags_following_count
- * @property mixed                                                                                                     $threads_following_count
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Group[]                                              $groups
  * @property int|null                                                                                                  $groups_count
  * @property \App\Models\Activity|null                                                                                 $lastActivity
@@ -344,38 +340,6 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
-     * Return the count of entities the user is following.
-     */
-    public function getEntitiesFollowingCountAttribute(): int
-    {
-        return $this->follows()->where('object_type', 'entity')->count();
-    }
-
-    /**
-     * Return the count of tags the user is following.
-     */
-    public function getTagsFollowingCountAttribute(): int
-    {
-        return $this->follows()->where('object_type', 'tag')->count();
-    }
-
-    /**
-     * Return the count of series the user is following.
-     */
-    public function getSeriesFollowingCountAttribute(): int
-    {
-        return $this->follows()->where('object_type', 'series')->count();
-    }
-
-    /**
-     * Return the count of threads the user is following.
-     */
-    public function getThreadsFollowingCountAttribute(): int
-    {
-        return $this->follows()->where('object_type', 'thread')->count();
-    }
-
-    /**
      * IDs of the objects of one type (e.g. 'series') this user follows, loaded once per request
      * so list cards can check follow state without a query each.
      *
@@ -609,18 +573,32 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     }
 
     /**
+     * Narrow a query on a followable model to the ones this user follows.
+     * $type is the follows.object_type of that model ('entity', 'tag', ...).
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel> $query
+     * @return Builder<TModel>
+     */
+    private function following(Builder $query, string $type): Builder
+    {
+        $table = $query->getModel()->getTable();
+
+        return $query->join('follows', $table.'.id', '=', 'follows.object_id')
+            ->where('follows.object_type', '=', $type)
+            ->where('follows.user_id', '=', $this->id)
+            ->select($table.'.*');
+    }
+
+    /**
      * Return a query builder for entities the user is following.
      *
      * @return Builder<Entity>
      */
     public function getFollowingEntities(): Builder
     {
-        $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'entity')
-            ->where('follows.user_id', '=', $this->id)
-            ->select('entities.*');
-
-        return $entities;
+        return $this->following(Entity::query(), 'entity');
     }
 
     /**
@@ -630,9 +608,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getEntitiesFollowing(): Collection
     {
-        return $this->getFollowingEntities()
-            ->orderBy('entities.name', 'asc')
-            ->get();
+        return $this->getFollowingEntities()->orderBy('entities.name', 'asc')->get();
     }
 
     /**
@@ -640,13 +616,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function countEntitiesFollowing(): int
     {
-        $entities = Entity::join('follows', 'entities.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'entity')
-            ->where('follows.user_id', '=', $this->id)
-            ->select('entities.*')
-            ->count();
-
-        return $entities;
+        return $this->getFollowingEntities()->count();
     }
 
     /**
@@ -656,15 +626,10 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getTagsFollowing(): Collection
     {
-        $tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'tag')
-            ->where('follows.user_id', '=', $this->id)
+        return $this->following(Tag::query(), 'tag')
             ->orderBy('tags.name', 'asc')
-            ->select('tags.*')
             ->withCount(['events', 'series', 'entities', 'threads'])
             ->get();
-
-        return $tags;
     }
 
     /**
@@ -672,14 +637,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function countTagsFollowing(): int
     {
-        $tags = Tag::join('follows', 'tags.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'tag')
-            ->where('follows.user_id', '=', $this->id)
-            ->orderBy('tags.name', 'asc')
-            ->select('tags.*')
-            ->count();
-
-        return $tags;
+        return $this->following(Tag::query(), 'tag')->count();
     }
 
     /**
@@ -689,14 +647,7 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function getSeriesFollowing(): Collection
     {
-        $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'series')
-            ->where('follows.user_id', '=', $this->id)
-            ->orderBy('series.name', 'asc')
-            ->select('series.*')
-            ->get();
-
-        return $series;
+        return $this->following(Series::query(), 'series')->orderBy('series.name', 'asc')->get();
     }
 
     /**
@@ -704,46 +655,28 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     public function countSeriesFollowing(): int
     {
-        $series = Series::join('follows', 'series.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'series')
-            ->where('follows.user_id', '=', $this->id)
-            ->orderBy('follows.created_at', 'desc')
-            ->select('series.*')
-            ->count();
-
-        return $series;
+        return $this->following(Series::query(), 'series')->count();
     }
 
     /**
      * Return a list of threads the user is following, limited to the ones the
      * viewer can see.
+     *
+     * @return Collection<int, Thread>
      */
     public function getThreadsFollowing(?User $viewer): Collection
     {
-        $threads = Thread::visible($viewer)
-            ->join('follows', 'threads.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'thread')
-            ->where('follows.user_id', '=', $this->id)
+        return $this->following(Thread::visible($viewer), 'thread')
             ->orderBy('follows.created_at', 'desc')
-            ->select('threads.*')
             ->get();
-
-        return $threads;
     }
 
     /**
-     * Return a count of threads the user is following.
+     * Return a count of threads the user is following (all of them, whoever is looking).
      */
     public function countThreadsFollowing(): int
     {
-        $threads = Thread::join('follows', 'threads.id', '=', 'follows.object_id')
-            ->where('follows.object_type', '=', 'thread')
-            ->where('follows.user_id', '=', $this->id)
-            ->orderBy('follows.created_at', 'desc')
-            ->select('threads.*')
-            ->count();
-
-        return $threads;
+        return $this->following(Thread::query(), 'thread')->count();
     }
 
     /**

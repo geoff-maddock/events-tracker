@@ -4,10 +4,14 @@ namespace Tests\Feature;
 
 use App\Models\Action;
 use App\Models\Activity;
+use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\Follow;
 use App\Models\ResponseType;
+use App\Models\Series;
+use App\Models\Tag;
+use App\Models\Thread;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Visibility;
@@ -63,17 +67,51 @@ class UserProfilePageTest extends TestCase
         $this->assertSame(2, $user->attending_count);
     }
 
-    public function test_following_counts_are_per_type(): void
+    public function test_following_counts_and_lists_are_per_type(): void
     {
         $user = $this->makeUser();
-        foreach (['tag', 'tag', 'entity', 'series', 'thread', 'thread', 'thread'] as $i => $type) {
-            Follow::create(['user_id' => $user->id, 'object_type' => $type, 'object_id' => $i + 1]);
+        $other = $this->makeUser();
+        $follow = fn (User $who, string $type, int $id) => Follow::create(['user_id' => $who->id, 'object_type' => $type, 'object_id' => $id]);
+
+        $tags = Tag::factory()->count(2)->create();
+        $entity = Entity::factory()->create();
+        $series = Series::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $threads = Thread::factory()->count(3)->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+
+        $tags->each(fn (Tag $tag) => $follow($user, 'tag', $tag->id));
+        $follow($user, 'entity', $entity->id);
+        $follow($user, 'series', $series->id);
+        $threads->each(fn (Thread $thread) => $follow($user, 'thread', $thread->id));
+        // someone else's follows, and an entity id that is also a followed tag id, don't count
+        $follow($other, 'entity', Entity::factory()->create()->id);
+        $follow($other, 'tag', $tags[0]->id);
+
+        $this->assertSame(2, $user->countTagsFollowing());
+        $this->assertSame(1, $user->countEntitiesFollowing());
+        $this->assertSame(1, $user->countSeriesFollowing());
+        $this->assertSame(3, $user->countThreadsFollowing());
+
+        $this->assertEqualsCanonicalizing($tags->modelKeys(), $user->getTagsFollowing()->modelKeys());
+        $this->assertSame([$entity->id], $user->getEntitiesFollowing()->modelKeys());
+        $this->assertSame([$entity->id], $user->getFollowingEntities()->pluck('entities.id')->all());
+        $this->assertSame([$series->id], $user->getSeriesFollowing()->modelKeys());
+        $this->assertEqualsCanonicalizing($threads->modelKeys(), $user->getThreadsFollowing(null)->modelKeys());
+    }
+
+    public function test_followed_threads_list_leaves_out_what_the_viewer_cannot_see(): void
+    {
+        $user = $this->makeUser();
+        $public = Thread::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
+        $private = Thread::factory()->create(['visibility_id' => Visibility::VISIBILITY_PRIVATE]);
+        // the model stamps created_by itself when a thread is created
+        $private->forceFill(['created_by' => $user->id])->save();
+        foreach ([$public, $private] as $thread) {
+            Follow::create(['user_id' => $user->id, 'object_type' => 'thread', 'object_id' => $thread->id]);
         }
 
-        $this->assertSame(2, $user->tags_following_count);
-        $this->assertSame(1, $user->entities_following_count);
-        $this->assertSame(1, $user->series_following_count);
-        $this->assertSame(3, $user->threads_following_count);
+        $this->assertSame([$public->id], $user->getThreadsFollowing(null)->modelKeys());
+        $this->assertEqualsCanonicalizing([$public->id, $private->id], $user->getThreadsFollowing($user)->modelKeys());
+        $this->assertSame(2, $user->countThreadsFollowing());
     }
 
     public function test_viewing_a_profile_leaves_the_reset_token_alone(): void
