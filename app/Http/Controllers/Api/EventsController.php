@@ -17,6 +17,7 @@ use App\Models\Activity;
 use App\Models\Entity;
 use App\Models\Event;
 use App\Models\EventResponse;
+use App\Models\ResponseType;
 use App\Models\EventType;
 use App\Models\Photo;
 use App\Services\Embeds\OembedExtractor;
@@ -679,18 +680,14 @@ class EventsController extends Controller
         $user = $request->user();
         abort_unless($event->isVisibleTo($user), 404);
 
-        $response = EventResponse::where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->where('response_type_id', 1)
-            ->first();
+        // as on the web: two requests arriving together must leave one row
+        $response = EventResponse::firstOrCreate([
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+            'response_type_id' => ResponseType::ATTENDING,
+        ]);
 
-        if (!$response) {
-            $response = new EventResponse();
-            $response->event()->associate($event);
-            $response->user()->associate($user);
-            $response->response_type_id = 1;
-            $response->save();
-
+        if ($response->wasRecentlyCreated) {
             Activity::log($event, $user, 6);
         }
 
