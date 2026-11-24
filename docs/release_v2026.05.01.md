@@ -228,6 +228,7 @@ Follow the standard installation process in [deployment_notes.md](deployment_not
 ```bash
 git clone git@github.com:geoff-maddock/events-tracker.git
 cd events-tracker
+git checkout v2026.05.01   # leave this out to install the current main instead
 composer install
 npm install
 cp .env.example .env
@@ -247,9 +248,11 @@ This is a major release with a full UI refresh (Tailwind CSS / Vite), new featur
 - [ ] Put the app into maintenance mode: `php artisan down`
 - [ ] Confirm you are on PHP 8.4+ and Node 24+
 
-#### 1. Pull the latest code
+#### 1. Check out the release
+`main` has moved on since; these steps are for this release only.
 ```bash
-git pull origin main
+git fetch --tags
+git checkout v2026.05.01
 ```
 
 #### 2. Update PHP dependencies

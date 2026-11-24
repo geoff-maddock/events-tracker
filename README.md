@@ -32,7 +32,7 @@ Changes are listed in the [feature notes](docs/feature_notes.md); changes since 
 * PHP 8.2 or newer (CI and production run 8.4)
 * Laravel 12
 * MySQL 8
-* Blade views with Tailwind CSS 4, built with Vite (Node 24)
+* Blade views with Tailwind CSS 4, built with Vite (Node 20.19+ or 22.12+; CI and production run 24)
 * Optional integrations: Instagram, Discord, S3 file storage, Sentry
 
 ### Roadmap

@@ -692,7 +692,7 @@ troubleshooting.
 ## 2026.02.12
 
 ### Tailwind CSS 4 Upgrade (Mix-first)
-The frontend build now uses Tailwind CSS v4 while staying on Laravel Mix for this phase. (Laravel Mix was replaced by Vite in v2026.05.01; `webpack.mix.js` no longer exists.)
+The frontend build now uses Tailwind CSS v4 while staying on Laravel Mix for this phase.
 
 **Build/config updates:**
 - `tailwindcss` upgraded to `^4.1.12`

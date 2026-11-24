@@ -14,8 +14,8 @@ Follow these steps to configure and deploy the application
 	 ```
     Digital Ocean Droplet
 		Ubuntu 22.04 LTS
-		2vCPUs
-		4GB / 80 GB Disk
+		4 vCPUs
+		8 GB RAM / 80 GB Disk (shared with a stage and a dev copy of the site)
   ```
 * PHP 8.4 (the code needs 8.2 or newer)
 	```
@@ -28,7 +28,7 @@ Follow these steps to configure and deploy the application
   gmaddock@Wrecked:/var/www/events-tracker$ mysql -V
   mysql  Ver 8.0.45-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
   ```
-* NodeJS 24.14.1+
+* NodeJS 24 (`package.json` accepts 20.19+ or 22.12+)
   ```
   gmaddock@Wrecked:/var/www/events-tracker$ node -v
   v24.14.1
@@ -334,10 +334,12 @@ the sidebar (`/job-status`).
 
 ## Scheduled tasks
 
-Everything registered in `app/Console/Kernel::schedule()` — weekly notifications,
-entity notifications, user cleanup, export cleanup, feedback invitations, the admin
-activity summary, the nightly housekeeping, the sitemap, `monitor:check`, and the Discord
-reminder and digest commands — runs from a **single** cron entry:
+Everything registered in `app/Console/Kernel::schedule()` — the daily and weekly
+notification emails, entity notifications, the Instagram autopost, the Discord reminder
+and digest commands, user cleanup, export cleanup, feedback invitations, the admin activity
+summary and weekly admin test email, the entity stats roll-up, the nightly housekeeping,
+the sitemap and `monitor:check` — runs from a **single** cron entry
+(`php artisan schedule:list` prints the exact list):
 
 ```crontab
 * * * * * php /var/www/events/artisan schedule:run >> /dev/null 2>&1
@@ -449,17 +451,27 @@ Both are on the same disk as the database. They cover a bad migration or a mista
 not the loss of the server: copy the dumps somewhere else as well. Watch the disk too; old
 dumps and MySQL binary logs are what fill it.
 
-To restore a dump into an empty database, then bring it up to the code:
+To restore production, load the dump into the empty database that `.env` names, then run the
+migrations newer than the dump. `migrate` works on the `.env` database, whatever the dump was
+loaded into:
 
 ```bash
-gunzip -c events_tracker-YYYYMMDD-HHMMSS.sql.gz | mysql -u <user> -p <database>
+gunzip -c events_tracker-YYYYMMDD-HHMMSS.sql.gz | mysql -u <user> -p <DB_DATABASE from .env>
 php artisan migrate --force
-php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
 
-Try a restore into a scratch database now and then; a dump that has never been restored is
-not known to work. `php artisan db:schema-diff` (above) confirms the result has the expected
-structure.
+Try a restore now and then; a dump that has never been restored is not known to work. Load it
+into a scratch database and compare that one with a fresh build. This reads the scratch
+database only and touches nothing else:
+
+```bash
+mysql -u <user> -p -e 'CREATE DATABASE restore_check'
+gunzip -c events_tracker-YYYYMMDD-HHMMSS.sql.gz | mysql -u <user> -p restore_check
+php artisan db:schema-diff --database=restore_check
+mysql -u <user> -p -e 'DROP DATABASE restore_check'
+```
+
+A dump older than the newest migration shows those migrations as differences; that is expected.
 ## Email unsubscribe and SES bounce handling (#2103)
 
 Bulk mail (weekly/daily digests, follower and forum alerts, entity contact mail) carries
