@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\UserStatus;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,21 +21,28 @@ class CheckBanned
      */
     public function handle(Request $request, Closure $next)
     {
-        // the default guard, or a token on a route that has no auth middleware of its own
-        $user = auth()->user() ?? Auth::guard('sanctum')->user();
+        $user = auth()->user();
 
-        if ($user && in_array((int) $user->user_status_id, [UserStatus::BANNED, UserStatus::SUSPENDED], true)) {
-            // only a session can be signed out; a token or basic auth request has none
+        // a token sent to a route that has no auth middleware of its own
+        if (null === $user && null !== $request->bearerToken()) {
+            $user = Auth::guard('sanctum')->user();
+        }
+
+        if ($user instanceof User && $user->isSuspendedOrBanned()) {
+            // The web guard by name: after a token or auth.either route the default
+            // guard is Sanctum's, which cannot sign a session (or its remember
+            // cookie) out.
             if ($request->hasSession()) {
-                if (method_exists(auth()->guard(), 'logout')) {
-                    Auth::logout();
-                }
+                Auth::guard('web')->logout();
 
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
             }
 
             $user->tokens()->delete();
+
+            // nothing later in this request should still see the refused user
+            Auth::forgetGuards();
 
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([

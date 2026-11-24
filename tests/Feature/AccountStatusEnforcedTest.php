@@ -105,9 +105,11 @@ class AccountStatusEnforcedTest extends TestCase
         $user = $this->user($status);
 
         $this->post('/login', ['email' => $user->email, 'password' => self::PASSWORD]);
+        $this->assertTrue(session()->has($this->sessionKey()), 'The sign-in itself went through.');
         $this->app['auth']->forgetGuards();
 
-        $this->get('/events/create')->assertRedirect(route('login'));
+        // a page a guest may open: only a signed-in, refused account is sent to the login page
+        $this->get('/events')->assertRedirect(route('login'));
     }
 
     #[Test]
@@ -141,7 +143,20 @@ class AccountStatusEnforcedTest extends TestCase
     {
         $user = $this->user($status);
 
-        $this->getJson('/api/events?limit=1', $this->basic($user))->assertStatus(401);
+        $this->getJson('/api/events?limit=1', $this->basic($user))
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Your Account is suspended, please contact Admin.']);
+        $this->assertNull(auth()->user(), 'The refused user is not left on the guard.');
+    }
+
+    #[Test]
+    public function a_refused_request_still_counts_against_the_rate_limit(): void
+    {
+        $user = $this->user(UserStatus::SUSPENDED);
+
+        $this->getJson('/api/events?limit=1', $this->basic($user))
+            ->assertStatus(401)
+            ->assertHeader('X-RateLimit-Limit');
     }
 
     #[Test]

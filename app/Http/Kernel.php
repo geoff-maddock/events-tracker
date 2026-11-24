@@ -7,6 +7,7 @@ use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Router;
 
 class Kernel extends HttpKernel
@@ -17,9 +18,10 @@ class Kernel extends HttpKernel
 
         // CheckBanned can only refuse a user it can see. It sits in the web and
         // api groups (after the session has started), and this order moves it
-        // behind whatever signs the request in: session, token or basic auth.
+        // behind whatever signs the request in (session, token or basic auth)
+        // and behind the rate limiter, so a refused request still counts.
         $this->addToMiddlewarePriorityAfter(AuthenticatesRequests::class, AuthenticateWithBasicAuth::class);
-        $this->addToMiddlewarePriorityAfter(AuthenticateWithBasicAuth::class, CheckBanned::class);
+        $this->addToMiddlewarePriorityAfter(ThrottleRequests::class, CheckBanned::class);
     }
 
     /**
