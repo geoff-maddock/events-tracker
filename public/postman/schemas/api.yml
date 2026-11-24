@@ -7389,7 +7389,9 @@ paths:
       description: |
         Typeahead search over events, entities, series, tags and site pages. Needs no sign-in and
         then returns what a signed-out visitor may see. With a token the results also include what
-        that user may see. Basic auth is not read.
+        that user may see (for an admin, unlisted entities too). A token that is expired or not
+        valid is treated as no token: the answer is still 200, with the signed-out results. Basic
+        auth is not read.
         Events, entities and series match on name, short description and description; tags on
         name. A keyword shorter than three characters matches on name only.
       operationId: search

@@ -166,6 +166,18 @@ class SearchMatchRoutesTest extends TestCase
     }
 
     #[Test]
+    public function the_api_search_still_reads_the_sites_own_session(): void
+    {
+        // the typeahead on the site's pages calls it with the session, not a token
+        $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $private = $this->event(['name' => 'Qz private night', 'visibility_id' => Visibility::VISIBILITY_PRIVATE, 'created_by' => $owner->id]);
+
+        $response = $this->actingAs($owner)->getJson('/api/search?q=qz&types=events&limit=20')->assertOk();
+
+        $this->assertContains($private->id, collect($response->json('results.events'))->pluck('id')->all());
+    }
+
+    #[Test]
     public function an_unlisted_entity_is_not_found_by_its_alias(): void
     {
         $entity = $this->entity(['entity_status_id' => EntityStatus::UNLISTED]);
