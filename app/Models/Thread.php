@@ -58,7 +58,6 @@ use Illuminate\Support\Str;
  * @property mixed                                                         $tag_list
  * @property int|null                                                      $likes_count
  * @property \App\Models\User|null                                         $locker
- * @property \Illuminate\Database\Eloquent\Collection|Photo[]              $photos
  * @property int|null                                                      $photos_count
  * @property \Illuminate\Database\Eloquent\Collection|Post[]               $posts
  * @property int|null                                                      $posts_count
@@ -340,14 +339,6 @@ class Thread extends Eloquent
     }
 
     /**
-     * Get all of the threads photos.
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany(Photo::class)->withTimestamps();
-    }
-
-    /**
      * A thread has one visibility.
      */
     public function visibility(): HasOne
@@ -515,17 +506,4 @@ class Thread extends Eloquent
         });
     }
 
-    public function addPhoto(Photo $photo): void
-    {
-        $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Return the primary photo for this thread.
-     **/
-    public function getPrimaryPhoto(): ?Photo
-    {
-        // gets the first photo related to this thread
-        return $this->photos()->where('photos.is_primary', '=', '1')->first();
-    }
 }

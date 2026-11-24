@@ -74,6 +74,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class Blog extends Eloquent
 {
+    use \App\Models\Concerns\OwnsPhotos;
     use HasFactory;
     use \App\Models\Concerns\SyncsEntities;
 
@@ -202,14 +203,6 @@ class Blog extends Eloquent
     }
 
     /**
-     * Get all of the blogs photos.
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany('App\Models\Photo')->withTimestamps();
-    }
-
-    /**
      * An blog has one visibility.
      */
     public function visibility(): HasOne
@@ -271,24 +264,6 @@ class Blog extends Eloquent
         return self::whereHas('entities', function ($q) use ($slug) {
             $q->where('slug', '=', $slug);
         });
-    }
-
-    public function addPhoto(Photo $photo): void
-    {
-        $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Return the primary photo for this blog.
-     *
-     **/
-    public function getPrimaryPhoto(): ?Photo
-    {
-        if ($this->relationLoaded('photos')) {
-            return $this->photos->firstWhere('is_primary', 1);
-        }
-
-        return $this->photos()->where('photos.is_primary', '=', '1')->first();
     }
 
     /**

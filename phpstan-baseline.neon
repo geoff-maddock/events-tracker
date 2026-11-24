@@ -79,12 +79,6 @@ parameters:
 			path: app/Http/Controllers/ThreadsController.php
 
 		-
-			message: '#^Method App\\Models\\Blog\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Blog.php
-
-		-
 			message: '#^Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Location\> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany\: TRelatedModel, TDeclaringModel$#'
 			identifier: generics.lessTypes
 			count: 1
@@ -92,12 +86,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Models\\Entity\:\:getBandcampLinkAttribute\(\) should return App\\Models\\Link\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Entity.php
-
-		-
-			message: '#^Method App\\Models\\Entity\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/Entity.php
@@ -121,18 +109,6 @@ parameters:
 			path: app/Models/Entity.php
 
 		-
-			message: '#^Method App\\Models\\Event\:\:getFlyer\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Event.php
-
-		-
-			message: '#^Method App\\Models\\Event\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Event.php
-
-		-
 			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\EventShare\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
 			identifier: property.phpDocType
 			count: 1
@@ -141,12 +117,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:past\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: app/Models/Series.php
-
-		-
-			message: '#^Method App\\Models\\Series\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Models/Series.php
 
@@ -173,24 +143,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Models/Thread.php
-
-		-
-			message: '#^Method App\\Models\\Thread\:\:getFlyer\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Thread.php
-
-		-
-			message: '#^Method App\\Models\\Thread\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Thread.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:getPrimaryPhoto\(\) should return App\\Models\\Photo\|null but returns \(Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/User.php
 
 		-
 			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'

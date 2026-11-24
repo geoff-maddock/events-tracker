@@ -7,7 +7,6 @@ use App\Models\Concerns\RefersToEntities;
 use App\Contracts\HasPhotos;
 use Carbon\Carbon;
 use DateTime;
-use Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -129,6 +128,7 @@ use App\Services\OptionLists;
  */
 class Series extends Eloquent implements HasPhotos
 {
+    use \App\Models\Concerns\OwnsPhotos;
     use \App\Models\Concerns\HasVisibility;
     use HasFactory;
     use RecommendedByFollows;
@@ -539,16 +539,6 @@ class Series extends Eloquent implements HasPhotos
     public function ownedBy(User $user): bool
     {
         return $this->created_by == $user->id;
-    }
-
-    /**
-     * Get all of the series photos.
-     *
-     * @return BelongsToMany<Photo, $this>
-     */
-    public function photos(): BelongsToMany
-    {
-        return $this->belongsToMany(Photo::class)->withTimestamps();
     }
 
     /**
@@ -1038,26 +1028,6 @@ class Series extends Eloquent implements HasPhotos
         return $this->entities->pluck('id')->all();
     }
 
-    public function addPhoto(Photo $photo): void
-    {
-        $this->photos()->attach($photo->id);
-    }
-
-    /**
-     * Return the primary photo for this event.
-     *
-     **/
-    public function getPrimaryPhoto(): ?Photo
-    {
-        // Use eager loaded photos if available
-        if ($this->relationLoaded('photos')) {
-            return $this->photos->firstWhere('is_primary', 1);
-        }
-
-        // get a list of events that start on the passed date
-        return $this->photos()->where('photos.is_primary', '=', '1')->first();
-    }
-
     /**
      * Checks if the series is followed by the user.
      *
@@ -1193,30 +1163,6 @@ class Series extends Eloquent implements HasPhotos
         }
 
         return route('clicktrack.series', ['id' => $this->id]);
-    }
-
-    // returns the actual path to the primary photo
-    public function getPrimaryPhotoPath(): ?string
-    {
-        $photo = $this->getPrimaryPhoto();
-
-        if ($photo) {
-            return Storage::disk('external')->url($photo->getStoragePath());
-        }                    
-
-        return null;
-    }
-
-    // returns the actual path to the thumbnail
-    public function getPrimaryPhotoThumbnailPath(): ?string
-    {
-        $photo = $this->getPrimaryPhoto();
-
-        if ($photo) {
-            return Storage::disk('external')->url($photo->getStorageThumbnail());
-        }                    
-
-        return null;
     }
 
     /**
