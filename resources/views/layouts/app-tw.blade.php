@@ -84,10 +84,7 @@
 	<!-- End Google Tag Manager (noscript) -->
 	@endif
 
-	<div id="loading" class="loading">
-		<div class="spinner"></div>
-	</div>
-	<div id="flash" class="flash"></div>
+	@include('partials.toasts')
 
 	<div class="flex min-h-screen lg:h-screen bg-background">
 		<!-- Sidebar -->
