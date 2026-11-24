@@ -104,6 +104,7 @@ use App\Services\OptionLists;
  */
 class Entity extends Eloquent implements HasPhotos
 {
+    use \App\Models\Concerns\Followable;
     use \App\Models\Concerns\OwnsPhotos;
     use HasFactory;
     use Notifiable;
@@ -547,14 +548,6 @@ class Entity extends Eloquent implements HasPhotos
     }
 
     /**
-     * The follows that belong to the entity.
-     */
-    public function follows(): MorphMany
-    {
-        return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
-    }
-
-    /**
      * The likes that belong to the entity.
      */
     public function likes(): MorphMany
@@ -968,36 +961,6 @@ class Entity extends Eloquent implements HasPhotos
         }
 
         return '';
-    }
-
-    /**
-     * Checks if the entity is followed by the user.
-     *
-     **/
-    public function followedBy(?User $user): ?Follow
-    {
-        if (!$user) {
-            return null;
-        }
-
-        return Follow::where('object_type', '=', 'entity')
-            ->where('object_id', '=', $this->id)
-            ->where('user_id', '=', $user->id)
-            ->first();
-    }
-
-    /**
-     * Returns the users that follow the entity.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
-     *
-     **/
-    public function followers(): Collection
-    {
-        return User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
-            ->where('follows.object_type', 'entity')
-            ->where('follows.object_id', $this->id)
-            ->get('users.*');
     }
 
     /**

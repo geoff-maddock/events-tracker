@@ -99,6 +99,7 @@ use Illuminate\Support\Str;
  */
 class Thread extends Eloquent
 {
+    use \App\Models\Concerns\Followable;
     use \App\Models\Concerns\HasLikeCounter;
 
     protected function likeType(): string
@@ -245,39 +246,6 @@ class Thread extends Eloquent
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * Checks if the thread is followed by the user.    
-     */
-    public function followedBy(User $user): ?Follow
-    {
-        return Follow::where('object_type', '=', 'thread')
-            ->where('object_id', '=', $this->id)
-            ->where('user_id', '=', $user->id)
-            ->first();
-    }
-
-    /**
-     * The follows that belong to the thread.
-     */
-    public function follows(): BelongsToMany
-    {
-        return $this->belongsToMany(Follow::class)->withTimestamps();
-    }
-
-    /**
-     * Returns the users that follow the entity.
-     **/
-    public function followers(): Collection
-    {
-        // profile is read for every follower's notification settings
-        $users = User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
-        ->where('follows.object_type', 'thread')
-        ->where('follows.object_id', $this->id)
-        ->get('users.*');
-
-        return $users;
     }
 
     /**
