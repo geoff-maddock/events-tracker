@@ -6,6 +6,7 @@ use App\Models\Entity;
 use App\Models\EntityStatus;
 use App\Models\EntityType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Entity>
@@ -28,7 +29,8 @@ class EntityFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'slug' => $this->faker->name,
+            // slugs are unique, and two faker names can be the same
+            'slug' => Str::slug($this->faker->name).'-'.Str::lower(Str::random(6)),
             'short' => $this->faker->text(100),
             'description' => $this->faker->text(254),
             'entity_type_id' => function () {

@@ -40,7 +40,6 @@ class EntityQuickCheckTest extends TestCase
     {
         return Entity::factory()->create([
             'name' => $name,
-            'slug' => \Illuminate\Support\Str::slug($name),
             'entity_type_id' => $typeId,
             'entity_status_id' => EntityStatus::ACTIVE,
         ]);
