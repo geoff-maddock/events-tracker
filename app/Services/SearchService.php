@@ -165,13 +165,20 @@ class SearchService
     private function entities(string $keyword, int $perPage): LengthAwarePaginator
     {
         $useFulltext = $this->useFulltext($keyword);
+        $lower = mb_strtolower($keyword);
 
         $query = Entity::query()
             ->with(Entity::CARD_EAGER_LOAD)
             ->whereIntegerInRaw('entities.id', $this->idsMatchingAny([
                 $this->textMatchIds('entities', ['name', 'short', 'description'], $keyword, $useFulltext),
-                Entity::query()->select('entities.id')->whereHas('tags', $this->ciNameMatch($keyword))->toBase(),
-                Entity::query()->select('entities.id')->whereHas('aliases', $this->ciNameMatch($keyword))->toBase(),
+                DB::table('entity_tag')
+                    ->join('tags', 'tags.id', '=', 'entity_tag.tag_id')
+                    ->whereRaw('LOWER(tags.name) = ?', [$lower])
+                    ->select('entity_tag.entity_id as id'),
+                DB::table('alias_entity')
+                    ->join('aliases', 'aliases.id', '=', 'alias_entity.alias_id')
+                    ->whereRaw('LOWER(aliases.name) = ?', [$lower])
+                    ->select('alias_entity.entity_id as id'),
             ]));
 
         if ($useFulltext) {
@@ -397,21 +404,16 @@ class SearchService
     private function textMatchIds(string $table, array $columns, string $keyword, bool $useFulltext): QueryBuilder
     {
         $query = DB::table($table)->select("$table.id");
+        $this->applyTextMatch($query, $table, $columns, $keyword, $useFulltext);
 
-        if ($useFulltext) {
-            $cols = implode(', ', array_map(fn ($c) => "$table.$c", $columns));
-
-            return $query->whereRaw("MATCH($cols) AGAINST (? IN BOOLEAN MODE)", [$this->booleanQuery($keyword)]);
-        }
-
-        return $query->where("$table.name", 'like', '%' . $keyword . '%');
+        return $query;
     }
 
     /**
-     * @param  Builder<*>  $query
+     * @param  Builder<*>|QueryBuilder  $query
      * @param  array<int, string>  $columns
      */
-    private function applyTextMatch(Builder $query, string $table, array $columns, string $keyword, bool $useFulltext): void
+    private function applyTextMatch(Builder|QueryBuilder $query, string $table, array $columns, string $keyword, bool $useFulltext): void
     {
         if ($useFulltext) {
             $cols = implode(',', array_map(fn ($c) => "$table.$c", $columns));
