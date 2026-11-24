@@ -1435,7 +1435,7 @@ class EventsController extends Controller
             return back();
         }
 
-        // delete the attending response, including any duplicates left by older double submits
+        // delete the attending response
         if (EventResponse::where('event_id', '=', $id)->where('user_id', '=', $this->user->id)->where('response_type_id', '=', 1)->delete()) {
             // add to activity log
             Activity::log($event, $this->user, 7);

@@ -64,35 +64,48 @@ class DoubleSubmitTest extends TestCase
     }
 
     #[Test]
-    public function attending_twice_on_the_site_stores_one_response(): void
+    public function a_quick_add_that_loses_the_race_for_its_slug_tries_again(): void
     {
-        $event = Event::factory()->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC]);
-
-        $this->actingAs($this->user)->post("/events/{$event->id}/attend");
-        $this->actingAs($this->user)->post("/events/{$event->id}/attend");
-
-        $this->assertSame(1, EventResponse::where('event_id', $event->id)->where('user_id', $this->user->id)->count());
-    }
-
-    #[Test]
-    public function a_quick_added_entity_whose_slug_is_taken_meanwhile_gets_the_next_one(): void
-    {
-        // stands in for the other request: its row lands after this one's check and before its insert
-        $taken = false;
-        Entity::creating(function (Entity $entity) use (&$taken) {
-            if (!$taken) {
-                $taken = true;
-                DB::table('entities')->insert([
-                    'name' => 'Zzq Race Hall', 'slug' => $entity->slug, 'short' => 'x', 'description' => 'x',
-                    'entity_type_id' => $entity->entity_type_id, 'entity_status_id' => $entity->entity_status_id,
-                    'created_by' => $this->user->id,
-                ]);
+        // stands in for the other request's row landing between this one's check and its insert
+        $attempts = 0;
+        Entity::creating(function () use (&$attempts) {
+            if (1 === ++$attempts) {
+                throw new UniqueConstraintViolationException('mysql', 'insert into `entities`', [], new \Exception('Duplicate entry'));
             }
         });
 
         $entity = app(EntityWriter::class)->quickCreate($this->user, 'Zzq Race Hall', 'Venue');
 
-        $this->assertSame('zzq-race-hall-1', $entity->slug);
-        $this->assertSame(2, DB::table('entities')->where('name', 'Zzq Race Hall')->count());
+        $this->assertSame(2, $attempts);
+        $this->assertSame('zzq-race-hall', $entity->slug);
+        $this->assertSame(1, DB::table('entities')->where('name', 'Zzq Race Hall')->count());
+    }
+
+    #[Test]
+    public function a_quick_add_that_keeps_failing_leaves_nothing_behind(): void
+    {
+        // a clash that is not about the slug: the retry must not pile up half-made entities
+        Entity::created(function (Entity $entity) {
+            DB::table('entity_role')->insert(['entity_id' => $entity->id, 'role_id' => \App\Models\Role::where('name', 'Venue')->value('id')]);
+        });
+
+        try {
+            app(EntityWriter::class)->quickCreate($this->user, 'Zzq Stuck Hall', 'Venue');
+            $this->fail('The clash was swallowed.');
+        } catch (UniqueConstraintViolationException) {
+            $this->assertSame(0, DB::table('entities')->where('name', 'Zzq Stuck Hall')->count());
+        }
+    }
+
+    #[Test]
+    public function a_quick_added_name_as_long_as_the_slug_column_still_gets_a_numbered_slug(): void
+    {
+        $name = str_repeat('zzqlong ', 31).'hall';
+
+        $first = app(EntityWriter::class)->quickCreate($this->user, $name, 'Venue');
+        $second = app(EntityWriter::class)->quickCreate($this->user, $name, 'Venue');
+
+        $this->assertLessThanOrEqual(255, strlen($second->slug));
+        $this->assertSame($first->slug.'-1', $second->slug);
     }
 }

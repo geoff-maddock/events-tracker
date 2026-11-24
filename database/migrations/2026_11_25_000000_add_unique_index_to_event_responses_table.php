@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -21,18 +22,30 @@ return new class extends Migration
             return;
         }
 
-        DB::statement(
-            'DELETE later FROM event_responses later
-             INNER JOIN event_responses earlier
-                ON earlier.event_id = later.event_id
-               AND earlier.user_id = later.user_id
-               AND earlier.response_type_id = later.response_type_id
-               AND earlier.id < later.id'
-        );
+        // On a live site a new repeat can land between the delete and the index;
+        // then both are simply done again.
+        for ($attempt = 1; ; ++$attempt) {
+            DB::statement(
+                'DELETE later FROM event_responses later
+                 INNER JOIN event_responses earlier
+                    ON earlier.event_id = later.event_id
+                   AND earlier.user_id = later.user_id
+                   AND earlier.response_type_id = later.response_type_id
+                   AND earlier.id < later.id'
+            );
 
-        Schema::table('event_responses', function (Blueprint $table) {
-            $table->unique(self::COLUMNS);
-        });
+            try {
+                Schema::table('event_responses', function (Blueprint $table) {
+                    $table->unique(self::COLUMNS);
+                });
+
+                return;
+            } catch (UniqueConstraintViolationException $e) {
+                if ($attempt >= 3) {
+                    throw $e;
+                }
+            }
+        }
     }
 
     /**
