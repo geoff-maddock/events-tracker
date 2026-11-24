@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
@@ -128,6 +127,7 @@ use App\Services\OptionLists;
  */
 class Series extends Eloquent implements HasPhotos
 {
+    use \App\Models\Concerns\Followable;
     use \App\Models\Concerns\OwnsPhotos;
     use \App\Models\Concerns\HasVisibility;
     use HasFactory;
@@ -1026,41 +1026,6 @@ class Series extends Eloquent implements HasPhotos
     public function getEntityListAttribute(): array
     {
         return $this->entities->pluck('id')->all();
-    }
-
-    /**
-     * Checks if the series is followed by the user.
-     *
-     **/
-    public function followedBy(User $user): ?Follow
-    {
-        return Follow::where('object_type', '=', 'series')
-        ->where('object_id', '=', $this->id)
-        ->where('user_id', '=', $user->id)
-        ->first();
-    }
-
-    /**
-     * Returns the users that follow the series.
-     *
-     *
-     * @return Collection<int, User>
-     **/
-    public function followers(): Collection
-    {
-        // profile is read for every follower's notification settings
-        return User::with('profile')->join('follows', 'users.id', '=', 'follows.user_id')
-            ->where('follows.object_type', 'series')
-            ->where('follows.object_id', $this->id)
-            ->get('users.*');
-    }
-
-    /**
-     * The follows that belong to the entity.
-     */
-    public function follows(): MorphMany
-    {
-        return $this->morphMany(Follow::class, 'object', 'object_type', 'object_id');
     }
 
     public function getTitleFormat(): string
