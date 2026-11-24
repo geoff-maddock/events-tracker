@@ -160,10 +160,6 @@ class EventShowingListingsTest extends TestCase
         $this->assertSame(['2027-03-04 19:00', '2027-03-06 14:00'], $items->pluck('start')->sort()->values()->all());
         $this->assertSame('2027-03-06 16:00', $items->firstWhere('start', '2027-03-06 14:00')['end']);
         $this->assertCount(2, $items->pluck('id')->unique());
-
-        $api = collect($this->getJson('/api/calendar-events?start=2027-03-01&end=2027-03-08')->assertOk()->json())
-            ->where('title', 'ZZ Run Play');
-        $this->assertCount(3, $api);
     }
 
     public function test_day_views_place_the_run_under_each_day(): void

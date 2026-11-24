@@ -15,21 +15,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         return ['data' => 'token invalidated'];
     });
 
-    // check if the user can view a profile
-    Route::get('tokens/profile', function (Request $request) {
-        if ($request->user()->tokenCan('user:view-profile')) {
-            // can view profile
-            return ['data' => 'user can view the profile for '. $request->user()->name];
-        } else {
-            // cannot view profile
-            return ['data' => 'user cannot view the profile for '. $request->user()->name];
-        }
-    });
-
-});
-
-Route::middleware('auth:sanctum')->get('tokens/test', function (Request $request) {
-    return ['data' => 'token test'];
 });
 
 // Public typeahead search. Visibility scoping uses the optionally-authenticated user.
@@ -211,7 +196,6 @@ Route::middleware('auth.either')->name('api.')->group(function () {
 });
 
 // calendar routes - these are used by the web app for dynamic loading
-Route::get('calendar-events', [\App\Http\Controllers\EventsController::class, 'calendarEventsApi'])->name('calendarEvents.api');
 Route::get('tag-calendar-events', [\App\Http\Controllers\EventsController::class, 'tagCalendarEventsApi'])->name('tagCalendarEvents.api');
 
 // user registration endpoint

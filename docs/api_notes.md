@@ -25,7 +25,7 @@ All `/api/*` routes go through the `api` rate limiter (`RouteServiceProvider::co
 | Caller | Limit | Keyed by |
 | --- | --- | --- |
 | Authenticated (basic auth or bearer token) | 240 requests / minute | user id |
-| Anonymous (e.g. `/api/search`, `/api/calendar-events`) | 120 requests / minute | IP address |
+| Anonymous (e.g. `/api/search`) | 120 requests / minute | IP address |
 | `POST /api/{events,entities,series}/{id}/photos/from-url` | 20 requests / minute, on top of the general limit | user id |
 | Failed basic auth attempts | 20 failures / minute | IP address |
 
