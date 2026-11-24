@@ -2,11 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\NormalizesSlug;
 use App\Models\EntityStatus;
 use Illuminate\Validation\Rule;
 
 class EntityPatchRequest extends Request
 {
+    use NormalizesSlug;
+
     public function authorize(): bool
     {
         return true;

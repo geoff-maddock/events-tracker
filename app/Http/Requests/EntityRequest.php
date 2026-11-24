@@ -1,11 +1,15 @@
 <?php
 
 namespace App\Http\Requests;
+
+use App\Http\Requests\Concerns\NormalizesSlug;
 use App\Models\EntityStatus;
 use Illuminate\Validation\Rule;
 
 class EntityRequest extends Request
 {
+    use NormalizesSlug;
+
     /**
      * Determine if the user is authorized to make this request.
      */
