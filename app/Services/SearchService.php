@@ -100,9 +100,9 @@ class SearchService
                 // Text match on event's own columns.
                 $this->textMatchIds('events', ['name', 'short', 'description'], $keyword, $useFulltext),
                 // Related-entity / tag / series matches (case-insensitive).
+                // through the model, so an unlisted entity only leads an admin to its events
                 DB::table('entity_event')
-                    ->join('entities', 'entities.id', '=', 'entity_event.entity_id')
-                    ->where('entities.slug', strtolower($slug))
+                    ->whereIn('entity_event.entity_id', Entity::query()->where('entities.slug', strtolower($slug))->select('entities.id'))
                     ->select('entity_event.event_id as id'),
                 DB::table('event_tag')
                     ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
