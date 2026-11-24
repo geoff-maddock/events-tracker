@@ -366,8 +366,9 @@ class ThreadsController extends Controller
         $thread = Thread::create($input);
 
         $thread->tags()->attach($syncArray);
-        $thread->entities()->attach($request->input('entity_list'));
-        $thread->series()->attach($request->input('series_list'));
+        // a repeated id would be the same link twice
+        $thread->entities()->attach(array_unique((array) $request->input('entity_list')));
+        $thread->series()->attach(array_unique((array) $request->input('series_list')));
 
         // here, make a call to notify all users who are following any of the sync'd tags
         NotifyFollowers::dispatch($thread);
