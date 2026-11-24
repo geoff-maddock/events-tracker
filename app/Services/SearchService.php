@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -90,37 +91,30 @@ class SearchService
     private function events(string $keyword, string $slug, ?User $user, int $perPage): LengthAwarePaginator
     {
         $useFulltext = $this->useFulltext($keyword);
+        $lower = mb_strtolower($keyword);
 
         $query = Event::query()
             // what events/card-tw reads per card (#2173)
             ->with(EventsController::cardEventEagerLoad($user))
-            ->where(function (Builder $q) use ($keyword, $slug, $useFulltext) {
+            ->whereIntegerInRaw('events.id', $this->idsMatchingAny([
                 // Text match on event's own columns.
-                if ($useFulltext) {
-                    $q->whereRaw(
-                        'MATCH(events.name, events.short, events.description) AGAINST (? IN BOOLEAN MODE)',
-                        [$this->booleanQuery($keyword)]
-                    );
-                } else {
-                    $q->where('events.name', 'like', '%' . $keyword . '%');
-                }
-
+                $this->textMatchIds('events', ['name', 'short', 'description'], $keyword, $useFulltext),
                 // Related-entity / tag / series matches (case-insensitive).
-                // IN (subquery) rather than orWhereHas: OR'd EXISTS subqueries run
-                // once per event row, and cost ~0.3s per query on the full table (#2173).
-                $lower = mb_strtolower($keyword);
-                $q->orWhereIn('events.id', DB::table('entity_event')
-                        ->join('entities', 'entities.id', '=', 'entity_event.entity_id')
-                        ->where('entities.slug', strtolower($slug))
-                        ->select('entity_event.event_id'))
-                    ->orWhereIn('events.id', DB::table('event_tag')
-                        ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
-                        ->whereRaw('LOWER(tags.name) = ?', [$lower])
-                        ->select('event_tag.event_id'))
-                    ->orWhereIn('events.series_id', DB::table('series')->whereRaw('LOWER(name) = ?', [$lower])->select('id'))
-                    ->orWhereIn('events.venue_id', DB::table('entities')->whereRaw('LOWER(name) = ?', [$lower])->select('id'))
-                    ->orWhereIn('events.promoter_id', DB::table('entities')->whereRaw('LOWER(name) = ?', [$lower])->select('id'));
-            })
+                DB::table('entity_event')
+                    ->join('entities', 'entities.id', '=', 'entity_event.entity_id')
+                    ->where('entities.slug', strtolower($slug))
+                    ->select('entity_event.event_id as id'),
+                DB::table('event_tag')
+                    ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
+                    ->whereRaw('LOWER(tags.name) = ?', [$lower])
+                    ->select('event_tag.event_id as id'),
+                DB::table('events')->select('id')
+                    ->whereIn('series_id', DB::table('series')->whereRaw('LOWER(name) = ?', [$lower])->select('id')),
+                DB::table('events')->select('id')
+                    ->whereIn('venue_id', DB::table('entities')->whereRaw('LOWER(name) = ?', [$lower])->select('id')),
+                DB::table('events')->select('id')
+                    ->whereIn('promoter_id', DB::table('entities')->whereRaw('LOWER(name) = ?', [$lower])->select('id')),
+            ]))
             ->visible($user);
 
         $this->applyRecencyOrder($query, 'events');
@@ -171,22 +165,21 @@ class SearchService
     private function entities(string $keyword, int $perPage): LengthAwarePaginator
     {
         $useFulltext = $this->useFulltext($keyword);
+        $lower = mb_strtolower($keyword);
 
         $query = Entity::query()
             ->with(Entity::CARD_EAGER_LOAD)
-            ->where(function (Builder $q) use ($keyword, $useFulltext) {
-                if ($useFulltext) {
-                    $q->whereRaw(
-                        'MATCH(entities.name, entities.short, entities.description) AGAINST (? IN BOOLEAN MODE)',
-                        [$this->booleanQuery($keyword)]
-                    );
-                } else {
-                    $q->where('entities.name', 'like', '%' . $keyword . '%');
-                }
-
-                $q->orWhereHas('tags', $this->ciNameMatch($keyword))
-                    ->orWhereHas('aliases', $this->ciNameMatch($keyword));
-            });
+            ->whereIntegerInRaw('entities.id', $this->idsMatchingAny([
+                $this->textMatchIds('entities', ['name', 'short', 'description'], $keyword, $useFulltext),
+                DB::table('entity_tag')
+                    ->join('tags', 'tags.id', '=', 'entity_tag.tag_id')
+                    ->whereRaw('LOWER(tags.name) = ?', [$lower])
+                    ->select('entity_tag.entity_id as id'),
+                DB::table('alias_entity')
+                    ->join('aliases', 'aliases.id', '=', 'alias_entity.alias_id')
+                    ->whereRaw('LOWER(aliases.name) = ?', [$lower])
+                    ->select('alias_entity.entity_id as id'),
+            ]));
 
         if ($useFulltext) {
             $query->orderByRaw(
@@ -380,10 +373,47 @@ class SearchService
     }
 
     /**
-     * @param  Builder<*>  $query
+     * The ids of the rows that match any one of the given queries, each of
+     * which selects a single `id` column.
+     *
+     * A row can match on its own text or through something it is linked to.
+     * Written as one WHERE with ORs, MySQL gives up on the FULLTEXT index and
+     * reads the whole table, twice with the page count (#2393). As a UNION
+     * each part uses its own index. The ids are fetched here and not left as
+     * a subquery: given the subquery, MySQL still starts from every visible
+     * row and looks each one up in it.
+     *
+     * @param  non-empty-list<QueryBuilder>  $queries
+     * @return list<int>
+     */
+    private function idsMatchingAny(array $queries): array
+    {
+        $union = array_shift($queries);
+        foreach ($queries as $query) {
+            $union->union($query);
+        }
+
+        return $union->pluck('id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    /**
+     * The ids of the rows whose own text matches the keyword.
+     *
      * @param  array<int, string>  $columns
      */
-    private function applyTextMatch(Builder $query, string $table, array $columns, string $keyword, bool $useFulltext): void
+    private function textMatchIds(string $table, array $columns, string $keyword, bool $useFulltext): QueryBuilder
+    {
+        $query = DB::table($table)->select("$table.id");
+        $this->applyTextMatch($query, $table, $columns, $keyword, $useFulltext);
+
+        return $query;
+    }
+
+    /**
+     * @param  Builder<*>|QueryBuilder  $query
+     * @param  array<int, string>  $columns
+     */
+    private function applyTextMatch(Builder|QueryBuilder $query, string $table, array $columns, string $keyword, bool $useFulltext): void
     {
         if ($useFulltext) {
             $cols = implode(',', array_map(fn ($c) => "$table.$c", $columns));
