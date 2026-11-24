@@ -106,7 +106,7 @@
 
     @if($response->isApprovedButNotShared())
         <p class="text-sm text-muted-foreground mt-4">
-            <i class="bi bi-exclamation-triangle text-yellow-500"></i>
+            <i class="bi bi-exclamation-triangle text-warning"></i>
             Approved, but the submitter kept this private — it will not be shown. Set visibility to public to allow it.
         </p>
     @elseif($response->isDisplayable())

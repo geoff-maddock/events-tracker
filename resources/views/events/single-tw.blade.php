@@ -73,7 +73,7 @@
             <div class="flex flex-col gap-1">
                 <!-- Visibility Badge -->
                 @if ($event->visibility->name !== 'Public')
-                <span class="text-xs font-bold text-yellow-500 uppercase tracking-wider">{{ $event->visibility->name }}</span>
+                <span class="text-xs font-bold text-warning uppercase tracking-wider">{{ $event->visibility->name }}</span>
                 @endif
 
                 <!-- Date -->

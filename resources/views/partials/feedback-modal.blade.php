@@ -109,7 +109,7 @@
                                                 :aria-label="n + ' out of ' + question.max"
                                                 :aria-pressed="answers[question.key] === n"
                                                 class="p-1 text-2xl leading-none transition-colors"
-                                                :class="answers[question.key] >= n ? 'text-yellow-400' : 'text-muted-foreground hover:text-foreground'">
+                                                :class="answers[question.key] >= n ? 'text-warning' : 'text-muted-foreground hover:text-foreground'">
                                             <i class="bi" :class="answers[question.key] >= n ? 'bi-star-fill' : 'bi-star'"></i>
                                         </button>
                                     </template>

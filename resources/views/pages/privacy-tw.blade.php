@@ -14,19 +14,19 @@
             </h2>
             <ul class="space-y-2 text-muted-foreground ml-10">
                 <li class="flex items-start gap-2">
-                    <i class="bi bi-check-circle text-green-500 mt-1"></i>
+                    <i class="bi bi-check-circle text-success mt-1"></i>
                     <span>We respect your privacy and strive to keep your data safe and secure.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                    <i class="bi bi-check-circle text-green-500 mt-1"></i>
+                    <i class="bi bi-check-circle text-success mt-1"></i>
                     <span>We don't use your data for any purpose other than your use and interaction with this site.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                    <i class="bi bi-check-circle text-green-500 mt-1"></i>
+                    <i class="bi bi-check-circle text-success mt-1"></i>
                     <span>We don't share your data with any 3rd parties. Sensitive data such as passwords are encrypted and not available to users or administrators.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                    <i class="bi bi-check-circle text-green-500 mt-1"></i>
+                    <i class="bi bi-check-circle text-success mt-1"></i>
                     <span>We display no advertisements and share no data with advertisers.</span>
                 </li>
             </ul>

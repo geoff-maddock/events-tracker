@@ -16,8 +16,8 @@
             @if (session('resent'))
                 <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                     <div class="flex items-center gap-3">
-                        <i class="bi bi-check-circle text-green-500"></i>
-                        <span class="text-green-500">A fresh verification link has been sent to your email address.</span>
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span class="text-success">A fresh verification link has been sent to your email address.</span>
                     </div>
                 </div>
             @endif

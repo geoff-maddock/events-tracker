@@ -187,10 +187,10 @@
 						<span class="text-gray-600 dark:text-gray-400 font-bold">
 							{{ $series->occurrenceType->name }}
 						</span>
-						<span class="mx-1 text-gray-500">{{ $series->occurrence_repeat }}</span>
+						<span class="mx-1 text-muted-foreground">{{ $series->occurrence_repeat }}</span>
 					</div>
 
-					<div class="text-sm text-gray-500 space-y-1">
+					<div class="text-sm text-muted-foreground space-y-1">
 						<p>Founded {{ $series->founded_at ? $series->founded_at->format('l F jS Y') : 'unknown' }}</p>
 
 						@if ($series->occurrenceType->name != 'No Schedule')
@@ -221,20 +221,20 @@
 							<a href="/events/type/{{ $series->eventType->slug }}" class="text-gray-500 dark:text-gray-400 font-bold hover:text-gray-900 dark:hover:text-gray-100">
 								{{ $series->eventType->name }}
 							</a>
-							<span class="mx-1 text-gray-500">series</span>
+							<span class="mx-1 text-muted-foreground">series</span>
 						</div>
 					@endif
 
 					<!-- Promoter -->
 					@if ($series->promoter)
-						<div class="flex items-center text-sm text-gray-500">
+						<div class="flex items-center text-sm text-muted-foreground">
 							<i class="bi bi-megaphone mr-2 h-4 w-4"></i>
 							<a href="/entities/{{ $series->promoter->slug }}" class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline-offset-2 hover:underline">
 								{{ $series->promoter->name }}
 							</a>
 						</div>
 					@elseif ($series->promoterLabel())
-						<div class="flex items-center text-sm text-gray-500">
+						<div class="flex items-center text-sm text-muted-foreground">
 							<i class="bi bi-megaphone mr-2 h-4 w-4"></i>
 							<span>{{ $series->promoterLabel() }}</span>
 						</div>
@@ -242,7 +242,7 @@
 
 					<!-- Venue -->
 					@if ($series->venue)
-						<div class="flex items-center text-sm text-gray-500">
+						<div class="flex items-center text-sm text-muted-foreground">
 							<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
 							<a href="/entities/{{ $series->venue->slug }}" class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline-offset-2 hover:underline">
 								{{ $series->venue->name }}
@@ -252,7 +252,7 @@
 							@endif
 						</div>
 					@elseif ($series->venueLabel())
-						<div class="flex items-center text-sm text-gray-500">
+						<div class="flex items-center text-sm text-muted-foreground">
 							<i class="bi bi-geo-alt mr-2 h-4 w-4"></i>
 							<span>{{ $series->venueLabel() }}</span>
 						</div>

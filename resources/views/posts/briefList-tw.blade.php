@@ -30,7 +30,7 @@
 							<form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline" data-confirm="Are you sure you want to delete this post?">
 								@csrf
 								@method('DELETE')
-								<button type="submit" class="text-muted-foreground hover:text-red-500" title="Delete the post">
+								<button type="submit" class="text-muted-foreground hover:text-destructive" title="Delete the post">
 									<i class="bi bi-trash-fill"></i>
 								</button>
 							</form>
@@ -38,11 +38,11 @@
 
 						@if ($signedIn)
 							@if ($like = $post->likedBy($user))
-								<a data-method="post" href="{!! route('posts.unlike', ['id' => $post->id]) !!}" title="Unlike" class="text-yellow-500 hover:text-yellow-400">
+								<a data-method="post" href="{!! route('posts.unlike', ['id' => $post->id]) !!}" title="Unlike" class="text-warning hover:text-warning/80">
 									<i class="bi bi-star-fill"></i>
 								</a>
 							@else
-								<a data-method="post" href="{!! route('posts.like', ['id' => $post->id]) !!}" title="Like" class="text-muted-foreground hover:text-yellow-500">
+								<a data-method="post" href="{!! route('posts.like', ['id' => $post->id]) !!}" title="Like" class="text-muted-foreground hover:text-warning">
 									<i class="bi bi-star"></i>
 								</a>
 							@endif

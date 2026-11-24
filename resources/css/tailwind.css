@@ -27,6 +27,7 @@
     /* text on the page or card background; --destructive is tuned as a button fill */
     --destructive-text: 0 74% 42%;
     --success-text: 142 72% 25%;
+    --warning-text: 26 90% 37%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
@@ -53,6 +54,7 @@
     --destructive-foreground: 0 0% 98%;
     --destructive-text: 0 91% 71%;
     --success-text: 142 69% 58%;
+    --warning-text: 43 96% 56%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;

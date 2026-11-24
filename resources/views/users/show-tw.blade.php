@@ -87,7 +87,7 @@
 
                         @can('grant_access')
                             @if (!$user->isActive)
-                                <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-accent transition-colors">
+                                <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('users.activate', ['id' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-success hover:bg-accent transition-colors">
                                     <i class="bi bi-check-circle mr-3 w-4 text-center"></i>
                                     Activate
                                 </a>
@@ -123,7 +123,7 @@
 
                         @can('impersonate_user')
                             <div class="border-t border-border my-1"></div>
-                            <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-amber-600 hover:bg-accent transition-colors">
+                            <a data-confirm="" data-confirm-button="Confirm" data-method="post" href="{{ route('user.impersonate', ['user' => $user->id]) }}" class="flex items-center px-4 py-2 text-sm text-warning hover:bg-accent transition-colors">
                                 <i class="bi bi-person-badge mr-3 w-4 text-center"></i>
                                 Impersonate
                             </a>
@@ -160,9 +160,9 @@
                     <div class="flex items-center gap-2">
                         <span class="font-semibold text-foreground">Status:</span>
                         @if ($user->status->name !== 'Active')
-                            <span class="text-amber-500 font-medium">{{ $user->status->name }}</span>
+                            <span class="text-warning font-medium">{{ $user->status->name }}</span>
                         @else
-                            <span class="text-green-500">{{ $user->status->name }}</span>
+                            <span class="text-success">{{ $user->status->name }}</span>
                         @endif
                     </div>
 
@@ -232,32 +232,32 @@
                         <div class="space-y-1 text-sm">
                             @if (($signedIn && (Auth::user()->id == $user->id || Auth::user()->id == Config::get('app.superuser')) || $user->profile->setting_public_profile == 1))
                                 <div class="flex items-center gap-2">
-                                    <i class="bi {{ $user->profile->setting_weekly_update ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <i class="bi {{ $user->profile->setting_weekly_update ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Receive Weekly Updates</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <i class="bi {{ $user->profile->setting_daily_update ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <i class="bi {{ $user->profile->setting_daily_update ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Receive Daily Updates</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <i class="bi {{ $user->profile->setting_instant_update ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <i class="bi {{ $user->profile->setting_instant_update ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Receive Instant Updates</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <i class="bi {{ $user->profile->setting_forum_update ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <i class="bi {{ $user->profile->setting_forum_update ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Receive Forum Updates</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <i class="bi {{ $user->profile->setting_notify_threads_by_follow ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <i class="bi {{ $user->profile->setting_notify_threads_by_follow ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Notify Discussions by Follow</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <i class="bi {{ $user->profile->setting_feedback_requests ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                    <i class="bi {{ $user->profile->setting_feedback_requests ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                     <span class="text-muted-foreground">Receive Feedback Requests</span>
                                 </div>
                             @endif
                             <div class="flex items-center gap-2">
-                                <i class="bi {{ $user->profile->setting_public_profile ? 'bi-check-circle text-green-500' : 'bi-x-circle text-muted-foreground' }}"></i>
+                                <i class="bi {{ $user->profile->setting_public_profile ? 'bi-check-circle text-success' : 'bi-x-circle text-muted-foreground' }}"></i>
                                 <span class="text-muted-foreground">Public Profile</span>
                             </div>
                         </div>

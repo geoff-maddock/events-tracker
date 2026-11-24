@@ -18,7 +18,7 @@
                     </a>
 
                     @if ($entity->entityStatus && $entity->entityStatus->name === 'Inactive')
-                        <span class="text-xs text-amber-500">[Inactive]</span>
+                        <span class="text-xs text-warning">[Inactive]</span>
                     @endif
 
                     @if ($signedIn && $entity->isOwnedBy($user))

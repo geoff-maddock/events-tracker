@@ -1,16 +1,16 @@
 @if (isset($tag))
-    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-muted-foreground mx-2">/</span>
     @if (is_object($tag))
         <a href="{{ route('tags.show', [$tag->slug]) }}" class="text-primary hover:text-primary-hover transition-colors">
             {{ ucfirst($tag->name) }}
         </a>
         @if ($signedIn)
             @if ($follow = $tag->followedBy($user))
-                <a data-method="post" href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="Unfollow" class="ml-1 text-green-500 hover:text-green-400">
+                <a data-method="post" href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="Unfollow" class="ml-1 text-success hover:text-success/80">
                     <i class="bi bi-check-circle-fill"></i>
                 </a>
             @else
-                <a data-method="post" href="{{ route('tags.follow', ['id' => $tag->id]) }}" title="Follow" class="ml-1 text-gray-400 hover:text-primary">
+                <a data-method="post" href="{{ route('tags.follow', ['id' => $tag->id]) }}" title="Follow" class="ml-1 text-muted-foreground hover:text-primary">
                     <i class="bi bi-plus-circle"></i>
                 </a>
             @endif
@@ -23,18 +23,18 @@
 @endif
 
 @if (isset($related))
-    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-muted-foreground mx-2">/</span>
     @if (is_object($related))
         <a href="{{ route('entities.show', [$related->slug]) }}" class="text-primary hover:text-primary-hover transition-colors">
             {{ ucfirst($related->name) }}
         </a>
         @if ($signedIn)
             @if ($follow = $related->followedBy($user))
-                <a data-method="post" href="{{ route('entities.unfollow', ['id' => $related->id]) }}" title="Unfollow" class="ml-1 text-green-500 hover:text-green-400">
+                <a data-method="post" href="{{ route('entities.unfollow', ['id' => $related->id]) }}" title="Unfollow" class="ml-1 text-success hover:text-success/80">
                     <i class="bi bi-check-circle-fill"></i>
                 </a>
             @else
-                <a data-method="post" href="{{ route('entities.follow', ['id' => $related->id]) }}" title="Follow" class="ml-1 text-gray-400 hover:text-primary">
+                <a data-method="post" href="{{ route('entities.follow', ['id' => $related->id]) }}" title="Follow" class="ml-1 text-muted-foreground hover:text-primary">
                     <i class="bi bi-plus-circle"></i>
                 </a>
             @endif
@@ -47,21 +47,21 @@
 @endif
 
 @if (isset($dateFilterDescription))
-    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-muted-foreground mx-2">/</span>
     <span class="text-primary hover:text-primary-hover transition-colors">
         {{ $dateFilterDescription }}
     </span>
 @endif
 
 @if (isset($type))
-    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-muted-foreground mx-2">/</span>
     <span class="text-primary hover:text-primary-hover transition-colors">
         {{ ucfirst($type) }}
     </span>
 @endif
 
 @if (isset($role))
-    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-muted-foreground mx-2">/</span>
     <span class="text-primary hover:text-primary-hover transition-colors">
         {{ ucfirst($role) }}
     </span>

@@ -376,10 +376,10 @@ Pittsburgh Events Calendar — Concerts, Shows & More
 		function showCopiedFeedback() {
 			const originalContent = btn.innerHTML;
 			btn.innerHTML = '<i class="bi bi-check2"></i><span>Copied!</span>';
-			btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+			btn.classList.add('bg-green-500/10', 'border-green-500/50', 'text-success');
 			setTimeout(function() {
 				btn.innerHTML = originalContent;
-				btn.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
+				btn.classList.remove('bg-green-500/10', 'border-green-500/50', 'text-success');
 			}, 2000);
 		}
 

@@ -117,7 +117,7 @@
                             <td class="py-2 pr-4">{{ $response->subject->name ?? '—' }}</td>
                             <td class="py-2 pr-4">
                                 @if($ratingAnswer)
-                                    <span class="text-yellow-400">{{ str_repeat('★', (int) $ratingAnswer->value_int) }}</span>
+                                    <span class="text-warning">{{ str_repeat('★', (int) $ratingAnswer->value_int) }}</span>
                                 @else
                                     <span class="text-muted-foreground">—</span>
                                 @endif
