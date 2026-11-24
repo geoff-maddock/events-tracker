@@ -90,7 +90,7 @@ class OpenApiSpecParityTest extends TestCase
     {
         $operations = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             $uri = '/'.ltrim($route->uri(), '/');
             if (!str_starts_with($uri, '/api/')) {
                 continue;
