@@ -1,0 +1,189 @@
+- generic [active] [ref=f19e1]:
+  - generic [ref=f19e2]:
+    - complementary [ref=f19e3]:
+      - generic [ref=f19e4]:
+        - link "DEV Arcane City" [ref=f19e5] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - generic [ref=f19e7]: pittsburgh events guide
+      - generic [ref=f19e8]:
+        - search [ref=f19e11]:
+          - generic [ref=f19e12]:
+            - combobox "Search" [ref=f19e13]
+            - generic [ref=f19e14]: 
+        - generic [ref=f19e15]:
+          - button "Add something" [ref=f19e16]:
+            - generic [aria-hidden] [ref=f19e17]: 
+          - text:   
+      - navigation [ref=f19e18]:
+        - generic [ref=f19e19]:
+          - link " Events" [ref=f19e20] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=f19e21]: 
+            - generic [ref=f19e22]: Events
+          - generic [ref=f19e23]:
+            - link " Tonight" [ref=f19e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=f19e25]: 
+              - generic [ref=f19e26]: Tonight
+            - link " Weekend" [ref=f19e27] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=f19e28]: 
+              - generic [ref=f19e29]: Weekend
+            - link " This Week" [ref=f19e30] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=f19e31]: 
+              - generic [ref=f19e32]: This Week
+            - link " Grid" [ref=f19e33] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=f19e34]: 
+              - generic [ref=f19e35]: Grid
+        - link " Event Calendar" [ref=f19e37] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=f19e38]: 
+          - generic [ref=f19e39]: Event Calendar
+        - link " Entities" [ref=f19e40] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=f19e41]: 
+          - generic [ref=f19e42]: Entities
+        - link " Series" [ref=f19e43] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=f19e44]: 
+          - generic [ref=f19e45]: Series
+        - link " Tags" [ref=f19e46] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=f19e47]: 
+          - generic [ref=f19e48]: Tags
+        - link " Forum" [ref=f19e49] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=f19e50]: 
+          - generic [ref=f19e51]: Forum
+        - link " About" [ref=f19e53] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=f19e54]: 
+          - generic [ref=f19e55]: About
+        - link " Help" [ref=f19e56] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=f19e57]: 
+          - generic [ref=f19e58]: Help
+      - generic [ref=f19e59]:
+        - generic [ref=f19e60]:
+          - link " Log in" [ref=f19e61] [cursor=pointer]:
+            - /url: https://dev.arcane.city/login
+            - generic [ref=f19e62]: 
+            - generic [ref=f19e63]: Log in
+          - link "Register" [ref=f19e64] [cursor=pointer]:
+            - /url: https://dev.arcane.city/register
+        - button "Switch to light mode" [ref=f19e67]:
+          - generic [ref=f19e68]: 
+    - text:                
+    - generic [ref=f19e69]:
+      - text:      
+      - main [ref=f19e70]:
+        - generic [ref=f19e71]:
+          - heading "Events in Pittsburgh Tonight" [level=1] [ref=f19e72]
+          - paragraph [ref=f19e73]: 1 show tonight — Hip Hop, Rap, Trap & more.
+        - generic [ref=f19e74]:
+          - link "Tonight" [ref=f19e75] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - link "This Weekend" [ref=f19e76] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - link "This Week" [ref=f19e77] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+        - generic [ref=f19e78]:
+          - link "Hip Hop 1" [ref=f19e79] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight?tag=hip-hop
+            - text: Hip Hop
+            - generic [ref=f19e80]: "1"
+          - link "Rap 1" [ref=f19e81] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight?tag=rap
+            - text: Rap
+            - generic [ref=f19e82]: "1"
+          - link "Trap 1" [ref=f19e83] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight?tag=trap
+            - text: Trap
+            - generic [ref=f19e84]: "1"
+        - article [ref=f19e86]:
+          - generic [ref=f19e87]:
+            - link "View photo for Chief Keef" [ref=f19e88] [cursor=pointer]:
+              - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788294229_a2e3152f-76d7-4bde-bd7a-a232526c2932.webp
+              - img "Chief Keef" [ref=f19e89]
+            - link "Sign in to mark Chief Keef as attending" [ref=f19e91] [cursor=pointer]:
+              - /url: https://dev.arcane.city/login
+              - generic [aria-hidden] [ref=f19e92]: 
+          - generic [ref=f19e93]:
+            - heading [level=3] [ref=f19e94]:
+              - link "Chief Keef" [ref=f19e95] [cursor=pointer]:
+                - /url: https://dev.arcane.city/events/chief-keef
+            - paragraph [ref=f19e96]: Chicago drill pioneer Chief Keef performs live at Roxian Theatre in Pittsburgh, PA.
+            - link "Concert" [ref=f19e98] [cursor=pointer]:
+              - /url: /events/type/concert
+            - generic [ref=f19e99]:
+              - generic [ref=f19e100]:
+                - generic [ref=f19e101]: 
+                - link "Monday, October 12, 2026 at 8:00 PM" [ref=f19e102] [cursor=pointer]:
+                  - /url: /events/by-date/2026/10/12
+              - generic [ref=f19e103]:
+                - generic [ref=f19e104]: 
+                - generic [ref=f19e105]: 18+
+              - link "Buy tickets for Chief Keef" [ref=f19e107] [cursor=pointer]:
+                - /url: https://dev.arcane.city/go/evt-9066
+                - generic [aria-hidden] [ref=f19e108]: 
+                - generic [ref=f19e109]: Buy Tickets
+            - generic [ref=f19e111]:
+              - link "Citizens Live at The Wylie" [ref=f19e112] [cursor=pointer]:
+                - /url: https://dev.arcane.city/entities/citizens-live-at-the-wylie
+              - link "Filter events by Citizens Live at The Wylie" [ref=f19e113] [cursor=pointer]:
+                - /url: https://dev.arcane.city/events/related-to/citizens-live-at-the-wylie
+                - generic [aria-hidden] [ref=f19e114]: 
+            - generic [ref=f19e115]:
+              - generic [ref=f19e116]:
+                - link "Hip Hop" [ref=f19e117] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/hip-hop
+                - link "View details for Hip Hop" [ref=f19e118] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/hip-hop
+                  - generic [aria-hidden] [ref=f19e119]: 
+              - generic [ref=f19e120]:
+                - link "Rap" [ref=f19e121] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/rap
+                - link "View details for Rap" [ref=f19e122] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/rap
+                  - generic [aria-hidden] [ref=f19e123]: 
+              - generic [ref=f19e124]:
+                - link "Trap" [ref=f19e125] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/trap
+                - link "View details for Trap" [ref=f19e126] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/trap
+                  - generic [aria-hidden] [ref=f19e127]: 
+          - iframe [ref=f19e130]
+          - generic [ref=f19e132]:
+            - link "External link for Chief Keef" [ref=f19e133] [cursor=pointer]:
+              - /url: https://chiefkeef.com
+              - generic [aria-hidden] [ref=f19e134]: 
+            - link "Buy tickets for Chief Keef" [ref=f19e135] [cursor=pointer]:
+              - /url: https://dev.arcane.city/go/evt-9066
+              - generic [aria-hidden] [ref=f19e136]: 
+              - generic [ref=f19e137]: Buy Tickets
+        - generic [ref=f19e139]:
+          - generic [ref=f19e140]: DEV Arcane City
+          - generic [aria-hidden] [ref=f19e141]: ·
+          - link "Tonight" [ref=f19e142] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=f19e143]: ·
+          - link "This Weekend" [ref=f19e144] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=f19e145]: ·
+          - link "This Week" [ref=f19e146] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=f19e147]: ·
+          - link "Events" [ref=f19e148] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=f19e149]: ·
+          - link "Entities" [ref=f19e150] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f19e151]: ·
+          - link "Series" [ref=f19e152] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f19e153]: ·
+          - link "Tags" [ref=f19e154] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

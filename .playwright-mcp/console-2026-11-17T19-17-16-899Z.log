@@ -1,0 +1,15 @@
+[       0ms] Error: Page crashed and was reset to about:blank.
+    at _Tab.logErrorMessage (/home/gmaddock/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/lib/coreBundle.js:67261:62)
+    at Context.ensureTab (/home/gmaddock/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/lib/coreBundle.js:67687:28)
+    at async Object.handle (/home/gmaddock/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/lib/coreBundle.js:66448:20)
+    at async BrowserBackend.callTool (/home/gmaddock/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/lib/coreBundle.js:68478:11)
+    at async /home/gmaddock/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/lib/coreBundle.js:74872:26
+    at async wrappedHandler (/home/gmaddock/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/lib/utilsBundle.js:87327:24)
+[   12010ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-6835ba7d157d.js:55
+[   47512ms] [LOG] 19:18:04.410: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:1
+[   47632ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:1
+[   47635ms] [LOG] 19:18:04.533: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:1
+[   47654ms] [LOG] 19:18:04.552: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:1
+[   48398ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:1
+[   48439ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:1
+[   48781ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-6835ba7d157d.js:55

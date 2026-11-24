@@ -1,0 +1,136 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=e4]:
+      - generic [aria-hidden] [ref=e5]: 
+    - generic [ref=e7]: Upcoming shows
+  - region [ref=e106]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - heading [level=2] [ref=e107]:
+          - link "Arie Cole" [ref=e108] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/arie-cole
+        - paragraph [ref=e37]: Make Her Sit Forever
+        - paragraph [ref=e38]:
+          - link "Sun, Jan 17 · Slappers N Bangers vs Union" [ref=e109] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/slappers-n-bangers-vs-union-jan-16-2027
+      - button "Sign in to follow this artist" [ref=e13]:
+        - generic [aria-hidden] [ref=e14]: 
+    - iframe [ref=e110]:
+      - generic [ref=f3e1]:
+        - generic [ref=f3e5]:
+          - generic [ref=f3e8]:
+            - link "Make Her Sit Forever" [ref=f3e9] [cursor=pointer]:
+              - /url: https://soundcloud.com/theariecole/make-her-sit-forever
+              - generic "Make Her Sit Forever" [ref=f3e11]
+            - button "Follow" [ref=f3e13] [cursor=pointer]
+          - generic [ref=f3e14]:
+            - generic [ref=f3e16]:
+              - application "Pause" [ref=f3e18] [cursor=pointer]
+              - generic [ref=f3e25]:
+                - link "Arie Cole" [ref=f3e26] [cursor=pointer]:
+                  - /url: https://soundcloud.com/theariecole
+                - link "Make Her Sit Forever" [ref=f3e27] [cursor=pointer]:
+                  - /url: https://soundcloud.com/theariecole/make-her-sit-forever
+              - generic [ref=f3e28]:
+                - link "Play on SoundCloud" [ref=f3e30] [cursor=pointer]:
+                  - /url: https://soundcloud.com/theariecole/make-her-sit-forever
+                - generic [ref=f3e34]:
+                  - button "Like" [ref=f3e35] [cursor=pointer]
+                  - button "Share" [ref=f3e36] [cursor=pointer]
+            - list [ref=f3e44]:
+              - listitem [ref=f3e45]:
+                - generic "364 plays" [ref=f3e46]: "364"
+        - link "SoundCloud privacy policy" [ref=f3e54] [cursor=pointer]:
+          - /url: https://soundcloud.com/pages/privacy
+          - text: Privacy policy
+    - generic [ref=e15]:
+      - generic [aria-hidden] [ref=e16]: 0:05
+      - slider "Seek within the track" [ref=e17]: "96"
+      - generic [aria-hidden] [ref=e18]: 0:58
+    - group "Player controls" [ref=e19]:
+      - button "Previous artist" [ref=e20]:
+        - generic [aria-hidden] [ref=e21]: 
+      - button "Back 15 seconds" [ref=e22]:
+        - generic [aria-hidden] [ref=e23]: 
+      - button "Pause" [ref=e111]:
+        - generic [aria-hidden] [ref=e25]: 
+      - button "Forward 15 seconds" [ref=e26]:
+        - generic [aria-hidden] [ref=e27]: 
+      - button "Next artist" [ref=e28]:
+        - generic [aria-hidden] [ref=e29]: 
+    - status [ref=e30]
+  - region [ref=e31]:
+    - heading "Up next" [level=2] [ref=e32]
+    - list [ref=e33]:
+      - listitem [ref=e43]:
+        - button "1 Thunder Vest Fri, Nov 6 · Flipper with Justin Pearson (The Locust) on Lead Vocals Bandcamp" [ref=e44]:
+          - generic [ref=e45]: "1"
+          - generic [ref=e46]:
+            - generic [ref=e47]: Thunder Vest
+            - generic [ref=e48]: Fri, Nov 6 · Flipper with Justin Pearson (The Locust) on Lead Vocals
+          - text: 
+          - generic [ref=e49]: Bandcamp
+      - listitem [ref=e50]:
+        - button "2 Mires Sun, Nov 8 · Stalemate of Wills, Mires, Passing Bell at Remedy Bandcamp" [ref=e51]:
+          - generic [ref=e52]: "2"
+          - generic [ref=e53]:
+            - generic [ref=e54]: Mires
+            - generic [ref=e55]: Sun, Nov 8 · Stalemate of Wills, Mires, Passing Bell at Remedy
+          - text: 
+          - generic [ref=e56]: Bandcamp
+      - listitem [ref=e57]:
+        - button "3 Spitbite Tue, Nov 10 · The Queers with Spitbite and Right on Warriors Bandcamp" [ref=e58]:
+          - generic [ref=e59]: "3"
+          - generic [ref=e60]:
+            - generic [ref=e61]: Spitbite
+            - generic [ref=e62]: Tue, Nov 10 · The Queers with Spitbite and Right on Warriors
+          - text: 
+          - generic [ref=e63]: Bandcamp
+      - listitem [ref=e64]:
+        - 'button "4 Hemlock for Socrates Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=e65]':
+          - generic [ref=e66]: "4"
+          - generic [ref=e67]:
+            - generic [ref=e68]: Hemlock for Socrates
+            - generic [ref=e69]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=e70]: Bandcamp
+      - listitem [ref=e71]:
+        - 'button "5 Millie Dread Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=e72]':
+          - generic [ref=e73]: "5"
+          - generic [ref=e74]:
+            - generic [ref=e75]: Millie Dread
+            - generic [ref=e76]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=e77]: Bandcamp
+      - listitem [ref=e78]:
+        - button "6 Perimeter Junk Sun, Nov 15 · Ultraviolet w/ Veronica Vasicka, Formosa Bandcamp" [ref=e79]:
+          - generic [ref=e80]: "6"
+          - generic [ref=e81]:
+            - generic [ref=e82]: Perimeter Junk
+            - generic [ref=e83]: Sun, Nov 15 · Ultraviolet w/ Veronica Vasicka, Formosa
+          - text: 
+          - generic [ref=e84]: Bandcamp
+      - listitem [ref=e85]:
+        - button "7 Short Fictions Mon, Nov 16 · Worst Party Ever + Equipment w/ Ogbert the Nerd + Short Fictions Bandcamp" [ref=e86]:
+          - generic [ref=e87]: "7"
+          - generic [ref=e88]:
+            - generic [ref=e89]: Short Fictions
+            - generic [ref=e90]: Mon, Nov 16 · Worst Party Ever + Equipment w/ Ogbert the Nerd + Short Fictions
+          - text: 
+          - generic [ref=e91]: Bandcamp
+      - listitem [ref=e92]:
+        - button "8 Peace Talks Mon, Nov 16 · Deerhoof with Peace Talks Bandcamp" [ref=e93]:
+          - generic [ref=e94]: "8"
+          - generic [ref=e95]:
+            - generic [ref=e96]: Peace Talks
+            - generic [ref=e97]: Mon, Nov 16 · Deerhoof with Peace Talks
+          - text: 
+          - generic [ref=e98]: Bandcamp
+      - listitem [ref=e99]:
+        - button "9 Arie Cole Sun, Jan 17 · Slappers N Bangers vs Union SoundCloud" [active] [ref=e100]:
+          - generic [ref=e101]: "9"
+          - generic [ref=e102]:
+            - generic [ref=e103]: Arie Cole
+            - generic [ref=e104]: Sun, Jan 17 · Slappers N Bangers vs Union
+          - text: 
+          - generic [ref=e105]: SoundCloud

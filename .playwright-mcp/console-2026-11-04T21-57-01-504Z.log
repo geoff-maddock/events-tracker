@@ -1,0 +1,11 @@
+[     177ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[     180ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[     936ms] [LOG] 21:57:02.438: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[     947ms] [LOG] 21:57:02.451: initing HTMLEmbeddedPlayer3: "neue" @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[     993ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   16643ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   16644ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   17720ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-4c43fee4c24f.js:54
+[   24274ms] [LOG] 21:57:25.776: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[   24284ms] [LOG] 21:57:25.787: initing HTMLEmbeddedPlayer3: "neue" @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[   24309ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0

@@ -1,0 +1,388 @@
+- generic [active] [ref=f5e1]:
+  - link "Skip to main content" [ref=f5e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f5e3]:
+    - text:                    
+    - dialog "Navigation menu" [ref=f5e4]:
+      - button "Close navigation menu" [ref=f5e5]:
+        - generic [aria-hidden] [ref=f5e6]: 
+      - generic [ref=f5e7]:
+        - link "DEV Arcane City" [ref=f5e8] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - text: pittsburgh events guide
+      - navigation "Main" [ref=f5e10]:
+        - generic [ref=f5e11]:
+          - link "Events" [ref=f5e12] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [aria-hidden] [ref=f5e13]: 
+          - generic [ref=f5e15]:
+            - link "Tonight" [ref=f5e16] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [aria-hidden] [ref=f5e17]: 
+            - link "This Week" [ref=f5e19] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [aria-hidden] [ref=f5e20]: 
+            - link "This Weekend" [ref=f5e22] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [aria-hidden] [ref=f5e23]: 
+            - link "Event Grid" [ref=f5e25] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [aria-hidden] [ref=f5e26]: 
+        - text: 
+        - link "Listen" [ref=f5e28] [cursor=pointer]:
+          - /url: https://dev.arcane.city/player?source=upcoming
+          - generic [aria-hidden] [ref=f5e29]: 
+        - link "Entities" [ref=f5e31] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f5e32]: 
+        - link "Series" [ref=f5e34] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f5e35]: 
+        - link "Tags" [ref=f5e37] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [aria-hidden] [ref=f5e38]: 
+        - link "Forum" [ref=f5e40] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [aria-hidden] [ref=f5e41]: 
+        - link "About" [ref=f5e44] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [aria-hidden] [ref=f5e45]: 
+        - link "Help" [ref=f5e47] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [aria-hidden] [ref=f5e48]: 
+      - generic [ref=f5e50]:
+        - link " My Account" [ref=f5e51] [cursor=pointer]:
+          - /url: https://dev.arcane.city/login
+          - generic [ref=f5e52]: 
+          - generic [ref=f5e53]: My Account
+        - link " Register" [ref=f5e54] [cursor=pointer]:
+          - /url: https://dev.arcane.city/register
+          - generic [ref=f5e55]: 
+          - generic [ref=f5e56]: Register
+      - button "Switch to light mode" [ref=f5e60]:
+        - generic [ref=f5e61]: 
+    - generic [ref=f5e62]:
+      - banner [ref=f5e63]:
+        - generic [ref=f5e64]:
+          - button "Open navigation menu" [ref=f5e65]:
+            - generic [aria-hidden] [ref=f5e66]: 
+          - link "DEV Arcane City pittsburgh events guide" [ref=f5e67] [cursor=pointer]:
+            - /url: https://dev.arcane.city
+            - generic [ref=f5e68]: DEV Arcane City
+            - generic [ref=f5e69]: pittsburgh events guide
+          - search [ref=f5e72]:
+            - generic [ref=f5e73]:
+              - combobox "Search" [ref=f5e74]
+              - generic [ref=f5e75]: 
+          - generic [ref=f5e77]:
+            - button "Add something" [ref=f5e78]:
+              - generic [aria-hidden] [ref=f5e79]: 
+            - text:   
+      - main [ref=f5e80]:
+        - generic [ref=f5e81]:
+          - generic [ref=f5e82]:
+            - heading "Tags" [level=1] [ref=f5e83]
+            - paragraph [ref=f5e84]: Browse genres and keyword tags.
+          - link " Popular" [ref=f5e86] [cursor=pointer]:
+            - /url: https://dev.arcane.city/popular#popular-tags
+            - generic [ref=f5e87]: 
+            - text: Popular
+          - button " Show Filters " [ref=f5e89]:
+            - generic [ref=f5e90]: 
+            - generic [ref=f5e91]: Show Filters
+            - generic [ref=f5e92]: 
+          - generic [ref=f5e93]:
+            - generic [ref=f5e94]: Showing 1 to 25 of 350 results
+            - generic [ref=f5e96]:
+              - combobox "Results per page" [ref=f5e97]:
+                - option "10"
+                - option "25" [selected]
+                - option "50"
+                - option "100"
+              - combobox "Sort by" [ref=f5e98]:
+                - option "Name" [selected]
+                - option "Popularity"
+                - option "Date Created"
+                - option "Last Updated"
+              - combobox "Sort direction" [ref=f5e99]:
+                - option "asc" [selected]
+                - option "desc"
+            - navigation "Pages" [ref=f5e100]:
+              - link "1" [ref=f5e101] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags?search=&sort=name&direction=asc&limit=25&page=1
+              - link "2" [ref=f5e102] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags?search=&sort=name&direction=asc&limit=25&page=2
+              - link "3" [ref=f5e103] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags?search=&sort=name&direction=asc&limit=25&page=3
+          - generic [ref=f5e104]:
+            - generic [ref=f5e105]:
+              - link [ref=f5e106] [cursor=pointer]:
+                - /url: /tags/2000s
+                - img "2000s" [ref=f5e107]
+              - generic [ref=f5e109]:
+                - link "2000s" [ref=f5e111] [cursor=pointer]:
+                  - /url: /tags/2000s
+                - link "" [ref=f5e112] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e114]:
+              - link [ref=f5e115] [cursor=pointer]:
+                - /url: /tags/45s
+                - img "45s" [ref=f5e116]
+              - generic [ref=f5e118]:
+                - link "45s" [ref=f5e120] [cursor=pointer]:
+                  - /url: /tags/45s
+                - link "" [ref=f5e121] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e123]:
+              - link [ref=f5e124] [cursor=pointer]:
+                - /url: /tags/80s
+                - img "80s" [ref=f5e125]
+              - generic [ref=f5e127]:
+                - link "80s" [ref=f5e129] [cursor=pointer]:
+                  - /url: /tags/80s
+                - link "" [ref=f5e130] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e132]:
+              - link [ref=f5e133] [cursor=pointer]:
+                - /url: /tags/90s
+                - img "90s" [ref=f5e134]
+              - generic [ref=f5e136]:
+                - link "90s" [ref=f5e138] [cursor=pointer]:
+                  - /url: /tags/90s
+                - link "" [ref=f5e139] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e141]:
+              - link [ref=f5e142] [cursor=pointer]:
+                - /url: /tags/acid
+                - img "Acid" [ref=f5e143]
+              - generic [ref=f5e145]:
+                - link "Acid" [ref=f5e147] [cursor=pointer]:
+                  - /url: /tags/acid
+                - link "" [ref=f5e148] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e150]:
+              - link [ref=f5e151] [cursor=pointer]:
+                - /url: /tags/acoustic
+                - img "Acoustic" [ref=f5e152]
+              - generic [ref=f5e154]:
+                - link "Acoustic" [ref=f5e156] [cursor=pointer]:
+                  - /url: /tags/acoustic
+                - link "" [ref=f5e157] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e159]:
+              - link [ref=f5e160] [cursor=pointer]:
+                - /url: /tags/activism
+                - img "Activism" [ref=f5e161]
+              - generic [ref=f5e163]:
+                - link "Activism" [ref=f5e165] [cursor=pointer]:
+                  - /url: /tags/activism
+                - link "" [ref=f5e166] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e168]:
+              - link "" [ref=f5e169] [cursor=pointer]:
+                - /url: /tags/admin
+              - generic [ref=f5e173]:
+                - link "Admin" [ref=f5e175] [cursor=pointer]:
+                  - /url: /tags/admin
+                - link "" [ref=f5e176] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e178]:
+              - link [ref=f5e179] [cursor=pointer]:
+                - /url: /tags/afrobeat
+                - img "Afrobeat" [ref=f5e180]
+              - generic [ref=f5e182]:
+                - link "Afrobeat" [ref=f5e184] [cursor=pointer]:
+                  - /url: /tags/afrobeat
+                - link "" [ref=f5e185] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e187]:
+              - link [ref=f5e188] [cursor=pointer]:
+                - /url: /tags/afrobeats
+                - img "Afrobeats" [ref=f5e189]
+              - generic [ref=f5e191]:
+                - link "Afrobeats" [ref=f5e193] [cursor=pointer]:
+                  - /url: /tags/afrobeats
+                - link "" [ref=f5e194] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e196]:
+              - link [ref=f5e197] [cursor=pointer]:
+                - /url: /tags/alt
+                - img "Alt" [ref=f5e198]
+              - generic [ref=f5e200]:
+                - link "Alt" [ref=f5e202] [cursor=pointer]:
+                  - /url: /tags/alt
+                - link "" [ref=f5e203] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e205]:
+              - link [ref=f5e206] [cursor=pointer]:
+                - /url: /tags/alt-country
+                - img "Alt-country" [ref=f5e207]
+              - generic [ref=f5e209]:
+                - link "Alt-country" [ref=f5e211] [cursor=pointer]:
+                  - /url: /tags/alt-country
+                - link "" [ref=f5e212] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e214]:
+              - link [ref=f5e215] [cursor=pointer]:
+                - /url: /tags/alternative
+                - img "Alternative" [ref=f5e216]
+              - generic [ref=f5e218]:
+                - link "Alternative" [ref=f5e220] [cursor=pointer]:
+                  - /url: /tags/alternative
+                - link "" [ref=f5e221] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e223]:
+              - link [ref=f5e224] [cursor=pointer]:
+                - /url: /tags/amapiano
+                - img "Amapiano" [ref=f5e225]
+              - generic [ref=f5e227]:
+                - link "Amapiano" [ref=f5e229] [cursor=pointer]:
+                  - /url: /tags/amapiano
+                - link "" [ref=f5e230] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e232]:
+              - link [ref=f5e233] [cursor=pointer]:
+                - /url: /tags/ambient
+                - img "Ambient" [ref=f5e234]
+              - generic [ref=f5e236]:
+                - link "Ambient" [ref=f5e238] [cursor=pointer]:
+                  - /url: /tags/ambient
+                - link "" [ref=f5e239] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e241]:
+              - link [ref=f5e242] [cursor=pointer]:
+                - /url: /tags/animals
+                - img "Animals" [ref=f5e243]
+              - generic [ref=f5e245]:
+                - link "Animals" [ref=f5e247] [cursor=pointer]:
+                  - /url: /tags/animals
+                - link "" [ref=f5e248] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e250]:
+              - link [ref=f5e251] [cursor=pointer]:
+                - /url: /tags/anime
+                - img "Anime" [ref=f5e252]
+              - generic [ref=f5e254]:
+                - link "Anime" [ref=f5e256] [cursor=pointer]:
+                  - /url: /tags/anime
+                - link "" [ref=f5e257] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e259]:
+              - link [ref=f5e260] [cursor=pointer]:
+                - /url: /tags/anthing-goes
+                - img "Anything Goes" [ref=f5e261]
+              - generic [ref=f5e263]:
+                - link "Anything Goes" [ref=f5e265] [cursor=pointer]:
+                  - /url: /tags/anthing-goes
+                - link "" [ref=f5e266] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e268]:
+              - link [ref=f5e269] [cursor=pointer]:
+                - /url: /tags/art
+                - img "Art" [ref=f5e270]
+              - generic [ref=f5e272]:
+                - link "Art" [ref=f5e274] [cursor=pointer]:
+                  - /url: /tags/art
+                - link "" [ref=f5e275] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e277]:
+              - link [ref=f5e278] [cursor=pointer]:
+                - /url: /tags/artrock
+                - img "Artrock" [ref=f5e279]
+              - generic [ref=f5e281]:
+                - link "Artrock" [ref=f5e283] [cursor=pointer]:
+                  - /url: /tags/artrock
+                - link "" [ref=f5e284] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e286]:
+              - link [ref=f5e287] [cursor=pointer]:
+                - /url: /tags/audiovisual
+                - img "Audiovisual" [ref=f5e288]
+              - generic [ref=f5e290]:
+                - link "Audiovisual" [ref=f5e292] [cursor=pointer]:
+                  - /url: /tags/audiovisual
+                - link "" [ref=f5e293] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e295]:
+              - link [ref=f5e296] [cursor=pointer]:
+                - /url: /tags/avant
+                - img "Avant" [ref=f5e297]
+              - generic [ref=f5e299]:
+                - link "Avant" [ref=f5e301] [cursor=pointer]:
+                  - /url: /tags/avant
+                - link "" [ref=f5e302] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e304]:
+              - link [ref=f5e305] [cursor=pointer]:
+                - /url: /tags/azonto
+                - img "Azonto" [ref=f5e306]
+              - generic [ref=f5e308]:
+                - link "Azonto" [ref=f5e310] [cursor=pointer]:
+                  - /url: /tags/azonto
+                - link "" [ref=f5e311] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e313]:
+              - link [ref=f5e314] [cursor=pointer]:
+                - /url: /tags/b-movies
+                - img "B-movies" [ref=f5e315]
+              - generic [ref=f5e317]:
+                - link "B-movies" [ref=f5e319] [cursor=pointer]:
+                  - /url: /tags/b-movies
+                - link "" [ref=f5e320] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+            - generic [ref=f5e322]:
+              - link [ref=f5e323] [cursor=pointer]:
+                - /url: /tags/baile-funk
+                - img "Baile Funk" [ref=f5e324]
+              - generic [ref=f5e326]:
+                - link "Baile Funk" [ref=f5e328] [cursor=pointer]:
+                  - /url: /tags/baile-funk
+                - link "" [ref=f5e329] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/login
+          - generic [ref=f5e331]:
+            - generic [ref=f5e332]: Showing 1 to 25 of 350 results
+            - generic [ref=f5e334]:
+              - combobox "Results per page" [ref=f5e335]:
+                - option "10"
+                - option "25" [selected]
+                - option "50"
+                - option "100"
+              - combobox "Sort by" [ref=f5e336]:
+                - option "Name" [selected]
+                - option "Popularity"
+                - option "Date Created"
+                - option "Last Updated"
+              - combobox "Sort direction" [ref=f5e337]:
+                - option "asc" [selected]
+                - option "desc"
+            - navigation "Pages" [ref=f5e338]:
+              - link "1" [ref=f5e339] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags?search=&sort=name&direction=asc&limit=25&page=1
+              - link "2" [ref=f5e340] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags?search=&sort=name&direction=asc&limit=25&page=2
+              - link "3" [ref=f5e341] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags?search=&sort=name&direction=asc&limit=25&page=3
+        - generic [ref=f5e343]:
+          - generic [ref=f5e344]: DEV Arcane City
+          - generic [aria-hidden] [ref=f5e345]: ·
+          - link "Tonight" [ref=f5e346] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=f5e347]: ·
+          - link "This Week" [ref=f5e348] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=f5e349]: ·
+          - link "This Weekend" [ref=f5e350] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=f5e351]: ·
+          - link "Events" [ref=f5e352] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=f5e353]: ·
+          - link "Entities" [ref=f5e354] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f5e355]: ·
+          - link "Series" [ref=f5e356] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f5e357]: ·
+          - link "Tags" [ref=f5e358] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

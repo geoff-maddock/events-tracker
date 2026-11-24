@@ -1,0 +1,162 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - text:                         
+    - complementary [ref=e3]:
+      - button "Close navigation" [ref=e4]:
+        - generic [aria-hidden] [ref=e5]: 
+      - generic [ref=e6]:
+        - link "DEV Arcane City" [ref=e7] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - text: pittsburgh events guide
+      - navigation [ref=e9]:
+        - generic [ref=e10]:
+          - link " Your Radar" [ref=e11] [cursor=pointer]:
+            - /url: https://dev.arcane.city/radar
+            - generic [ref=e12]: 
+            - generic [ref=e13]: Your Radar
+          - link " Events" [ref=e14] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=e15]: 
+            - generic [ref=e16]: Events
+          - generic [ref=e17]:
+            - link " Tonight" [ref=e18] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=e19]: 
+              - generic [ref=e20]: Tonight
+            - link " This Week" [ref=e21] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=e22]: 
+              - generic [ref=e23]: This Week
+            - link " This Weekend" [ref=e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=e25]: 
+              - generic [ref=e26]: This Weekend
+            - link " Event Grid" [ref=e27] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=e28]: 
+              - generic [ref=e29]: Event Grid
+        - link " Event Calendar" [ref=e31] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=e32]: 
+          - generic [ref=e33]: Event Calendar
+        - link " Entities" [ref=e35] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=e36]: 
+          - generic [ref=e37]: Entities
+        - link " Series" [ref=e38] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=e39]: 
+          - generic [ref=e40]: Series
+        - link " Tags" [ref=e41] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=e42]: 
+          - generic [ref=e43]: Tags
+        - link " Forum" [ref=e44] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=e45]: 
+          - generic [ref=e46]: Forum
+        - link " Users" [ref=e47] [cursor=pointer]:
+          - /url: https://dev.arcane.city/users
+          - generic [ref=e48]: 
+          - generic [ref=e49]: Users
+        - link " About" [ref=e51] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=e52]: 
+          - generic [ref=e53]: About
+        - link " Help" [ref=e54] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=e55]: 
+          - generic [ref=e56]: Help
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]: 
+          - link "Geoffrey Maddock" [ref=e60] [cursor=pointer]:
+            - /url: https://dev.arcane.city/users/1
+        - link " All Modules" [ref=e61] [cursor=pointer]:
+          - /url: https://dev.arcane.city/all-modules
+          - generic [ref=e62]: 
+          - generic [ref=e63]: All Modules
+      - generic [ref=e65]:
+        - button "Switch to light mode" [ref=e67]:
+          - generic [ref=e68]: 
+        - link " Log out" [ref=e69] [cursor=pointer]:
+          - /url: https://dev.arcane.city/logout
+          - generic [ref=e70]: 
+          - generic [ref=e71]: Log out
+    - generic [ref=e72]:
+      - banner [ref=e73]:
+        - generic [ref=e74]:
+          - button "Open navigation menu" [ref=e75]:
+            - generic [aria-hidden] [ref=e76]: 
+          - link "DEV Arcane City pittsburgh events guide" [ref=e77] [cursor=pointer]:
+            - /url: https://dev.arcane.city
+            - generic [ref=e78]: DEV Arcane City
+            - generic [ref=e79]: pittsburgh events guide
+          - search [ref=e82]:
+            - generic [ref=e83]:
+              - combobox "Search" [ref=e84]
+              - generic [ref=e85]: 
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - button "Add something" [ref=e88]:
+                - generic [aria-hidden] [ref=e89]: 
+              - text:   
+            - link [ref=e90] [cursor=pointer]:
+              - /url: https://dev.arcane.city/users/1
+              - img "Geoffrey Maddock" [ref=e91]
+      - main [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - heading "Add a New Keyword Tag" [level=1] [ref=e95]
+            - paragraph [ref=e96]: Create a new tag to help categorize events
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - generic [ref=e101]: Name *
+              - textbox "Name *" [active] [ref=e103]:
+                - /placeholder: Enter tag name
+            - generic [ref=e104]:
+              - text: Slug
+              - textbox "Slug" [ref=e106]:
+                - /placeholder: tag-slug
+              - paragraph [ref=e107]: Unique URL-friendly identifier (auto-generated from name)
+            - generic [ref=e108]:
+              - text: Description
+              - textbox "Description" [ref=e110]:
+                - /placeholder: Enter a description for this tag
+              - paragraph [ref=e111]: Optional description for this tag
+            - generic [ref=e112]:
+              - text: Type
+              - combobox [ref=e116] [cursor=pointer]:
+                - textbox "Select tag type" [ref=e117]
+            - generic [ref=e118]:
+              - button "Add Tag" [ref=e119]
+              - link "Cancel" [ref=e120] [cursor=pointer]:
+                - /url: https://dev.arcane.city/tags
+          - link " Return to list" [ref=e122] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+            - generic [ref=e123]: 
+            - generic [ref=e124]: Return to list
+        - generic [ref=e126]:
+          - generic [ref=e127]: DEV Arcane City
+          - generic [aria-hidden] [ref=e128]: ·
+          - link "Tonight" [ref=e129] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=e130]: ·
+          - link "This Week" [ref=e131] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=e132]: ·
+          - link "This Weekend" [ref=e133] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=e134]: ·
+          - link "Events" [ref=e135] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=e136]: ·
+          - link "Entities" [ref=e137] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=e138]: ·
+          - link "Series" [ref=e139] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=e140]: ·
+          - link "Tags" [ref=e141] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

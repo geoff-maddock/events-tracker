@@ -1,0 +1,85 @@
+- generic [ref=f14e2]:
+  - banner [ref=f14e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=f14e4]:
+      - generic [aria-hidden] [ref=f14e5]: 
+    - generic [ref=f14e7]: "Upcoming shows · tag: goth"
+  - region [ref=f14e8]:
+    - generic [ref=f14e9]:
+      - generic [ref=f14e10]:
+        - heading [level=2] [ref=f14e11]:
+          - link "Hemlock for Socrates" [ref=f14e12] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/hemlock-for-socrates
+        - paragraph [ref=f14e51]: I Won't Cry - [melter] Remix, by Hemlock for Socrates
+        - paragraph [ref=f14e13]:
+          - 'link "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show" [ref=f14e14] [cursor=pointer]':
+            - /url: https://dev.arcane.city/events/millie-dread-mary-death-album-release-show
+      - button "Sign in to follow this artist" [ref=f14e15]:
+        - generic [aria-hidden] [ref=f14e16]: 
+    - iframe [ref=f14e53]:
+      - generic [ref=f15e2]:
+        - generic [ref=f15e3]:
+          - generic [ref=f15e4] [cursor=pointer]
+          - link [ref=f15e6] [cursor=pointer]:
+            - /url: https://hemlockforsocrates.bandcamp.com/album/i-wont-cry-melter-remix?from=embed
+        - generic [ref=f15e8]:
+          - generic [ref=f15e9]:
+            - link:
+              - /url: https://hemlockforsocrates.bandcamp.com/album/i-wont-cry-melter-remix?from=embed
+            - generic [ref=f15e10]:
+              - link [ref=f15e11] [cursor=pointer]:
+                - /url: https://hemlockforsocrates.bandcamp.com/album/i-wont-cry-melter-remix?from=embed
+              - link "I Won't Cry - [melter] Remix" [ref=f15e14] [cursor=pointer]:
+                - /url: https://hemlockforsocrates.bandcamp.com/album/i-wont-cry-melter-remix?from=embed
+              - generic [ref=f15e15]:
+                - link "buy" [ref=f15e17] [cursor=pointer]:
+                  - /url: https://hemlockforsocrates.bandcamp.com/album/i-wont-cry-melter-remix?action=buy&from=embed
+                - link "share" [ref=f15e19] [cursor=pointer]:
+                  - /url: https://hemlockforsocrates.bandcamp.com/album/i-wont-cry-melter-remix?action=share&from=embed
+              - text: by
+              - generic [ref=f15e20]:
+                - text: from
+                - generic [ref=f15e21]: by Hemlock for Socrates
+              - generic [ref=f15e22]:
+                - generic [ref=f15e23]:
+                  - generic [ref=f15e24]: "2."
+                  - generic [ref=f15e25]: I Won't Cry - [melter] Remix
+                - generic [ref=f15e26]:
+                  - generic [ref=f15e27]: 00:00
+                  - generic [ref=f15e28]: / 05:14
+              - generic [ref=f15e32] [cursor=pointer]
+              - generic [ref=f15e33]:
+                - generic [ref=f15e34] [cursor=pointer]
+                - generic [ref=f15e36] [cursor=pointer]
+          - text: /
+    - paragraph [ref=f14e54]: Use the Bandcamp player's own controls to play, pause and seek this release. Next and previous still move through the queue.
+    - group "Player controls" [ref=f14e21]:
+      - button "Previous artist" [ref=f14e22]:
+        - generic [aria-hidden] [ref=f14e23]: 
+      - button "Back 15 seconds" [disabled] [ref=f14e24]:
+        - generic [aria-hidden] [ref=f14e25]: 
+      - button "Play" [disabled] [ref=f14e26]:
+        - generic [aria-hidden] [ref=f14e27]: 
+      - button "Forward 15 seconds" [disabled] [ref=f14e28]:
+        - generic [aria-hidden] [ref=f14e29]: 
+      - button "Next artist" [ref=f14e30]:
+        - generic [aria-hidden] [ref=f14e31]: 
+    - status [ref=f14e32]
+  - region [ref=f14e33]:
+    - heading "Up next" [level=2] [ref=f14e34]
+    - list [ref=f14e35]:
+      - listitem [ref=f14e36]:
+        - 'button "1 Hemlock for Socrates Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=f14e37]':
+          - generic [ref=f14e38]: "1"
+          - generic [ref=f14e39]:
+            - generic [ref=f14e40]: Hemlock for Socrates
+            - generic [ref=f14e41]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=f14e43]: Bandcamp
+      - listitem [ref=f14e44]:
+        - 'button "2 Millie Dread Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=f14e45]':
+          - generic [ref=f14e46]: "2"
+          - generic [ref=f14e47]:
+            - generic [ref=f14e48]: Millie Dread
+            - generic [ref=f14e49]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=f14e50]: Bandcamp

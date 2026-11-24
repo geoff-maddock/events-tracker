@@ -1,0 +1,52 @@
+- generic [ref=f14e2]:
+  - banner [ref=f14e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=f14e4]:
+      - generic [aria-hidden] [ref=f14e5]: 
+    - generic [ref=f14e7]: "Upcoming shows · tag: goth"
+  - region [ref=f14e8]:
+    - generic [ref=f14e9]:
+      - generic [ref=f14e10]:
+        - heading [level=2] [ref=f14e11]:
+          - link "Hemlock for Socrates" [ref=f14e12] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities/hemlock-for-socrates
+        - paragraph
+        - paragraph [ref=f14e13]:
+          - 'link "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show" [ref=f14e14] [cursor=pointer]':
+            - /url: https://dev.arcane.city/events/millie-dread-mary-death-album-release-show
+      - button "Sign in to follow this artist" [ref=f14e15]:
+        - generic [aria-hidden] [ref=f14e16]: 
+    - generic [ref=f14e17]:
+      - generic [aria-hidden] [ref=f14e18]: 0:00
+      - slider "Seek within the track" [disabled] [ref=f14e19]: "0"
+      - generic [aria-hidden] [ref=f14e20]: 0:00
+    - group "Player controls" [ref=f14e21]:
+      - button "Previous artist" [ref=f14e22]:
+        - generic [aria-hidden] [ref=f14e23]: 
+      - button "Back 15 seconds" [ref=f14e24]:
+        - generic [aria-hidden] [ref=f14e25]: 
+      - button "Play" [ref=f14e26]:
+        - generic [aria-hidden] [ref=f14e27]: 
+      - button "Forward 15 seconds" [ref=f14e28]:
+        - generic [aria-hidden] [ref=f14e29]: 
+      - button "Next artist" [ref=f14e30]:
+        - generic [aria-hidden] [ref=f14e31]: 
+    - status [ref=f14e32]
+  - region [ref=f14e33]:
+    - heading "Up next" [level=2] [ref=f14e34]
+    - list [ref=f14e35]:
+      - listitem [ref=f14e36]:
+        - 'button "1 Hemlock for Socrates Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=f14e37]':
+          - generic [ref=f14e38]: "1"
+          - generic [ref=f14e39]:
+            - generic [ref=f14e40]: Hemlock for Socrates
+            - generic [ref=f14e41]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - generic [aria-hidden] [ref=f14e42]: 
+          - generic [ref=f14e43]: Bandcamp
+      - listitem [ref=f14e44]:
+        - 'button "2 Millie Dread Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show Bandcamp" [ref=f14e45]':
+          - generic [ref=f14e46]: "2"
+          - generic [ref=f14e47]:
+            - generic [ref=f14e48]: Millie Dread
+            - generic [ref=f14e49]: "Sat, Nov 14 · MILLIE DREAD: MARY DEATH Album Release Show"
+          - text: 
+          - generic [ref=f14e50]: Bandcamp

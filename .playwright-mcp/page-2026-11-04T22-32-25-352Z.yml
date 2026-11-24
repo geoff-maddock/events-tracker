@@ -1,0 +1,912 @@
+- generic [ref=f20e1]:
+  - generic [ref=f20e2]:
+    - complementary [ref=f20e3]:
+      - generic [ref=f20e4]:
+        - link "DEV Arcane City" [ref=f20e5] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - generic [ref=f20e7]: pittsburgh events guide
+      - generic [ref=f20e8]:
+        - search [ref=f20e11]:
+          - generic [ref=f20e12]:
+            - combobox "Search" [ref=f20e13]
+            - generic [ref=f20e14]: 
+        - generic [ref=f20e15]:
+          - button "Add something" [ref=f20e16]:
+            - generic [aria-hidden] [ref=f20e17]: 
+          - text:   
+      - navigation [ref=f20e18]:
+        - generic [ref=f20e19]:
+          - link " Events" [ref=f20e20] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=f20e21]: 
+            - generic [ref=f20e22]: Events
+          - generic [ref=f20e23]:
+            - link " Tonight" [ref=f20e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=f20e25]: 
+              - generic [ref=f20e26]: Tonight
+            - link " This Week" [ref=f20e27] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=f20e28]: 
+              - generic [ref=f20e29]: This Week
+            - link " This Weekend" [ref=f20e30] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=f20e31]: 
+              - generic [ref=f20e32]: This Weekend
+            - link " Event Grid" [ref=f20e33] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=f20e34]: 
+              - generic [ref=f20e35]: Event Grid
+        - link " Event Calendar" [ref=f20e36] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=f20e37]: 
+          - generic [ref=f20e38]: Event Calendar
+        - link "Listen" [ref=f20e39] [cursor=pointer]:
+          - /url: https://dev.arcane.city/player?source=upcoming
+          - generic [aria-hidden] [ref=f20e40]: 
+        - link " Entities" [ref=f20e42] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=f20e43]: 
+          - generic [ref=f20e44]: Entities
+        - link " Series" [ref=f20e45] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=f20e46]: 
+          - generic [ref=f20e47]: Series
+        - link " Tags" [ref=f20e48] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=f20e49]: 
+          - generic [ref=f20e50]: Tags
+        - link " Forum" [ref=f20e51] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=f20e52]: 
+          - generic [ref=f20e53]: Forum
+        - link " About" [ref=f20e55] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=f20e56]: 
+          - generic [ref=f20e57]: About
+        - link " Help" [ref=f20e58] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=f20e59]: 
+          - generic [ref=f20e60]: Help
+      - generic [ref=f20e61]:
+        - generic [ref=f20e62]:
+          - link " Log in" [ref=f20e63] [cursor=pointer]:
+            - /url: https://dev.arcane.city/login
+            - generic [ref=f20e64]: 
+            - generic [ref=f20e65]: Log in
+          - link "Register" [ref=f20e66] [cursor=pointer]:
+            - /url: https://dev.arcane.city/register
+        - button "Switch to light mode" [ref=f20e69]:
+          - generic [ref=f20e70]: 
+    - text:                 
+    - generic [ref=f20e71]:
+      - text:      
+      - main [ref=f20e72]:
+        - link " Back" [ref=f20e74] [cursor=pointer]:
+          - /url: https://dev.arcane.city/player?filters%5Btag%5D=goth&source=upcoming
+          - generic [ref=f20e75]: 
+          - generic [ref=f20e76]: Back
+        - generic [ref=f20e77]:
+          - generic [ref=f20e78]:
+            - generic [ref=f20e79]:
+              - generic [ref=f20e80]:
+                - heading "Arie Cole" [level=1] [ref=f20e81]
+                - generic [ref=f20e82]:
+                  - link "Add to player" [active] [ref=f20e83] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/player?source=entity&slug=arie-cole
+                    - generic [aria-hidden] [ref=f20e84]: 
+                    - generic [ref=f20e85]: Added to player
+                  - generic [ref=f20e86]:
+                    - button "Actions" [ref=f20e87]:
+                      - generic [aria-hidden] [ref=f20e88]: 
+                    - text:   
+              - paragraph [ref=f20e89]: pittsburgh dj
+            - link [ref=f20e91] [cursor=pointer]:
+              - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1511377305-13119085_271253663209777_2654584747933383849_n.jpg
+              - img "Arie Cole" [ref=f20e92]
+            - generic [ref=f20e93]:
+              - heading " Upcoming Events" [level=2] [ref=f20e94]:
+                - generic [ref=f20e95]: 
+                - text: Upcoming Events
+              - article [ref=f20e97]:
+                - generic [ref=f20e98]:
+                  - link "View photo for Slappers N Bangers vs Union" [ref=f20e99] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1773942911_653585666_10163461205357034_6426840941894715319_n.webp
+                    - img "Slappers N Bangers vs Union" [ref=f20e100]
+                  - link "Sign in to mark Slappers N Bangers vs Union as attending" [ref=f20e102] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/login
+                    - generic [aria-hidden] [ref=f20e103]: 
+                - generic [ref=f20e104]:
+                  - heading [level=3] [ref=f20e105]:
+                    - link "Slappers N Bangers vs Union" [ref=f20e106] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/events/slappers-n-bangers-vs-union-jan-16-2027
+                  - paragraph [ref=f20e107]: Hip hop, RnB, and trap party at Citizens Live at The Wylie.
+                  - link "Club Night" [ref=f20e109] [cursor=pointer]:
+                    - /url: /events/type/club-night
+                  - generic [ref=f20e110]:
+                    - generic [ref=f20e111]:
+                      - generic [ref=f20e112]: 
+                      - link "Sunday, January 17, 2027 at 2:00 AM" [ref=f20e113] [cursor=pointer]:
+                        - /url: /events/by-date/2027/01/17
+                    - generic [ref=f20e114]:
+                      - generic [ref=f20e115]: 
+                      - link "Citizens Live at The Wylie" [ref=f20e116] [cursor=pointer]:
+                        - /url: /entities/citizens-live-at-the-wylie
+                    - generic [ref=f20e117]:
+                      - generic [ref=f20e118]: 
+                      - generic [ref=f20e119]: All Ages
+                  - generic [ref=f20e120]:
+                    - generic [ref=f20e121]:
+                      - link "Arie Cole" [ref=f20e122] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/entities/arie-cole
+                      - link "Filter events by Arie Cole" [ref=f20e123] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/events/related-to/arie-cole
+                        - generic [aria-hidden] [ref=f20e124]: 
+                    - generic [ref=f20e125]:
+                      - link "Citizens Live at The Wylie" [ref=f20e126] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/entities/citizens-live-at-the-wylie
+                      - link "Filter events by Citizens Live at The Wylie" [ref=f20e127] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/events/related-to/citizens-live-at-the-wylie
+                        - generic [aria-hidden] [ref=f20e128]: 
+                  - generic [ref=f20e129]:
+                    - generic [ref=f20e130]:
+                      - link "Hip Hop" [ref=f20e131] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/events/tag/hip-hop
+                      - link "View details for Hip Hop" [ref=f20e132] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/tags/hip-hop
+                        - generic [aria-hidden] [ref=f20e133]: 
+                    - generic [ref=f20e134]:
+                      - link "R&b" [ref=f20e135] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/events/tag/rnb
+                      - link "View details for R&b" [ref=f20e136] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/tags/rnb
+                        - generic [aria-hidden] [ref=f20e137]: 
+                    - generic [ref=f20e138]:
+                      - link "Trap" [ref=f20e139] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/events/tag/trap
+                      - link "View details for Trap" [ref=f20e140] [cursor=pointer]:
+                        - /url: https://dev.arcane.city/tags/trap
+                        - generic [aria-hidden] [ref=f20e141]: 
+                - iframe [ref=f20e449]:
+                  - generic [ref=f21e5]:
+                    - application "Play" [ref=f21e7] [cursor=pointer]
+                    - link "Play on SoundCloud" [ref=f21e12] [cursor=pointer]:
+                      - /url: https://soundcloud.com/theariecole/make-her-sit-forever
+                    - link "Arie Cole – Make Her Sit Forever" [ref=f21e19] [cursor=pointer]:
+                      - /url: https://soundcloud.com/theariecole/make-her-sit-forever
+                - link "Part of Slappers N Bangers" [ref=f20e143] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/series/slappers-n-bangers
+            - generic [ref=f20e144]: pittsburgh dj https://www.facebook.com/TheArieCole/
+            - iframe [ref=f20e451]:
+              - generic [ref=f22e1]:
+                - generic [ref=f22e5]:
+                  - generic [ref=f22e6]:
+                    - generic "Arie Cole’s avatar" [ref=f22e8]
+                    - generic [ref=f22e9]:
+                      - generic "Arie Cole’s avatar" [ref=f22e11]
+                      - generic "Arie Cole’s avatar" [ref=f22e13]
+                  - generic [ref=f22e16]:
+                    - application "Play" [ref=f22e18] [cursor=pointer]
+                    - generic [ref=f22e23]:
+                      - link "Arie Cole" [ref=f22e24] [cursor=pointer]:
+                        - /url: https://soundcloud.com/theariecole
+                      - link "Latest tracks" [ref=f22e25] [cursor=pointer]:
+                        - /url: https://soundcloud.com/theariecole/tracks
+                    - link "Play on SoundCloud" [ref=f22e28] [cursor=pointer]:
+                      - /url: https://soundcloud.com/theariecole
+                  - generic [ref=f22e33]:
+                    - generic [ref=f22e34]: "5"
+                    - generic [ref=f22e35]: tracks
+                - link "SoundCloud privacy policy" [ref=f22e38] [cursor=pointer]:
+                  - /url: https://soundcloud.com/pages/privacy
+                  - text: Privacy policy
+            - generic [ref=f20e151]:
+              - generic [ref=f20e152]:
+                - heading " Frequently Performs With" [level=2] [ref=f20e153]:
+                  - generic [ref=f20e154]: 
+                  - text: Frequently Performs With
+                - generic [ref=f20e155]:
+                  - generic [ref=f20e156]:
+                    - link "Make Sure You Have Fun" [ref=f20e157] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/make-sure-you-have-fun
+                    - generic [ref=f20e158]: 
+                  - generic [ref=f20e159]:
+                    - link "Keebs" [ref=f20e160] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/keebs
+                    - generic [ref=f20e161]: 
+                  - generic [ref=f20e162]:
+                    - link "Yamez" [ref=f20e163] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/yamez
+                    - generic [ref=f20e164]: 
+                  - generic [ref=f20e165]:
+                    - link "pvkvsv" [ref=f20e166] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/pvkvsv
+                    - generic [ref=f20e167]: 
+                  - generic [ref=f20e168]:
+                    - link "Nowhere2run" [ref=f20e169] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/nowhere2run
+                    - generic [ref=f20e170]: 
+                  - generic [ref=f20e171]:
+                    - link "Icy Pisces" [ref=f20e172] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/icy-pisces
+                    - generic [ref=f20e173]: 
+                  - generic [ref=f20e174]:
+                    - link "DJ Femi" [ref=f20e175] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/dj-femi
+                    - generic [ref=f20e176]: 
+                  - generic [ref=f20e177]:
+                    - link "Pandemic" [ref=f20e178] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/pandemic
+                    - generic [ref=f20e179]: 
+                  - generic [ref=f20e180]:
+                    - link "Huny" [ref=f20e181] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/huny
+                    - generic [ref=f20e182]: 
+                  - generic [ref=f20e183]:
+                    - link "Naeem" [ref=f20e184] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/naeem
+                    - generic [ref=f20e185]: 
+              - generic [ref=f20e186]:
+                - heading " Frequently Performs At" [level=2] [ref=f20e187]:
+                  - generic [ref=f20e188]: 
+                  - text: Frequently Performs At
+                - generic [ref=f20e189]:
+                  - generic [ref=f20e190]:
+                    - link "Spirit" [ref=f20e191] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/spirit
+                    - generic [ref=f20e192]: 
+                  - generic [ref=f20e193]:
+                    - link "Thunderbird" [ref=f20e194] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/thunderbird
+                    - generic [ref=f20e195]: 
+                  - generic [ref=f20e196]:
+                    - link "Ask a punk" [ref=f20e197] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/ask-a-punk
+                    - generic [ref=f20e198]: 
+                  - generic [ref=f20e199]:
+                    - link "Jackworth Ginger Beer" [ref=f20e200] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/jackworth-ginger-beer
+                    - generic [ref=f20e201]: 
+                  - generic [ref=f20e202]:
+                    - link "Belvederes" [ref=f20e203] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/belvederes
+                    - generic [ref=f20e204]: 
+                  - generic [ref=f20e205]:
+                    - link "Brillobox" [ref=f20e206] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/brillobox
+                    - generic [ref=f20e207]: 
+                  - generic [ref=f20e208]:
+                    - link "3 Crossings" [ref=f20e209] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/a-3-crossings
+                    - generic [ref=f20e210]: 
+                  - generic [ref=f20e211]:
+                    - link "Mr. Smalls" [ref=f20e212] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/mr-smalls
+                    - generic [ref=f20e213]: 
+                  - generic [ref=f20e214]:
+                    - link "Trace Brewing" [ref=f20e215] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/trace-brewing
+                    - generic [ref=f20e216]: 
+                  - generic [ref=f20e217]:
+                    - link "Carnegie Museum of Art" [ref=f20e218] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cmoa
+                    - generic [ref=f20e219]: 
+          - generic [ref=f20e220]:
+            - generic [ref=f20e222]:
+              - generic [ref=f20e223]:
+                - generic [ref=f20e224]:
+                  - generic [ref=f20e225]: 
+                  - text: Individual
+                - generic [ref=f20e226]:
+                  - generic [ref=f20e227]: 
+                  - text: 0 Followers
+              - generic [ref=f20e228]:
+                - generic [ref=f20e229]: Roles
+                - generic [ref=f20e230]:
+                  - link "Dj" [ref=f20e231] [cursor=pointer]:
+                    - /url: /entities/role/Dj
+                  - link "Promoter" [ref=f20e232] [cursor=pointer]:
+                    - /url: /entities/role/Promoter
+              - generic [ref=f20e233]:
+                - generic [ref=f20e234]: Tags
+                - generic [ref=f20e235]:
+                  - generic [ref=f20e236]:
+                    - link "Club Music" [ref=f20e237] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/tag/club-music
+                    - link "View details for Club Music" [ref=f20e238] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/club-music
+                      - generic [aria-hidden] [ref=f20e239]: 
+                  - generic [ref=f20e240]:
+                    - link "Electronic" [ref=f20e241] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/tag/electronic
+                    - link "View details for Electronic" [ref=f20e242] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=f20e243]: 
+                  - generic [ref=f20e244]:
+                    - link "Hip Hop" [ref=f20e245] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/tag/hip-hop
+                    - link "View details for Hip Hop" [ref=f20e246] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/hip-hop
+                      - generic [aria-hidden] [ref=f20e247]: 
+                  - generic [ref=f20e248]:
+                    - link "House" [ref=f20e249] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/tag/house
+                    - link "View details for House" [ref=f20e250] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/house
+                      - generic [aria-hidden] [ref=f20e251]: 
+                  - generic [ref=f20e252]:
+                    - link "Trap" [ref=f20e253] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/tag/trap
+                    - link "View details for Trap" [ref=f20e254] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/trap
+                      - generic [aria-hidden] [ref=f20e255]: 
+              - link "Instagram profile for Arie Cole" [ref=f20e258] [cursor=pointer]:
+                - /url: https://instagram.com/thearie_cole
+                - generic [aria-hidden] [ref=f20e259]: 
+            - generic [ref=f20e260]:
+              - heading " Links" [level=2] [ref=f20e261]:
+                - generic [ref=f20e262]: 
+                - text: Links
+              - generic [ref=f20e263]:
+                - generic [ref=f20e264]:
+                  - link "Facebook" [ref=f20e265] [cursor=pointer]:
+                    - /url: https://www.facebook.com/TheArieCole/
+                  - generic [ref=f20e266]: 
+                - generic [ref=f20e267]:
+                  - link "Soundcloud" [ref=f20e268] [cursor=pointer]:
+                    - /url: https://soundcloud.com/theariecole
+                  - generic [ref=f20e269]: 
+            - generic [ref=f20e270]:
+              - heading " Photos" [level=2] [ref=f20e271]:
+                - generic [ref=f20e272]: 
+                - text: Photos
+              - link [ref=f20e275] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1511377305-13119085_271253663209777_2654584747933383849_n.jpg
+                - img "1511377305-13119085_271253663209777_2654584747933383849_n.jpg" [ref=f20e276]
+        - article [ref=f20e278]:
+          - generic [ref=f20e279]:
+            - generic [ref=f20e280]: 
+            - heading "Past Events" [level=4] [ref=f20e281]
+            - generic [ref=f20e282]: 20+
+          - generic [ref=f20e283]:
+            - generic [ref=f20e284]:
+              - generic [ref=f20e285]:
+                - generic [ref=f20e286]: Jul 12
+                - generic [ref=f20e287]:
+                  - link [ref=f20e289] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1783361763_2731b8cc-3f63-4b21-adb3-16f3e2424f15.webp
+                    - 'img "Slappers N Bangers: Hotter Than July" [ref=f20e290]'
+                  - generic:
+                    - generic: "Slappers N Bangers: Hotter Than July"
+                    - generic: Club Night
+                    - generic: 3 Crossings
+                    - generic:
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "R&b":
+                          - /url: https://dev.arcane.city/events/tag/rnb
+                        - link "View details for R&b":
+                          - /url: https://dev.arcane.city/tags/rnb
+                          - generic [aria-hidden]: 
+                - 'link "Details for Slappers N Bangers: Hotter Than July" [ref=f20e291] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/slappers-n-bangers-hotter-than-july
+                  - text: Details
+              - generic [ref=f20e292]:
+                - generic [ref=f20e293]: Jul 11
+                - generic [ref=f20e294]:
+                  - link [ref=f20e296] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778541665_1c01b38c-95dc-4d69-8865-0ca859a5ec5e.webp
+                    - 'img "Bloodrave: Daywalker Party" [ref=f20e297]'
+                  - generic:
+                    - generic: "Bloodrave: Daywalker Party"
+                    - generic: Rave
+                    - generic: Ask a punk
+                    - generic:
+                      - generic:
+                        - link "Ebm":
+                          - /url: https://dev.arcane.city/events/tag/ebm
+                        - link "View details for Ebm":
+                          - /url: https://dev.arcane.city/tags/ebm
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Electronic":
+                          - /url: https://dev.arcane.city/events/tag/electronic
+                        - link "View details for Electronic":
+                          - /url: https://dev.arcane.city/tags/electronic
+                          - generic [aria-hidden]: 
+                - 'link "Details for Bloodrave: Daywalker Party" [ref=f20e298] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/bloodrave-daywalker-party
+                  - text: Details
+              - generic [ref=f20e299]:
+                - generic [ref=f20e300]: Jun 20
+                - generic [ref=f20e301]:
+                  - link [ref=f20e303] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1776287114_07c2acbf-a52b-42a9-8151-47f1b56a7b1b.webp
+                    - img "Mt Oliver Juneteenth Block Party" [ref=f20e304]
+                  - generic:
+                    - generic: Mt Oliver Juneteenth Block Party
+                    - generic: Festival
+                    - generic: Ask a punk
+                    - generic:
+                      - generic:
+                        - link "Live Music":
+                          - /url: https://dev.arcane.city/events/tag/live-music
+                        - link "View details for Live Music":
+                          - /url: https://dev.arcane.city/tags/live-music
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "R&b":
+                          - /url: https://dev.arcane.city/events/tag/rnb
+                        - link "View details for R&b":
+                          - /url: https://dev.arcane.city/tags/rnb
+                          - generic [aria-hidden]: 
+                - link "Details for Mt Oliver Juneteenth Block Party" [ref=f20e305] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/mt-oliver-juneteenth-block-party
+                  - text: Details
+              - generic [ref=f20e306]:
+                - generic [ref=f20e307]: Apr 18
+                - generic [ref=f20e308]:
+                  - link [ref=f20e310] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1774802421_reesealburtfloss_1774793064_3863551589214941715_2120524095.webp
+                    - img "Highline Remix" [ref=f20e311]
+                  - generic:
+                    - generic: Highline Remix
+                    - generic: Pop-up
+                    - generic: Highline
+                    - generic:
+                      - generic:
+                        - link "Bass":
+                          - /url: https://dev.arcane.city/events/tag/bass
+                        - link "View details for Bass":
+                          - /url: https://dev.arcane.city/tags/bass
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Electronic":
+                          - /url: https://dev.arcane.city/events/tag/electronic
+                        - link "View details for Electronic":
+                          - /url: https://dev.arcane.city/tags/electronic
+                          - generic [aria-hidden]: 
+                - link "Details for Highline Remix" [ref=f20e312] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/highline-remix-pittsburgh-2026-04-18
+                  - text: Details
+              - generic [ref=f20e313]:
+                - generic [ref=f20e314]: Mar 28
+                - generic [ref=f20e315]:
+                  - link [ref=f20e317] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1773343306_650508072_18563259778049358_6555460686254498266_n.webp
+                    - img "Arie Cole, Kay Chin, DJ Inception" [ref=f20e318]
+                  - generic:
+                    - generic: Arie Cole, Kay Chin, DJ Inception
+                    - generic: Club Night
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Disco":
+                          - /url: https://dev.arcane.city/events/tag/disco
+                        - link "View details for Disco":
+                          - /url: https://dev.arcane.city/tags/disco
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Electronic":
+                          - /url: https://dev.arcane.city/events/tag/electronic
+                        - link "View details for Electronic":
+                          - /url: https://dev.arcane.city/tags/electronic
+                          - generic [aria-hidden]: 
+                - link "Details for Arie Cole, Kay Chin, DJ Inception" [ref=f20e319] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/arie-cole-kay-chin-dj-inception-spirit-2026
+                  - text: Details
+              - generic [ref=f20e320]:
+                - generic [ref=f20e321]: Feb 21
+                - generic [ref=f20e322]:
+                  - link [ref=f20e324] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1770656250_627716942_18193273300350705_8108293783701580441_n.webp
+                    - img "Slappers N Bangers" [ref=f20e325]
+                  - generic:
+                    - generic: Slappers N Bangers
+                    - generic: Club Night
+                    - generic: Thunderbird
+                    - generic:
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "R&b":
+                          - /url: https://dev.arcane.city/events/tag/rnb
+                        - link "View details for R&b":
+                          - /url: https://dev.arcane.city/tags/rnb
+                          - generic [aria-hidden]: 
+                - link "Details for Slappers N Bangers" [ref=f20e326] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/slappers-n-bangers-feb-21-2026
+                  - text: Details
+              - generic [ref=f20e327]:
+                - generic [ref=f20e328]: Dec 31
+                - generic [ref=f20e329]:
+                  - link [ref=f20e331] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1766010774_590419187_18187474060350705_7421407843048286434_n.webp
+                    - img "Slappers N Bangers NYE 2025" [ref=f20e332]
+                  - generic:
+                    - generic: Slappers N Bangers NYE 2025
+                    - generic: Club Night
+                    - generic: Thunderbird
+                    - generic:
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                - link "Details for Slappers N Bangers NYE 2025" [ref=f20e333] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/slappers-n-bangers-nye-2025
+                  - text: Details
+              - generic [ref=f20e334]:
+                - generic [ref=f20e335]: Nov 29
+                - generic [ref=f20e336]:
+                  - link [ref=f20e338] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1764035834_587719956_18185776120350705_8389208883457637983_n.webp
+                    - 'img "Slappers N Bangers: Friendsgiving" [ref=f20e339]'
+                  - generic:
+                    - generic: "Slappers N Bangers: Friendsgiving"
+                    - generic: House Show
+                    - generic: Thunderbird
+                    - generic:
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                - 'link "Details for Slappers N Bangers: Friendsgiving" [ref=f20e340] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/slappers-n-bangers-friendsgiving
+                  - text: Details
+              - generic [ref=f20e341]:
+                - generic [ref=f20e342]: Oct 31
+                - generic [ref=f20e343]:
+                  - link [ref=f20e345] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1755555360_535006468_2584285585249632_5894020509276618733_n.webp
+                    - 'img "Nowhere2Run''s BLOODRAVE: Halloween" [ref=f20e346]'
+                  - generic:
+                    - generic: "Nowhere2Run's BLOODRAVE: Halloween"
+                    - generic: Rave
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Goth":
+                          - /url: https://dev.arcane.city/events/tag/goth
+                        - link "View details for Goth":
+                          - /url: https://dev.arcane.city/tags/goth
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Industrial":
+                          - /url: https://dev.arcane.city/events/tag/industrial
+                        - link "View details for Industrial":
+                          - /url: https://dev.arcane.city/tags/industrial
+                          - generic [aria-hidden]: 
+                - 'link "Details for Nowhere2Run''s BLOODRAVE: Halloween" [ref=f20e347] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/bloodrave-halloween-2025
+                  - text: Details
+              - generic [ref=f20e348]:
+                - generic [ref=f20e349]: Oct 16
+                - generic [ref=f20e350]:
+                  - link [ref=f20e352] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1760597852_565102499_18532094644006686_6956853330507935005_n.webp
+                    - 'img "Brewery Sessions: Arie Cole, Yamez, PVKVSV" [ref=f20e353]'
+                  - generic:
+                    - generic: "Brewery Sessions: Arie Cole, Yamez, PVKVSV"
+                    - generic: Rave
+                    - generic: Jackworth Ginger Beer
+                    - generic:
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Drum And Bass":
+                          - /url: https://dev.arcane.city/events/tag/drum-and-bass
+                        - link "View details for Drum And Bass":
+                          - /url: https://dev.arcane.city/tags/drum-and-bass
+                          - generic [aria-hidden]: 
+                - 'link "Details for Brewery Sessions: Arie Cole, Yamez, PVKVSV" [ref=f20e354] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/brewery-sessions-arie-cole-yamez-pvkvsv
+                  - text: Details
+              - generic [ref=f20e355]:
+                - generic [ref=f20e356]: Jul 4
+                - generic [ref=f20e357]:
+                  - link [ref=f20e359] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1750694523_495081742_17864912973381746_3342058111376113952_n.webp
+                    - img "BLOODRAVE III w/ Nowhere2Run, Rita Lukea, Visciousswishes, Arie Cole, Slow Danger, Rob Chilldren" [ref=f20e360]
+                  - generic:
+                    - generic: BLOODRAVE III w/ Nowhere2Run, Rita Lukea, Visciousswishes, Arie Cole, Slow Danger, Rob Chilldren
+                    - generic: Club Night
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Electronic":
+                          - /url: https://dev.arcane.city/events/tag/electronic
+                        - link "View details for Electronic":
+                          - /url: https://dev.arcane.city/tags/electronic
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Goth":
+                          - /url: https://dev.arcane.city/events/tag/goth
+                        - link "View details for Goth":
+                          - /url: https://dev.arcane.city/tags/goth
+                          - generic [aria-hidden]: 
+                - link "Details for BLOODRAVE III w/ Nowhere2Run, Rita Lukea, Visciousswishes, Arie Cole, Slow Danger, Rob Chilldren" [ref=f20e361] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/bloodrave-iii-w-nowhere2-run-rita-lukea-visciousswishes-arie-cole-slow-danger-rob-chilldren
+                  - text: Details
+              - generic [ref=f20e362]:
+                - generic [ref=f20e363]: Jun 19
+                - generic [ref=f20e364]:
+                  - link [ref=f20e366] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1750290095_509997293_18502832233021712_2157208098264605659_n.webp
+                    - img "INSIDE OUT - Skylight" [ref=f20e367]
+                  - generic:
+                    - generic: INSIDE OUT - Skylight
+                    - generic: Pop-up
+                    - generic: Carnegie Museum of Art
+                    - generic:
+                      - generic:
+                        - link "Club Music":
+                          - /url: https://dev.arcane.city/events/tag/club-music
+                        - link "View details for Club Music":
+                          - /url: https://dev.arcane.city/tags/club-music
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Downtempo":
+                          - /url: https://dev.arcane.city/events/tag/downtempo
+                        - link "View details for Downtempo":
+                          - /url: https://dev.arcane.city/tags/downtempo
+                          - generic [aria-hidden]: 
+                - link "Details for INSIDE OUT - Skylight" [ref=f20e368] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/inside-out-skylight
+                  - text: Details
+              - generic [ref=f20e369]:
+                - generic [ref=f20e370]: Jun 15
+                - generic [ref=f20e371]:
+                  - link [ref=f20e373] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1749748569_504516469_18167537299350705_929567282541435122_n.webp
+                    - img "SLAPPERS & BANGERS" [ref=f20e374]
+                  - generic:
+                    - generic: SLAPPERS & BANGERS
+                    - generic: Pop-up
+                    - generic: Jackworth Ginger Beer
+                    - generic:
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "R&b":
+                          - /url: https://dev.arcane.city/events/tag/rnb
+                        - link "View details for R&b":
+                          - /url: https://dev.arcane.city/tags/rnb
+                          - generic [aria-hidden]: 
+                - link "Details for SLAPPERS & BANGERS" [ref=f20e375] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/slappers-bangers
+                  - text: Details
+              - generic [ref=f20e376]:
+                - generic [ref=f20e377]: Oct 18
+                - generic [ref=f20e378]:
+                  - link [ref=f20e380] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1729227118_FLUX%2B10.18.webp
+                    - img "FLUX w/ Arie Cole, Cosmic Drip, Kay Chin" [ref=f20e381]
+                  - generic:
+                    - generic: FLUX w/ Arie Cole, Cosmic Drip, Kay Chin
+                    - generic: Club Night
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Disco":
+                          - /url: https://dev.arcane.city/events/tag/disco
+                        - link "View details for Disco":
+                          - /url: https://dev.arcane.city/tags/disco
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Electronic":
+                          - /url: https://dev.arcane.city/events/tag/electronic
+                        - link "View details for Electronic":
+                          - /url: https://dev.arcane.city/tags/electronic
+                          - generic [aria-hidden]: 
+                - link "Details for FLUX w/ Arie Cole, Cosmic Drip, Kay Chin" [ref=f20e382] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/flux-w-arie-cole-cosmic-drip-kay-chin
+                  - text: Details
+              - generic [ref=f20e383]:
+                - generic [ref=f20e384]: Aug 23
+                - generic [ref=f20e385]:
+                  - link [ref=f20e387] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1724274955_456360130_501789835941679_609874127901260402_n.webp
+                    - img "SUMMERS OVER!" [ref=f20e388]
+                  - generic:
+                    - generic: SUMMERS OVER!
+                    - generic: Rave
+                    - generic: Certain Death II
+                    - generic:
+                      - generic:
+                        - link "Beats":
+                          - /url: https://dev.arcane.city/events/tag/beats
+                        - link "View details for Beats":
+                          - /url: https://dev.arcane.city/tags/beats
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Club Music":
+                          - /url: https://dev.arcane.city/events/tag/club-music
+                        - link "View details for Club Music":
+                          - /url: https://dev.arcane.city/tags/club-music
+                          - generic [aria-hidden]: 
+                - link "Details for SUMMERS OVER!" [ref=f20e389] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/summers-over
+                  - text: Details
+              - generic [ref=f20e390]:
+                - generic [ref=f20e391]: May 26
+                - generic [ref=f20e392]:
+                  - link [ref=f20e394] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1716428753_438037641_1215223086397327_863382852916359414_n%20%281%29.webp
+                    - img "TRACE & WYEP presents AeroSol Fest" [ref=f20e395]
+                  - generic:
+                    - generic: TRACE & WYEP presents AeroSol Fest
+                    - generic: Concert
+                    - generic: Trace Brewing
+                    - generic:
+                      - generic:
+                        - link "Alternative":
+                          - /url: https://dev.arcane.city/events/tag/alternative
+                        - link "View details for Alternative":
+                          - /url: https://dev.arcane.city/tags/alternative
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Hip Hop":
+                          - /url: https://dev.arcane.city/events/tag/hip-hop
+                        - link "View details for Hip Hop":
+                          - /url: https://dev.arcane.city/tags/hip-hop
+                          - generic [aria-hidden]: 
+                - link "Details for TRACE & WYEP presents AeroSol Fest" [ref=f20e396] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/trace-wyep-presents-aero-sol-fest
+                  - text: Details
+              - generic [ref=f20e397]:
+                - generic [ref=f20e398]: Mar 23
+                - generic [ref=f20e399]:
+                  - link [ref=f20e401] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1711137610_432433896_1470331853518099_647787770586736998_n.webp
+                    - img "FLUX w/ Arie Cole, Madame Trio, Doctor Dap" [ref=f20e402]
+                  - generic:
+                    - generic: FLUX w/ Arie Cole, Madame Trio, Doctor Dap
+                    - generic: Club Night
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Disco":
+                          - /url: https://dev.arcane.city/events/tag/disco
+                        - link "View details for Disco":
+                          - /url: https://dev.arcane.city/tags/disco
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Electronic":
+                          - /url: https://dev.arcane.city/events/tag/electronic
+                        - link "View details for Electronic":
+                          - /url: https://dev.arcane.city/tags/electronic
+                          - generic [aria-hidden]: 
+                - link "Details for FLUX w/ Arie Cole, Madame Trio, Doctor Dap" [ref=f20e403] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/flux-w-arie-cole-madame-trio-doctor-dap
+                  - text: Details
+              - generic [ref=f20e404]:
+                - generic [ref=f20e405]: Feb 9
+                - generic [ref=f20e406]:
+                  - link [ref=f20e408] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1705993903_temp.webp
+                    - img "Flux Black History Edition" [ref=f20e409]
+                  - generic:
+                    - generic: Flux Black History Edition
+                    - generic: Club Night
+                    - generic: Mr. Smalls
+                    - generic:
+                      - generic:
+                        - link "Afrobeat":
+                          - /url: https://dev.arcane.city/events/tag/afrobeat
+                        - link "View details for Afrobeat":
+                          - /url: https://dev.arcane.city/tags/afrobeat
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Drum And Bass":
+                          - /url: https://dev.arcane.city/events/tag/drum-and-bass
+                        - link "View details for Drum And Bass":
+                          - /url: https://dev.arcane.city/tags/drum-and-bass
+                          - generic [aria-hidden]: 
+                - link "Details for Flux Black History Edition" [ref=f20e410] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/flux-black-history-edition
+                  - text: Details
+              - generic [ref=f20e411]:
+                - generic [ref=f20e412]: Dec 8
+                - generic [ref=f20e413]:
+                  - link [ref=f20e415] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1701748580_408272708_10102645284321470_8052026507721556789_n.webp
+                    - img "FLUX w/ Arie Cole, Huny XO" [ref=f20e416]
+                  - generic:
+                    - generic: FLUX w/ Arie Cole, Huny XO
+                    - generic: Club Night
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Dance Party":
+                          - /url: https://dev.arcane.city/events/tag/dance-party
+                        - link "View details for Dance Party":
+                          - /url: https://dev.arcane.city/tags/dance-party
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Disco":
+                          - /url: https://dev.arcane.city/events/tag/disco
+                        - link "View details for Disco":
+                          - /url: https://dev.arcane.city/tags/disco
+                          - generic [aria-hidden]: 
+                - link "Details for FLUX w/ Arie Cole, Huny XO" [ref=f20e417] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/flux-w-arie-cole-huny-xo
+                  - text: Details
+              - generic [ref=f20e418]:
+                - generic [ref=f20e419]: Nov 10
+                - generic [ref=f20e420]:
+                  - link [ref=f20e422] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1699294549_400040216_10110901033368683_2872724969430557144_n.webp
+                    - img "FLUX w/ arie cole, dj inception, jarrett tebbets" [ref=f20e423]
+                  - generic:
+                    - generic: FLUX w/ arie cole, dj inception, jarrett tebbets
+                    - generic: Club Night
+                    - generic: Spirit
+                    - generic:
+                      - generic:
+                        - link "Disco":
+                          - /url: https://dev.arcane.city/events/tag/disco
+                        - link "View details for Disco":
+                          - /url: https://dev.arcane.city/tags/disco
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "House":
+                          - /url: https://dev.arcane.city/events/tag/house
+                        - link "View details for House":
+                          - /url: https://dev.arcane.city/tags/house
+                          - generic [aria-hidden]: 
+                - link "Details for FLUX w/ arie cole, dj inception, jarrett tebbets" [ref=f20e424] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/flux-w-arie-cole-dj-inception-jarrett-tebbets
+                  - text: Details
+            - paragraph [ref=f20e425]:
+              - text: Showing 20 most recent —
+              - link "view all past events" [ref=f20e426] [cursor=pointer]:
+                - /url: https://dev.arcane.city/events/related-to/arie-cole
+          - link "View All Related Events " [ref=f20e428] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/related-to/arie-cole
+            - text: View All Related Events
+            - generic [ref=f20e429]: 
+        - generic [ref=f20e431]:
+          - generic [ref=f20e432]: DEV Arcane City
+          - generic [aria-hidden] [ref=f20e433]: ·
+          - link "Tonight" [ref=f20e434] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=f20e435]: ·
+          - link "This Week" [ref=f20e436] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=f20e437]: ·
+          - link "This Weekend" [ref=f20e438] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=f20e439]: ·
+          - link "Events" [ref=f20e440] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=f20e441]: ·
+          - link "Entities" [ref=f20e442] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f20e443]: ·
+          - link "Series" [ref=f20e444] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f20e445]: ·
+          - link "Tags" [ref=f20e446] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

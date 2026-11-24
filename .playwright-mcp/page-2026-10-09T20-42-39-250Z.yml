@@ -1,0 +1,944 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - text:                    
+    - complementary [ref=e3]:
+      - button "Close navigation" [ref=e4]:
+        - generic [aria-hidden] [ref=e5]: 
+      - generic [ref=e6]:
+        - link "Arcane City" [ref=e7] [cursor=pointer]:
+          - /url: https://arcane.city
+        - text: pittsburgh events guide
+      - navigation [ref=e9]:
+        - generic [ref=e10]:
+          - link " Events" [ref=e11] [cursor=pointer]:
+            - /url: https://arcane.city/events
+            - generic [ref=e12]: 
+            - generic [ref=e13]: Events
+          - generic [ref=e14]:
+            - link " Tonight" [ref=e15] [cursor=pointer]:
+              - /url: https://arcane.city/events/tonight
+              - generic [ref=e16]: 
+              - generic [ref=e17]: Tonight
+            - link " This Weekend" [ref=e18] [cursor=pointer]:
+              - /url: https://arcane.city/events/this-weekend
+              - generic [ref=e19]: 
+              - generic [ref=e20]: This Weekend
+            - link " This Week" [ref=e21] [cursor=pointer]:
+              - /url: https://arcane.city/events/this-week
+              - generic [ref=e22]: 
+              - generic [ref=e23]: This Week
+            - link " Event Grid" [ref=e24] [cursor=pointer]:
+              - /url: https://arcane.city/events/grid
+              - generic [ref=e25]: 
+              - generic [ref=e26]: Event Grid
+        - link " Event Calendar" [ref=e28] [cursor=pointer]:
+          - /url: https://arcane.city/calendar
+          - generic [ref=e29]: 
+          - generic [ref=e30]: Event Calendar
+        - link " Entities" [ref=e32] [cursor=pointer]:
+          - /url: https://arcane.city/entities
+          - generic [ref=e33]: 
+          - generic [ref=e34]: Entities
+        - link " Series" [ref=e35] [cursor=pointer]:
+          - /url: https://arcane.city/series
+          - generic [ref=e36]: 
+          - generic [ref=e37]: Series
+        - link " Tags" [ref=e38] [cursor=pointer]:
+          - /url: https://arcane.city/tags
+          - generic [ref=e39]: 
+          - generic [ref=e40]: Tags
+        - link " Forum" [ref=e41] [cursor=pointer]:
+          - /url: https://arcane.city/threads/all
+          - generic [ref=e42]: 
+          - generic [ref=e43]: Forum
+        - link " About" [ref=e45] [cursor=pointer]:
+          - /url: https://arcane.city/about
+          - generic [ref=e46]: 
+          - generic [ref=e47]: About
+        - link " Help" [ref=e48] [cursor=pointer]:
+          - /url: https://arcane.city/help
+          - generic [ref=e49]: 
+          - generic [ref=e50]: Help
+      - generic [ref=e51]:
+        - link " My Account" [ref=e52] [cursor=pointer]:
+          - /url: https://arcane.city/login
+          - generic [ref=e53]: 
+          - generic [ref=e54]: My Account
+        - link " Register" [ref=e55] [cursor=pointer]:
+          - /url: https://arcane.city/register
+          - generic [ref=e56]: 
+          - generic [ref=e57]: Register
+      - button "Switch to light mode" [ref=e61]:
+        - generic [ref=e62]: 
+    - generic [ref=e63]:
+      - banner [ref=e64]:
+        - generic [ref=e65]:
+          - button "Open navigation menu" [ref=e66]:
+            - generic [aria-hidden] [ref=e67]: 
+          - link "Arcane City pittsburgh events guide" [ref=e68] [cursor=pointer]:
+            - /url: https://arcane.city
+            - generic [ref=e69]: Arcane City
+            - generic [ref=e70]: pittsburgh events guide
+          - search [ref=e73]:
+            - generic [ref=e74]:
+              - combobox "Search" [ref=e75]
+              - generic [ref=e76]: 
+          - generic [ref=e78]:
+            - button "Add something" [ref=e79]:
+              - generic [aria-hidden] [ref=e80]: 
+            - text:   
+      - main [ref=e81]:
+        - link " Back" [ref=e83] [cursor=pointer]:
+          - /url: https://arcane.city
+          - generic [ref=e84]: 
+          - generic [ref=e85]: Back
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - generic [ref=e89]:
+                - heading "Rock Room" [level=1] [ref=e90]
+                - generic [ref=e92]:
+                  - button "Actions" [ref=e93]:
+                    - generic [aria-hidden] [ref=e94]: 
+                  - text:   
+              - paragraph [ref=e95]: Punk friendly bar and show space
+            - link [ref=e97] [cursor=pointer]:
+              - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456855748-13730246.jpg
+              - img "Rock Room" [ref=e98]
+            - generic [ref=e99]:
+              - heading " Upcoming Events" [level=2] [ref=e100]:
+                - generic [ref=e101]: 
+                - text: Upcoming Events
+              - generic [ref=e102]:
+                - article [ref=e103]:
+                  - generic [ref=e104]:
+                    - link "View photo for NecroFelony, Sarcosuchus, Charnel Tryst & Demoralizing" [ref=e105] [cursor=pointer]:
+                      - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1790212252_Oct%2010%20death%20metal%20show%20flyer.webp
+                      - img "NecroFelony, Sarcosuchus, Charnel Tryst & Demoralizing" [ref=e106]
+                    - link "Sign in to mark NecroFelony, Sarcosuchus, Charnel Tryst & Demoralizing as attending" [ref=e108] [cursor=pointer]:
+                      - /url: https://arcane.city/login
+                      - generic [aria-hidden] [ref=e109]: 
+                  - generic [ref=e110]:
+                    - heading [level=3] [ref=e111]:
+                      - link "NecroFelony, Sarcosuchus, Charnel Tryst & Demoralizing" [ref=e112] [cursor=pointer]:
+                        - /url: https://arcane.city/events/necro-felony-sarcosuchus-charnel-tryst-demoralizing
+                    - paragraph [ref=e113]: Death metal/grind night at Rock Room featuring Sarcosuchus, Gutgash, Demoralizing, and an unnamed headliner.
+                    - link "Concert" [ref=e115] [cursor=pointer]:
+                      - /url: /events/type/concert
+                    - generic [ref=e116]:
+                      - generic [ref=e117]:
+                        - generic [ref=e118]: 
+                        - link "Saturday, October 10, 2026 at 8:00 PM" [ref=e119] [cursor=pointer]:
+                          - /url: /events/by-date/2026/10/10
+                      - generic [ref=e120]:
+                        - generic [ref=e121]: 
+                        - link "Rock Room" [ref=e122] [cursor=pointer]:
+                          - /url: /entities/rock-room
+                      - generic [ref=e123]:
+                        - generic [ref=e124]: 
+                        - generic [ref=e125]: 21+
+                      - generic [ref=e126]:
+                        - generic [ref=e127]: 
+                        - generic [ref=e128]: "Door: $10"
+                    - generic [ref=e129]:
+                      - generic [ref=e130]:
+                        - link "Demoralizing" [ref=e131] [cursor=pointer]:
+                          - /url: https://arcane.city/entities/demoralizing
+                        - link "Filter events by Demoralizing" [ref=e132] [cursor=pointer]:
+                          - /url: https://arcane.city/events/related-to/demoralizing
+                          - generic [aria-hidden] [ref=e133]: 
+                      - generic [ref=e134]:
+                        - link "Rock Room" [ref=e135] [cursor=pointer]:
+                          - /url: https://arcane.city/entities/rock-room
+                        - link "Filter events by Rock Room" [ref=e136] [cursor=pointer]:
+                          - /url: https://arcane.city/events/related-to/rock-room
+                          - generic [aria-hidden] [ref=e137]: 
+                    - generic [ref=e138]:
+                      - generic [ref=e139]:
+                        - link "Death Metal" [ref=e140] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/death-metal
+                        - link "View details for Death Metal" [ref=e141] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/death-metal
+                          - generic [aria-hidden] [ref=e142]: 
+                      - generic [ref=e143]:
+                        - link "Grindcore" [ref=e144] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/grindcore
+                        - link "View details for Grindcore" [ref=e145] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/grindcore
+                          - generic [aria-hidden] [ref=e146]: 
+                      - generic [ref=e147]:
+                        - link "Metal" [ref=e148] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal" [ref=e149] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden] [ref=e150]: 
+                - article [ref=e152]:
+                  - generic [ref=e153]:
+                    - link "View photo for Motherless, Porcupine, Sherm, Pulverizer" [ref=e154] [cursor=pointer]:
+                      - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1790718904_89d8bf31-f5f8-4943-9941-7cacc7d67788.webp
+                      - img "Motherless, Porcupine, Sherm, Pulverizer" [ref=e155]
+                    - link "Sign in to mark Motherless, Porcupine, Sherm, Pulverizer as attending" [ref=e157] [cursor=pointer]:
+                      - /url: https://arcane.city/login
+                      - generic [aria-hidden] [ref=e158]: 
+                  - generic [ref=e159]:
+                    - heading [level=3] [ref=e160]:
+                      - link "Motherless, Porcupine, Sherm, Pulverizer" [ref=e161] [cursor=pointer]:
+                        - /url: https://arcane.city/events/motherless-porcupine-sherm-pulverizer
+                    - paragraph [ref=e162]: A heavy underground metal/hardcore show at Rock Room featuring Motherless, Porcupine, Sherm, and Pulverizer, with costumes encouraged for the Halloween-season lineup.
+                    - link "Concert" [ref=e164] [cursor=pointer]:
+                      - /url: /events/type/concert
+                    - generic [ref=e165]:
+                      - generic [ref=e166]:
+                        - generic [ref=e167]: 
+                        - link "Saturday, October 24, 2026 at 8:00 PM" [ref=e168] [cursor=pointer]:
+                          - /url: /events/by-date/2026/10/24
+                      - generic [ref=e169]:
+                        - generic [ref=e170]: 
+                        - link "Rock Room" [ref=e171] [cursor=pointer]:
+                          - /url: /entities/rock-room
+                      - generic [ref=e172]:
+                        - generic [ref=e173]: 
+                        - generic [ref=e174]: "Door: $12"
+                    - generic [ref=e175]:
+                      - generic [ref=e176]:
+                        - link "Perry House Productions" [ref=e177] [cursor=pointer]:
+                          - /url: https://arcane.city/entities/perry-house-productions
+                        - link "Filter events by Perry House Productions" [ref=e178] [cursor=pointer]:
+                          - /url: https://arcane.city/events/related-to/perry-house-productions
+                          - generic [aria-hidden] [ref=e179]: 
+                      - generic [ref=e180]:
+                        - link "Rock Room" [ref=e181] [cursor=pointer]:
+                          - /url: https://arcane.city/entities/rock-room
+                        - link "Filter events by Rock Room" [ref=e182] [cursor=pointer]:
+                          - /url: https://arcane.city/events/related-to/rock-room
+                          - generic [aria-hidden] [ref=e183]: 
+                    - generic [ref=e184]:
+                      - generic [ref=e185]:
+                        - link "Grind" [ref=e186] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/grind
+                        - link "View details for Grind" [ref=e187] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/grind
+                          - generic [aria-hidden] [ref=e188]: 
+                      - generic [ref=e189]:
+                        - link "Hardcore" [ref=e190] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/hardcore
+                        - link "View details for Hardcore" [ref=e191] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/hardcore
+                          - generic [aria-hidden] [ref=e192]: 
+                      - generic [ref=e193]:
+                        - link "Metal" [ref=e194] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal" [ref=e195] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden] [ref=e196]: 
+                      - generic [ref=e197]:
+                        - link "Punk" [ref=e198] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk" [ref=e199] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden] [ref=e200]: 
+                      - generic [ref=e201]:
+                        - link "Sludge" [ref=e202] [cursor=pointer]:
+                          - /url: https://arcane.city/events/tag/sludge
+                        - link "View details for Sludge" [ref=e203] [cursor=pointer]:
+                          - /url: https://arcane.city/tags/sludge
+                          - generic [aria-hidden] [ref=e204]: 
+            - generic [ref=e206]: Official Rock Room instagram Polish Hill’s living room 21+ NO ONLINE BOOKING
+            - generic [ref=e209]:
+              - heading " Frequently Performs With" [level=2] [ref=e210]:
+                - generic [ref=e211]: 
+                - text: Frequently Performs With
+              - generic [ref=e212]:
+                - generic [ref=e213]:
+                  - link "Erica Scary" [ref=e214] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/erica-scary
+                  - generic [ref=e215]: 
+                - generic [ref=e216]:
+                  - link "Death Instinct" [ref=e217] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/death-instinct
+                  - generic [ref=e218]: 
+                - generic [ref=e219]:
+                  - link "Lilac//Web" [ref=e220] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/lilac-web
+                  - generic [ref=e221]: 
+                - generic [ref=e222]:
+                  - link "Krass Advert" [ref=e223] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/krass-advert
+                  - generic [ref=e224]: 
+                - generic [ref=e225]:
+                  - link "Painted Dog" [ref=e226] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/painted-dog
+                  - generic [ref=e227]: 
+                - generic [ref=e228]:
+                  - link "Complete Fucker" [ref=e229] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/complete-fucker
+                  - generic [ref=e230]: 
+                - generic [ref=e231]:
+                  - link "Fuzzfiend" [ref=e232] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/fuzzfiend
+                  - generic [ref=e233]: 
+                - generic [ref=e234]:
+                  - link "Dukkha" [ref=e235] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/dukkha
+                  - generic [ref=e236]: 
+                - generic [ref=e237]:
+                  - link "Joey Molinaro" [ref=e238] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/joey-molinaro
+                  - generic [ref=e239]: 
+                - generic [ref=e240]:
+                  - link "Concealed Blade" [ref=e241] [cursor=pointer]:
+                    - /url: https://arcane.city/entities/concealed-blade
+                  - generic [ref=e242]: 
+          - generic [ref=e243]:
+            - generic [ref=e244]:
+              - heading " Venue Facts" [level=2] [ref=e245]:
+                - generic [ref=e246]: 
+                - text: Venue Facts
+              - generic [ref=e247]:
+                - generic [ref=e248]:
+                  - term [ref=e249]: Capacity
+                  - definition [ref=e250]: "120"
+                - generic [ref=e251]:
+                  - term [ref=e252]: Address
+                  - definition [ref=e253]: 1054 Herron Ave, Pittsburgh, PA 15219 · Polish Hill Pittsburgh, PA
+                - generic [ref=e254]:
+                  - term [ref=e255]: Ages
+                  - definition [ref=e256]: Varies by event
+                - generic [ref=e257]:
+                  - term [ref=e258]: Links
+                  - definition [ref=e259]:
+                    - link "Website" [ref=e260] [cursor=pointer]:
+                      - /url: https://www.facebook.com/officialrockroom
+                    - link "Instagram" [ref=e261] [cursor=pointer]:
+                      - /url: https://instagram.com/rockroompgh
+                - generic [ref=e262]:
+                  - term [ref=e263]: Photos
+                  - definition [ref=e264]:
+                    - link "2 photos" [ref=e265] [cursor=pointer]:
+                      - /url: "#photo-gallery"
+            - generic [ref=e267]:
+              - generic [ref=e268]:
+                - generic [ref=e269]:
+                  - generic [ref=e270]: 
+                  - text: Space
+                - generic [ref=e271]:
+                  - text: "Aliases:"
+                  - link "The Rock Room" [ref=e273] [cursor=pointer]:
+                    - /url: /entities/alias/The Rock Room
+                - generic [ref=e274]:
+                  - generic [ref=e275]: 
+                  - text: 8 Followers
+              - generic [ref=e276]:
+                - generic [ref=e277]: Roles
+                - link "Venue" [ref=e279] [cursor=pointer]:
+                  - /url: /entities/role/Venue
+              - generic [ref=e280]:
+                - generic [ref=e281]: Tags
+                - generic [ref=e282]:
+                  - generic [ref=e283]:
+                    - link "Bar" [ref=e284] [cursor=pointer]:
+                      - /url: https://arcane.city/entities/tag/bar
+                    - link "View details for Bar" [ref=e285] [cursor=pointer]:
+                      - /url: https://arcane.city/tags/bar
+                      - generic [aria-hidden] [ref=e286]: 
+                  - generic [ref=e287]:
+                    - link "Crust" [ref=e288] [cursor=pointer]:
+                      - /url: https://arcane.city/entities/tag/crust
+                    - link "View details for Crust" [ref=e289] [cursor=pointer]:
+                      - /url: https://arcane.city/tags/crust
+                      - generic [aria-hidden] [ref=e290]: 
+                  - generic [ref=e291]:
+                    - link "Punk" [ref=e292] [cursor=pointer]:
+                      - /url: https://arcane.city/entities/tag/punk
+                    - link "View details for Punk" [ref=e293] [cursor=pointer]:
+                      - /url: https://arcane.city/tags/punk
+                      - generic [aria-hidden] [ref=e294]: 
+              - link "Instagram profile for Rock Room" [ref=e297] [cursor=pointer]:
+                - /url: https://instagram.com/rockroompgh
+                - generic [aria-hidden] [ref=e298]: 
+            - generic [ref=e299]:
+              - heading " Locations" [level=2] [ref=e300]:
+                - generic [ref=e301]: 
+                - text: Locations
+              - generic [ref=e303]:
+                - generic [ref=e304]: Business
+                - generic [ref=e305]: 1054 Herron Ave, Pittsburgh, PA 15219 Polish Hill Pittsburgh PA USA
+                - generic [ref=e306]: "Capacity: 120"
+            - generic [ref=e307]:
+              - heading " Links" [level=2] [ref=e308]:
+                - generic [ref=e309]: 
+                - text: Links
+              - generic [ref=e311]:
+                - link "Facebook" [ref=e312] [cursor=pointer]:
+                  - /url: https://www.facebook.com/officialrockroom
+                - generic [ref=e313]: 
+            - generic [ref=e314]:
+              - heading " Photos" [level=2] [ref=e315]:
+                - generic [ref=e316]: 
+                - text: Photos
+              - generic [ref=e317]:
+                - link [ref=e319] [cursor=pointer]:
+                  - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456855748-13730246.jpg
+                  - img "1456855748-13730246.jpg" [ref=e320]
+                - link [ref=e322] [cursor=pointer]:
+                  - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1456855787-ls.jpg
+                  - img "1456855787-ls.jpg" [ref=e323]
+        - article [ref=e325]:
+          - generic [ref=e326]:
+            - generic [ref=e327]: 
+            - heading "Past Events" [level=4] [ref=e328]
+            - generic [ref=e329]: 20+
+          - generic [ref=e330]:
+            - generic [ref=e331]:
+              - generic [ref=e332]:
+                - generic [ref=e333]: Oct 4
+                - generic [ref=e334]:
+                  - link [ref=e336] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788456908_86c66298-3bd5-4a05-af86-b68b92385129.webp
+                    - img "Leather Lung, Fuzzfiend, Salem Bitch Trials" [ref=e337]
+                  - generic:
+                    - generic: Leather Lung, Fuzzfiend, Salem Bitch Trials
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Doom Metal":
+                          - /url: https://arcane.city/events/tag/doom-metal
+                        - link "View details for Doom Metal":
+                          - /url: https://arcane.city/tags/doom-metal
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Metal":
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal":
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden]: 
+                - link "Details for Leather Lung, Fuzzfiend, Salem Bitch Trials" [ref=e338] [cursor=pointer]:
+                  - /url: https://arcane.city/events/leather-lung-fuzzfiend-salem-bitch-trials
+                  - text: Details
+              - generic [ref=e339]:
+                - generic [ref=e340]: Oct 3
+                - generic [ref=e341]:
+                  - link [ref=e343] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1790720399_0928bf6e-efc6-4667-b3fc-56ff06b49bb1.webp
+                    - img "Star Carr with Hit Kit Party, Blood Noize, and Part Time Daughter" [ref=e344]
+                  - generic:
+                    - generic: Star Carr with Hit Kit Party, Blood Noize, and Part Time Daughter
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Noise":
+                          - /url: https://arcane.city/events/tag/noise
+                        - link "View details for Noise":
+                          - /url: https://arcane.city/tags/noise
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                - link "Details for Star Carr with Hit Kit Party, Blood Noize, and Part Time Daughter" [ref=e345] [cursor=pointer]:
+                  - /url: https://arcane.city/events/star-carr-hit-kit-party-blood-noize-part-time-daughter
+                  - text: Details
+              - generic [ref=e346]:
+                - generic [ref=e347]: Sep 24
+                - generic [ref=e348]:
+                  - link [ref=e350] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1789580553_9d2c94ef-5da9-48a2-a64b-04e46b143f3c.webp
+                    - img "Plektani (Athens, Greece) with Dukkha" [ref=e351]
+                  - generic:
+                    - generic: Plektani (Athens, Greece) with Dukkha
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Hardcore":
+                          - /url: https://arcane.city/events/tag/hardcore
+                        - link "View details for Hardcore":
+                          - /url: https://arcane.city/tags/hardcore
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                - link "Details for Plektani (Athens, Greece) with Dukkha" [ref=e352] [cursor=pointer]:
+                  - /url: https://arcane.city/events/plektani-dukkha-rock-room
+                  - text: Details
+              - generic [ref=e353]:
+                - generic [ref=e354]: Sep 16
+                - generic [ref=e355]:
+                  - link [ref=e357] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788546468_profane_existence_official_1788540664_3978887758281701617_4296399381.webp
+                    - img "Destruct / D. Sablu / Ultimatum / Martin" [ref=e358]
+                  - generic:
+                    - generic: Destruct / D. Sablu / Ultimatum / Martin
+                    - generic: Concert
+                    - generic: The Courts
+                    - generic:
+                      - generic:
+                        - link "Diy":
+                          - /url: https://arcane.city/events/tag/diy
+                        - link "View details for Diy":
+                          - /url: https://arcane.city/tags/diy
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Hardcore":
+                          - /url: https://arcane.city/events/tag/hardcore
+                        - link "View details for Hardcore":
+                          - /url: https://arcane.city/tags/hardcore
+                          - generic [aria-hidden]: 
+                - link "Details for Destruct / D. Sablu / Ultimatum / Martin" [ref=e359] [cursor=pointer]:
+                  - /url: https://arcane.city/events/destruct-d-sablu-ultimatum-martin
+                  - text: Details
+              - generic [ref=e360]:
+                - generic [ref=e361]: Sep 5
+                - generic [ref=e362]:
+                  - link [ref=e364] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785342015_4386f89b-6fb1-40ee-aa6a-a24baf494c3c.webp
+                    - img "Gay Cum Daddies, Cloning, In Countrn" [ref=e365]
+                  - generic:
+                    - generic: Gay Cum Daddies, Cloning, In Countrn
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Diy":
+                          - /url: https://arcane.city/events/tag/diy
+                        - link "View details for Diy":
+                          - /url: https://arcane.city/tags/diy
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Experimental":
+                          - /url: https://arcane.city/events/tag/experimental
+                        - link "View details for Experimental":
+                          - /url: https://arcane.city/tags/experimental
+                          - generic [aria-hidden]: 
+                - link "Details for Gay Cum Daddies, Cloning, In Countrn" [ref=e366] [cursor=pointer]:
+                  - /url: https://arcane.city/events/gay-cum-daddies-cloning-in-countrn
+                  - text: Details
+              - generic [ref=e367]:
+                - generic [ref=e368]: Aug 26
+                - generic [ref=e369]:
+                  - link [ref=e371] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785866763_757507103_18111682552969754_3072409345421482118_n.webp
+                    - img "Five Hundred Bucks / Little Low / Law Jaw / Big Thrill" [ref=e372]
+                  - generic:
+                    - generic: Five Hundred Bucks / Little Low / Law Jaw / Big Thrill
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Emo":
+                          - /url: https://arcane.city/events/tag/emo
+                        - link "View details for Emo":
+                          - /url: https://arcane.city/tags/emo
+                          - generic [aria-hidden]: 
+                - link "Details for Five Hundred Bucks / Little Low / Law Jaw / Big Thrill" [ref=e373] [cursor=pointer]:
+                  - /url: https://arcane.city/events/five-hundred-bucks-little-low-law-jaw-big-thrill-2026-08-26
+                  - text: Details
+              - generic [ref=e374]:
+                - generic [ref=e375]: Jul 29
+                - generic [ref=e376]:
+                  - link [ref=e378] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1782410635_a8b2c024-e36e-4000-9089-55021b92fe4c.webp
+                    - img "Abyecta, Fan Club, Martin" [ref=e379]
+                  - generic:
+                    - generic: Abyecta, Fan Club, Martin
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Hardcore":
+                          - /url: https://arcane.city/events/tag/hardcore
+                        - link "View details for Hardcore":
+                          - /url: https://arcane.city/tags/hardcore
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Live Music":
+                          - /url: https://arcane.city/events/tag/live-music
+                        - link "View details for Live Music":
+                          - /url: https://arcane.city/tags/live-music
+                          - generic [aria-hidden]: 
+                - link "Details for Abyecta, Fan Club, Martin" [ref=e380] [cursor=pointer]:
+                  - /url: https://arcane.city/events/abyecta-fan-club-martin
+                  - text: Details
+              - generic [ref=e381]:
+                - generic [ref=e382]: Jul 25
+                - generic [ref=e383]:
+                  - link [ref=e385] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1782976347_e41b2fb0-3221-4f16-b87c-4613c2bcae26.webp
+                    - img "Zorn & Fuzzfiend" [ref=e386]
+                  - generic:
+                    - generic: Zorn & Fuzzfiend
+                    - generic: Concert
+                    - generic: The Courts
+                    - generic:
+                      - generic:
+                        - link "Doom":
+                          - /url: https://arcane.city/events/tag/doom
+                        - link "View details for Doom":
+                          - /url: https://arcane.city/tags/doom
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                - link "Details for Zorn & Fuzzfiend" [ref=e387] [cursor=pointer]:
+                  - /url: https://arcane.city/events/zorn-and-fuzzfiend
+                  - text: Details
+              - generic [ref=e388]:
+                - generic [ref=e389]: Jul 17
+                - generic [ref=e390]:
+                  - link [ref=e392] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1782230083_f9dd83fa-78d5-4bbb-9f20-48ea7124778d.webp
+                    - img "The Day The Rock Room Turned Day-Glo" [ref=e393]
+                  - generic:
+                    - generic: The Day The Rock Room Turned Day-Glo
+                    - generic: Club Night
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "80s":
+                          - /url: https://arcane.city/events/tag/80s
+                        - link "View details for 80s":
+                          - /url: https://arcane.city/tags/80s
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "New Wave":
+                          - /url: https://arcane.city/events/tag/new-wave
+                        - link "View details for New Wave":
+                          - /url: https://arcane.city/tags/new-wave
+                          - generic [aria-hidden]: 
+                - link "Details for The Day The Rock Room Turned Day-Glo" [ref=e394] [cursor=pointer]:
+                  - /url: https://arcane.city/events/the-day-the-rock-room-turned-day-glo
+                  - text: Details
+              - generic [ref=e395]:
+                - generic [ref=e396]: Jun 27
+                - generic [ref=e397]:
+                  - link [ref=e399] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1782168356_d39b26d2-7641-44be-9e45-50cf1a9e5fb3.webp
+                    - img "Mires, O.I.L., Fuzzfiend" [ref=e400]
+                  - generic:
+                    - generic: Mires, O.I.L., Fuzzfiend
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Doom":
+                          - /url: https://arcane.city/events/tag/doom
+                        - link "View details for Doom":
+                          - /url: https://arcane.city/tags/doom
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Metal":
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal":
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden]: 
+                - link "Details for Mires, O.I.L., Fuzzfiend" [ref=e401] [cursor=pointer]:
+                  - /url: https://arcane.city/events/mires-o-i-l-fuzzfiend
+                  - text: Details
+              - generic [ref=e402]:
+                - generic [ref=e403]: Jun 20
+                - generic [ref=e404]:
+                  - link [ref=e406] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1781880689_b0e8183b-b0cb-4e8b-a127-b27ac0ca37ee.webp
+                    - img "Briny / The Scratch and Sniffs / Sticky" [ref=e407]
+                  - generic:
+                    - generic: Briny / The Scratch and Sniffs / Sticky
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Diy":
+                          - /url: https://arcane.city/events/tag/diy
+                        - link "View details for Diy":
+                          - /url: https://arcane.city/tags/diy
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Indie":
+                          - /url: https://arcane.city/events/tag/indie
+                        - link "View details for Indie":
+                          - /url: https://arcane.city/tags/indie
+                          - generic [aria-hidden]: 
+                - link "Details for Briny / The Scratch and Sniffs / Sticky" [ref=e408] [cursor=pointer]:
+                  - /url: https://arcane.city/events/briny-the-scratch-and-sniffs-sticky
+                  - text: Details
+              - generic [ref=e409]:
+                - generic [ref=e410]: Jun 19
+                - generic [ref=e411]:
+                  - link [ref=e413] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1781799677_received_1008499181706329.webp
+                    - img "Goetia, Nuclear Tomb, Demoralizing" [ref=e414]
+                  - generic:
+                    - generic: Goetia, Nuclear Tomb, Demoralizing
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Death Metal":
+                          - /url: https://arcane.city/events/tag/death-metal
+                        - link "View details for Death Metal":
+                          - /url: https://arcane.city/tags/death-metal
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Metal":
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal":
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden]: 
+                - link "Details for Goetia, Nuclear Tomb, Demoralizing" [ref=e415] [cursor=pointer]:
+                  - /url: https://arcane.city/events/goetia-nuclear-tomb-demoralizing
+                  - text: Details
+              - generic [ref=e416]:
+                - generic [ref=e417]: Jun 18
+                - generic [ref=e418]:
+                  - link [ref=e420] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1772687040_641256732_18440733754114070_6932753404831047957_n.webp
+                    - img "Bustié (NYC), Lilac//Web, DJ Pancakes" [ref=e421]
+                  - generic:
+                    - generic: Bustié (NYC), Lilac//Web, DJ Pancakes
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Diy":
+                          - /url: https://arcane.city/events/tag/diy
+                        - link "View details for Diy":
+                          - /url: https://arcane.city/tags/diy
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Ebm":
+                          - /url: https://arcane.city/events/tag/ebm
+                        - link "View details for Ebm":
+                          - /url: https://arcane.city/tags/ebm
+                          - generic [aria-hidden]: 
+                - link "Details for Bustié (NYC), Lilac//Web, DJ Pancakes" [ref=e422] [cursor=pointer]:
+                  - /url: https://arcane.city/events/busti-nyc-lilac-web-dj-pancakes
+                  - text: Details
+              - generic [ref=e423]:
+                - generic [ref=e424]: Jun 11
+                - generic [ref=e425]:
+                  - link [ref=e427] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778190130_0e606a92-4b94-491b-8b28-a3fe91ac0757.webp
+                    - img "Deceptor, Vicious Blade, and Septic Idols" [ref=e428]
+                  - generic:
+                    - generic: Deceptor, Vicious Blade, and Septic Idols
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Death Metal":
+                          - /url: https://arcane.city/events/tag/death-metal
+                        - link "View details for Death Metal":
+                          - /url: https://arcane.city/tags/death-metal
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Metal":
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal":
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden]: 
+                - link "Details for Deceptor, Vicious Blade, and Septic Idols" [ref=e429] [cursor=pointer]:
+                  - /url: https://arcane.city/events/deceptor-vicious-blade-and-septic-idols
+                  - text: Details
+              - generic [ref=e430]:
+                - generic [ref=e431]: Jun 9
+                - generic [ref=e432]:
+                  - link [ref=e434] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1775492508_b46b0100-daab-4527-b5d6-7e3fcc4e0a67.webp
+                    - img "Punk Night w/ The Uncouth, Last Protocol, DJ Drago" [ref=e435]
+                  - generic:
+                    - generic: Punk Night w/ The Uncouth, Last Protocol, DJ Drago
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Rock":
+                          - /url: https://arcane.city/events/tag/rock
+                        - link "View details for Rock":
+                          - /url: https://arcane.city/tags/rock
+                          - generic [aria-hidden]: 
+                - link "Details for Punk Night w/ The Uncouth, Last Protocol, DJ Drago" [ref=e436] [cursor=pointer]:
+                  - /url: https://arcane.city/events/punk-night-w-the-uncouth-last-protocol-dj-drago
+                  - text: Details
+              - generic [ref=e437]:
+                - generic [ref=e438]: May 27
+                - generic [ref=e439]:
+                  - link [ref=e441] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1775492389_11c9bdbf-efbc-4cad-b7df-f414b359f0db.webp
+                    - img "Rock N Roll Rendezvous" [ref=e442]
+                  - generic:
+                    - generic: Rock N Roll Rendezvous
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Live Music":
+                          - /url: https://arcane.city/events/tag/live-music
+                        - link "View details for Live Music":
+                          - /url: https://arcane.city/tags/live-music
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                - link "Details for Rock N Roll Rendezvous" [ref=e443] [cursor=pointer]:
+                  - /url: https://arcane.city/events/rock-n-roll-rendezvous
+                  - text: Details
+              - generic [ref=e444]:
+                - generic [ref=e445]: May 26
+                - generic [ref=e446]:
+                  - link [ref=e448] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778013639_May%2026%20Show_V2.webp
+                    - img "Godzilla Nether Portal + Scrumper + Bastard Accident + I Am the Lizard Queen" [ref=e449]
+                  - generic:
+                    - generic: Godzilla Nether Portal + Scrumper + Bastard Accident + I Am the Lizard Queen
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Experimental":
+                          - /url: https://arcane.city/events/tag/experimental
+                        - link "View details for Experimental":
+                          - /url: https://arcane.city/tags/experimental
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Noise Rock":
+                          - /url: https://arcane.city/events/tag/noise-rock
+                        - link "View details for Noise Rock":
+                          - /url: https://arcane.city/tags/noise-rock
+                          - generic [aria-hidden]: 
+                - link "Details for Godzilla Nether Portal + Scrumper + Bastard Accident + I Am the Lizard Queen" [ref=e450] [cursor=pointer]:
+                  - /url: https://arcane.city/events/godzilla-nether-portal-scrumper-bastard-accident-i-am-the-lizard-queen
+                  - text: Details
+              - generic [ref=e451]:
+                - generic [ref=e452]: May 24
+                - generic [ref=e453]:
+                  - link [ref=e455] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1775245708_d94575b8-bf95-491e-ae68-1627814ec317.webp
+                    - img "Loosey with Painted Dog and Snarling Dogs" [ref=e456]
+                  - generic:
+                    - generic: Loosey with Painted Dog and Snarling Dogs
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Power Pop":
+                          - /url: https://arcane.city/events/tag/power-pop
+                        - link "View details for Power Pop":
+                          - /url: https://arcane.city/tags/power-pop
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                - link "Details for Loosey with Painted Dog and Snarling Dogs" [ref=e457] [cursor=pointer]:
+                  - /url: https://arcane.city/events/loosey-with-painted-dog-and-snarling-dogs
+                  - text: Details
+              - generic [ref=e458]:
+                - generic [ref=e459]: May 16
+                - generic [ref=e460]:
+                  - link [ref=e462] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778697717_298da351-87ac-412d-94cc-82128615ed6b.webp
+                    - img "Switchblade / Möwer / Heavy Smoker" [ref=e463]
+                  - generic:
+                    - generic: Switchblade / Möwer / Heavy Smoker
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Doom Metal":
+                          - /url: https://arcane.city/events/tag/doom-metal
+                        - link "View details for Doom Metal":
+                          - /url: https://arcane.city/tags/doom-metal
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Metal":
+                          - /url: https://arcane.city/events/tag/metal
+                        - link "View details for Metal":
+                          - /url: https://arcane.city/tags/metal
+                          - generic [aria-hidden]: 
+                - link "Details for Switchblade / Möwer / Heavy Smoker" [ref=e464] [cursor=pointer]:
+                  - /url: https://arcane.city/events/switchblade-m-wer-heavy-smoker
+                  - text: Details
+              - generic [ref=e465]:
+                - generic [ref=e466]: Apr 11
+                - generic [ref=e467]:
+                  - link [ref=e469] [cursor=pointer]:
+                    - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1772831046_645883155_18445869283129358_1439626558610980468_n.webp
+                    - img "Sheer Terror, Submachine, School Drugs, Complete Fucker" [ref=e470]
+                  - generic:
+                    - generic: Sheer Terror, Submachine, School Drugs, Complete Fucker
+                    - generic: Concert
+                    - generic: Rock Room
+                    - generic:
+                      - generic:
+                        - link "Hardcore":
+                          - /url: https://arcane.city/events/tag/hardcore
+                        - link "View details for Hardcore":
+                          - /url: https://arcane.city/tags/hardcore
+                          - generic [aria-hidden]: 
+                      - generic:
+                        - link "Punk":
+                          - /url: https://arcane.city/events/tag/punk
+                        - link "View details for Punk":
+                          - /url: https://arcane.city/tags/punk
+                          - generic [aria-hidden]: 
+                - link "Details for Sheer Terror, Submachine, School Drugs, Complete Fucker" [ref=e471] [cursor=pointer]:
+                  - /url: https://arcane.city/events/sheer-terror-submachine-school-drugs-complete-fucker-rock-room-2026-04-11
+                  - text: Details
+            - paragraph [ref=e472]:
+              - text: Showing 20 most recent —
+              - link "view all past events" [ref=e473] [cursor=pointer]:
+                - /url: https://arcane.city/events/related-to/rock-room
+          - link "View All Related Events " [ref=e475] [cursor=pointer]:
+            - /url: https://arcane.city/events/related-to/rock-room
+            - text: View All Related Events
+            - generic [ref=e476]: 
+        - generic [ref=e478]:
+          - generic [ref=e479]: Arcane City
+          - generic [aria-hidden] [ref=e480]: ·
+          - link "Tonight" [ref=e481] [cursor=pointer]:
+            - /url: https://arcane.city/events/tonight
+          - generic [aria-hidden] [ref=e482]: ·
+          - link "This Weekend" [ref=e483] [cursor=pointer]:
+            - /url: https://arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=e484]: ·
+          - link "This Week" [ref=e485] [cursor=pointer]:
+            - /url: https://arcane.city/events/this-week
+          - generic [aria-hidden] [ref=e486]: ·
+          - link "Events" [ref=e487] [cursor=pointer]:
+            - /url: https://arcane.city/events
+          - generic [aria-hidden] [ref=e488]: ·
+          - link "Entities" [ref=e489] [cursor=pointer]:
+            - /url: https://arcane.city/entities
+          - generic [aria-hidden] [ref=e490]: ·
+          - link "Series" [ref=e491] [cursor=pointer]:
+            - /url: https://arcane.city/series
+          - generic [aria-hidden] [ref=e492]: ·
+          - link "Tags" [ref=e493] [cursor=pointer]:
+            - /url: https://arcane.city/tags
+  - text:    

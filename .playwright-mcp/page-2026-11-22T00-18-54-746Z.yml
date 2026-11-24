@@ -1,0 +1,211 @@
+- generic [ref=e4]:
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - heading "Arcane City 2025.06.09 OAS 3.0" [level=1] [ref=e10]:
+        - text: Arcane City
+        - generic [ref=e11]:
+          - generic [ref=e12]: 2025.06.09
+          - generic [ref=e14]: OAS 3.0
+      - link "https://dev.arcane.city/postman/schemas/api.yml" [ref=e16] [cursor=pointer]:
+        - /url: https://dev.arcane.city/postman/schemas/api.yml
+    - generic [ref=e19]:
+      - paragraph [ref=e20]: REST API for working with Arcane City data.
+      - paragraph [ref=e21]: "Rate limits: 240 requests/minute per authenticated user, 120 requests/minute per IP for anonymous requests, and 20 requests/minute for photos/from-url. After 20 failed basic auth attempts in a minute from one IP, basic auth from that IP is refused until the minute is up. Over any limit the API returns 429 with a Retry-After header."
+      - paragraph [ref=e22]:
+        - text: Creating or updating content (events, entities and their contacts, links, locations and photos, series, tags, threads, posts, blogs, links, locations) needs a verified email. An unverified account gets 403 with
+        - code [ref=e23]: "{\"message\": \"Your email address is not verified.\"}"
+        - text: . Reads, follow/unfollow, attend and token creation don't need one.
+    - link "Contact Geoff Maddock" [ref=e25] [cursor=pointer]:
+      - /url: mailto:geoff.maddock@gmail.com
+  - generic [ref=e27]:
+    - generic [ref=e29]:
+      - text: Servers
+      - combobox [ref=e32]:
+        - option "https://arcane.city - Production" [selected]
+        - option "https://stage.arcane.city - Stage"
+        - option "https://dev.arcane.city - Development"
+    - button "Authorize" [ref=e34] [cursor=pointer]
+  - main [ref=e38]:
+    - generic [ref=e42]:
+      - heading "activities Collapse operation" [level=3] [ref=e45] [cursor=pointer]:
+        - generic [ref=e46]: activities
+        - button "Collapse operation" [expanded] [ref=e47]
+      - generic [ref=e53] [cursor=pointer]:
+        - button "GET /api/activities Get Activities" [ref=e54]:
+          - generic [ref=e55]: GET
+          - generic [ref=e56]:
+            - generic [ref=e57]: /api/activities
+            - generic [ref=e60]: Get Activities
+        - generic "Copy path to clipboard":
+          - button "Copy path to clipboard"
+        - button "authorization button unlocked" [ref=e61]
+        - button "get /api/activities" [ref=e64]
+      - generic [ref=e70] [cursor=pointer]:
+        - 'button "GET /api/activities/{id} Get Activity" [ref=e71]':
+          - generic [ref=e72]: GET
+          - generic [ref=e73]:
+            - generic [ref=e74]: "/api/activities/{id}"
+            - generic [ref=e77]: Get Activity
+        - generic "Copy path to clipboard":
+          - button "Copy path to clipboard"
+        - button "authorization button unlocked" [ref=e78]
+        - 'button "get /api/activities/{id}" [ref=e81]'
+      - heading "blogs Collapse operation" [level=3] [ref=e86] [cursor=pointer]:
+        - generic [ref=e87]: blogs
+        - button "Collapse operation" [expanded] [ref=e88]
+    - generic [ref=e93]:
+      - heading [level=4] [ref=e94] [cursor=pointer]:
+        - button "Schemas" [expanded] [ref=e95]
+      - generic [ref=e99]:
+        - button [ref=e102] [cursor=pointer]:
+          - strong [ref=e105]: Activity
+        - button [ref=e109] [cursor=pointer]:
+          - strong [ref=e112]: Activities
+        - button [ref=e116] [cursor=pointer]:
+          - strong [ref=e119]: Blog
+        - button [ref=e123] [cursor=pointer]:
+          - strong [ref=e126]: Blogs
+        - button [ref=e130] [cursor=pointer]:
+          - strong [ref=e133]: Embeds
+        - button [ref=e137] [cursor=pointer]:
+          - strong [ref=e140]: EmbedResponse
+        - button [ref=e144] [cursor=pointer]:
+          - strong [ref=e147]: Photos
+        - button [ref=e151] [cursor=pointer]:
+          - strong [ref=e154]: PhotoResponse
+        - button [ref=e158] [cursor=pointer]:
+          - strong [ref=e161]: InstagramPostResponse
+        - button [ref=e165] [cursor=pointer]:
+          - strong [ref=e168]: EntityRequest
+        - button [ref=e172] [cursor=pointer]:
+          - strong [ref=e175]: EntityPatchRequest
+        - button [ref=e179] [cursor=pointer]:
+          - strong [ref=e182]: EntityResponse
+        - button [ref=e186] [cursor=pointer]:
+          - strong [ref=e189]: Entities
+        - button [ref=e193] [cursor=pointer]:
+          - strong [ref=e196]: EntityTypeResponse
+        - button [ref=e200] [cursor=pointer]:
+          - strong [ref=e203]: EntityTypeRequest
+        - button [ref=e207] [cursor=pointer]:
+          - strong [ref=e210]: EntityTypes
+        - button [ref=e214] [cursor=pointer]:
+          - strong [ref=e217]: EntityStatusResponse
+        - button [ref=e221] [cursor=pointer]:
+          - strong [ref=e224]: EntityStatusRequest
+        - button [ref=e228] [cursor=pointer]:
+          - strong [ref=e231]: EventRequest
+        - button [ref=e235] [cursor=pointer]:
+          - strong [ref=e238]: EventResponse
+        - button [ref=e242] [cursor=pointer]:
+          - strong [ref=e245]: Events
+        - button [ref=e249] [cursor=pointer]:
+          - strong [ref=e252]: EventStatusResponse
+        - button [ref=e256] [cursor=pointer]:
+          - strong [ref=e259]: EventStatusRequest
+        - button [ref=e263] [cursor=pointer]:
+          - strong [ref=e266]: EventStatuses
+        - button [ref=e270] [cursor=pointer]:
+          - strong [ref=e273]: EventTypeRequest
+        - button [ref=e277] [cursor=pointer]:
+          - strong [ref=e280]: EventTypeResponse
+        - button [ref=e284] [cursor=pointer]:
+          - strong [ref=e287]: EventTypes
+        - button [ref=e291] [cursor=pointer]:
+          - strong [ref=e294]: Forum
+        - button [ref=e298] [cursor=pointer]:
+          - strong [ref=e301]: Forums
+        - button [ref=e305] [cursor=pointer]:
+          - strong [ref=e308]: Link
+        - button [ref=e312] [cursor=pointer]:
+          - strong [ref=e315]: Links
+        - button [ref=e319] [cursor=pointer]:
+          - strong [ref=e322]: Contact
+        - button [ref=e326] [cursor=pointer]:
+          - strong [ref=e329]: Contacts
+        - button [ref=e333] [cursor=pointer]:
+          - strong [ref=e336]: Menu
+        - button [ref=e340] [cursor=pointer]:
+          - strong [ref=e343]: Menus
+        - button [ref=e347] [cursor=pointer]:
+          - strong [ref=e350]: Location
+        - button [ref=e354] [cursor=pointer]:
+          - strong [ref=e357]: LocationRequest
+        - button [ref=e361] [cursor=pointer]:
+          - strong [ref=e364]: OccurrenceDay
+        - button [ref=e368] [cursor=pointer]:
+          - strong [ref=e371]: OccurrenceType
+        - button [ref=e375] [cursor=pointer]:
+          - strong [ref=e378]: OccurrenceWeek
+        - button [ref=e382] [cursor=pointer]:
+          - strong [ref=e385]: OccurrenceTypes
+        - button [ref=e389] [cursor=pointer]:
+          - strong [ref=e392]: OccurrenceWeeks
+        - button [ref=e396] [cursor=pointer]:
+          - strong [ref=e399]: OccurrenceDays
+        - button [ref=e403] [cursor=pointer]:
+          - strong [ref=e406]: Post
+        - button [ref=e410] [cursor=pointer]:
+          - strong [ref=e413]: Posts
+        - button [ref=e417] [cursor=pointer]:
+          - strong [ref=e420]: SeriesRequest
+        - button [ref=e424] [cursor=pointer]:
+          - strong [ref=e427]: SeriesResponse
+        - button [ref=e431] [cursor=pointer]:
+          - strong [ref=e434]: Seriess
+        - button [ref=e438] [cursor=pointer]:
+          - strong [ref=e441]: Tag
+        - button [ref=e445] [cursor=pointer]:
+          - strong [ref=e448]: Tags
+        - button [ref=e452] [cursor=pointer]:
+          - strong [ref=e455]: TagType
+        - button [ref=e459] [cursor=pointer]:
+          - strong [ref=e462]: TagTypes
+        - button [ref=e466] [cursor=pointer]:
+          - strong [ref=e469]: Role
+        - button [ref=e473] [cursor=pointer]:
+          - strong [ref=e476]: RoleRequest
+        - button [ref=e480] [cursor=pointer]:
+          - strong [ref=e483]: Roles
+        - button [ref=e487] [cursor=pointer]:
+          - strong [ref=e490]: Thread
+        - button [ref=e494] [cursor=pointer]:
+          - strong [ref=e497]: Threads
+        - button [ref=e501] [cursor=pointer]:
+          - strong [ref=e504]: ProfileResponse
+        - button [ref=e508] [cursor=pointer]:
+          - strong [ref=e511]: ProfileRequest
+        - button [ref=e515] [cursor=pointer]:
+          - strong [ref=e518]: UserSimple
+        - button [ref=e522] [cursor=pointer]:
+          - strong [ref=e525]: MinimalUser
+        - button [ref=e529] [cursor=pointer]:
+          - strong [ref=e532]: UserResponse
+        - button [ref=e536] [cursor=pointer]:
+          - strong [ref=e539]: UserRequest
+        - button [ref=e543] [cursor=pointer]:
+          - strong [ref=e546]: UserProfileRequest
+        - button [ref=e550] [cursor=pointer]:
+          - strong [ref=e553]: UserRegistrationRequest
+        - button [ref=e557] [cursor=pointer]:
+          - strong [ref=e560]: UserRegistrationResponse
+        - button [ref=e564] [cursor=pointer]:
+          - strong [ref=e567]: Users
+        - button [ref=e571] [cursor=pointer]:
+          - strong [ref=e574]: UserTokenRequest
+        - button [ref=e578] [cursor=pointer]:
+          - strong [ref=e581]: UserTokenResponse
+        - button [ref=e585] [cursor=pointer]:
+          - strong [ref=e588]: PasswordResetEmailRequest
+        - button [ref=e592] [cursor=pointer]:
+          - strong [ref=e595]: ResetPasswordRequest
+        - button [ref=e599] [cursor=pointer]:
+          - strong [ref=e602]: MessageResponse
+        - button [ref=e606] [cursor=pointer]:
+          - strong [ref=e609]: Visibility
+        - button [ref=e613] [cursor=pointer]:
+          - strong [ref=e616]: Visibilities
+        - button [ref=e620] [cursor=pointer]:
+          - strong [ref=e623]: Error
+        - button [ref=e627] [cursor=pointer]:
+          - strong [ref=e630]: Pagination

@@ -1,0 +1,1415 @@
+- generic [ref=f1e4]:
+  - generic [ref=f1e8]:
+    - generic [ref=f1e9]:
+      - heading "Arcane City 2025.06.09 OAS3" [level=2] [ref=f1e10]:
+        - text: Arcane City
+        - generic [ref=f1e11]:
+          - generic [ref=f1e12]: 2025.06.09
+          - generic [ref=f1e14]: OAS3
+      - link "https://arcane.city/postman/schemas/api.yml" [ref=f1e16] [cursor=pointer]:
+        - /url: https://arcane.city/postman/schemas/api.yml
+    - generic [ref=f1e19]:
+      - paragraph [ref=f1e20]: REST API for working with Arcane City data.
+      - paragraph [ref=f1e21]: "Rate limits: 240 requests/minute per authenticated user, 120 requests/minute per IP for anonymous requests, and 20 requests/minute for photos/from-url. After 20 failed basic auth attempts in a minute from one IP, basic auth from that IP is refused until the minute is up. Over any limit the API returns 429 with a Retry-After header."
+      - paragraph [ref=f1e22]:
+        - text: Creating or updating content (events, entities and their contacts, links, locations and photos, series, tags, threads, posts, blogs, links, locations) needs a verified email. An unverified account gets 403 with
+        - code [ref=f1e23]: "{\"message\": \"Your email address is not verified.\"}"
+        - text: . Reads, follow/unfollow, attend and token creation don't need one.
+    - link "Contact Geoff Maddock" [ref=f1e25] [cursor=pointer]:
+      - /url: mailto:geoff.maddock@gmail.com
+  - generic [ref=f1e27]:
+    - generic [ref=f1e28]:
+      - text: Servers
+      - combobox [ref=f1e31]:
+        - option "https://arcane.city - Production" [selected]
+        - option "https://stage.arcane.city - Stage"
+        - option "https://dev.arcane.city - Development"
+    - button "Authorize" [ref=f1e33] [cursor=pointer]
+  - generic [ref=f1e39]:
+    - generic [ref=f1e41]:
+      - heading "activities Collapse operation" [level=3] [ref=f1e42] [cursor=pointer]:
+        - generic [ref=f1e43]: activities
+        - button "Collapse operation" [expanded] [ref=f1e44]
+      - generic [ref=f1e48]:
+        - generic [ref=f1e51] [cursor=pointer]:
+          - button "get /api/activities" [ref=f1e52]:
+            - generic [ref=f1e53]: GET
+            - generic [ref=f1e54]: /api/activities
+            - generic [ref=f1e57]: Get Activities
+          - button "authorization button unlocked" [ref=f1e60]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e66] [cursor=pointer]:
+          - 'button "get /api/activities/{id}" [ref=f1e67]':
+            - generic [ref=f1e68]: GET
+            - generic [ref=f1e69]: "/api/activities/{id}"
+            - generic [ref=f1e72]: Get Activity
+          - button "authorization button unlocked" [ref=f1e75]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e80]:
+      - heading "blogs Collapse operation" [level=3] [ref=f1e81] [cursor=pointer]:
+        - generic [ref=f1e82]: blogs
+        - button "Collapse operation" [expanded] [ref=f1e83]
+      - generic [ref=f1e87]:
+        - generic [ref=f1e90] [cursor=pointer]:
+          - button "get /api/blogs" [ref=f1e91]:
+            - generic [ref=f1e92]: GET
+            - generic [ref=f1e93]: /api/blogs
+            - generic [ref=f1e96]: Get Blogs
+          - button "authorization button unlocked" [ref=f1e99]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e105] [cursor=pointer]:
+          - button "post /api/blogs" [ref=f1e106]:
+            - generic [ref=f1e107]: POST
+            - generic [ref=f1e108]: /api/blogs
+            - generic [ref=f1e111]: Create blog
+          - button "authorization button unlocked" [ref=f1e114]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e120] [cursor=pointer]:
+          - 'button "get /api/blogs/{slug}" [ref=f1e121]':
+            - generic [ref=f1e122]: GET
+            - generic [ref=f1e123]: "/api/blogs/{slug}"
+            - generic [ref=f1e126]: Get Blog
+          - button "authorization button unlocked" [ref=f1e129]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e135] [cursor=pointer]:
+          - 'button "put /api/blogs/{slug}" [ref=f1e136]':
+            - generic [ref=f1e137]: PUT
+            - generic [ref=f1e138]: "/api/blogs/{slug}"
+            - generic [ref=f1e141]: Update Blog (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e144]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e150] [cursor=pointer]:
+          - 'button "patch /api/blogs/{slug}" [ref=f1e151]':
+            - generic [ref=f1e152]: PATCH
+            - generic [ref=f1e153]: "/api/blogs/{slug}"
+            - generic [ref=f1e156]: Patch Blog (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e159]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e165] [cursor=pointer]:
+          - 'button "delete /api/blogs/{slug}" [ref=f1e166]':
+            - generic [ref=f1e167]: DELETE
+            - generic [ref=f1e168]: "/api/blogs/{slug}"
+            - generic [ref=f1e171]: Delete Blog
+          - button "authorization button unlocked" [ref=f1e174]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e179]:
+      - heading "entities Collapse operation" [level=3] [ref=f1e180] [cursor=pointer]:
+        - generic [ref=f1e181]: entities
+        - button "Collapse operation" [expanded] [ref=f1e182]
+      - generic [ref=f1e186]:
+        - generic [ref=f1e189] [cursor=pointer]:
+          - button "post /api/entities" [ref=f1e190]:
+            - generic [ref=f1e191]: POST
+            - generic [ref=f1e192]: /api/entities
+            - generic [ref=f1e195]: Create Entity
+          - button "authorization button unlocked" [ref=f1e198]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e204] [cursor=pointer]:
+          - button "get /api/entities" [ref=f1e205]:
+            - generic [ref=f1e206]: GET
+            - generic [ref=f1e207]: /api/entities
+            - generic [ref=f1e210]: Get Entities
+          - button "authorization button unlocked" [ref=f1e213]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e219] [cursor=pointer]:
+          - button "get /api/entities/popular" [ref=f1e220]:
+            - generic [ref=f1e221]: GET
+            - generic [ref=f1e222]: /api/entities/popular
+            - generic [ref=f1e225]: Get Most Popular Entities
+          - button "authorization button unlocked" [ref=f1e228]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e234] [cursor=pointer]:
+          - button "get /api/entities/following" [ref=f1e235]:
+            - generic [ref=f1e236]: GET
+            - generic [ref=f1e237]: /api/entities/following
+            - generic [ref=f1e240]: Get Entities Followed by Authenticated User
+          - button "authorization button unlocked" [ref=f1e243]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e249] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}" [ref=f1e250]':
+            - generic [ref=f1e251]: GET
+            - generic [ref=f1e252]: "/api/entities/{slug}"
+            - generic [ref=f1e255]: Get Entity
+          - button "authorization button unlocked" [ref=f1e258]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e264] [cursor=pointer]:
+          - 'button "put /api/entities/{slug}" [ref=f1e265]':
+            - generic [ref=f1e266]: PUT
+            - generic [ref=f1e267]: "/api/entities/{slug}"
+            - generic [ref=f1e270]: Update Entity (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e273]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e279] [cursor=pointer]:
+          - 'button "patch /api/entities/{slug}" [ref=f1e280]':
+            - generic [ref=f1e281]: PATCH
+            - generic [ref=f1e282]: "/api/entities/{slug}"
+            - generic [ref=f1e285]: Patch Entity (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e288]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e294] [cursor=pointer]:
+          - 'button "delete /api/entities/{slug}" [ref=f1e295]':
+            - generic [ref=f1e296]: DELETE
+            - generic [ref=f1e297]: "/api/entities/{slug}"
+            - generic [ref=f1e300]: Delete Entity
+          - button "authorization button unlocked" [ref=f1e303]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e309] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}/embeds" [ref=f1e310]':
+            - generic [ref=f1e311]: GET
+            - generic [ref=f1e312]: "/api/entities/{slug}/embeds"
+            - generic [ref=f1e315]: Get Entity Embeds
+          - button "authorization button unlocked" [ref=f1e318]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e324] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}/minimal-embeds" [ref=f1e325]':
+            - generic [ref=f1e326]: GET
+            - generic [ref=f1e327]: "/api/entities/{slug}/minimal-embeds"
+            - generic [ref=f1e330]: Get Entity MinimalEmbeds
+          - button "authorization button unlocked" [ref=f1e333]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e339] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}/photos" [ref=f1e340]':
+            - generic [ref=f1e341]: GET
+            - generic [ref=f1e342]: "/api/entities/{slug}/photos"
+            - generic [ref=f1e345]: Get Entity Photos
+          - button "authorization button unlocked" [ref=f1e348]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e354] [cursor=pointer]:
+          - 'button "post /api/entities/{slug}/photos" [ref=f1e355]':
+            - generic [ref=f1e356]: POST
+            - generic [ref=f1e357]: "/api/entities/{slug}/photos"
+            - generic [ref=f1e360]: Add Entity Photo
+          - button "authorization button unlocked" [ref=f1e363]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e369] [cursor=pointer]:
+          - 'button "post /api/entities/{id}/photos/from-url" [ref=f1e370]':
+            - generic [ref=f1e371]: POST
+            - generic [ref=f1e372]: "/api/entities/{id}/photos/from-url"
+            - generic [ref=f1e375]: Add Entity Photo From URL
+          - button "authorization button unlocked" [ref=f1e378]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e384] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}/links" [ref=f1e385]':
+            - generic [ref=f1e386]: GET
+            - generic [ref=f1e387]: "/api/entities/{slug}/links"
+            - generic [ref=f1e390]: Get Entity Links
+          - button "authorization button unlocked" [ref=f1e393]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e399] [cursor=pointer]:
+          - 'button "post /api/entities/{slug}/links" [ref=f1e400]':
+            - generic [ref=f1e401]: POST
+            - generic [ref=f1e402]: "/api/entities/{slug}/links"
+            - generic [ref=f1e405]: Add Entity Link
+          - button "authorization button unlocked" [ref=f1e408]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e414] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}/locations" [ref=f1e415]':
+            - generic [ref=f1e416]: GET
+            - generic [ref=f1e417]: "/api/entities/{slug}/locations"
+            - generic [ref=f1e420]: Get Entity Locations
+          - button "authorization button unlocked" [ref=f1e423]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e429] [cursor=pointer]:
+          - 'button "post /api/entities/{slug}/locations" [ref=f1e430]':
+            - generic [ref=f1e431]: POST
+            - generic [ref=f1e432]: "/api/entities/{slug}/locations"
+            - generic [ref=f1e435]: Add Entity Location
+          - button "authorization button unlocked" [ref=f1e438]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e444] [cursor=pointer]:
+          - 'button "get /api/entities/{slug}/contacts" [ref=f1e445]':
+            - generic [ref=f1e446]: GET
+            - generic [ref=f1e447]: "/api/entities/{slug}/contacts"
+            - generic [ref=f1e450]: Get Entity Contacts
+          - button "authorization button unlocked" [ref=f1e453]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e459] [cursor=pointer]:
+          - 'button "post /api/entities/{slug}/contacts" [ref=f1e460]':
+            - generic [ref=f1e461]: POST
+            - generic [ref=f1e462]: "/api/entities/{slug}/contacts"
+            - generic [ref=f1e465]: Add Entity Contact
+          - button "authorization button unlocked" [ref=f1e468]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e474] [cursor=pointer]:
+          - 'button "put /api/entities/{id}/links/{linkId}" [ref=f1e475]':
+            - generic [ref=f1e476]: PUT
+            - generic [ref=f1e477]: "/api/entities/{id}/links/{linkId}"
+            - generic [ref=f1e480]: Update Entity Link (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e483]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e489] [cursor=pointer]:
+          - 'button "patch /api/entities/{id}/links/{linkId}" [ref=f1e490]':
+            - generic [ref=f1e491]: PATCH
+            - generic [ref=f1e492]: "/api/entities/{id}/links/{linkId}"
+            - generic [ref=f1e495]: Patch Entity link (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e498]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e504] [cursor=pointer]:
+          - 'button "delete /api/entities/{id}/links/{linkId}" [ref=f1e505]':
+            - generic [ref=f1e506]: DELETE
+            - generic [ref=f1e507]: "/api/entities/{id}/links/{linkId}"
+            - generic [ref=f1e510]: Delete Entity Link
+          - button "authorization button unlocked" [ref=f1e513]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e519] [cursor=pointer]:
+          - 'button "put /api/entities/{id}/locations/{locationId}" [ref=f1e520]':
+            - generic [ref=f1e521]: PUT
+            - generic [ref=f1e522]: "/api/entities/{id}/locations/{locationId}"
+            - generic [ref=f1e525]: Update Entity Location (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e528]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e534] [cursor=pointer]:
+          - 'button "patch /api/entities/{id}/locations/{locationId}" [ref=f1e535]':
+            - generic [ref=f1e536]: PATCH
+            - generic [ref=f1e537]: "/api/entities/{id}/locations/{locationId}"
+            - generic [ref=f1e540]: Patch Entity location (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e543]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e549] [cursor=pointer]:
+          - 'button "delete /api/entities/{id}/locations/{locationId}" [ref=f1e550]':
+            - generic [ref=f1e551]: DELETE
+            - generic [ref=f1e552]: "/api/entities/{id}/locations/{locationId}"
+            - generic [ref=f1e555]: Delete Entity Location
+          - button "authorization button unlocked" [ref=f1e558]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e564] [cursor=pointer]:
+          - 'button "put /api/entities/{id}/contacts/{contactId}" [ref=f1e565]':
+            - generic [ref=f1e566]: PUT
+            - generic [ref=f1e567]: "/api/entities/{id}/contacts/{contactId}"
+            - generic [ref=f1e570]: Update Entity Contact (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e573]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e579] [cursor=pointer]:
+          - 'button "patch /api/entities/{id}/contacts/{contactId}" [ref=f1e580]':
+            - generic [ref=f1e581]: PATCH
+            - generic [ref=f1e582]: "/api/entities/{id}/contacts/{contactId}"
+            - generic [ref=f1e585]: Patch Entity contact (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e588]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e594] [cursor=pointer]:
+          - 'button "delete /api/entities/{id}/contacts/{contactId}" [ref=f1e595]':
+            - generic [ref=f1e596]: DELETE
+            - generic [ref=f1e597]: "/api/entities/{id}/contacts/{contactId}"
+            - generic [ref=f1e600]: Delete Entity Contact
+          - button "authorization button unlocked" [ref=f1e603]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e609] [cursor=pointer]:
+          - 'button "post /api/entities/{slug}/follow" [ref=f1e610]':
+            - generic [ref=f1e611]: POST
+            - generic [ref=f1e612]: "/api/entities/{slug}/follow"
+            - generic [ref=f1e615]: Follow Entity
+          - button "authorization button unlocked" [ref=f1e618]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e624] [cursor=pointer]:
+          - 'button "post /api/entities/{slug}/unfollow" [ref=f1e625]':
+            - generic [ref=f1e626]: POST
+            - generic [ref=f1e627]: "/api/entities/{slug}/unfollow"
+            - generic [ref=f1e630]: Unfollow Entity
+          - button "authorization button unlocked" [ref=f1e633]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e638]:
+      - heading "entity-statuses Collapse operation" [level=3] [ref=f1e639] [cursor=pointer]:
+        - generic [ref=f1e640]: entity-statuses
+        - button "Collapse operation" [expanded] [ref=f1e641]
+      - generic [ref=f1e645]:
+        - generic [ref=f1e648] [cursor=pointer]:
+          - button "get /api/entity-statuses" [ref=f1e649]:
+            - generic [ref=f1e650]: GET
+            - generic [ref=f1e651]: /api/entity-statuses
+            - generic [ref=f1e654]: Get Entity Statuses
+          - button "authorization button unlocked" [ref=f1e657]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e663] [cursor=pointer]:
+          - button "post /api/entity-statuses" [ref=f1e664]:
+            - generic [ref=f1e665]: POST
+            - generic [ref=f1e666]: /api/entity-statuses
+            - generic [ref=f1e669]: Create entity status
+          - button "authorization button unlocked" [ref=f1e672]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e678] [cursor=pointer]:
+          - 'button "get /api/entity-statuses/{entityStatusId}" [ref=f1e679]':
+            - generic [ref=f1e680]: GET
+            - generic [ref=f1e681]: "/api/entity-statuses/{entityStatusId}"
+            - generic [ref=f1e684]: Get EntityStatus
+          - button "authorization button unlocked" [ref=f1e687]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e693] [cursor=pointer]:
+          - 'button "put /api/entity-statuses/{entityStatusId}" [ref=f1e694]':
+            - generic [ref=f1e695]: PUT
+            - generic [ref=f1e696]: "/api/entity-statuses/{entityStatusId}"
+            - generic [ref=f1e699]: Update Entity Status (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e702]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e708] [cursor=pointer]:
+          - 'button "patch /api/entity-statuses/{entityStatusId}" [ref=f1e709]':
+            - generic [ref=f1e710]: PATCH
+            - generic [ref=f1e711]: "/api/entity-statuses/{entityStatusId}"
+            - generic [ref=f1e714]: Patch Entity status (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e717]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e723] [cursor=pointer]:
+          - 'button "delete /api/entity-statuses/{entityStatusId}" [ref=f1e724]':
+            - generic [ref=f1e725]: DELETE
+            - generic [ref=f1e726]: "/api/entity-statuses/{entityStatusId}"
+            - generic [ref=f1e729]: Delete Entity Status
+          - button "authorization button unlocked" [ref=f1e732]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e737]:
+      - heading "entity-types Collapse operation" [level=3] [ref=f1e738] [cursor=pointer]:
+        - generic [ref=f1e739]: entity-types
+        - button "Collapse operation" [expanded] [ref=f1e740]
+      - generic [ref=f1e744]:
+        - generic [ref=f1e747] [cursor=pointer]:
+          - button "get /api/entity-types" [ref=f1e748]:
+            - generic [ref=f1e749]: GET
+            - generic [ref=f1e750]: /api/entity-types
+            - generic [ref=f1e753]: Get Entity Types
+          - button "authorization button unlocked" [ref=f1e756]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e762] [cursor=pointer]:
+          - button "post /api/entity-types" [ref=f1e763]:
+            - generic [ref=f1e764]: POST
+            - generic [ref=f1e765]: /api/entity-types
+            - generic [ref=f1e768]: Create entity type
+          - button "authorization button unlocked" [ref=f1e771]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e777] [cursor=pointer]:
+          - 'button "get /api/entity-types/{entityTypeId}" [ref=f1e778]':
+            - generic [ref=f1e779]: GET
+            - generic [ref=f1e780]: "/api/entity-types/{entityTypeId}"
+            - generic [ref=f1e783]: Get EntityType
+          - button "authorization button unlocked" [ref=f1e786]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e792] [cursor=pointer]:
+          - 'button "put /api/entity-types/{entityTypeId}" [ref=f1e793]':
+            - generic [ref=f1e794]: PUT
+            - generic [ref=f1e795]: "/api/entity-types/{entityTypeId}"
+            - generic [ref=f1e798]: Update Entity Type (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e801]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e807] [cursor=pointer]:
+          - 'button "patch /api/entity-types/{entityTypeId}" [ref=f1e808]':
+            - generic [ref=f1e809]: PATCH
+            - generic [ref=f1e810]: "/api/entity-types/{entityTypeId}"
+            - generic [ref=f1e813]: Patch Entity type (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e816]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e822] [cursor=pointer]:
+          - 'button "delete /api/entity-types/{entityTypeId}" [ref=f1e823]':
+            - generic [ref=f1e824]: DELETE
+            - generic [ref=f1e825]: "/api/entity-types/{entityTypeId}"
+            - generic [ref=f1e828]: Delete Entity Type
+          - button "authorization button unlocked" [ref=f1e831]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e836]:
+      - heading "events Collapse operation" [level=3] [ref=f1e837] [cursor=pointer]:
+        - generic [ref=f1e838]: events
+        - button "Collapse operation" [expanded] [ref=f1e839]
+      - generic [ref=f1e843]:
+        - generic [ref=f1e846] [cursor=pointer]:
+          - button "post /api/events" [ref=f1e847]:
+            - generic [ref=f1e848]: POST
+            - generic [ref=f1e849]: /api/events
+            - generic [ref=f1e852]: Create Event
+          - button "authorization button unlocked" [ref=f1e855]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e861] [cursor=pointer]:
+          - button "get /api/events" [ref=f1e862]:
+            - generic [ref=f1e863]: GET
+            - generic [ref=f1e864]: /api/events
+            - generic [ref=f1e867]: Get Events
+          - button "authorization button unlocked" [ref=f1e870]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e876] [cursor=pointer]:
+          - button "get /api/events/attending" [ref=f1e877]:
+            - generic [ref=f1e878]: GET
+            - generic [ref=f1e879]: /api/events/attending
+            - generic [ref=f1e882]: Get Events the Authenticated User is Attending
+          - button "authorization button unlocked" [ref=f1e885]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e891] [cursor=pointer]:
+          - button "get /api/events/popular" [ref=f1e892]:
+            - generic [ref=f1e893]: GET
+            - generic [ref=f1e894]: /api/events/popular
+            - generic [ref=f1e897]: Get Most Popular Events
+          - button "authorization button unlocked" [ref=f1e900]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e906] [cursor=pointer]:
+          - 'button "get /api/events/by-date/{year}" [ref=f1e907]':
+            - generic [ref=f1e908]: GET
+            - generic [ref=f1e909]: "/api/events/by-date/{year}"
+            - generic [ref=f1e912]: Get Events by Year
+          - button "authorization button unlocked" [ref=f1e915]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e921] [cursor=pointer]:
+          - 'button "get /api/events/by-date/{year}/{month}" [ref=f1e922]':
+            - generic [ref=f1e923]: GET
+            - generic [ref=f1e924]: "/api/events/by-date/{year}/{month}"
+            - generic [ref=f1e927]: Get Events by Year and Month
+          - button "authorization button unlocked" [ref=f1e930]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e936] [cursor=pointer]:
+          - 'button "get /api/events/by-date/{year}/{month}/{day}" [ref=f1e937]':
+            - generic [ref=f1e938]: GET
+            - generic [ref=f1e939]: "/api/events/by-date/{year}/{month}/{day}"
+            - generic [ref=f1e942]: Get Events by Date
+          - button "authorization button unlocked" [ref=f1e945]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e951] [cursor=pointer]:
+          - 'button "get /api/events/{slug}" [ref=f1e952]':
+            - generic [ref=f1e953]: GET
+            - generic [ref=f1e954]: "/api/events/{slug}"
+            - generic [ref=f1e957]: Get Event
+          - button "authorization button unlocked" [ref=f1e960]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e966] [cursor=pointer]:
+          - 'button "put /api/events/{slug}" [ref=f1e967]':
+            - generic [ref=f1e968]: PUT
+            - generic [ref=f1e969]: "/api/events/{slug}"
+            - generic [ref=f1e972]: Update Events (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e975]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e981] [cursor=pointer]:
+          - 'button "patch /api/events/{slug}" [ref=f1e982]':
+            - generic [ref=f1e983]: PATCH
+            - generic [ref=f1e984]: "/api/events/{slug}"
+            - generic [ref=f1e987]: Patch Event (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e990]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e996] [cursor=pointer]:
+          - 'button "delete /api/events/{slug}" [ref=f1e997]':
+            - generic [ref=f1e998]: DELETE
+            - generic [ref=f1e999]: "/api/events/{slug}"
+            - generic [ref=f1e1002]: Delete Event
+          - button "authorization button unlocked" [ref=f1e1005]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1011] [cursor=pointer]:
+          - 'button "get /api/events/{slug}/embeds" [ref=f1e1012]':
+            - generic [ref=f1e1013]: GET
+            - generic [ref=f1e1014]: "/api/events/{slug}/embeds"
+            - generic [ref=f1e1017]: Get Event Embeds
+          - button "authorization button unlocked" [ref=f1e1020]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1026] [cursor=pointer]:
+          - 'button "get /api/events/{slug}/minimal-embeds" [ref=f1e1027]':
+            - generic [ref=f1e1028]: GET
+            - generic [ref=f1e1029]: "/api/events/{slug}/minimal-embeds"
+            - generic [ref=f1e1032]: Get Event MinimalEmbeds
+          - button "authorization button unlocked" [ref=f1e1035]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1041] [cursor=pointer]:
+          - 'button "get /api/events/{slug}/photos" [ref=f1e1042]':
+            - generic [ref=f1e1043]: GET
+            - generic [ref=f1e1044]: "/api/events/{slug}/photos"
+            - generic [ref=f1e1047]: Get Events Photos
+          - button "authorization button unlocked" [ref=f1e1050]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1056] [cursor=pointer]:
+          - 'button "post /api/events/{slug}/photos" [ref=f1e1057]':
+            - generic [ref=f1e1058]: POST
+            - generic [ref=f1e1059]: "/api/events/{slug}/photos"
+            - generic [ref=f1e1062]: Add Event Photo
+          - button "authorization button unlocked" [ref=f1e1065]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1071] [cursor=pointer]:
+          - 'button "post /api/events/{id}/photos/from-url" [ref=f1e1072]':
+            - generic [ref=f1e1073]: POST
+            - generic [ref=f1e1074]: "/api/events/{id}/photos/from-url"
+            - generic [ref=f1e1077]: Add Event Photo From URL
+          - button "authorization button unlocked" [ref=f1e1080]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1086] [cursor=pointer]:
+          - 'button "get /api/events/{slug}/all-photos" [ref=f1e1087]':
+            - generic [ref=f1e1088]: GET
+            - generic [ref=f1e1089]: "/api/events/{slug}/all-photos"
+            - generic [ref=f1e1092]: Get All Related Events Photos
+          - button "authorization button unlocked" [ref=f1e1095]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1101] [cursor=pointer]:
+          - 'button "post /api/events/{id}/instagram-post" [ref=f1e1102]':
+            - generic [ref=f1e1103]: POST
+            - generic [ref=f1e1104]: "/api/events/{id}/instagram-post"
+            - generic [ref=f1e1107]: Post Event to Instagram
+          - button "authorization button unlocked" [ref=f1e1110]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1116] [cursor=pointer]:
+          - 'button "post /api/events/{slug}/attend" [ref=f1e1117]':
+            - generic [ref=f1e1118]: POST
+            - generic [ref=f1e1119]: "/api/events/{slug}/attend"
+            - generic [ref=f1e1122]: Attend Event
+          - button "authorization button unlocked" [ref=f1e1125]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1131] [cursor=pointer]:
+          - 'button "delete /api/events/{slug}/attend" [ref=f1e1132]':
+            - generic [ref=f1e1133]: DELETE
+            - generic [ref=f1e1134]: "/api/events/{slug}/attend"
+            - generic [ref=f1e1137]: Unattend Event
+          - button "authorization button unlocked" [ref=f1e1140]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1145]:
+      - heading "event-types Collapse operation" [level=3] [ref=f1e1146] [cursor=pointer]:
+        - generic [ref=f1e1147]: event-types
+        - button "Collapse operation" [expanded] [ref=f1e1148]
+      - generic [ref=f1e1152]:
+        - generic [ref=f1e1155] [cursor=pointer]:
+          - button "get /api/event-types" [ref=f1e1156]:
+            - generic [ref=f1e1157]: GET
+            - generic [ref=f1e1158]: /api/event-types
+            - generic [ref=f1e1161]: Get Event Types
+          - button "authorization button unlocked" [ref=f1e1164]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1170] [cursor=pointer]:
+          - button "post /api/event-types" [ref=f1e1171]:
+            - generic [ref=f1e1172]: POST
+            - generic [ref=f1e1173]: /api/event-types
+            - generic [ref=f1e1176]: Create event type
+          - button "authorization button unlocked" [ref=f1e1179]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1185] [cursor=pointer]:
+          - 'button "get /api/event-types/{eventTypeId}" [ref=f1e1186]':
+            - generic [ref=f1e1187]: GET
+            - generic [ref=f1e1188]: "/api/event-types/{eventTypeId}"
+            - generic [ref=f1e1191]: Get EventType
+          - button "authorization button unlocked" [ref=f1e1194]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1200] [cursor=pointer]:
+          - 'button "put /api/event-types/{eventTypeId}" [ref=f1e1201]':
+            - generic [ref=f1e1202]: PUT
+            - generic [ref=f1e1203]: "/api/event-types/{eventTypeId}"
+            - generic [ref=f1e1206]: Update Event Type (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e1209]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1215] [cursor=pointer]:
+          - 'button "patch /api/event-types/{eventTypeId}" [ref=f1e1216]':
+            - generic [ref=f1e1217]: PATCH
+            - generic [ref=f1e1218]: "/api/event-types/{eventTypeId}"
+            - generic [ref=f1e1221]: Patch Event type (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e1224]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1230] [cursor=pointer]:
+          - 'button "delete /api/event-types/{eventTypeId}" [ref=f1e1231]':
+            - generic [ref=f1e1232]: DELETE
+            - generic [ref=f1e1233]: "/api/event-types/{eventTypeId}"
+            - generic [ref=f1e1236]: Delete Event Type
+          - button "authorization button unlocked" [ref=f1e1239]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1244]:
+      - heading "event-statuses Collapse operation" [level=3] [ref=f1e1245] [cursor=pointer]:
+        - generic [ref=f1e1246]: event-statuses
+        - button "Collapse operation" [expanded] [ref=f1e1247]
+      - generic [ref=f1e1251]:
+        - generic [ref=f1e1254] [cursor=pointer]:
+          - button "get /api/event-statuses" [ref=f1e1255]:
+            - generic [ref=f1e1256]: GET
+            - generic [ref=f1e1257]: /api/event-statuses
+            - generic [ref=f1e1260]: Get Event Statuses
+          - button "authorization button unlocked" [ref=f1e1263]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1269] [cursor=pointer]:
+          - button "post /api/event-statuses" [ref=f1e1270]:
+            - generic [ref=f1e1271]: POST
+            - generic [ref=f1e1272]: /api/event-statuses
+            - generic [ref=f1e1275]: Create event status
+          - button "authorization button unlocked" [ref=f1e1278]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1284] [cursor=pointer]:
+          - 'button "get /api/event-statuses/{eventStatusId}" [ref=f1e1285]':
+            - generic [ref=f1e1286]: GET
+            - generic [ref=f1e1287]: "/api/event-statuses/{eventStatusId}"
+            - generic [ref=f1e1290]: Get EventStatus
+          - button "authorization button unlocked" [ref=f1e1293]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1299] [cursor=pointer]:
+          - 'button "put /api/event-statuses/{eventStatusId}" [ref=f1e1300]':
+            - generic [ref=f1e1301]: PUT
+            - generic [ref=f1e1302]: "/api/event-statuses/{eventStatusId}"
+            - generic [ref=f1e1305]: Update Event Status (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e1308]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1314] [cursor=pointer]:
+          - 'button "patch /api/event-statuses/{eventStatusId}" [ref=f1e1315]':
+            - generic [ref=f1e1316]: PATCH
+            - generic [ref=f1e1317]: "/api/event-statuses/{eventStatusId}"
+            - generic [ref=f1e1320]: Patch Event status (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e1323]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1329] [cursor=pointer]:
+          - 'button "delete /api/event-statuses/{eventStatusId}" [ref=f1e1330]':
+            - generic [ref=f1e1331]: DELETE
+            - generic [ref=f1e1332]: "/api/event-statuses/{eventStatusId}"
+            - generic [ref=f1e1335]: Delete Event Status
+          - button "authorization button unlocked" [ref=f1e1338]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1343]:
+      - heading "forums Collapse operation" [level=3] [ref=f1e1344] [cursor=pointer]:
+        - generic [ref=f1e1345]: forums
+        - button "Collapse operation" [expanded] [ref=f1e1346]
+      - generic [ref=f1e1350]:
+        - generic [ref=f1e1353] [cursor=pointer]:
+          - button "get /api/forums" [ref=f1e1354]:
+            - generic [ref=f1e1355]: GET
+            - generic [ref=f1e1356]: /api/forums
+            - generic [ref=f1e1359]: Get Forums
+          - button "authorization button unlocked" [ref=f1e1362]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1368] [cursor=pointer]:
+          - button "post /api/forums" [ref=f1e1369]:
+            - generic [ref=f1e1370]: POST
+            - generic [ref=f1e1371]: /api/forums
+            - generic [ref=f1e1374]: Create forum
+          - button "authorization button unlocked" [ref=f1e1377]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1383] [cursor=pointer]:
+          - 'button "get /api/forums/{forumId}" [ref=f1e1384]':
+            - generic [ref=f1e1385]: GET
+            - generic [ref=f1e1386]: "/api/forums/{forumId}"
+            - generic [ref=f1e1389]: Get Forum
+          - button "authorization button unlocked" [ref=f1e1392]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1398] [cursor=pointer]:
+          - 'button "put /api/forums/{forumId}" [ref=f1e1399]':
+            - generic [ref=f1e1400]: PUT
+            - generic [ref=f1e1401]: "/api/forums/{forumId}"
+            - generic [ref=f1e1404]: Update Forum (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e1407]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1413] [cursor=pointer]:
+          - 'button "patch /api/forums/{forumId}" [ref=f1e1414]':
+            - generic [ref=f1e1415]: PATCH
+            - generic [ref=f1e1416]: "/api/forums/{forumId}"
+            - generic [ref=f1e1419]: Patch Forum (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e1422]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1428] [cursor=pointer]:
+          - 'button "delete /api/forums/{forumId}" [ref=f1e1429]':
+            - generic [ref=f1e1430]: DELETE
+            - generic [ref=f1e1431]: "/api/forums/{forumId}"
+            - generic [ref=f1e1434]: Delete Forum
+          - button "authorization button unlocked" [ref=f1e1437]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1442]:
+      - heading "links Collapse operation" [level=3] [ref=f1e1443] [cursor=pointer]:
+        - generic [ref=f1e1444]: links
+        - button "Collapse operation" [expanded] [ref=f1e1445]
+      - generic [ref=f1e1449]:
+        - generic [ref=f1e1452] [cursor=pointer]:
+          - button "get /api/links" [ref=f1e1453]:
+            - generic [ref=f1e1454]: GET
+            - generic [ref=f1e1455]: /api/links
+            - generic [ref=f1e1458]: Get Links
+          - button "authorization button unlocked" [ref=f1e1461]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1467] [cursor=pointer]:
+          - button "post /api/links" [ref=f1e1468]:
+            - generic [ref=f1e1469]: POST
+            - generic [ref=f1e1470]: /api/links
+            - generic [ref=f1e1473]: Create link
+          - button "authorization button unlocked" [ref=f1e1476]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1482] [cursor=pointer]:
+          - 'button "get /api/links/{linkId}" [ref=f1e1483]':
+            - generic [ref=f1e1484]: GET
+            - generic [ref=f1e1485]: "/api/links/{linkId}"
+            - generic [ref=f1e1488]: Get Link
+          - button "authorization button unlocked" [ref=f1e1491]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1497] [cursor=pointer]:
+          - 'button "put /api/links/{linkId}" [ref=f1e1498]':
+            - generic [ref=f1e1499]: PUT
+            - generic [ref=f1e1500]: "/api/links/{linkId}"
+            - generic [ref=f1e1503]: Update link
+          - button "authorization button unlocked" [ref=f1e1506]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1512] [cursor=pointer]:
+          - 'button "delete /api/links/{linkId}" [ref=f1e1513]':
+            - generic [ref=f1e1514]: DELETE
+            - generic [ref=f1e1515]: "/api/links/{linkId}"
+            - generic [ref=f1e1518]: Delete Link
+          - button "authorization button unlocked" [ref=f1e1521]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1526]:
+      - heading "menus Collapse operation" [level=3] [ref=f1e1527] [cursor=pointer]:
+        - generic [ref=f1e1528]: menus
+        - button "Collapse operation" [expanded] [ref=f1e1529]
+      - generic [ref=f1e1533]:
+        - generic [ref=f1e1536] [cursor=pointer]:
+          - button "get /api/menus" [ref=f1e1537]:
+            - generic [ref=f1e1538]: GET
+            - generic [ref=f1e1539]: /api/menus
+            - generic [ref=f1e1542]: Get Menus
+          - button "authorization button unlocked" [ref=f1e1545]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1551] [cursor=pointer]:
+          - button "post /api/menus" [ref=f1e1552]:
+            - generic [ref=f1e1553]: POST
+            - generic [ref=f1e1554]: /api/menus
+            - generic [ref=f1e1557]: Create menu
+          - button "authorization button unlocked" [ref=f1e1560]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1566] [cursor=pointer]:
+          - 'button "get /api/menus/{menuId}" [ref=f1e1567]':
+            - generic [ref=f1e1568]: GET
+            - generic [ref=f1e1569]: "/api/menus/{menuId}"
+            - generic [ref=f1e1572]: Get Menu
+          - button "authorization button unlocked" [ref=f1e1575]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1581] [cursor=pointer]:
+          - 'button "patch /api/menus/{menuId}" [ref=f1e1582]':
+            - generic [ref=f1e1583]: PATCH
+            - generic [ref=f1e1584]: "/api/menus/{menuId}"
+            - generic [ref=f1e1587]: Update menu
+          - button "authorization button unlocked" [ref=f1e1590]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1596] [cursor=pointer]:
+          - 'button "delete /api/menus/{menuId}" [ref=f1e1597]':
+            - generic [ref=f1e1598]: DELETE
+            - generic [ref=f1e1599]: "/api/menus/{menuId}"
+            - generic [ref=f1e1602]: Delete Menu
+          - button "authorization button unlocked" [ref=f1e1605]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1610]:
+      - heading "locations Collapse operation" [level=3] [ref=f1e1611] [cursor=pointer]:
+        - generic [ref=f1e1612]: locations
+        - button "Collapse operation" [expanded] [ref=f1e1613]
+      - generic [ref=f1e1617]:
+        - generic [ref=f1e1620] [cursor=pointer]:
+          - button "get /api/locations" [ref=f1e1621]:
+            - generic [ref=f1e1622]: GET
+            - generic [ref=f1e1623]: /api/locations
+            - generic [ref=f1e1626]: Get Locations
+          - button "authorization button unlocked" [ref=f1e1629]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1635] [cursor=pointer]:
+          - button "post /api/locations" [ref=f1e1636]:
+            - generic [ref=f1e1637]: POST
+            - generic [ref=f1e1638]: /api/locations
+            - generic [ref=f1e1641]: Create location
+          - button "authorization button unlocked" [ref=f1e1644]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1650] [cursor=pointer]:
+          - 'button "get /api/locations/{locationId}" [ref=f1e1651]':
+            - generic [ref=f1e1652]: GET
+            - generic [ref=f1e1653]: "/api/locations/{locationId}"
+            - generic [ref=f1e1656]: Get Location
+          - button "authorization button unlocked" [ref=f1e1659]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1665] [cursor=pointer]:
+          - 'button "put /api/locations/{locationId}" [ref=f1e1666]':
+            - generic [ref=f1e1667]: PUT
+            - generic [ref=f1e1668]: "/api/locations/{locationId}"
+            - generic [ref=f1e1671]: Update location (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e1674]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1680] [cursor=pointer]:
+          - 'button "patch /api/locations/{locationId}" [ref=f1e1681]':
+            - generic [ref=f1e1682]: PATCH
+            - generic [ref=f1e1683]: "/api/locations/{locationId}"
+            - generic [ref=f1e1686]: Patch Location (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e1689]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1695] [cursor=pointer]:
+          - 'button "delete /api/locations/{locationId}" [ref=f1e1696]':
+            - generic [ref=f1e1697]: DELETE
+            - generic [ref=f1e1698]: "/api/locations/{locationId}"
+            - generic [ref=f1e1701]: Delete Location
+          - button "authorization button unlocked" [ref=f1e1704]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1709]:
+      - heading "occurrence-types Collapse operation" [level=3] [ref=f1e1710] [cursor=pointer]:
+        - generic [ref=f1e1711]: occurrence-types
+        - button "Collapse operation" [expanded] [ref=f1e1712]
+      - generic [ref=f1e1716]:
+        - generic [ref=f1e1719] [cursor=pointer]:
+          - button "get /api/occurrence-types" [ref=f1e1720]:
+            - generic [ref=f1e1721]: GET
+            - generic [ref=f1e1722]: /api/occurrence-types
+            - generic [ref=f1e1725]: Get Occurrence Types
+          - button "authorization button unlocked" [ref=f1e1728]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1734] [cursor=pointer]:
+          - 'button "get /api/occurrence-types/{occurrenceTypeId}" [ref=f1e1735]':
+            - generic [ref=f1e1736]: GET
+            - generic [ref=f1e1737]: "/api/occurrence-types/{occurrenceTypeId}"
+            - generic [ref=f1e1740]: Get Occurrence Type
+          - button "authorization button unlocked" [ref=f1e1743]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1748]:
+      - heading "occurrence-weeks Collapse operation" [level=3] [ref=f1e1749] [cursor=pointer]:
+        - generic [ref=f1e1750]: occurrence-weeks
+        - button "Collapse operation" [expanded] [ref=f1e1751]
+      - generic [ref=f1e1755]:
+        - generic [ref=f1e1758] [cursor=pointer]:
+          - button "get /api/occurrence-weeks" [ref=f1e1759]:
+            - generic [ref=f1e1760]: GET
+            - generic [ref=f1e1761]: /api/occurrence-weeks
+            - generic [ref=f1e1764]: Get Occurrence Weeks
+          - button "authorization button unlocked" [ref=f1e1767]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1773] [cursor=pointer]:
+          - 'button "get /api/occurrence-weeks/{occurrenceWeekId}" [ref=f1e1774]':
+            - generic [ref=f1e1775]: GET
+            - generic [ref=f1e1776]: "/api/occurrence-weeks/{occurrenceWeekId}"
+            - generic [ref=f1e1779]: Get Occurrence Week
+          - button "authorization button unlocked" [ref=f1e1782]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1787]:
+      - heading "occurrence-days Collapse operation" [level=3] [ref=f1e1788] [cursor=pointer]:
+        - generic [ref=f1e1789]: occurrence-days
+        - button "Collapse operation" [expanded] [ref=f1e1790]
+      - generic [ref=f1e1794]:
+        - generic [ref=f1e1797] [cursor=pointer]:
+          - button "get /api/occurrence-days" [ref=f1e1798]:
+            - generic [ref=f1e1799]: GET
+            - generic [ref=f1e1800]: /api/occurrence-days
+            - generic [ref=f1e1803]: Get Occurrence Days
+          - button "authorization button unlocked" [ref=f1e1806]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1812] [cursor=pointer]:
+          - 'button "get /api/occurrence-days/{occurrenceDayId}" [ref=f1e1813]':
+            - generic [ref=f1e1814]: GET
+            - generic [ref=f1e1815]: "/api/occurrence-days/{occurrenceDayId}"
+            - generic [ref=f1e1818]: Get Occurrence Day
+          - button "authorization button unlocked" [ref=f1e1821]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1826]:
+      - heading "photos Collapse operation" [level=3] [ref=f1e1827] [cursor=pointer]:
+        - generic [ref=f1e1828]: photos
+        - button "Collapse operation" [expanded] [ref=f1e1829]
+      - generic [ref=f1e1833]:
+        - generic [ref=f1e1836] [cursor=pointer]:
+          - 'button "post /api/photos/{photoId}/set-primary" [ref=f1e1837]':
+            - generic [ref=f1e1838]: POST
+            - generic [ref=f1e1839]: "/api/photos/{photoId}/set-primary"
+            - generic [ref=f1e1842]: Set Photo Primary
+          - button "authorization button unlocked" [ref=f1e1845]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1851] [cursor=pointer]:
+          - 'button "post /api/photos/{photoId}/unset-primary" [ref=f1e1852]':
+            - generic [ref=f1e1853]: POST
+            - generic [ref=f1e1854]: "/api/photos/{photoId}/unset-primary"
+            - generic [ref=f1e1857]: Unset Photo Primary
+          - button "authorization button unlocked" [ref=f1e1860]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1866] [cursor=pointer]:
+          - 'button "delete /api/photos/{photoId}" [ref=f1e1867]':
+            - generic [ref=f1e1868]: DELETE
+            - generic [ref=f1e1869]: "/api/photos/{photoId}"
+            - generic [ref=f1e1872]: Delete Photo
+          - button "authorization button unlocked" [ref=f1e1875]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1880]:
+      - heading "posts Collapse operation" [level=3] [ref=f1e1881] [cursor=pointer]:
+        - generic [ref=f1e1882]: posts
+        - button "Collapse operation" [expanded] [ref=f1e1883]
+      - generic [ref=f1e1887]:
+        - generic [ref=f1e1890] [cursor=pointer]:
+          - button "get /api/posts" [ref=f1e1891]:
+            - generic [ref=f1e1892]: GET
+            - generic [ref=f1e1893]: /api/posts
+            - generic [ref=f1e1896]: Get Posts
+          - button "authorization button unlocked" [ref=f1e1899]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1905] [cursor=pointer]:
+          - button "post /api/posts" [ref=f1e1906]:
+            - generic [ref=f1e1907]: POST
+            - generic [ref=f1e1908]: /api/posts
+            - generic [ref=f1e1911]: Create post
+          - button "authorization button unlocked" [ref=f1e1914]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1920] [cursor=pointer]:
+          - 'button "get /api/posts/{postId}" [ref=f1e1921]':
+            - generic [ref=f1e1922]: GET
+            - generic [ref=f1e1923]: "/api/posts/{postId}"
+            - generic [ref=f1e1926]: Get Post
+          - button "authorization button unlocked" [ref=f1e1929]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1935] [cursor=pointer]:
+          - 'button "delete /api/posts/{postId}" [ref=f1e1936]':
+            - generic [ref=f1e1937]: DELETE
+            - generic [ref=f1e1938]: "/api/posts/{postId}"
+            - generic [ref=f1e1941]: Delete Post
+          - button "authorization button unlocked" [ref=f1e1944]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e1949]:
+      - heading "roles Collapse operation" [level=3] [ref=f1e1950] [cursor=pointer]:
+        - generic [ref=f1e1951]: roles
+        - button "Collapse operation" [expanded] [ref=f1e1952]
+      - generic [ref=f1e1956]:
+        - generic [ref=f1e1959] [cursor=pointer]:
+          - button "get /api/roles" [ref=f1e1960]:
+            - generic [ref=f1e1961]: GET
+            - generic [ref=f1e1962]: /api/roles
+            - generic [ref=f1e1965]: Get Roles
+          - button "authorization button unlocked" [ref=f1e1968]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1974] [cursor=pointer]:
+          - button "post /api/roles" [ref=f1e1975]:
+            - generic [ref=f1e1976]: POST
+            - generic [ref=f1e1977]: /api/roles
+            - generic [ref=f1e1980]: Create Role
+          - button "authorization button unlocked" [ref=f1e1983]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e1989] [cursor=pointer]:
+          - 'button "get /api/roles/{roleId}" [ref=f1e1990]':
+            - generic [ref=f1e1991]: GET
+            - generic [ref=f1e1992]: "/api/roles/{roleId}"
+            - generic [ref=f1e1995]: Get Role
+          - button "authorization button unlocked" [ref=f1e1998]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2004] [cursor=pointer]:
+          - 'button "put /api/roles/{roleId}" [ref=f1e2005]':
+            - generic [ref=f1e2006]: PUT
+            - generic [ref=f1e2007]: "/api/roles/{roleId}"
+            - generic [ref=f1e2010]: Update Role (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e2013]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2019] [cursor=pointer]:
+          - 'button "patch /api/roles/{roleId}" [ref=f1e2020]':
+            - generic [ref=f1e2021]: PATCH
+            - generic [ref=f1e2022]: "/api/roles/{roleId}"
+            - generic [ref=f1e2025]: Patch Role (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e2028]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2034] [cursor=pointer]:
+          - 'button "delete /api/roles/{roleId}" [ref=f1e2035]':
+            - generic [ref=f1e2036]: DELETE
+            - generic [ref=f1e2037]: "/api/roles/{roleId}"
+            - generic [ref=f1e2040]: Delete Role
+          - button "authorization button unlocked" [ref=f1e2043]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e2048]:
+      - heading "series Collapse operation" [level=3] [ref=f1e2049] [cursor=pointer]:
+        - generic [ref=f1e2050]: series
+        - button "Collapse operation" [expanded] [ref=f1e2051]
+      - generic [ref=f1e2055]:
+        - generic [ref=f1e2058] [cursor=pointer]:
+          - button "post /api/series" [ref=f1e2059]:
+            - generic [ref=f1e2060]: POST
+            - generic [ref=f1e2061]: /api/series
+            - generic [ref=f1e2064]: Create Series
+          - button "authorization button unlocked" [ref=f1e2067]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2073] [cursor=pointer]:
+          - button "get /api/series" [ref=f1e2074]:
+            - generic [ref=f1e2075]: GET
+            - generic [ref=f1e2076]: /api/series
+            - generic [ref=f1e2079]: Get Series by filters
+          - button "authorization button unlocked" [ref=f1e2082]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2088] [cursor=pointer]:
+          - button "get /api/series/popular" [ref=f1e2089]:
+            - generic [ref=f1e2090]: GET
+            - generic [ref=f1e2091]: /api/series/popular
+            - generic [ref=f1e2094]: Get Most Popular Series
+          - button "authorization button unlocked" [ref=f1e2097]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2103] [cursor=pointer]:
+          - 'button "get /api/series/{slug}" [ref=f1e2104]':
+            - generic [ref=f1e2105]: GET
+            - generic [ref=f1e2106]: "/api/series/{slug}"
+            - generic [ref=f1e2109]: Get one Series
+          - button "authorization button unlocked" [ref=f1e2112]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2118] [cursor=pointer]:
+          - 'button "put /api/series/{slug}" [ref=f1e2119]':
+            - generic [ref=f1e2120]: PUT
+            - generic [ref=f1e2121]: "/api/series/{slug}"
+            - generic [ref=f1e2124]: Update Series (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e2127]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2133] [cursor=pointer]:
+          - 'button "patch /api/series/{slug}" [ref=f1e2134]':
+            - generic [ref=f1e2135]: PATCH
+            - generic [ref=f1e2136]: "/api/series/{slug}"
+            - generic [ref=f1e2139]: Patch Series (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e2142]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2148] [cursor=pointer]:
+          - 'button "delete /api/series/{slug}" [ref=f1e2149]':
+            - generic [ref=f1e2150]: DELETE
+            - generic [ref=f1e2151]: "/api/series/{slug}"
+            - generic [ref=f1e2154]: Delete Series
+          - button "authorization button unlocked" [ref=f1e2157]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2163] [cursor=pointer]:
+          - 'button "get /api/series/{slug}/all-photos" [ref=f1e2164]':
+            - generic [ref=f1e2165]: GET
+            - generic [ref=f1e2166]: "/api/series/{slug}/all-photos"
+            - generic [ref=f1e2169]: Get All Related Series Photos
+          - button "authorization button unlocked" [ref=f1e2172]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2178] [cursor=pointer]:
+          - 'button "post /api/series/{id}/photos" [ref=f1e2179]':
+            - generic [ref=f1e2180]: POST
+            - generic [ref=f1e2181]: "/api/series/{id}/photos"
+            - generic [ref=f1e2184]: Add Series Photo
+          - button "authorization button unlocked" [ref=f1e2187]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2193] [cursor=pointer]:
+          - 'button "post /api/series/{id}/photos/from-url" [ref=f1e2194]':
+            - generic [ref=f1e2195]: POST
+            - generic [ref=f1e2196]: "/api/series/{id}/photos/from-url"
+            - generic [ref=f1e2199]: Add Series Photo From URL
+          - button "authorization button unlocked" [ref=f1e2202]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2208] [cursor=pointer]:
+          - 'button "post /api/series/{slug}/follow" [ref=f1e2209]':
+            - generic [ref=f1e2210]: POST
+            - generic [ref=f1e2211]: "/api/series/{slug}/follow"
+            - generic [ref=f1e2214]: Follow Series
+          - button "authorization button unlocked" [ref=f1e2217]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2223] [cursor=pointer]:
+          - 'button "post /api/series/{slug}/unfollow" [ref=f1e2224]':
+            - generic [ref=f1e2225]: POST
+            - generic [ref=f1e2226]: "/api/series/{slug}/unfollow"
+            - generic [ref=f1e2229]: Unfollow Series
+          - button "authorization button unlocked" [ref=f1e2232]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e2237]:
+      - heading "tags Collapse operation" [level=3] [ref=f1e2238] [cursor=pointer]:
+        - generic [ref=f1e2239]: tags
+        - button "Collapse operation" [expanded] [ref=f1e2240]
+      - generic [ref=f1e2244]:
+        - generic [ref=f1e2247] [cursor=pointer]:
+          - 'button "post /api/tags/{slug}/follow" [ref=f1e2248]':
+            - generic [ref=f1e2249]: POST
+            - generic [ref=f1e2250]: "/api/tags/{slug}/follow"
+            - generic [ref=f1e2253]: Follow Tag
+          - button "authorization button unlocked" [ref=f1e2256]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2262] [cursor=pointer]:
+          - 'button "post /api/tags/{slug}/unfollow" [ref=f1e2263]':
+            - generic [ref=f1e2264]: POST
+            - generic [ref=f1e2265]: "/api/tags/{slug}/unfollow"
+            - generic [ref=f1e2268]: Unfollow Tag
+          - button "authorization button unlocked" [ref=f1e2271]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2277] [cursor=pointer]:
+          - button "post /api/tags" [ref=f1e2278]:
+            - generic [ref=f1e2279]: POST
+            - generic [ref=f1e2280]: /api/tags
+            - generic [ref=f1e2283]: Create Tag
+          - button "authorization button unlocked" [ref=f1e2286]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2292] [cursor=pointer]:
+          - button "get /api/tags" [ref=f1e2293]:
+            - generic [ref=f1e2294]: GET
+            - generic [ref=f1e2295]: /api/tags
+            - generic [ref=f1e2298]: Get Tags
+          - button "authorization button unlocked" [ref=f1e2301]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2307] [cursor=pointer]:
+          - button "get /api/tags/popular" [ref=f1e2308]:
+            - generic [ref=f1e2309]: GET
+            - generic [ref=f1e2310]: /api/tags/popular
+            - generic [ref=f1e2313]: Get Most Popular Tags
+          - button "authorization button unlocked" [ref=f1e2316]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2322] [cursor=pointer]:
+          - 'button "get /api/tags/{slug}" [ref=f1e2323]':
+            - generic [ref=f1e2324]: GET
+            - generic [ref=f1e2325]: "/api/tags/{slug}"
+            - generic [ref=f1e2328]: Get one Tag
+          - button "authorization button unlocked" [ref=f1e2331]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2337] [cursor=pointer]:
+          - 'button "put /api/tags/{slug}" [ref=f1e2338]':
+            - generic [ref=f1e2339]: PUT
+            - generic [ref=f1e2340]: "/api/tags/{slug}"
+            - generic [ref=f1e2343]: Update Tag
+          - button "authorization button unlocked" [ref=f1e2346]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2352] [cursor=pointer]:
+          - 'button "delete /api/tags/{slug}" [ref=f1e2353]':
+            - generic [ref=f1e2354]: DELETE
+            - generic [ref=f1e2355]: "/api/tags/{slug}"
+            - generic [ref=f1e2358]: Delete Tag
+          - button "authorization button unlocked" [ref=f1e2361]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2367] [cursor=pointer]:
+          - 'button "get /api/tags/{slug}/related-tags" [ref=f1e2368]':
+            - generic [ref=f1e2369]: GET
+            - generic [ref=f1e2370]: "/api/tags/{slug}/related-tags"
+            - generic [ref=f1e2373]: Get Related Tags
+          - button "authorization button unlocked" [ref=f1e2376]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e2381]:
+      - heading "tag-types Collapse operation" [level=3] [ref=f1e2382] [cursor=pointer]:
+        - generic [ref=f1e2383]: tag-types
+        - button "Collapse operation" [expanded] [ref=f1e2384]
+      - generic [ref=f1e2388]:
+        - generic [ref=f1e2391] [cursor=pointer]:
+          - button "get /api/tag-types" [ref=f1e2392]:
+            - generic [ref=f1e2393]: GET
+            - generic [ref=f1e2394]: /api/tag-types
+            - generic [ref=f1e2397]: Get Tag Types
+          - button "authorization button unlocked" [ref=f1e2400]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2406] [cursor=pointer]:
+          - 'button "get /api/tag-types/{tagTypeId}" [ref=f1e2407]':
+            - generic [ref=f1e2408]: GET
+            - generic [ref=f1e2409]: "/api/tag-types/{tagTypeId}"
+            - generic [ref=f1e2412]: Get Tag Type
+          - button "authorization button unlocked" [ref=f1e2415]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e2420]:
+      - heading "threads Collapse operation" [level=3] [ref=f1e2421] [cursor=pointer]:
+        - generic [ref=f1e2422]: threads
+        - button "Collapse operation" [expanded] [ref=f1e2423]
+      - generic [ref=f1e2427]:
+        - generic [ref=f1e2430] [cursor=pointer]:
+          - button "get /api/threads" [ref=f1e2431]:
+            - generic [ref=f1e2432]: GET
+            - generic [ref=f1e2433]: /api/threads
+            - generic [ref=f1e2436]: Get Threads
+          - button "authorization button unlocked" [ref=f1e2439]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2445] [cursor=pointer]:
+          - button "post /api/threads" [ref=f1e2446]:
+            - generic [ref=f1e2447]: POST
+            - generic [ref=f1e2448]: /api/threads
+            - generic [ref=f1e2451]: Create thread
+          - button "authorization button unlocked" [ref=f1e2454]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2460] [cursor=pointer]:
+          - 'button "get /api/threads/{threadId}" [ref=f1e2461]':
+            - generic [ref=f1e2462]: GET
+            - generic [ref=f1e2463]: "/api/threads/{threadId}"
+            - generic [ref=f1e2466]: Get Thread
+          - button "authorization button unlocked" [ref=f1e2469]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2475] [cursor=pointer]:
+          - 'button "put /api/threads/{threadId}" [ref=f1e2476]':
+            - generic [ref=f1e2477]: PUT
+            - generic [ref=f1e2478]: "/api/threads/{threadId}"
+            - generic [ref=f1e2481]: Update Thread (PUT — full replace)
+          - button "authorization button unlocked" [ref=f1e2484]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2490] [cursor=pointer]:
+          - 'button "patch /api/threads/{threadId}" [ref=f1e2491]':
+            - generic [ref=f1e2492]: PATCH
+            - generic [ref=f1e2493]: "/api/threads/{threadId}"
+            - generic [ref=f1e2496]: Patch Thread (PATCH — partial update)
+          - button "authorization button unlocked" [ref=f1e2499]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2505] [cursor=pointer]:
+          - 'button "delete /api/threads/{threadId}" [ref=f1e2506]':
+            - generic [ref=f1e2507]: DELETE
+            - generic [ref=f1e2508]: "/api/threads/{threadId}"
+            - generic [ref=f1e2511]: Delete Thread
+          - button "authorization button unlocked" [ref=f1e2514]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2520] [cursor=pointer]:
+          - 'button "get /api/threads/{threadId}/posts" [ref=f1e2521]':
+            - generic [ref=f1e2522]: GET
+            - generic [ref=f1e2523]: "/api/threads/{threadId}/posts"
+            - generic [ref=f1e2526]: Get Posts in Thread
+          - button "authorization button unlocked" [ref=f1e2529]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2535] [cursor=pointer]:
+          - 'button "get /api/threads/{threadId}/posts/{postId}" [ref=f1e2536]':
+            - generic [ref=f1e2537]: GET
+            - generic [ref=f1e2538]: "/api/threads/{threadId}/posts/{postId}"
+            - generic [ref=f1e2541]: Get Post in Thread
+          - button "authorization button unlocked" [ref=f1e2544]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e2549]:
+      - heading "users Collapse operation" [level=3] [ref=f1e2550] [cursor=pointer]:
+        - generic [ref=f1e2551]: users
+        - button "Collapse operation" [expanded] [ref=f1e2552]
+      - generic [ref=f1e2556]:
+        - generic [ref=f1e2559] [cursor=pointer]:
+          - button "post /api/tokens/create" [ref=f1e2560]:
+            - generic [ref=f1e2561]: POST
+            - generic [ref=f1e2562]: /api/tokens/create
+            - generic [ref=f1e2565]: Create User Bearer Token
+          - button "authorization button unlocked" [ref=f1e2568]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2574] [cursor=pointer]:
+          - button "get /api/tokens/validate" [ref=f1e2575]:
+            - generic [ref=f1e2576]: GET
+            - generic [ref=f1e2577]: /api/tokens/validate
+            - generic [ref=f1e2580]: Validate User Token
+          - button "authorization button unlocked" [ref=f1e2583]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2589] [cursor=pointer]:
+          - button "get /api/auth/me" [ref=f1e2590]:
+            - generic [ref=f1e2591]: GET
+            - generic [ref=f1e2592]: /api/auth/me
+            - generic [ref=f1e2595]: Get Authenticated User
+          - button "authorization button unlocked" [ref=f1e2598]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2604] [cursor=pointer]:
+          - button "post /api/users" [ref=f1e2605]:
+            - generic [ref=f1e2606]: POST
+            - generic [ref=f1e2607]: /api/users
+            - generic [ref=f1e2610]: Create User
+          - button "authorization button unlocked" [ref=f1e2613]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2619] [cursor=pointer]:
+          - button "get /api/users" [ref=f1e2620]:
+            - generic [ref=f1e2621]: GET
+            - generic [ref=f1e2622]: /api/users
+            - generic [ref=f1e2625]: Get Users
+          - button "authorization button unlocked" [ref=f1e2628]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2634] [cursor=pointer]:
+          - 'button "get /api/users/{userId}" [ref=f1e2635]':
+            - generic [ref=f1e2636]: GET
+            - generic [ref=f1e2637]: "/api/users/{userId}"
+            - generic [ref=f1e2640]: Get one User by id
+          - button "authorization button unlocked" [ref=f1e2643]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2649] [cursor=pointer]:
+          - 'button "put /api/users/{userId}" [ref=f1e2650]':
+            - generic [ref=f1e2651]: PUT
+            - generic [ref=f1e2652]: "/api/users/{userId}"
+            - generic [ref=f1e2655]: Update User
+          - button "authorization button unlocked" [ref=f1e2658]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2664] [cursor=pointer]:
+          - 'button "delete /api/users/{userId}" [ref=f1e2665]':
+            - generic [ref=f1e2666]: DELETE
+            - generic [ref=f1e2667]: "/api/users/{userId}"
+            - generic [ref=f1e2670]: Delete User
+          - button "authorization button unlocked" [ref=f1e2673]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2679] [cursor=pointer]:
+          - 'button "get /api/users/{userId}/events-attending" [ref=f1e2680]':
+            - generic [ref=f1e2681]: GET
+            - generic [ref=f1e2682]: "/api/users/{userId}/events-attending"
+            - generic [ref=f1e2685]: Get Events the User is Attending
+          - button "authorization button unlocked" [ref=f1e2688]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2694] [cursor=pointer]:
+          - button "get /api/events-recommended" [ref=f1e2695]:
+            - generic [ref=f1e2696]: GET
+            - generic [ref=f1e2697]: /api/events-recommended
+            - generic [ref=f1e2700]: Get Events the User is Recommended
+          - button "authorization button unlocked" [ref=f1e2703]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2709] [cursor=pointer]:
+          - button "post /api/user/send-password-reset-email" [ref=f1e2710]:
+            - generic [ref=f1e2711]: POST
+            - generic [ref=f1e2712]: /api/user/send-password-reset-email
+            - generic [ref=f1e2715]: Send Password Reset Email
+          - button "authorization button unlocked" [ref=f1e2718]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2724] [cursor=pointer]:
+          - button "post /api/user/reset-password" [ref=f1e2725]:
+            - generic [ref=f1e2726]: POST
+            - generic [ref=f1e2727]: /api/user/reset-password
+            - generic [ref=f1e2730]: Reset Password
+          - button "authorization button unlocked" [ref=f1e2733]
+          - generic "Copy to clipboard"
+    - generic [ref=f1e2738]:
+      - heading "user-registration Collapse operation" [level=3] [ref=f1e2739] [cursor=pointer]:
+        - generic [ref=f1e2740]: user-registration
+        - button "Collapse operation" [expanded] [ref=f1e2741]
+      - generic [ref=f1e2748] [cursor=pointer]:
+        - button "post /api/register" [ref=f1e2749]:
+          - generic [ref=f1e2750]: POST
+          - generic [ref=f1e2751]: /api/register
+          - generic [ref=f1e2754]: Register New User
+        - button "authorization button unlocked" [ref=f1e2757]
+        - generic "Copy to clipboard"
+    - generic [ref=f1e2762]:
+      - heading "visibilities Collapse operation" [level=3] [ref=f1e2763] [cursor=pointer]:
+        - generic [ref=f1e2764]: visibilities
+        - button "Collapse operation" [expanded] [ref=f1e2765]
+      - generic [ref=f1e2769]:
+        - generic [ref=f1e2772] [cursor=pointer]:
+          - button "get /api/visibilities" [ref=f1e2773]:
+            - generic [ref=f1e2774]: GET
+            - generic [ref=f1e2775]: /api/visibilities
+            - generic [ref=f1e2778]: Get Visibilities
+          - button "authorization button unlocked" [ref=f1e2781]
+          - generic "Copy to clipboard"
+        - generic [ref=f1e2787] [cursor=pointer]:
+          - 'button "get /api/visibilities/{visibilityId}" [ref=f1e2788]':
+            - generic [ref=f1e2789]: GET
+            - generic [ref=f1e2790]: "/api/visibilities/{visibilityId}"
+            - generic [ref=f1e2793]: Get Visibility
+          - button "authorization button unlocked" [ref=f1e2796]
+          - generic "Copy to clipboard"
+  - generic [ref=f1e2802]:
+    - heading [level=4] [ref=f1e2803] [cursor=pointer]:
+      - button "Schemas" [expanded] [ref=f1e2804]
+    - generic [ref=f1e2808]:
+      - button "Activity" [ref=f1e2811] [cursor=pointer]
+      - button "Activities" [ref=f1e2817] [cursor=pointer]
+      - button "Blog" [ref=f1e2823] [cursor=pointer]
+      - button "Blogs" [ref=f1e2829] [cursor=pointer]
+      - button "Embeds" [ref=f1e2835] [cursor=pointer]
+      - button "EmbedResponse" [ref=f1e2841] [cursor=pointer]
+      - button "Photos" [ref=f1e2847] [cursor=pointer]
+      - button "PhotoResponse" [ref=f1e2853] [cursor=pointer]
+      - button "InstagramPostResponse" [ref=f1e2859] [cursor=pointer]
+      - button "EntityRequest" [ref=f1e2865] [cursor=pointer]
+      - button "EntityPatchRequest" [ref=f1e2871] [cursor=pointer]
+      - button "EntityResponse" [ref=f1e2877] [cursor=pointer]
+      - button "Entities" [ref=f1e2883] [cursor=pointer]
+      - button "EntityTypeResponse" [ref=f1e2889] [cursor=pointer]
+      - button "EntityTypeRequest" [ref=f1e2895] [cursor=pointer]
+      - button "EntityTypes" [ref=f1e2901] [cursor=pointer]
+      - button "EntityStatusResponse" [ref=f1e2907] [cursor=pointer]
+      - button "EntityStatusRequest" [ref=f1e2913] [cursor=pointer]
+      - button "EventRequest" [ref=f1e2919] [cursor=pointer]
+      - button "EventResponse" [ref=f1e2925] [cursor=pointer]
+      - button "Events" [ref=f1e2931] [cursor=pointer]
+      - button "EventStatusResponse" [ref=f1e2937] [cursor=pointer]
+      - button "EventStatusRequest" [ref=f1e2943] [cursor=pointer]
+      - button "EventStatuses" [ref=f1e2949] [cursor=pointer]
+      - button "EventTypeRequest" [ref=f1e2955] [cursor=pointer]
+      - button "EventTypeResponse" [ref=f1e2961] [cursor=pointer]
+      - button "EventTypes" [ref=f1e2967] [cursor=pointer]
+      - button "Forum" [ref=f1e2973] [cursor=pointer]
+      - button "Forums" [ref=f1e2979] [cursor=pointer]
+      - button "Link" [ref=f1e2985] [cursor=pointer]
+      - button "Links" [ref=f1e2991] [cursor=pointer]
+      - button "Contact" [ref=f1e2997] [cursor=pointer]
+      - button "Contacts" [ref=f1e3003] [cursor=pointer]
+      - button "Menu" [ref=f1e3009] [cursor=pointer]
+      - button "Menus" [ref=f1e3015] [cursor=pointer]
+      - button "Location" [ref=f1e3021] [cursor=pointer]
+      - button "LocationRequest" [ref=f1e3027] [cursor=pointer]
+      - button "OccurrenceDay" [ref=f1e3033] [cursor=pointer]
+      - button "OccurrenceType" [ref=f1e3039] [cursor=pointer]
+      - button "OccurrenceWeek" [ref=f1e3045] [cursor=pointer]
+      - button "OccurrenceTypes" [ref=f1e3051] [cursor=pointer]
+      - button "OccurrenceWeeks" [ref=f1e3057] [cursor=pointer]
+      - button "OccurrenceDays" [ref=f1e3063] [cursor=pointer]
+      - button "Post" [ref=f1e3069] [cursor=pointer]
+      - button "Posts" [ref=f1e3075] [cursor=pointer]
+      - button "SeriesRequest" [ref=f1e3081] [cursor=pointer]
+      - button "SeriesResponse" [ref=f1e3087] [cursor=pointer]
+      - button "Seriess" [ref=f1e3093] [cursor=pointer]
+      - button "Tag" [ref=f1e3099] [cursor=pointer]
+      - button "Tags" [ref=f1e3105] [cursor=pointer]
+      - button "TagType" [ref=f1e3111] [cursor=pointer]
+      - button "TagTypes" [ref=f1e3117] [cursor=pointer]
+      - button "Role" [ref=f1e3123] [cursor=pointer]
+      - button "RoleRequest" [ref=f1e3129] [cursor=pointer]
+      - button "Roles" [ref=f1e3135] [cursor=pointer]
+      - button "Thread" [ref=f1e3141] [cursor=pointer]
+      - button "Threads" [ref=f1e3147] [cursor=pointer]
+      - button "ProfileResponse" [ref=f1e3153] [cursor=pointer]
+      - button "ProfileRequest" [ref=f1e3159] [cursor=pointer]
+      - button "UserSimple" [ref=f1e3165] [cursor=pointer]
+      - button "MinimalUser" [ref=f1e3171] [cursor=pointer]
+      - button "UserResponse" [ref=f1e3177] [cursor=pointer]
+      - button "UserRequest" [ref=f1e3183] [cursor=pointer]
+      - button "UserProfileRequest" [ref=f1e3189] [cursor=pointer]
+      - button "UserRegistrationRequest" [ref=f1e3195] [cursor=pointer]
+      - button "UserRegistrationResponse" [ref=f1e3201] [cursor=pointer]
+      - button "Users" [ref=f1e3207] [cursor=pointer]
+      - button "UserTokenRequest" [ref=f1e3213] [cursor=pointer]
+      - button "UserTokenResponse" [ref=f1e3219] [cursor=pointer]
+      - button "PasswordResetEmailRequest" [ref=f1e3225] [cursor=pointer]
+      - button "ResetPasswordRequest" [ref=f1e3231] [cursor=pointer]
+      - button "MessageResponse" [ref=f1e3237] [cursor=pointer]
+      - button "Visibility" [ref=f1e3243] [cursor=pointer]
+      - button "Visibilities" [ref=f1e3249] [cursor=pointer]
+      - button "Error" [ref=f1e3255] [cursor=pointer]
+      - button "Pagination" [ref=f1e3261] [cursor=pointer]

@@ -1,0 +1,1500 @@
+- generic [active] [ref=f41e1]:
+  - generic [ref=f41e2]:
+    - complementary [ref=f41e3]:
+      - generic [ref=f41e4]:
+        - link "DEV Arcane City" [ref=f41e5] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - generic [ref=f41e7]: pittsburgh events guide
+      - generic [ref=f41e8]:
+        - search [ref=f41e11]:
+          - generic [ref=f41e12]:
+            - combobox "Search" [ref=f41e13]
+            - generic [ref=f41e14]: 
+        - generic [ref=f41e15]:
+          - button "Add something" [ref=f41e16]:
+            - generic [aria-hidden] [ref=f41e17]: 
+          - text:   
+      - navigation [ref=f41e18]:
+        - generic [ref=f41e19]:
+          - link " Events" [ref=f41e20] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=f41e21]: 
+            - generic [ref=f41e22]: Events
+          - generic [ref=f41e23]:
+            - link " Tonight" [ref=f41e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=f41e25]: 
+              - generic [ref=f41e26]: Tonight
+            - link " This Weekend" [ref=f41e27] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=f41e28]: 
+              - generic [ref=f41e29]: This Weekend
+            - link " This Week" [ref=f41e30] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=f41e31]: 
+              - generic [ref=f41e32]: This Week
+            - link " Event Grid" [ref=f41e33] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=f41e34]: 
+              - generic [ref=f41e35]: Event Grid
+        - link " Event Calendar" [ref=f41e37] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=f41e38]: 
+          - generic [ref=f41e39]: Event Calendar
+        - link " Entities" [ref=f41e40] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=f41e41]: 
+          - generic [ref=f41e42]: Entities
+        - link " Series" [ref=f41e43] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=f41e44]: 
+          - generic [ref=f41e45]: Series
+        - link " Tags" [ref=f41e46] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=f41e47]: 
+          - generic [ref=f41e48]: Tags
+        - link " Forum" [ref=f41e49] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=f41e50]: 
+          - generic [ref=f41e51]: Forum
+        - link " About" [ref=f41e53] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=f41e54]: 
+          - generic [ref=f41e55]: About
+        - link " Help" [ref=f41e56] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=f41e57]: 
+          - generic [ref=f41e58]: Help
+      - generic [ref=f41e59]:
+        - generic [ref=f41e60]:
+          - link " Log in" [ref=f41e61] [cursor=pointer]:
+            - /url: https://dev.arcane.city/login
+            - generic [ref=f41e62]: 
+            - generic [ref=f41e63]: Log in
+          - link "Register" [ref=f41e64] [cursor=pointer]:
+            - /url: https://dev.arcane.city/register
+        - button "Switch to light mode" [ref=f41e67]:
+          - generic [ref=f41e68]: 
+    - text:                
+    - generic [ref=f41e69]:
+      - text:      
+      - main [ref=f41e70]:
+        - generic [ref=f41e71]:
+          - heading "Events in Pittsburgh This Weekend" [level=1] [ref=f41e72]
+          - paragraph [ref=f41e73]: 21 shows this weekend across 16 Pittsburgh venues — Alternative, Electronic, Indie & more.
+        - generic [ref=f41e74]:
+          - link "Tonight" [ref=f41e75] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - link "This Weekend" [ref=f41e76] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - link "This Week" [ref=f41e77] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+        - generic [ref=f41e78]:
+          - link "Alternative 5" [ref=f41e79] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=alternative
+            - text: Alternative
+            - generic [ref=f41e80]: "5"
+          - link "Electronic 5" [ref=f41e81] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=electronic
+            - text: Electronic
+            - generic [ref=f41e82]: "5"
+          - link "Indie 3" [ref=f41e83] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=indie
+            - text: Indie
+            - generic [ref=f41e84]: "3"
+          - link "Comedy 2" [ref=f41e85] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=comedy
+            - text: Comedy
+            - generic [ref=f41e86]: "2"
+          - link "Dark 2" [ref=f41e87] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=dark
+            - text: Dark
+            - generic [ref=f41e88]: "2"
+          - link "Experimental 2" [ref=f41e89] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=experimental
+            - text: Experimental
+            - generic [ref=f41e90]: "2"
+          - link "Film 2" [ref=f41e91] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=film
+            - text: Film
+            - generic [ref=f41e92]: "2"
+          - link "Halloween 2" [ref=f41e93] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend?tag=halloween
+            - text: Halloween
+            - generic [ref=f41e94]: "2"
+          - button "Show all tags" [ref=f41e95]: …
+        - generic [ref=f41e96]:
+          - article [ref=f41e97]:
+            - generic [ref=f41e98]:
+              - link "View photo for Johnny Pemberton (Friday)" [ref=f41e99] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788893202_images%20%2832%29.webp
+                - img "Johnny Pemberton (Friday)" [ref=f41e100]
+              - link "Sign in to mark Johnny Pemberton (Friday) as attending" [ref=f41e102] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e103]: 
+            - generic [ref=f41e104]:
+              - heading [level=3] [ref=f41e105]:
+                - link "Johnny Pemberton (Friday)" [ref=f41e106] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/johnny-pemberton-friday-20261016
+              - paragraph [ref=f41e107]: Bottlerocket Social Hall, 7pm.
+              - link "Comedy" [ref=f41e109] [cursor=pointer]:
+                - /url: /events/type/comedy
+              - generic [ref=f41e110]:
+                - generic [ref=f41e111]:
+                  - generic [ref=f41e112]: 
+                  - link "Friday, October 16, 2026 at 7:00 PM" [ref=f41e113] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/16
+                - generic [ref=f41e114]:
+                  - generic [ref=f41e115]: 
+                  - link "Bottlerocket Social Hall" [ref=f41e116] [cursor=pointer]:
+                    - /url: /entities/bottlerocket-social-hall
+                  - link "Map for Bottlerocket Social Hall" [ref=f41e117] [cursor=pointer]:
+                    - /url: https://goo.gl/maps/gdxeXcwPbKbWGabT9
+                    - generic [aria-hidden] [ref=f41e118]: 
+              - generic [ref=f41e120]:
+                - link "Bottlerocket Social Hall" [ref=f41e121] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/bottlerocket-social-hall
+                - link "Filter events by Bottlerocket Social Hall" [ref=f41e122] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/bottlerocket-social-hall
+                  - generic [aria-hidden] [ref=f41e123]: 
+              - generic [ref=f41e125]:
+                - link "Comedy" [ref=f41e126] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/comedy
+                - link "View details for Comedy" [ref=f41e127] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/comedy
+                  - generic [aria-hidden] [ref=f41e128]: 
+            - link "External link for Johnny Pemberton (Friday)" [ref=f41e131] [cursor=pointer]:
+              - /url: https://app.opendate.io/v/bottlerocket-social-hall-1260
+              - generic [aria-hidden] [ref=f41e132]: 
+          - article [ref=f41e133]:
+            - generic [ref=f41e134]:
+              - link "View photo for Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often" [ref=f41e135] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785361835_e32d2503-06d5-4307-9893-8e10af931205.webp
+                - img "Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often" [ref=f41e136]
+              - link "Sign in to mark Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often as attending" [ref=f41e138] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e139]: 
+            - generic [ref=f41e140]:
+              - heading [level=3] [ref=f41e141]:
+                - link "Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often" [ref=f41e142] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/plead-the-widows-cause-pipe-bomb-fote-lysandra-mutate-often
+              - paragraph [ref=f41e143]: A heavy night of melodic hardcore and more
+              - link "Concert" [ref=f41e145] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e146]:
+                - generic [ref=f41e147]:
+                  - generic [ref=f41e148]: 
+                  - link "Friday, October 16, 2026 at 7:30 PM" [ref=f41e149] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/16
+                - generic [ref=f41e150]:
+                  - generic [ref=f41e151]: 
+                  - link "222 Ormsby" [ref=f41e152] [cursor=pointer]:
+                    - /url: /entities/222-ormsby
+                - generic [ref=f41e153]:
+                  - generic [ref=f41e154]: 
+                  - generic [ref=f41e155]: All Ages
+                - generic [ref=f41e156]:
+                  - generic [ref=f41e157]: 
+                  - generic [ref=f41e158]: "Presale: $15"
+                  - link "Buy tickets for Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often" [ref=f41e159] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/go/evt-8653
+                    - generic [aria-hidden] [ref=f41e160]: 
+                    - generic [ref=f41e161]: Buy Tickets
+              - generic [ref=f41e162]:
+                - generic [ref=f41e163]:
+                  - link "222 Ormsby" [ref=f41e164] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/222-ormsby
+                  - link "Filter events by 222 Ormsby" [ref=f41e165] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/222-ormsby
+                    - generic [aria-hidden] [ref=f41e166]: 
+                - generic [ref=f41e167]:
+                  - link "Perry House Productions" [ref=f41e168] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/perry-house-productions
+                  - link "Filter events by Perry House Productions" [ref=f41e169] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/perry-house-productions
+                    - generic [aria-hidden] [ref=f41e170]: 
+              - generic [ref=f41e171]:
+                - generic [ref=f41e172]:
+                  - link "Alternative" [ref=f41e173] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/alternative
+                  - link "View details for Alternative" [ref=f41e174] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/alternative
+                    - generic [aria-hidden] [ref=f41e175]: 
+                - generic [ref=f41e176]:
+                  - link "Digital Hardcore" [ref=f41e177] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/digital-hardcore
+                  - link "View details for Digital Hardcore" [ref=f41e178] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/digital-hardcore
+                    - generic [aria-hidden] [ref=f41e179]: 
+                - generic [ref=f41e180]:
+                  - link "Hardcore" [ref=f41e181] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=f41e182] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=f41e183]: 
+                - generic [ref=f41e184]:
+                  - link "Metal" [ref=f41e185] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/metal
+                  - link "View details for Metal" [ref=f41e186] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/metal
+                    - generic [aria-hidden] [ref=f41e187]: 
+                - generic [ref=f41e188]:
+                  - link "Punk" [ref=f41e189] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/punk
+                  - link "View details for Punk" [ref=f41e190] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f41e191]: 
+            - iframe [ref=f41e194]:
+              - generic [ref=f42e2]:
+                - generic [ref=f42e3]:
+                  - link [ref=f42e4] [cursor=pointer]:
+                    - /url: https://pleadthewidowscause.bandcamp.com/album/silver-glass-stare?from=embed
+                  - generic [ref=f42e6] [cursor=pointer]
+                - generic [ref=f42e8]:
+                  - generic [ref=f42e10]:
+                    - link "Silver Glass Stare" [ref=f42e11] [cursor=pointer]:
+                      - /url: https://pleadthewidowscause.bandcamp.com/album/silver-glass-stare?from=embed
+                    - text: by
+                    - generic:
+                      - text: from
+                      - generic [ref=f42e12]: by Plead the Widow's Cause
+                    - text: /
+                  - generic [ref=f42e13]:
+                    - link "buy" [ref=f42e15] [cursor=pointer]:
+                      - /url: https://pleadthewidowscause.bandcamp.com/album/silver-glass-stare?action=buy&from=embed
+                    - link "share" [ref=f42e17] [cursor=pointer]:
+                      - /url: https://pleadthewidowscause.bandcamp.com/album/silver-glass-stare?action=share&from=embed
+            - generic [ref=f41e196]:
+              - link "External link for Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often" [ref=f41e197] [cursor=pointer]:
+                - /url: https://perry-house.com
+                - generic [aria-hidden] [ref=f41e198]: 
+              - link "Buy tickets for Plead The Widow's Cause / Pipe Bomb / FOTE / Lysandra / Mutate Often" [ref=f41e199] [cursor=pointer]:
+                - /url: https://dev.arcane.city/go/evt-8653
+                - generic [aria-hidden] [ref=f41e200]: 
+                - generic [ref=f41e201]: Buy Tickets
+          - article [ref=f41e202]:
+            - generic [ref=f41e203]:
+              - link "View photo for Theresa Musatto" [ref=f41e204] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788839408_ab6761610000e5eb0777e722620dadc4079907e6.webp
+                - img "Theresa Musatto" [ref=f41e205]
+              - link "Sign in to mark Theresa Musatto as attending" [ref=f41e207] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e208]: 
+            - generic [ref=f41e209]:
+              - heading [level=3] [ref=f41e210]:
+                - link "Theresa Musatto" [ref=f41e211] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/theresa-musatto-20261016
+              - paragraph [ref=f41e212]: Theresa Musatto at Poetry Lounge (Millvale). 8pm. $10.
+              - link "Concert" [ref=f41e214] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e215]:
+                - generic [ref=f41e216]:
+                  - generic [ref=f41e217]: 
+                  - link "Friday, October 16, 2026 at 8:00 PM" [ref=f41e218] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/16
+                - generic [ref=f41e219]:
+                  - generic [ref=f41e220]: 
+                  - link "Poetry Lounge" [ref=f41e221] [cursor=pointer]:
+                    - /url: /entities/poetry-lounge
+                - generic [ref=f41e222]:
+                  - generic [ref=f41e223]: 
+                  - generic [ref=f41e224]: "Door: $10"
+              - generic [ref=f41e226]:
+                - link "Poetry Lounge" [ref=f41e227] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/poetry-lounge
+                - link "Filter events by Poetry Lounge" [ref=f41e228] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/poetry-lounge
+                  - generic [aria-hidden] [ref=f41e229]: 
+              - generic [ref=f41e231]:
+                - link "Folk" [ref=f41e232] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/folk
+                - link "View details for Folk" [ref=f41e233] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/folk
+                  - generic [aria-hidden] [ref=f41e234]: 
+            - link "External link for Theresa Musatto" [ref=f41e237] [cursor=pointer]:
+              - /url: https://www.poetrymillvale.com/events/
+              - generic [aria-hidden] [ref=f41e238]: 
+          - article [ref=f41e239]:
+            - generic [ref=f41e240]:
+              - link "View photo for SUBCINEMA Presents ACCION MUTANTE" [ref=f41e241] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1790038842_831b7bc1-ffc5-4cdb-8f3f-c6b041f3763e.webp
+                - img "SUBCINEMA Presents ACCION MUTANTE" [ref=f41e242]
+              - link "Sign in to mark SUBCINEMA Presents ACCION MUTANTE as attending" [ref=f41e244] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e245]: 
+            - generic [ref=f41e246]:
+              - heading [level=3] [ref=f41e247]:
+                - link "SUBCINEMA Presents ACCION MUTANTE" [ref=f41e248] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/subcinema-presents-accion-mutante
+              - paragraph [ref=f41e249]: Join us at Lost Lizard Video for Alex de la Iglesia's ACCIÓN MUTANTE (1993). Presented on PAL VHS and Projected on EIKI Video.
+              - link "Film Screening" [ref=f41e251] [cursor=pointer]:
+                - /url: /events/type/film-screening
+              - generic [ref=f41e252]:
+                - generic [ref=f41e253]:
+                  - generic [ref=f41e254]: 
+                  - link "Friday, October 16, 2026 at 8:00 PM" [ref=f41e255] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/16
+                - generic [ref=f41e256]:
+                  - generic [ref=f41e257]: 
+                  - link "Lost Lizard Video" [ref=f41e258] [cursor=pointer]:
+                    - /url: /entities/lost-lizard-video
+                  - link "Map for Lost Lizard Video" [ref=f41e259] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/Ax8zJMzxEPpNWWJV9
+                    - generic [aria-hidden] [ref=f41e260]: 
+                - generic [ref=f41e261]:
+                  - generic [ref=f41e262]: 
+                  - generic [ref=f41e263]: 18+
+                - link "Buy tickets for SUBCINEMA Presents ACCION MUTANTE" [ref=f41e265] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/go/evt-9355
+                  - generic [aria-hidden] [ref=f41e266]: 
+                  - generic [ref=f41e267]: Buy Tickets
+              - generic [ref=f41e268]:
+                - generic [ref=f41e269]:
+                  - link "Lost Lizard Video" [ref=f41e270] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/lost-lizard-video
+                  - link "Filter events by Lost Lizard Video" [ref=f41e271] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/lost-lizard-video
+                    - generic [aria-hidden] [ref=f41e272]: 
+                - generic [ref=f41e273]:
+                  - link "SUBCINEMA" [ref=f41e274] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/subcinema
+                  - link "Filter events by SUBCINEMA" [ref=f41e275] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/subcinema
+                    - generic [aria-hidden] [ref=f41e276]: 
+              - generic [ref=f41e277]:
+                - generic [ref=f41e278]:
+                  - link "B-movies" [ref=f41e279] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/b-movies
+                  - link "View details for B-movies" [ref=f41e280] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/b-movies
+                    - generic [aria-hidden] [ref=f41e281]: 
+                - generic [ref=f41e282]:
+                  - link "Cinema" [ref=f41e283] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/cinema
+                  - link "View details for Cinema" [ref=f41e284] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/cinema
+                    - generic [aria-hidden] [ref=f41e285]: 
+                - generic [ref=f41e286]:
+                  - link "Film" [ref=f41e287] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/film
+                  - link "View details for Film" [ref=f41e288] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/film
+                    - generic [aria-hidden] [ref=f41e289]: 
+                - generic [ref=f41e290]:
+                  - link "Horror" [ref=f41e291] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/horror
+                  - link "View details for Horror" [ref=f41e292] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/horror
+                    - generic [aria-hidden] [ref=f41e293]: 
+                - generic [ref=f41e294]:
+                  - link "Movie" [ref=f41e295] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/movie
+                  - link "View details for Movie" [ref=f41e296] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/movie
+                    - generic [aria-hidden] [ref=f41e297]: 
+                - generic [ref=f41e298]: +2 more
+            - link "Buy tickets for SUBCINEMA Presents ACCION MUTANTE" [ref=f41e301] [cursor=pointer]:
+              - /url: https://dev.arcane.city/go/evt-9355
+              - generic [aria-hidden] [ref=f41e302]: 
+              - generic [ref=f41e303]: Buy Tickets
+          - article [ref=f41e304]:
+            - generic [ref=f41e305]:
+              - 'link "View photo for NOiZ Presents: Great Dane & Hunter Reed w/ Erie Sounds Takeover" [ref=f41e306] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788977122_2192203d-3147-4238-a2a9-9e4d70381ac5.webp
+                - 'img "NOiZ Presents: Great Dane & Hunter Reed w/ Erie Sounds Takeover" [ref=f41e307]'
+              - 'link "Sign in to mark NOiZ Presents: Great Dane & Hunter Reed w/ Erie Sounds Takeover as attending" [ref=f41e309] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e310]: 
+            - generic [ref=f41e311]:
+              - heading [level=3] [ref=f41e312]:
+                - 'link "NOiZ Presents: Great Dane & Hunter Reed w/ Erie Sounds Takeover" [ref=f41e313] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/noiz-presents-great-dane-hunter-reed-erie-sounds-takeover
+              - paragraph [ref=f41e314]: Bass music night headlined by Great Dane and Hunter Reed, with an Erie Sounds takeover set from A.R.K., Joey Darker, Subdermal Sound, Khan Kuma, and Triiipgod.
+              - link "Club Night" [ref=f41e316] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=f41e317]:
+                - generic [ref=f41e318]:
+                  - generic [ref=f41e319]: 
+                  - link "Friday, October 16, 2026 at 9:00 PM - 2:00 AM" [ref=f41e320] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/16
+                - generic [ref=f41e321]:
+                  - generic [ref=f41e322]: 
+                  - link "Side Quest" [ref=f41e323] [cursor=pointer]:
+                    - /url: /entities/side-quest
+                  - link "Map for Side Quest" [ref=f41e324] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/DCLivEaH5sFtLG3w6
+                    - generic [aria-hidden] [ref=f41e325]: 
+                - generic [ref=f41e326]:
+                  - generic [ref=f41e327]: 
+                  - generic [ref=f41e328]: 18+
+                - 'link "Buy tickets for NOiZ Presents: Great Dane & Hunter Reed w/ Erie Sounds Takeover" [ref=f41e330] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/go/evt-9217
+                  - generic [aria-hidden] [ref=f41e331]: 
+                  - generic [ref=f41e332]: Buy Tickets
+              - generic [ref=f41e333]:
+                - generic [ref=f41e334]:
+                  - link "Khan Kuma" [ref=f41e335] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/khan-kuma
+                  - link "Filter events by Khan Kuma" [ref=f41e336] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/khan-kuma
+                    - generic [aria-hidden] [ref=f41e337]: 
+                - generic [ref=f41e338]:
+                  - link "NOiZ Presents" [ref=f41e339] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/noiz-presents
+                  - link "Filter events by NOiZ Presents" [ref=f41e340] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/noiz-presents
+                    - generic [aria-hidden] [ref=f41e341]: 
+                - generic [ref=f41e342]:
+                  - link "TriiipGod" [ref=f41e343] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/triiipgod
+                  - link "Filter events by TriiipGod" [ref=f41e344] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/triiipgod
+                    - generic [aria-hidden] [ref=f41e345]: 
+                - generic [ref=f41e346]: +1 more
+              - generic [ref=f41e347]:
+                - generic [ref=f41e348]:
+                  - link "Bass" [ref=f41e349] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/bass
+                  - link "View details for Bass" [ref=f41e350] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/bass
+                    - generic [aria-hidden] [ref=f41e351]: 
+                - generic [ref=f41e352]:
+                  - link "Dubstep" [ref=f41e353] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/dubstep
+                  - link "View details for Dubstep" [ref=f41e354] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/dubstep
+                    - generic [aria-hidden] [ref=f41e355]: 
+                - generic [ref=f41e356]:
+                  - link "Electronic" [ref=f41e357] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=f41e358] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f41e359]: 
+                - generic [ref=f41e360]:
+                  - link "Riddim" [ref=f41e361] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/riddim
+                  - link "View details for Riddim" [ref=f41e362] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/riddim
+                    - generic [aria-hidden] [ref=f41e363]: 
+            - 'link "Buy tickets for NOiZ Presents: Great Dane & Hunter Reed w/ Erie Sounds Takeover" [ref=f41e366] [cursor=pointer]':
+              - /url: https://dev.arcane.city/go/evt-9217
+              - generic [aria-hidden] [ref=f41e367]: 
+              - generic [ref=f41e368]: Buy Tickets
+          - article [ref=f41e369]:
+            - generic [ref=f41e370]:
+              - link "View photo for The Dark Arts w/ Azrael, Gunray, Gustav Wav, La Boix" [ref=f41e371] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1790086628_bfb53606-be54-4fdb-9ab6-de3f6ab039e7.webp
+                - img "The Dark Arts w/ Azrael, Gunray, Gustav Wav, La Boix" [ref=f41e372]
+              - link "Sign in to mark The Dark Arts w/ Azrael, Gunray, Gustav Wav, La Boix as attending" [ref=f41e374] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e375]: 
+            - generic [ref=f41e376]:
+              - heading [level=3] [ref=f41e377]:
+                - link "The Dark Arts w/ Azrael, Gunray, Gustav Wav, La Boix" [ref=f41e378] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/the-dark-arts-w-azrael-gunray-gustav-wav-la-boix
+              - paragraph [ref=f41e379]: A night of dark, occult-themed electronic music at Gallery AFK featuring Azrael, Gunray, Gustav Wav, and La Boix.
+              - link "Club Night" [ref=f41e381] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=f41e382]:
+                - generic [ref=f41e383]:
+                  - generic [ref=f41e384]: 
+                  - link "Friday, October 16, 2026 at 10:00 PM - 4:00 AM" [ref=f41e385] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/16
+                - generic [ref=f41e386]:
+                  - generic [ref=f41e387]: 
+                  - link "Gallery AFK" [ref=f41e388] [cursor=pointer]:
+                    - /url: /entities/gallery-afk
+                - generic [ref=f41e389]:
+                  - generic [ref=f41e390]: 
+                  - generic [ref=f41e391]: 18+
+                - generic [ref=f41e392]:
+                  - generic [ref=f41e393]: 
+                  - generic [ref=f41e394]: "Door: $10"
+              - generic [ref=f41e395]:
+                - generic [ref=f41e396]:
+                  - link "Azrael" [ref=f41e397] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/azrael
+                  - link "Filter events by Azrael" [ref=f41e398] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/azrael
+                    - generic [aria-hidden] [ref=f41e399]: 
+                - generic [ref=f41e400]:
+                  - link "Gallery AFK" [ref=f41e401] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/gallery-afk
+                  - link "Filter events by Gallery AFK" [ref=f41e402] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/gallery-afk
+                    - generic [aria-hidden] [ref=f41e403]: 
+                - generic [ref=f41e404]:
+                  - link "Gun Ray" [ref=f41e405] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/gun-ray
+                  - link "Filter events by Gun Ray" [ref=f41e406] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/gun-ray
+                    - generic [aria-hidden] [ref=f41e407]: 
+                - generic [ref=f41e408]: +1 more
+              - generic [ref=f41e409]:
+                - generic [ref=f41e410]:
+                  - link "Dark" [ref=f41e411] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/dark
+                  - link "View details for Dark" [ref=f41e412] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/dark
+                    - generic [aria-hidden] [ref=f41e413]: 
+                - generic [ref=f41e414]:
+                  - link "Electronic" [ref=f41e415] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=f41e416] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f41e417]: 
+                - generic [ref=f41e418]:
+                  - link "Occult" [ref=f41e419] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/occult
+                  - link "View details for Occult" [ref=f41e420] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/occult
+                    - generic [aria-hidden] [ref=f41e421]: 
+                - generic [ref=f41e422]:
+                  - link "Techno" [ref=f41e423] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=f41e424] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=f41e425]: 
+            - iframe [ref=f41e428]
+          - article [ref=f41e430]:
+            - generic [ref=f41e431]:
+              - link "View photo for Brigitte Calls Me Baby – Irreversible Tour" [ref=f41e432] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1786727250_brigitte-calls-me-baby-irreversible-tour.webp
+                - img "Brigitte Calls Me Baby – Irreversible Tour" [ref=f41e433]
+              - link "Sign in to mark Brigitte Calls Me Baby – Irreversible Tour as attending" [ref=f41e435] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e436]: 
+            - generic [ref=f41e437]:
+              - heading [level=3] [ref=f41e438]:
+                - link "Brigitte Calls Me Baby – Irreversible Tour" [ref=f41e439] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/brigitte-calls-me-baby-irreversible-tour
+              - paragraph [ref=f41e440]: Opus One presents Brigitte Calls Me Baby with special guest Common People. All ages.
+              - link "Concert" [ref=f41e442] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e443]:
+                - generic [ref=f41e444]:
+                  - generic [ref=f41e445]: 
+                  - link "Saturday, October 17, 2026 at 1:00 AM - 4:00 AM" [ref=f41e446] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e447]:
+                  - generic [ref=f41e448]: 
+                  - link "Mr. Smalls" [ref=f41e449] [cursor=pointer]:
+                    - /url: /entities/mr-smalls
+                  - link "Map for Mr. Smalls" [ref=f41e450] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/place/Mr.+Smalls+Theatre+%26+Funhouse/@40.4808359,-79.9723408,15z/data=!4m2!3m1!1s0x0:0xeef98c3fb01c02e5?sa=X&ved=0ahUKEwiFuOCM_-PMAhXIHD4KHZNNAOAQ_BIInAEwEQ
+                    - generic [aria-hidden] [ref=f41e451]: 
+              - generic [ref=f41e453]:
+                - link "Mr. Smalls" [ref=f41e454] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/mr-smalls
+                - link "Filter events by Mr. Smalls" [ref=f41e455] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/mr-smalls
+                  - generic [aria-hidden] [ref=f41e456]: 
+              - generic [ref=f41e457]:
+                - generic [ref=f41e458]:
+                  - link "Indie" [ref=f41e459] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/indie
+                  - link "View details for Indie" [ref=f41e460] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/indie
+                    - generic [aria-hidden] [ref=f41e461]: 
+                - generic [ref=f41e462]:
+                  - link "Alternative" [ref=f41e463] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/alternative
+                  - link "View details for Alternative" [ref=f41e464] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/alternative
+                    - generic [aria-hidden] [ref=f41e465]: 
+            - link "External link for Brigitte Calls Me Baby – Irreversible Tour" [ref=f41e468] [cursor=pointer]:
+              - /url: https://mrsmalls.com/events/brigitte-calls-me-baby/
+              - generic [aria-hidden] [ref=f41e469]: 
+          - article [ref=f41e470]:
+            - generic [ref=f41e471]:
+              - link "View photo for Maneka with The Zells, Sad Bulldog, Addict Brain" [ref=f41e472] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1786724352_funhouseatmrsmalls_1786723222_3963644127497284182_3629543068.webp
+                - img "Maneka with The Zells, Sad Bulldog, Addict Brain" [ref=f41e473]
+              - link "Sign in to mark Maneka with The Zells, Sad Bulldog, Addict Brain as attending" [ref=f41e475] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e476]: 
+            - generic [ref=f41e477]:
+              - heading [level=3] [ref=f41e478]:
+                - link "Maneka with The Zells, Sad Bulldog, Addict Brain" [ref=f41e479] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/maneka-with-the-zells-sad-bulldog-addict-brain
+              - paragraph [ref=f41e480]: Maneka headlines Mr. Smalls with support from The Zells, Sad Bulldog, and Addict Brain.
+              - link "Concert" [ref=f41e482] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e483]:
+                - generic [ref=f41e484]:
+                  - generic [ref=f41e485]: 
+                  - link "Saturday, October 17, 2026 at 7:00 PM" [ref=f41e486] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e487]:
+                  - generic [ref=f41e488]: 
+                  - link "The Funhouse at Mr. Smalls" [ref=f41e489] [cursor=pointer]:
+                    - /url: /entities/the-funhouse-at-mr-smalls
+                - generic [ref=f41e490]:
+                  - generic [ref=f41e491]: 
+                  - generic [ref=f41e492]: All Ages
+              - generic [ref=f41e493]:
+                - generic [ref=f41e494]:
+                  - link "Addict Brain" [ref=f41e495] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/addict-brain
+                  - link "Filter events by Addict Brain" [ref=f41e496] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/addict-brain
+                    - generic [aria-hidden] [ref=f41e497]: 
+                - generic [ref=f41e498]:
+                  - link "Sad Bulldog" [ref=f41e499] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/sad-bulldog
+                  - link "Filter events by Sad Bulldog" [ref=f41e500] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/sad-bulldog
+                    - generic [aria-hidden] [ref=f41e501]: 
+                - generic [ref=f41e502]:
+                  - link "The Funhouse at Mr. Smalls" [ref=f41e503] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/the-funhouse-at-mr-smalls
+                  - link "Filter events by The Funhouse at Mr. Smalls" [ref=f41e504] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/the-funhouse-at-mr-smalls
+                    - generic [aria-hidden] [ref=f41e505]: 
+                - generic [ref=f41e506]: +2 more
+              - generic [ref=f41e507]:
+                - generic [ref=f41e508]:
+                  - link "Alternative" [ref=f41e509] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/alternative
+                  - link "View details for Alternative" [ref=f41e510] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/alternative
+                    - generic [aria-hidden] [ref=f41e511]: 
+                - generic [ref=f41e512]:
+                  - link "Post-punk" [ref=f41e513] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/post-punk
+                  - link "View details for Post-punk" [ref=f41e514] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/post-punk
+                    - generic [aria-hidden] [ref=f41e515]: 
+            - iframe [ref=f41e518]:
+              - generic [ref=f44e2]:
+                - generic [ref=f44e3]:
+                  - link [ref=f44e4] [cursor=pointer]:
+                    - /url: https://addictbrain.bandcamp.com/album/demo?from=embed
+                  - generic [ref=f44e6] [cursor=pointer]
+                - generic [ref=f44e8]:
+                  - generic [ref=f44e10]:
+                    - link "Demo" [ref=f44e11] [cursor=pointer]:
+                      - /url: https://addictbrain.bandcamp.com/album/demo?from=embed
+                    - text: by
+                    - generic:
+                      - text: from
+                      - generic [ref=f44e12]: by Addict Brain
+                    - text: /
+                  - generic [ref=f44e13]:
+                    - link "download" [ref=f44e15] [cursor=pointer]:
+                      - /url: https://addictbrain.bandcamp.com/album/demo?action=download&from=embed
+                    - link "share" [ref=f44e17] [cursor=pointer]:
+                      - /url: https://addictbrain.bandcamp.com/album/demo?action=share&from=embed
+            - link "External link for Maneka with The Zells, Sad Bulldog, Addict Brain" [ref=f41e521] [cursor=pointer]:
+              - /url: https://www.mrsmalls.com
+              - generic [aria-hidden] [ref=f41e522]: 
+          - article [ref=f41e523]:
+            - generic [ref=f41e524]:
+              - link "View photo for Marie Faustin" [ref=f41e525] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788893249_images%20%2833%29.webp
+                - img "Marie Faustin" [ref=f41e526]
+              - link "Sign in to mark Marie Faustin as attending" [ref=f41e528] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e529]: 
+            - generic [ref=f41e530]:
+              - heading [level=3] [ref=f41e531]:
+                - link "Marie Faustin" [ref=f41e532] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/marie-faustin-20261017
+              - paragraph [ref=f41e533]: Bottlerocket Social Hall, 7pm.
+              - link "Comedy" [ref=f41e535] [cursor=pointer]:
+                - /url: /events/type/comedy
+              - generic [ref=f41e536]:
+                - generic [ref=f41e537]:
+                  - generic [ref=f41e538]: 
+                  - link "Saturday, October 17, 2026 at 7:00 PM" [ref=f41e539] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e540]:
+                  - generic [ref=f41e541]: 
+                  - link "Bottlerocket Social Hall" [ref=f41e542] [cursor=pointer]:
+                    - /url: /entities/bottlerocket-social-hall
+                  - link "Map for Bottlerocket Social Hall" [ref=f41e543] [cursor=pointer]:
+                    - /url: https://goo.gl/maps/gdxeXcwPbKbWGabT9
+                    - generic [aria-hidden] [ref=f41e544]: 
+              - generic [ref=f41e546]:
+                - link "Bottlerocket Social Hall" [ref=f41e547] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/bottlerocket-social-hall
+                - link "Filter events by Bottlerocket Social Hall" [ref=f41e548] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/bottlerocket-social-hall
+                  - generic [aria-hidden] [ref=f41e549]: 
+              - generic [ref=f41e551]:
+                - link "Comedy" [ref=f41e552] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/comedy
+                - link "View details for Comedy" [ref=f41e553] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/comedy
+                  - generic [aria-hidden] [ref=f41e554]: 
+            - link "External link for Marie Faustin" [ref=f41e557] [cursor=pointer]:
+              - /url: https://app.opendate.io/v/bottlerocket-social-hall-1260
+              - generic [aria-hidden] [ref=f41e558]: 
+          - article [ref=f41e559]:
+            - generic [ref=f41e560]:
+              - link "View photo for Jason Calhoun / Dilettante / Estelle / Lucite Spine / Memory Wound" [ref=f41e561] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1789058749_3edb7ec6-acea-40b7-8c4a-47a3545921cb.webp
+                - img "Jason Calhoun / Dilettante / Estelle / Lucite Spine / Memory Wound" [ref=f41e562]
+              - link "Sign in to mark Jason Calhoun / Dilettante / Estelle / Lucite Spine / Memory Wound as attending" [ref=f41e564] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e565]: 
+            - generic [ref=f41e566]:
+              - heading [level=3] [ref=f41e567]:
+                - link "Jason Calhoun / Dilettante / Estelle / Lucite Spine / Memory Wound" [ref=f41e568] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/jason-calhoun-dilettante-estelle-lucite-spine-memory-wound
+              - paragraph [ref=f41e569]: A five-act noise/industrial/experimental showcase featuring Jason Calhoun, Dilettante, Estelle, Lucite Spine, and Memory Wound.
+              - link "Concert" [ref=f41e571] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e572]:
+                - generic [ref=f41e573]:
+                  - generic [ref=f41e574]: 
+                  - link "Saturday, October 17, 2026 at 7:00 PM - 11:00 PM" [ref=f41e575] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e576]:
+                  - generic [ref=f41e577]: 
+                  - link "318" [ref=f41e578] [cursor=pointer]:
+                    - /url: /entities/a-318
+                - generic [ref=f41e579]:
+                  - generic [ref=f41e580]: 
+                  - generic [ref=f41e581]: "Presale: $10"
+                  - generic [ref=f41e582]: "Door: $15"
+              - generic [ref=f41e583]:
+                - generic [ref=f41e584]:
+                  - link "318" [ref=f41e585] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/a-318
+                  - link "Filter events by 318" [ref=f41e586] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/a-318
+                    - generic [aria-hidden] [ref=f41e587]: 
+                - generic [ref=f41e588]:
+                  - link "Estelle" [ref=f41e589] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/estelle
+                  - link "Filter events by Estelle" [ref=f41e590] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/estelle
+                    - generic [aria-hidden] [ref=f41e591]: 
+                - generic [ref=f41e592]:
+                  - link "Dilettante" [ref=f41e593] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/dilettante
+                  - link "Filter events by Dilettante" [ref=f41e594] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/dilettante
+                    - generic [aria-hidden] [ref=f41e595]: 
+                - generic [ref=f41e596]: +2 more
+              - generic [ref=f41e597]:
+                - generic [ref=f41e598]:
+                  - link "Ambient" [ref=f41e599] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/ambient
+                  - link "View details for Ambient" [ref=f41e600] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/ambient
+                    - generic [aria-hidden] [ref=f41e601]: 
+                - generic [ref=f41e602]:
+                  - link "Experimental" [ref=f41e603] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/experimental
+                  - link "View details for Experimental" [ref=f41e604] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/experimental
+                    - generic [aria-hidden] [ref=f41e605]: 
+                - generic [ref=f41e606]:
+                  - link "Industrial" [ref=f41e607] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/industrial
+                  - link "View details for Industrial" [ref=f41e608] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/industrial
+                    - generic [aria-hidden] [ref=f41e609]: 
+                - generic [ref=f41e610]:
+                  - link "Noise" [ref=f41e611] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/noise
+                  - link "View details for Noise" [ref=f41e612] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/noise
+                    - generic [aria-hidden] [ref=f41e613]: 
+            - iframe [ref=f41e616]:
+              - generic [ref=f45e2]:
+                - generic [ref=f45e3]:
+                  - link [ref=f45e4] [cursor=pointer]:
+                    - /url: https://napsounds.bandcamp.com/album/revelations-of-divine-love?from=embed
+                  - generic [ref=f45e6] [cursor=pointer]
+                - generic [ref=f45e8]:
+                  - generic [ref=f45e10]:
+                    - link "revelations of divine love" [ref=f45e11] [cursor=pointer]:
+                      - /url: https://napsounds.bandcamp.com/album/revelations-of-divine-love?from=embed
+                    - text: by
+                    - generic:
+                      - text: from
+                      - generic [ref=f45e12]: by jason calhoun
+                    - text: /
+                  - generic [ref=f45e13]:
+                    - link "buy" [ref=f45e15] [cursor=pointer]:
+                      - /url: https://napsounds.bandcamp.com/album/revelations-of-divine-love?action=buy&from=embed
+                    - link "share" [ref=f45e17] [cursor=pointer]:
+                      - /url: https://napsounds.bandcamp.com/album/revelations-of-divine-love?action=share&from=embed
+          - article [ref=f41e618]:
+            - generic [ref=f41e619]:
+              - link "View photo for 97 Flood, Honeybee, Fake Grave, Dread, ARRF" [ref=f41e620] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1789833462_071e2c53-ae02-4986-a377-2fe20ada8f89.webp
+                - img "97 Flood, Honeybee, Fake Grave, Dread, ARRF" [ref=f41e621]
+              - link "Sign in to mark 97 Flood, Honeybee, Fake Grave, Dread, ARRF as attending" [ref=f41e623] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e624]: 
+            - generic [ref=f41e625]:
+              - heading [level=3] [ref=f41e626]:
+                - link "97 Flood, Honeybee, Fake Grave, Dread, ARRF" [ref=f41e627] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/-97-flood-honeybee-fake-grave-dread-arrf
+              - paragraph [ref=f41e628]: 97 Flood headlines a five-band punk/post-hardcore night at Roboto Project with Honeybee, Fake Grave, Dread, and ARRF.
+              - link "Concert" [ref=f41e630] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e631]:
+                - generic [ref=f41e632]:
+                  - generic [ref=f41e633]: 
+                  - link "Saturday, October 17, 2026 at 7:00 PM" [ref=f41e634] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e635]:
+                  - generic [ref=f41e636]: 
+                  - link "Roboto Project" [ref=f41e637] [cursor=pointer]:
+                    - /url: /entities/roboto-project
+                - generic [ref=f41e638]:
+                  - generic [ref=f41e639]: 
+                  - generic [ref=f41e640]: All Ages
+                - generic [ref=f41e641]:
+                  - generic [ref=f41e642]: 
+                  - generic [ref=f41e643]: "Door: $12"
+              - generic [ref=f41e645]:
+                - link "Roboto Project" [ref=f41e646] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/roboto-project
+                - link "Filter events by Roboto Project" [ref=f41e647] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/roboto-project
+                  - generic [aria-hidden] [ref=f41e648]: 
+              - generic [ref=f41e649]:
+                - generic [ref=f41e650]:
+                  - link "Emo" [ref=f41e651] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/emo
+                  - link "View details for Emo" [ref=f41e652] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/emo
+                    - generic [aria-hidden] [ref=f41e653]: 
+                - generic [ref=f41e654]:
+                  - link "Punk" [ref=f41e655] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/punk
+                  - link "View details for Punk" [ref=f41e656] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/punk
+                    - generic [aria-hidden] [ref=f41e657]: 
+                - generic [ref=f41e658]:
+                  - link "Screamo" [ref=f41e659] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/screamo
+                  - link "View details for Screamo" [ref=f41e660] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/screamo
+                    - generic [aria-hidden] [ref=f41e661]: 
+          - article [ref=f41e663]:
+            - generic [ref=f41e664]:
+              - link "View photo for The Creepification of Alex Ascension" [ref=f41e665] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785534929_6f9fd02b-3db8-43e5-a46b-4d7a738d7b77.webp
+                - img "The Creepification of Alex Ascension" [ref=f41e666]
+              - link "Sign in to mark The Creepification of Alex Ascension as attending" [ref=f41e668] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e669]: 
+            - generic [ref=f41e670]:
+              - heading [level=3] [ref=f41e671]:
+                - link "The Creepification of Alex Ascension" [ref=f41e672] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/the-creepification-of-alex-ascension
+              - paragraph [ref=f41e673]: An art installation and rave hosted by Alex Ascension featuring live DJs and creepy fashion in Pittsburgh.
+              - link "Club Night" [ref=f41e675] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=f41e676]:
+                - generic [ref=f41e677]:
+                  - generic [ref=f41e678]: 
+                  - link "Saturday, October 17, 2026 at 8:00 PM" [ref=f41e679] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e680]:
+                  - generic [ref=f41e681]: 
+                  - link "Community Forge" [ref=f41e682] [cursor=pointer]:
+                    - /url: /entities/community-forge
+                  - link "Map for Community Forge" [ref=f41e683] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/place/Community+Forge/@40.4375713,-79.8745301,15z/data=!4m2!3m1!1s0x0:0xae980a0df55b07a0?sa=X&ved=0ahUKEwil6Lz-nI3aAhXtTN8KHf4NAqoQ_BIIfjAK
+                    - generic [aria-hidden] [ref=f41e684]: 
+                - generic [ref=f41e685]:
+                  - generic [ref=f41e686]: 
+                  - generic [ref=f41e687]: 18+
+              - generic [ref=f41e689]:
+                - link "Community Forge" [ref=f41e690] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/community-forge
+                - link "Filter events by Community Forge" [ref=f41e691] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/community-forge
+                  - generic [aria-hidden] [ref=f41e692]: 
+              - generic [ref=f41e693]:
+                - generic [ref=f41e694]:
+                  - link "Dark" [ref=f41e695] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/dark
+                  - link "View details for Dark" [ref=f41e696] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/dark
+                    - generic [aria-hidden] [ref=f41e697]: 
+                - generic [ref=f41e698]:
+                  - link "Electronic" [ref=f41e699] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=f41e700] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f41e701]: 
+                - generic [ref=f41e702]:
+                  - link "Rave" [ref=f41e703] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=f41e704] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=f41e705]: 
+                - generic [ref=f41e706]:
+                  - link "Techno" [ref=f41e707] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=f41e708] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=f41e709]: 
+          - article [ref=f41e711]:
+            - generic [ref=f41e712]:
+              - link "View photo for Seven Mile Detour" [ref=f41e713] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788876602_download%20%283%29.webp
+                - img "Seven Mile Detour" [ref=f41e714]
+              - link "Sign in to mark Seven Mile Detour as attending" [ref=f41e716] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e717]: 
+            - generic [ref=f41e718]:
+              - heading [level=3] [ref=f41e719]:
+                - link "Seven Mile Detour" [ref=f41e720] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/seven-mile-detour-20261017
+              - paragraph [ref=f41e721]: Seven Mile Detour at Poetry Lounge (Millvale). 8pm. $10.
+              - link "Concert" [ref=f41e723] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e724]:
+                - generic [ref=f41e725]:
+                  - generic [ref=f41e726]: 
+                  - link "Saturday, October 17, 2026 at 8:00 PM" [ref=f41e727] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e728]:
+                  - generic [ref=f41e729]: 
+                  - link "Poetry Lounge" [ref=f41e730] [cursor=pointer]:
+                    - /url: /entities/poetry-lounge
+                - generic [ref=f41e731]:
+                  - generic [ref=f41e732]: 
+                  - generic [ref=f41e733]: "Door: $10"
+              - generic [ref=f41e735]:
+                - link "Poetry Lounge" [ref=f41e736] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/poetry-lounge
+                - link "Filter events by Poetry Lounge" [ref=f41e737] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/poetry-lounge
+                  - generic [aria-hidden] [ref=f41e738]: 
+              - generic [ref=f41e740]:
+                - link "Rock" [ref=f41e741] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/rock
+                - link "View details for Rock" [ref=f41e742] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/rock
+                  - generic [aria-hidden] [ref=f41e743]: 
+            - link "External link for Seven Mile Detour" [ref=f41e746] [cursor=pointer]:
+              - /url: https://www.poetrymillvale.com/events/
+              - generic [aria-hidden] [ref=f41e747]: 
+          - article [ref=f41e748]:
+            - generic [ref=f41e749]:
+              - 'link "View photo for In Dead by Ten: Heaven & Hell" [ref=f41e750] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788888294_34dfff71-0c19-43ea-9a88-f8152c55648e.webp
+                - 'img "In Dead by Ten: Heaven & Hell" [ref=f41e751]'
+              - 'link "Sign in to mark In Dead by Ten: Heaven & Hell as attending" [ref=f41e753] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e754]: 
+            - generic [ref=f41e755]:
+              - heading [level=3] [ref=f41e756]:
+                - 'link "In Dead by Ten: Heaven & Hell" [ref=f41e757] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/in-dead-by-ten-heaven-and-hell
+              - paragraph [ref=f41e758]: A Halloween-themed 'Heaven & Hell' party from the In Bed By Ten crew, spanning multiple Pittsburgh bars.
+              - link "Club Night" [ref=f41e760] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=f41e761]:
+                - generic [ref=f41e762]:
+                  - generic [ref=f41e763]: 
+                  - link "Saturday, October 17, 2026 at 8:00 PM" [ref=f41e764] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e765]:
+                  - generic [ref=f41e766]: 
+                  - link "This Is Red" [ref=f41e767] [cursor=pointer]:
+                    - /url: /entities/this-is-red
+                  - link "Map for This Is Red" [ref=f41e768] [cursor=pointer]:
+                    - /url: https://g.page/THISISREDagency
+                    - generic [aria-hidden] [ref=f41e769]: 
+                - generic [ref=f41e770]:
+                  - generic [ref=f41e771]: 
+                  - generic [ref=f41e772]: 21+
+              - generic [ref=f41e773]:
+                - generic [ref=f41e774]:
+                  - link "This Is Red" [ref=f41e775] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/this-is-red
+                  - link "Filter events by This Is Red" [ref=f41e776] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/this-is-red
+                    - generic [aria-hidden] [ref=f41e777]: 
+                - generic [ref=f41e778]:
+                  - link "Buscrates" [ref=f41e779] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/buscrates
+                  - link "Filter events by Buscrates" [ref=f41e780] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/buscrates
+                    - generic [aria-hidden] [ref=f41e781]: 
+                - generic [ref=f41e782]:
+                  - link "Ez Lou" [ref=f41e783] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/ez-lou
+                  - link "Filter events by Ez Lou" [ref=f41e784] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/ez-lou
+                    - generic [aria-hidden] [ref=f41e785]: 
+                - generic [ref=f41e786]: +1 more
+              - generic [ref=f41e787]:
+                - generic [ref=f41e788]:
+                  - link "Halloween" [ref=f41e789] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/halloween
+                  - link "View details for Halloween" [ref=f41e790] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/halloween
+                    - generic [aria-hidden] [ref=f41e791]: 
+                - generic [ref=f41e792]:
+                  - link "80s" [ref=f41e793] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/80s
+                  - link "View details for 80s" [ref=f41e794] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/80s
+                    - generic [aria-hidden] [ref=f41e795]: 
+                - generic [ref=f41e796]:
+                  - link "Disco" [ref=f41e797] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/disco
+                  - link "View details for Disco" [ref=f41e798] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/disco
+                    - generic [aria-hidden] [ref=f41e799]: 
+                - generic [ref=f41e800]:
+                  - link "Funk" [ref=f41e801] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/funk
+                  - link "View details for Funk" [ref=f41e802] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/funk
+                    - generic [aria-hidden] [ref=f41e803]: 
+            - iframe [ref=f41e806]
+          - article [ref=f41e808]:
+            - generic [ref=f41e809]:
+              - 'link "View photo for Beats Antique: Metamorphosis Tour" [ref=f41e810] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1790181728_8419cf60-52c6-477b-b896-d29baa57926b.webp
+                - 'img "Beats Antique: Metamorphosis Tour" [ref=f41e811]'
+              - 'link "Sign in to mark Beats Antique: Metamorphosis Tour as attending" [ref=f41e813] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e814]: 
+            - generic [ref=f41e815]:
+              - heading [level=3] [ref=f41e816]:
+                - 'link "Beats Antique: Metamorphosis Tour" [ref=f41e817] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/beats-antique-metamorphosis-tour
+              - paragraph [ref=f41e818]: Beats Antique brings their genre-bending fusion of electronica, world music, and tribal fusion bellydance to Thunderbird Music Hall on their Metamorphosis Tour.
+              - link "Concert" [ref=f41e820] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e821]:
+                - generic [ref=f41e822]:
+                  - generic [ref=f41e823]: 
+                  - link "Saturday, October 17, 2026 at 8:00 PM" [ref=f41e824] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e825]:
+                  - generic [ref=f41e826]: 
+                  - link "Thunderbird" [ref=f41e827] [cursor=pointer]:
+                    - /url: /entities/thunderbird
+                  - link "Map for Thunderbird" [ref=f41e828] [cursor=pointer]:
+                    - /url: https://goo.gl/maps/mNqkJ9cTdEt7TbWz8
+                    - generic [aria-hidden] [ref=f41e829]: 
+                - generic [ref=f41e830]:
+                  - generic [ref=f41e831]: 
+                  - generic [ref=f41e832]: 18+
+              - generic [ref=f41e834]:
+                - link "Thunderbird" [ref=f41e835] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/thunderbird
+                - link "Filter events by Thunderbird" [ref=f41e836] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/thunderbird
+                  - generic [aria-hidden] [ref=f41e837]: 
+              - generic [ref=f41e838]:
+                - generic [ref=f41e839]:
+                  - link "Beats" [ref=f41e840] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/beats
+                  - link "View details for Beats" [ref=f41e841] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/beats
+                    - generic [aria-hidden] [ref=f41e842]: 
+                - generic [ref=f41e843]:
+                  - link "Downtempo" [ref=f41e844] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/downtempo
+                  - link "View details for Downtempo" [ref=f41e845] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/downtempo
+                    - generic [aria-hidden] [ref=f41e846]: 
+                - generic [ref=f41e847]:
+                  - link "Electronic" [ref=f41e848] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=f41e849] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f41e850]: 
+                - generic [ref=f41e851]:
+                  - link "Glitch-hop" [ref=f41e852] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/glitch-hop
+                  - link "View details for Glitch-hop" [ref=f41e853] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/glitch-hop
+                    - generic [aria-hidden] [ref=f41e854]: 
+                - generic [ref=f41e855]:
+                  - link "World Music" [ref=f41e856] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/world-music
+                  - link "View details for World Music" [ref=f41e857] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/world-music
+                    - generic [aria-hidden] [ref=f41e858]: 
+          - article [ref=f41e860]:
+            - generic [ref=f41e861]:
+              - 'link "View photo for CLOACA - Evermore: One Hole Never More" [ref=f41e862] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1788985654_MPIzvgxa9X-1080.webp
+                - 'img "CLOACA - Evermore: One Hole Never More" [ref=f41e863]'
+              - 'link "Sign in to mark CLOACA - Evermore: One Hole Never More as attending" [ref=f41e865] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e866]: 
+            - generic [ref=f41e867]:
+              - heading [level=3] [ref=f41e868]:
+                - 'link "CLOACA - Evermore: One Hole Never More" [ref=f41e869] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/cloaca-evermore-one-hole-never-more
+              - paragraph [ref=f41e870]: Calling all Edgar Allen Hoes
+              - link "Club Night" [ref=f41e872] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=f41e873]:
+                - generic [ref=f41e874]:
+                  - generic [ref=f41e875]: 
+                  - link "Saturday, October 17, 2026 at 9:00 PM" [ref=f41e876] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/17
+                - generic [ref=f41e877]:
+                  - generic [ref=f41e878]: 
+                  - link "Collapse" [ref=f41e879] [cursor=pointer]:
+                    - /url: /entities/collapse
+                - 'link "Buy tickets for CLOACA - Evermore: One Hole Never More" [ref=f41e881] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/go/evt-9214
+                  - generic [aria-hidden] [ref=f41e882]: 
+                  - generic [ref=f41e883]: Buy Tickets
+              - generic [ref=f41e884]:
+                - generic [ref=f41e885]:
+                  - link "Collapse" [ref=f41e886] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/collapse
+                  - link "Filter events by Collapse" [ref=f41e887] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/collapse
+                    - generic [aria-hidden] [ref=f41e888]: 
+                - generic [ref=f41e889]:
+                  - link "Cereza Online" [ref=f41e890] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/cereza-online
+                  - link "Filter events by Cereza Online" [ref=f41e891] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/cereza-online
+                    - generic [aria-hidden] [ref=f41e892]: 
+                - generic [ref=f41e893]:
+                  - link "Clark Price" [ref=f41e894] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/clark-price
+                  - link "Filter events by Clark Price" [ref=f41e895] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/clark-price
+                    - generic [aria-hidden] [ref=f41e896]: 
+                - generic [ref=f41e897]: +1 more
+              - generic [ref=f41e898]:
+                - generic [ref=f41e899]:
+                  - link "Club" [ref=f41e900] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/club
+                  - link "View details for Club" [ref=f41e901] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/club
+                    - generic [aria-hidden] [ref=f41e902]: 
+                - generic [ref=f41e903]:
+                  - link "Electronic" [ref=f41e904] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=f41e905] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=f41e906]: 
+                - generic [ref=f41e907]:
+                  - link "Experimental" [ref=f41e908] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/experimental
+                  - link "View details for Experimental" [ref=f41e909] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/experimental
+                    - generic [aria-hidden] [ref=f41e910]: 
+                - generic [ref=f41e911]:
+                  - link "Halloween" [ref=f41e912] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/halloween
+                  - link "View details for Halloween" [ref=f41e913] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/halloween
+                    - generic [aria-hidden] [ref=f41e914]: 
+                - generic [ref=f41e915]:
+                  - link "Queer" [ref=f41e916] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/queer
+                  - link "View details for Queer" [ref=f41e917] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/queer
+                    - generic [aria-hidden] [ref=f41e918]: 
+            - iframe [ref=f41e921]
+            - 'link "Buy tickets for CLOACA - Evermore: One Hole Never More" [ref=f41e924] [cursor=pointer]':
+              - /url: https://dev.arcane.city/go/evt-9214
+              - generic [aria-hidden] [ref=f41e925]: 
+              - generic [ref=f41e926]: Buy Tickets
+          - article [ref=f41e927]:
+            - generic [ref=f41e928]:
+              - link "View photo for Dana and Alden – Papa’s Boat Tour" [ref=f41e929] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1786727256_dana-and-alden-papas-boat-tour.webp
+                - img "Dana and Alden – Papa’s Boat Tour" [ref=f41e930]
+              - link "Sign in to mark Dana and Alden – Papa’s Boat Tour as attending" [ref=f41e932] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e933]: 
+            - generic [ref=f41e934]:
+              - heading [level=3] [ref=f41e935]:
+                - link "Dana and Alden – Papa’s Boat Tour" [ref=f41e936] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/dana-and-alden-papas-boat-tour
+              - paragraph [ref=f41e937]: Opus One presents Dana and Alden with special guest Alex Amen. All ages.
+              - link "Concert" [ref=f41e939] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e940]:
+                - generic [ref=f41e941]:
+                  - generic [ref=f41e942]: 
+                  - link "Sunday, October 18, 2026 at 1:00 AM - 4:00 AM" [ref=f41e943] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/18
+                - generic [ref=f41e944]:
+                  - generic [ref=f41e945]: 
+                  - link "Mr. Smalls" [ref=f41e946] [cursor=pointer]:
+                    - /url: /entities/mr-smalls
+                  - link "Map for Mr. Smalls" [ref=f41e947] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/place/Mr.+Smalls+Theatre+%26+Funhouse/@40.4808359,-79.9723408,15z/data=!4m2!3m1!1s0x0:0xeef98c3fb01c02e5?sa=X&ved=0ahUKEwiFuOCM_-PMAhXIHD4KHZNNAOAQ_BIInAEwEQ
+                    - generic [aria-hidden] [ref=f41e948]: 
+              - generic [ref=f41e950]:
+                - link "Mr. Smalls" [ref=f41e951] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/mr-smalls
+                - link "Filter events by Mr. Smalls" [ref=f41e952] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/mr-smalls
+                  - generic [aria-hidden] [ref=f41e953]: 
+              - generic [ref=f41e954]:
+                - generic [ref=f41e955]:
+                  - link "Indie" [ref=f41e956] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/indie
+                  - link "View details for Indie" [ref=f41e957] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/indie
+                    - generic [aria-hidden] [ref=f41e958]: 
+                - generic [ref=f41e959]:
+                  - link "Jazz" [ref=f41e960] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jazz
+                  - link "View details for Jazz" [ref=f41e961] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jazz
+                    - generic [aria-hidden] [ref=f41e962]: 
+            - link "External link for Dana and Alden – Papa’s Boat Tour" [ref=f41e965] [cursor=pointer]:
+              - /url: https://mrsmalls.com/events/dana-and-alden/
+              - generic [aria-hidden] [ref=f41e966]: 
+          - article [ref=f41e967]:
+            - generic [ref=f41e968]:
+              - link "View photo for Pittsburgh Zine Fair" [ref=f41e969] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1789489884_806ae017-ccb8-459d-a7e1-4afeff22af97.webp
+                - img "Pittsburgh Zine Fair" [ref=f41e970]
+              - link "Sign in to mark Pittsburgh Zine Fair as attending" [ref=f41e972] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e973]: 
+            - generic [ref=f41e974]:
+              - heading [level=3] [ref=f41e975]:
+                - link "Pittsburgh Zine Fair" [ref=f41e976] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/pittsburgh-zine-fair
+              - paragraph [ref=f41e977]: An annual gathering of zine makers, small press artists, and independent publishers at the Kingsley Association.
+              - link "Festival" [ref=f41e979] [cursor=pointer]:
+                - /url: /events/type/festival
+              - generic [ref=f41e980]:
+                - generic [ref=f41e981]:
+                  - generic [ref=f41e982]: 
+                  - link "Sunday, October 18, 2026 at 11:00 AM - 5:00 PM" [ref=f41e983] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/18
+                - generic [ref=f41e984]:
+                  - generic [ref=f41e985]: 
+                  - link "The Kingsley" [ref=f41e986] [cursor=pointer]:
+                    - /url: /entities/the-kingsley
+                  - link "Map for The Kingsley" [ref=f41e987] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/z9rXJo7atikrpsuLA
+                    - generic [aria-hidden] [ref=f41e988]: 
+                - generic [ref=f41e989]:
+                  - generic [ref=f41e990]: 
+                  - generic [ref=f41e991]: All Ages
+              - generic [ref=f41e993]:
+                - link "The Kingsley" [ref=f41e994] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/the-kingsley
+                - link "Filter events by The Kingsley" [ref=f41e995] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/the-kingsley
+                  - generic [aria-hidden] [ref=f41e996]: 
+              - generic [ref=f41e997]:
+                - generic [ref=f41e998]:
+                  - link "Art" [ref=f41e999] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/art
+                  - link "View details for Art" [ref=f41e1000] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/art
+                    - generic [aria-hidden] [ref=f41e1001]: 
+                - generic [ref=f41e1002]:
+                  - link "Comics" [ref=f41e1003] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/comics
+                  - link "View details for Comics" [ref=f41e1004] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/comics
+                    - generic [aria-hidden] [ref=f41e1005]: 
+                - generic [ref=f41e1006]:
+                  - link "Diy" [ref=f41e1007] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/diy
+                  - link "View details for Diy" [ref=f41e1008] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/diy
+                    - generic [aria-hidden] [ref=f41e1009]: 
+                - generic [ref=f41e1010]:
+                  - link "Zines" [ref=f41e1011] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/zines
+                  - link "View details for Zines" [ref=f41e1012] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/zines
+                    - generic [aria-hidden] [ref=f41e1013]: 
+          - article [ref=f41e1015]:
+            - generic [ref=f41e1016]:
+              - link "View photo for Constellation X, Ego Sum, Skinsuit, Sundras" [ref=f41e1017] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1789956092_7bd7174b-a8b0-4092-814b-0d5dac1e66c1.webp
+                - img "Constellation X, Ego Sum, Skinsuit, Sundras" [ref=f41e1018]
+              - link "Sign in to mark Constellation X, Ego Sum, Skinsuit, Sundras as attending" [ref=f41e1020] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e1021]: 
+            - generic [ref=f41e1022]:
+              - heading [level=3] [ref=f41e1023]:
+                - link "Constellation X, Ego Sum, Skinsuit, Sundras" [ref=f41e1024] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/constellation-x-ego-sum-skinsuit-sundras
+              - paragraph [ref=f41e1025]: A four-band showcase featuring Constellation X, Ego Sum, Skinsuit, and Sundras at Poetry Lounge.
+              - link "Concert" [ref=f41e1027] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e1028]:
+                - generic [ref=f41e1029]:
+                  - generic [ref=f41e1030]: 
+                  - link "Sunday, October 18, 2026 at 7:00 PM" [ref=f41e1031] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/18
+                - generic [ref=f41e1032]:
+                  - generic [ref=f41e1033]: 
+                  - link "Poetry Lounge" [ref=f41e1034] [cursor=pointer]:
+                    - /url: /entities/poetry-lounge
+                - generic [ref=f41e1035]:
+                  - generic [ref=f41e1036]: 
+                  - generic [ref=f41e1037]: "Door: $10"
+              - generic [ref=f41e1038]:
+                - generic [ref=f41e1039]:
+                  - link "Poetry Lounge" [ref=f41e1040] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/poetry-lounge
+                  - link "Filter events by Poetry Lounge" [ref=f41e1041] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/poetry-lounge
+                    - generic [aria-hidden] [ref=f41e1042]: 
+                - generic [ref=f41e1043]:
+                  - link "Sundras" [ref=f41e1044] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/sundras
+                  - link "Filter events by Sundras" [ref=f41e1045] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/sundras
+                    - generic [aria-hidden] [ref=f41e1046]: 
+              - generic [ref=f41e1047]:
+                - generic [ref=f41e1048]:
+                  - link "Alternative" [ref=f41e1049] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/alternative
+                  - link "View details for Alternative" [ref=f41e1050] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/alternative
+                    - generic [aria-hidden] [ref=f41e1051]: 
+                - generic [ref=f41e1052]:
+                  - link "Indie" [ref=f41e1053] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/indie
+                  - link "View details for Indie" [ref=f41e1054] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/indie
+                    - generic [aria-hidden] [ref=f41e1055]: 
+                - generic [ref=f41e1056]:
+                  - link "Metal" [ref=f41e1057] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/metal
+                  - link "View details for Metal" [ref=f41e1058] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/metal
+                    - generic [aria-hidden] [ref=f41e1059]: 
+          - article [ref=f41e1061]:
+            - generic [ref=f41e1062]:
+              - link "View photo for Shortbus Commentary and Q&A w/ John Cameron Mitchell" [ref=f41e1063] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1789058134_94f7e419-f12a-4112-924f-0dedc59e27f1-original.webp
+                - img "Shortbus Commentary and Q&A w/ John Cameron Mitchell" [ref=f41e1064]
+              - link "Sign in to mark Shortbus Commentary and Q&A w/ John Cameron Mitchell as attending" [ref=f41e1066] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e1067]: 
+            - generic [ref=f41e1068]:
+              - heading [level=3] [ref=f41e1069]:
+                - link "Shortbus Commentary and Q&A w/ John Cameron Mitchell" [ref=f41e1070] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/shortbus-commentary-and-q-a-w-john-cameron-mitchell-20261018
+              - paragraph [ref=f41e1071]: Bottlerocket Social Hall, 7:30pm.
+              - link "Film Screening" [ref=f41e1073] [cursor=pointer]:
+                - /url: /events/type/film-screening
+              - generic [ref=f41e1074]:
+                - generic [ref=f41e1075]:
+                  - generic [ref=f41e1076]: 
+                  - link "Sunday, October 18, 2026 at 7:30 PM" [ref=f41e1077] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/18
+                - generic [ref=f41e1078]:
+                  - generic [ref=f41e1079]: 
+                  - link "Bottlerocket Social Hall" [ref=f41e1080] [cursor=pointer]:
+                    - /url: /entities/bottlerocket-social-hall
+                  - link "Map for Bottlerocket Social Hall" [ref=f41e1081] [cursor=pointer]:
+                    - /url: https://goo.gl/maps/gdxeXcwPbKbWGabT9
+                    - generic [aria-hidden] [ref=f41e1082]: 
+              - generic [ref=f41e1084]:
+                - link "Bottlerocket Social Hall" [ref=f41e1085] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/bottlerocket-social-hall
+                - link "Filter events by Bottlerocket Social Hall" [ref=f41e1086] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/bottlerocket-social-hall
+                  - generic [aria-hidden] [ref=f41e1087]: 
+              - generic [ref=f41e1089]:
+                - link "Film" [ref=f41e1090] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/film
+                - link "View details for Film" [ref=f41e1091] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/film
+                  - generic [aria-hidden] [ref=f41e1092]: 
+            - link "External link for Shortbus Commentary and Q&A w/ John Cameron Mitchell" [ref=f41e1095] [cursor=pointer]:
+              - /url: https://app.opendate.io/v/bottlerocket-social-hall-1260
+              - generic [aria-hidden] [ref=f41e1096]: 
+          - article [ref=f41e1097]:
+            - generic [ref=f41e1098]:
+              - link "View photo for Earl Sweatshirt & MIKE - On The Orange Tour" [ref=f41e1099] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1783536325_roxiantheatre_1783535217_3936900401718597780_10743767180.webp
+                - img "Earl Sweatshirt & MIKE - On The Orange Tour" [ref=f41e1100]
+              - link "Sign in to mark Earl Sweatshirt & MIKE - On The Orange Tour as attending" [ref=f41e1102] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=f41e1103]: 
+            - generic [ref=f41e1104]:
+              - heading [level=3] [ref=f41e1105]:
+                - link "Earl Sweatshirt & MIKE - On The Orange Tour" [ref=f41e1106] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/earl-sweatshirt-and-mike-on-the-orange-tour-2026-06-30-roxian-theater
+              - paragraph [ref=f41e1107]: Earl Sweatshirt and MIKE live at Roxian Theater with Harrison (Surf Gang).
+              - link "Concert" [ref=f41e1109] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=f41e1110]:
+                - generic [ref=f41e1111]:
+                  - generic [ref=f41e1112]: 
+                  - link "Sunday, October 18, 2026 at 8:00 PM" [ref=f41e1113] [cursor=pointer]:
+                    - /url: /events/by-date/2026/10/18
+                - generic [ref=f41e1114]:
+                  - generic [ref=f41e1115]: 
+                  - link "Roxian Theater" [ref=f41e1116] [cursor=pointer]:
+                    - /url: /entities/roxian-theater
+                  - link "Map for Roxian Theater" [ref=f41e1117] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/place/Roxian+Theatre/@40.4646184,-80.0611439,17z/data=!3m1!4b1!4m5!3m4!1s0x8834f5cbfef83f51:0xf0f16a3405aab864!8m2!3d40.4646184!4d-80.0589552
+                    - generic [aria-hidden] [ref=f41e1118]: 
+                - generic [ref=f41e1119]:
+                  - generic [ref=f41e1120]: 
+                  - generic [ref=f41e1121]: All Ages
+              - generic [ref=f41e1123]:
+                - link "Roxian Theater" [ref=f41e1124] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/roxian-theater
+                - link "Filter events by Roxian Theater" [ref=f41e1125] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/roxian-theater
+                  - generic [aria-hidden] [ref=f41e1126]: 
+              - generic [ref=f41e1127]:
+                - generic [ref=f41e1128]:
+                  - link "Alternative" [ref=f41e1129] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/alternative
+                  - link "View details for Alternative" [ref=f41e1130] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/alternative
+                    - generic [aria-hidden] [ref=f41e1131]: 
+                - generic [ref=f41e1132]:
+                  - link "Hip Hop" [ref=f41e1133] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hip-hop
+                  - link "View details for Hip Hop" [ref=f41e1134] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hip-hop
+                    - generic [aria-hidden] [ref=f41e1135]: 
+                - generic [ref=f41e1136]:
+                  - link "Rap" [ref=f41e1137] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rap
+                  - link "View details for Rap" [ref=f41e1138] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rap
+                    - generic [aria-hidden] [ref=f41e1139]: 
+        - generic [ref=f41e1142]:
+          - generic [ref=f41e1143]: DEV Arcane City
+          - generic [aria-hidden] [ref=f41e1144]: ·
+          - link "Tonight" [ref=f41e1145] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=f41e1146]: ·
+          - link "This Weekend" [ref=f41e1147] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=f41e1148]: ·
+          - link "This Week" [ref=f41e1149] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=f41e1150]: ·
+          - link "Events" [ref=f41e1151] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=f41e1152]: ·
+          - link "Entities" [ref=f41e1153] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=f41e1154]: ·
+          - link "Series" [ref=f41e1155] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=f41e1156]: ·
+          - link "Tags" [ref=f41e1157] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

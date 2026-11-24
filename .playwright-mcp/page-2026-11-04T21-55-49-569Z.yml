@@ -1,0 +1,36 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "DEV Arcane City Player" [level=1] [ref=e4]:
+      - generic [aria-hidden] [ref=e5]: 
+    - generic [ref=e7]: Upcoming shows
+  - region [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - heading [level=2] [ref=e11]:
+          - link "Loading…" [ref=e12] [cursor=pointer]:
+            - /url: "#"
+        - paragraph
+        - paragraph:
+          - link:
+            - /url: "#"
+      - button "Sign in to follow this artist" [ref=e13]:
+        - generic [aria-hidden] [ref=e14]: 
+    - generic [ref=e15]:
+      - generic [aria-hidden] [ref=e16]: 0:00
+      - slider "Seek within the track" [disabled] [ref=e17]: "0"
+      - generic [aria-hidden] [ref=e18]: 0:00
+    - group "Player controls" [ref=e19]:
+      - button "Previous artist" [ref=e20]:
+        - generic [aria-hidden] [ref=e21]: 
+      - button "Back 15 seconds" [ref=e22]:
+        - generic [aria-hidden] [ref=e23]: 
+      - button "Play" [ref=e24]:
+        - generic [aria-hidden] [ref=e25]: 
+      - button "Forward 15 seconds" [ref=e26]:
+        - generic [aria-hidden] [ref=e27]: 
+      - button "Next artist" [ref=e28]:
+        - generic [aria-hidden] [ref=e29]: 
+    - status [ref=e30]: Building your queue…
+  - region [ref=e31]:
+    - heading "Up next" [level=2] [ref=e32]
+    - list [ref=e33]

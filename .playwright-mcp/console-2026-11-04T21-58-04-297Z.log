@@ -1,0 +1,5 @@
+[     111ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[     115ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[     642ms] [LOG] 21:58:04.937: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[     649ms] [LOG] 21:58:04.946: initing HTMLEmbeddedPlayer3: "neue" @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[     685ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0

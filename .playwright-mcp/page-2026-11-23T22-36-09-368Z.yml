@@ -1,0 +1,1335 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - text:                    
+    - complementary [ref=e3]:
+      - button "Close navigation" [ref=e4]:
+        - generic [aria-hidden] [ref=e5]: 
+      - generic [ref=e6]:
+        - link "DEV Arcane City" [ref=e7] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - text: pittsburgh events guide
+      - navigation [ref=e9]:
+        - generic [ref=e10]:
+          - link "Events" [ref=e11] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [aria-hidden] [ref=e12]: 
+          - generic [ref=e14]:
+            - link "Tonight" [ref=e15] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [aria-hidden] [ref=e16]: 
+            - link "This Week" [ref=e18] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [aria-hidden] [ref=e19]: 
+            - link "This Weekend" [ref=e21] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [aria-hidden] [ref=e22]: 
+            - link "Event Grid" [ref=e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [aria-hidden] [ref=e25]: 
+        - link "Event Calendar" [ref=e27] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [aria-hidden] [ref=e28]: 
+        - link "Listen" [ref=e30] [cursor=pointer]:
+          - /url: https://dev.arcane.city/player?source=upcoming
+          - generic [aria-hidden] [ref=e31]: 
+        - link "Entities" [ref=e33] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=e34]: 
+        - link "Series" [ref=e36] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=e37]: 
+        - link "Tags" [ref=e39] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [aria-hidden] [ref=e40]: 
+        - link "Forum" [ref=e42] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [aria-hidden] [ref=e43]: 
+        - link "About" [ref=e46] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [aria-hidden] [ref=e47]: 
+        - link "Help" [ref=e49] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [aria-hidden] [ref=e50]: 
+      - generic [ref=e52]:
+        - link " My Account" [ref=e53] [cursor=pointer]:
+          - /url: https://dev.arcane.city/login
+          - generic [ref=e54]: 
+          - generic [ref=e55]: My Account
+        - link " Register" [ref=e56] [cursor=pointer]:
+          - /url: https://dev.arcane.city/register
+          - generic [ref=e57]: 
+          - generic [ref=e58]: Register
+      - button "Switch to light mode" [ref=e62]:
+        - generic [ref=e63]: 
+    - generic [ref=e64]:
+      - banner [ref=e65]:
+        - generic [ref=e66]:
+          - button "Open navigation menu" [ref=e67]:
+            - generic [aria-hidden] [ref=e68]: 
+          - link "DEV Arcane City pittsburgh events guide" [ref=e69] [cursor=pointer]:
+            - /url: https://dev.arcane.city
+            - generic [ref=e70]: DEV Arcane City
+            - generic [ref=e71]: pittsburgh events guide
+          - search [ref=e74]:
+            - generic [ref=e75]:
+              - combobox "Search" [ref=e76]
+              - generic [ref=e77]: 
+          - generic [ref=e79]:
+            - button "Add something" [ref=e80]:
+              - generic [aria-hidden] [ref=e81]: 
+            - text:   
+      - main [ref=e82]:
+        - generic [ref=e83]:
+          - heading "Forum" [level=1] [ref=e84]
+          - paragraph [ref=e85]: Discussions and community threads.
+        - generic [ref=e86]:
+          - link "Show All Threads" [ref=e87] [cursor=pointer]:
+            - /url: https://dev.arcane.city/threads/all
+          - link "Show Paged Threads" [ref=e88] [cursor=pointer]:
+            - /url: https://dev.arcane.city/threads
+          - link " Add Thread" [ref=e89] [cursor=pointer]:
+            - /url: https://dev.arcane.city/threads/create
+            - generic [ref=e90]: 
+            - text: Add Thread
+        - button " Show Filters " [ref=e92]:
+          - generic [ref=e93]: 
+          - generic [ref=e94]: Show Filters
+          - generic [ref=e95]: 
+        - generic [ref=e96]:
+          - generic [ref=e97]: Showing 1 to 25 of 126 results
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - combobox [ref=e100]:
+                - option "5"
+                - option "10"
+                - option "25" [selected]
+                - option "100"
+                - option "1000"
+              - generic [ref=e101]: "Sort by:"
+              - combobox [ref=e102]:
+                - option "Name"
+                - option "User"
+                - option "Created At" [selected]
+                - option "Updated At"
+              - combobox [ref=e103]:
+                - option "asc"
+                - option "desc" [selected]
+            - generic [ref=e104]:
+              - link "1" [ref=e105] [cursor=pointer]:
+                - /url: https://dev.arcane.city/threads?page=1
+              - link "2" [ref=e106] [cursor=pointer]:
+                - /url: https://dev.arcane.city/threads?page=2
+              - link "3" [ref=e107] [cursor=pointer]:
+                - /url: https://dev.arcane.city/threads?page=3
+        - generic [ref=e109]:
+          - article [ref=e110]:
+            - generic [ref=e111]:
+              - img "Geoffrey Maddock" [ref=e113]
+              - generic [ref=e114]:
+                - heading [level=3] [ref=e115]:
+                  - link "Freee" [ref=e116] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/325
+                - generic [ref=e117]:
+                  - generic [ref=e118]: Geoffrey Maddock
+                  - generic [ref=e119]: ·
+                  - generic [ref=e120]: 2 months ago
+                  - generic [ref=e121]: ·
+                  - generic [ref=e122]:
+                    - generic [ref=e123]: 
+                    - text: "131"
+                - generic [ref=e124]:
+                  - generic [ref=e125]:
+                    - link "Ask a punk" [ref=e126] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/ask-a-punk
+                    - link "Filter threads by Ask a punk" [ref=e127] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/ask-a-punk
+                      - generic [aria-hidden] [ref=e128]: 
+                  - generic [ref=e129]:
+                    - link "Eastland Mall" [ref=e130] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/eastland-mall
+                    - link "Filter threads by Eastland Mall" [ref=e131] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/eastland-mall
+                      - generic [aria-hidden] [ref=e132]: 
+                  - generic [ref=e133]:
+                    - link "Acid" [ref=e134] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/acid
+                    - link "View details for Acid" [ref=e135] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/acid
+                      - generic [aria-hidden] [ref=e136]: 
+                  - generic [ref=e137]:
+                    - link "Drum And Bass" [ref=e138] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/drum-and-bass
+                    - link "View details for Drum And Bass" [ref=e139] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/drum-and-bass
+                      - generic [aria-hidden] [ref=e140]: 
+                  - generic [ref=e141]:
+                    - link "Electronic" [ref=e142] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e143] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e144]: 
+                  - generic [ref=e145]: "+4"
+                - generic [ref=e146]:
+                  - generic [ref=e147]: 
+                  - link "Freee" [ref=e148] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/freee
+          - article [ref=e149]:
+            - generic [ref=e150]:
+              - img "Geoffrey Maddock" [ref=e152]
+              - generic [ref=e153]:
+                - heading [level=3] [ref=e154]:
+                  - link "SKULL FEST 15" [ref=e155] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/324
+                - generic [ref=e156]:
+                  - generic [ref=e157]: Geoffrey Maddock
+                  - generic [ref=e158]: ·
+                  - generic [ref=e159]: 3 months ago
+                  - generic [ref=e160]: ·
+                  - generic [ref=e161]:
+                    - generic [ref=e162]: 
+                    - text: "184"
+                - generic [ref=e163]:
+                  - generic [ref=e164]:
+                    - link "Death Instinct" [ref=e165] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/death-instinct
+                    - link "Filter threads by Death Instinct" [ref=e166] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/death-instinct
+                      - generic [aria-hidden] [ref=e167]: 
+                  - generic [ref=e168]:
+                    - link "Erica Scary" [ref=e169] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/erica-scary
+                    - link "Filter threads by Erica Scary" [ref=e170] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/erica-scary
+                      - generic [aria-hidden] [ref=e171]: 
+                  - generic [ref=e172]:
+                    - link "Grassy Knoll" [ref=e173] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/grassy-knoll
+                    - link "Filter threads by Grassy Knoll" [ref=e174] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/grassy-knoll
+                      - generic [aria-hidden] [ref=e175]: 
+                  - generic [ref=e176]: "+4"
+                  - generic [ref=e177]:
+                    - link "Deathrock" [ref=e178] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/deathrock
+                    - link "View details for Deathrock" [ref=e179] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/deathrock
+                      - generic [aria-hidden] [ref=e180]: 
+                  - generic [ref=e181]:
+                    - link "Diy" [ref=e182] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/diy
+                    - link "View details for Diy" [ref=e183] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/diy
+                      - generic [aria-hidden] [ref=e184]: 
+                  - generic [ref=e185]:
+                    - link "Goth" [ref=e186] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/goth
+                    - link "View details for Goth" [ref=e187] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/goth
+                      - generic [aria-hidden] [ref=e188]: 
+                  - generic [ref=e189]: "+2"
+                - generic [ref=e190]:
+                  - generic [ref=e191]: 
+                  - link "SKULL FEST 15" [ref=e192] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/skull-fest-15
+          - article [ref=e193]:
+            - generic [ref=e194]:
+              - generic [ref=e195]: 
+              - generic [ref=e198]:
+                - heading [level=3] [ref=e199]:
+                  - link "NOT IN PROGRESS [ON A F*CKING WRESTLING RING]" [ref=e200] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/321
+                - generic [ref=e201]:
+                  - generic [ref=e202]: Work In Progress
+                  - generic [ref=e203]: ·
+                  - generic [ref=e204]: 3 months ago
+                  - generic [ref=e205]: ·
+                  - generic [ref=e206]:
+                    - generic [ref=e207]: 
+                    - text: "1"
+                  - generic [ref=e208]: ·
+                  - generic [ref=e209]:
+                    - generic [ref=e210]: 
+                    - text: "235"
+                - generic [ref=e211]:
+                  - generic [ref=e212]:
+                    - link "829 Industry Street Warehouse" [ref=e213] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/829-industry-street-warehouse
+                    - link "Filter threads by 829 Industry Street Warehouse" [ref=e214] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/829-industry-street-warehouse
+                      - generic [aria-hidden] [ref=e215]: 
+                  - generic [ref=e216]:
+                    - link "Work in Progress" [ref=e217] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/work-in-progress
+                    - link "Filter threads by Work in Progress" [ref=e218] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/work-in-progress
+                      - generic [aria-hidden] [ref=e219]: 
+                  - generic [ref=e220]:
+                    - link "Diy" [ref=e221] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/diy
+                    - link "View details for Diy" [ref=e222] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/diy
+                      - generic [aria-hidden] [ref=e223]: 
+                  - generic [ref=e224]:
+                    - link "Hardcore" [ref=e225] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/hardcore
+                    - link "View details for Hardcore" [ref=e226] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/hardcore
+                      - generic [aria-hidden] [ref=e227]: 
+                  - generic [ref=e228]:
+                    - link "Live Music" [ref=e229] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/live-music
+                    - link "View details for Live Music" [ref=e230] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/live-music
+                      - generic [aria-hidden] [ref=e231]: 
+                  - generic [ref=e232]: "+1"
+                - generic [ref=e233]:
+                  - generic [ref=e234]: 
+                  - link "NOT IN PROGRESS [ON A F*CKING WRESTLING..." [ref=e235] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/not-in-progress-on-a-f-cking-wrestling-ring
+          - article [ref=e236]:
+            - generic [ref=e237]:
+              - img "Geoffrey Maddock" [ref=e239]
+              - generic [ref=e240]:
+                - heading [level=3] [ref=e241]:
+                  - link "Sediment" [ref=e242] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/320
+                - generic [ref=e243]:
+                  - generic [ref=e244]: Geoffrey Maddock
+                  - generic [ref=e245]: ·
+                  - generic [ref=e246]: 3 months ago
+                  - generic [ref=e247]: ·
+                  - generic [ref=e248]:
+                    - generic [ref=e249]: 
+                    - text: "1"
+                  - generic [ref=e250]: ·
+                  - generic [ref=e251]:
+                    - generic [ref=e252]: 
+                    - text: "198"
+                - generic [ref=e253]:
+                  - generic [ref=e254]:
+                    - link "Collapse" [ref=e255] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/collapse
+                    - link "Filter threads by Collapse" [ref=e256] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/collapse
+                      - generic [aria-hidden] [ref=e257]: 
+                  - generic [ref=e258]:
+                    - link "Rosy" [ref=e259] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/rosymakesmusic
+                    - link "Filter threads by Rosy" [ref=e260] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/rosymakesmusic
+                      - generic [aria-hidden] [ref=e261]: 
+                  - generic [ref=e262]:
+                    - link "Electronic" [ref=e263] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e264] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e265]: 
+                  - generic [ref=e266]:
+                    - link "Experimental" [ref=e267] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/experimental
+                    - link "View details for Experimental" [ref=e268] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/experimental
+                      - generic [aria-hidden] [ref=e269]: 
+                  - generic [ref=e270]:
+                    - link "Industrial" [ref=e271] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/industrial
+                    - link "View details for Industrial" [ref=e272] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/industrial
+                      - generic [aria-hidden] [ref=e273]: 
+                  - generic [ref=e274]: "+1"
+                - generic [ref=e275]:
+                  - generic [ref=e276]: 
+                  - link "Sediment" [ref=e277] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/sediment
+          - article [ref=e278]:
+            - generic [ref=e279]:
+              - generic [ref=e280]: 
+              - generic [ref=e283]:
+                - heading [level=3] [ref=e284]:
+                  - link "Golems of the Red Planet at Bellefield Hall 7/31" [ref=e285] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/318
+                - generic [ref=e286]:
+                  - generic [ref=e287]: Mark W Allender
+                  - generic [ref=e288]: ·
+                  - generic [ref=e289]: 4 months ago
+                  - generic [ref=e290]: ·
+                  - generic [ref=e291]:
+                    - generic [ref=e292]: 
+                    - text: "2"
+                  - generic [ref=e293]: ·
+                  - generic [ref=e294]:
+                    - generic [ref=e295]: 
+                    - text: "255"
+                - generic [ref=e296]:
+                  - generic [ref=e297]:
+                    - link "Bellefield Hall" [ref=e298] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/bellefield-hall
+                    - link "Filter threads by Bellefield Hall" [ref=e299] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/bellefield-hall
+                      - generic [aria-hidden] [ref=e300]: 
+                  - generic [ref=e301]:
+                    - link "Surf" [ref=e302] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/surf
+                    - link "View details for Surf" [ref=e303] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/surf
+                      - generic [aria-hidden] [ref=e304]: 
+                  - generic [ref=e305]:
+                    - link "Surf Rock" [ref=e306] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/surf-rock
+                    - link "View details for Surf Rock" [ref=e307] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/surf-rock
+                      - generic [aria-hidden] [ref=e308]: 
+          - article [ref=e309]:
+            - generic [ref=e310]:
+              - img "Geoffrey Maddock" [ref=e312]
+              - generic [ref=e313]:
+                - heading [level=3] [ref=e314]:
+                  - link "OUT OF ORDER w/ Jason Burns, Vasculator, Mr Hamilton, Cutups (2012)" [ref=e315] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/316
+                - generic [ref=e316]:
+                  - generic [ref=e317]: Geoffrey Maddock
+                  - generic [ref=e318]: ·
+                  - generic [ref=e319]: 5 months ago
+                  - generic [ref=e320]: ·
+                  - generic [ref=e321]:
+                    - generic [ref=e322]: 
+                    - text: "379"
+                - generic [ref=e323]:
+                  - generic [ref=e324]:
+                    - link "Cutups" [ref=e325] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cutups
+                    - link "Filter threads by Cutups" [ref=e326] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/cutups
+                      - generic [aria-hidden] [ref=e327]: 
+                  - generic [ref=e328]:
+                    - link "Jason Burns" [ref=e329] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/jason-burns
+                    - link "Filter threads by Jason Burns" [ref=e330] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/jason-burns
+                      - generic [aria-hidden] [ref=e331]: 
+                  - generic [ref=e332]:
+                    - link "Jose No" [ref=e333] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/jose-no
+                    - link "Filter threads by Jose No" [ref=e334] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/jose-no
+                      - generic [aria-hidden] [ref=e335]: 
+                  - generic [ref=e336]: "+1"
+                  - generic [ref=e337]:
+                    - link "Bass" [ref=e338] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/bass
+                    - link "View details for Bass" [ref=e339] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/bass
+                      - generic [aria-hidden] [ref=e340]: 
+                  - generic [ref=e341]:
+                    - link "Live Sets" [ref=e342] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/live-sets
+                    - link "View details for Live Sets" [ref=e343] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/live-sets
+                      - generic [aria-hidden] [ref=e344]: 
+                  - generic [ref=e345]:
+                    - link "Techno" [ref=e346] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/techno
+                    - link "View details for Techno" [ref=e347] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/techno
+                      - generic [aria-hidden] [ref=e348]: 
+                - generic [ref=e349]:
+                  - generic [ref=e350]: 
+                  - link "OUT OF ORDER w/ Jason Burns, Vasculator,..." [ref=e351] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/out-of-order-w-jason-burns-vasculator-mr-hamilton-cutups-
+          - article [ref=e352]:
+            - generic [ref=e353]:
+              - img "Geoffrey Maddock" [ref=e355]
+              - generic [ref=e356]:
+                - heading [level=3] [ref=e357]:
+                  - link "Misophonia w/ Decide Today, Funeral Parade of Roses, Lilac Web, Blood Noize, Cutups" [ref=e358] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/314
+                - generic [ref=e359]:
+                  - generic [ref=e360]: Geoffrey Maddock
+                  - generic [ref=e361]: ·
+                  - generic [ref=e362]: 6 months ago
+                  - generic [ref=e363]: ·
+                  - generic [ref=e364]:
+                    - generic [ref=e365]: 
+                    - text: "1"
+                  - generic [ref=e366]: ·
+                  - generic [ref=e367]:
+                    - generic [ref=e368]: 
+                    - text: "579"
+                - generic [ref=e369]:
+                  - generic [ref=e370]:
+                    - link "Cleaner Tapes" [ref=e371] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cleaner-tapes
+                    - link "Filter threads by Cleaner Tapes" [ref=e372] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/cleaner-tapes
+                      - generic [aria-hidden] [ref=e373]: 
+                  - generic [ref=e374]:
+                    - link "Cutups" [ref=e375] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cutups
+                    - link "Filter threads by Cutups" [ref=e376] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/cutups
+                      - generic [aria-hidden] [ref=e377]: 
+                  - generic [ref=e378]:
+                    - link "Funeral Parade of Roses" [ref=e379] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/funeral-parade-of-roses
+                    - link "Filter threads by Funeral Parade of Roses" [ref=e380] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/funeral-parade-of-roses
+                      - generic [aria-hidden] [ref=e381]: 
+                  - generic [ref=e382]: "+1"
+                  - generic [ref=e383]:
+                    - link "Breakcore" [ref=e384] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/breakcore
+                    - link "View details for Breakcore" [ref=e385] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/breakcore
+                      - generic [aria-hidden] [ref=e386]: 
+                  - generic [ref=e387]:
+                    - link "Digital Hardcore" [ref=e388] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/digital-hardcore
+                    - link "View details for Digital Hardcore" [ref=e389] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/digital-hardcore
+                      - generic [aria-hidden] [ref=e390]: 
+                  - generic [ref=e391]:
+                    - link "Industrial" [ref=e392] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/industrial
+                    - link "View details for Industrial" [ref=e393] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/industrial
+                      - generic [aria-hidden] [ref=e394]: 
+                  - generic [ref=e395]: "+3"
+                - generic [ref=e396]:
+                  - generic [ref=e397]: 
+                  - link "Misophonia w/ Decide Today, Funeral Para..." [ref=e398] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/misophonia-w-decide-today-funeral-parade-of-roses-lilac-web-blood-noize-cutups
+          - article [ref=e399]:
+            - generic [ref=e400]:
+              - img "Geoffrey Maddock" [ref=e402]
+              - generic [ref=e403]:
+                - heading [level=3] [ref=e404]:
+                  - link "Self Hosted Audio Player Embedding" [ref=e405] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/313
+                - generic [ref=e406]:
+                  - generic [ref=e407]: Geoffrey Maddock
+                  - generic [ref=e408]: ·
+                  - generic [ref=e409]: 7 months ago
+                  - generic [ref=e410]: ·
+                  - generic [ref=e411]:
+                    - generic [ref=e412]: 
+                    - text: "612"
+                - generic [ref=e413]:
+                  - generic [ref=e414]:
+                    - link "Cutups" [ref=e415] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cutups
+                    - link "Filter threads by Cutups" [ref=e416] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/cutups
+                      - generic [aria-hidden] [ref=e417]: 
+                  - generic [ref=e418]:
+                    - link "Electronic" [ref=e419] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e420] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e421]: 
+          - article [ref=e422]:
+            - generic [ref=e423]:
+              - img "Geoffrey Maddock" [ref=e425]
+              - generic [ref=e426]:
+                - heading [level=3] [ref=e427]:
+                  - 'link "this weekend: march 6-9th" [ref=e428] [cursor=pointer]':
+                    - /url: https://dev.arcane.city/threads/312
+                - generic [ref=e429]:
+                  - generic [ref=e430]: Geoffrey Maddock
+                  - generic [ref=e431]: ·
+                  - generic [ref=e432]: 8 months ago
+                  - generic [ref=e433]: ·
+                  - generic [ref=e434]:
+                    - generic [ref=e435]: 
+                    - text: "662"
+          - article [ref=e436]:
+            - generic [ref=e437]:
+              - img "Geoffrey Maddock" [ref=e439]
+              - generic [ref=e440]:
+                - heading [level=3] [ref=e441]:
+                  - link "HYPERCOLOR w/ Nullsleep, Floor Baba +" [ref=e442] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/311
+                - generic [ref=e443]:
+                  - generic [ref=e444]: Geoffrey Maddock
+                  - generic [ref=e445]: ·
+                  - generic [ref=e446]: 8 months ago
+                  - generic [ref=e447]: ·
+                  - generic [ref=e448]:
+                    - generic [ref=e449]: 
+                    - text: "1"
+                  - generic [ref=e450]: ·
+                  - generic [ref=e451]:
+                    - generic [ref=e452]: 
+                    - text: "798"
+                - generic [ref=e453]:
+                  - generic [ref=e454]: 
+                  - link "HYPERCOLOR w/ Nullsleep, Floor Baba +" [ref=e455] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/hypercolor-w-nullsleep-floor-baba
+          - article [ref=e456]:
+            - generic [ref=e457]:
+              - img "Tank" [ref=e459]
+              - generic [ref=e460]:
+                - heading [level=3] [ref=e461]:
+                  - link "recurring Spearmint Krush non-event" [ref=e462] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/306
+                - generic [ref=e463]:
+                  - generic [ref=e464]: Tank
+                  - generic [ref=e465]: ·
+                  - generic [ref=e466]: 10 months ago
+                  - generic [ref=e467]: ·
+                  - generic [ref=e468]:
+                    - generic [ref=e469]: 
+                    - text: "2"
+                  - generic [ref=e470]: ·
+                  - generic [ref=e471]:
+                    - generic [ref=e472]: 
+                    - text: "786"
+                - generic [ref=e473]:
+                  - generic [ref=e474]: 
+                  - link "Spearmint Krush" [ref=e475] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/spearmint-krush
+          - article [ref=e476]:
+            - generic [ref=e477]:
+              - img "Geoffrey Maddock" [ref=e479]
+              - generic [ref=e480]:
+                - heading [level=3] [ref=e481]:
+                  - link "TunnelVision" [ref=e482] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/305
+                - generic [ref=e483]:
+                  - generic [ref=e484]: Geoffrey Maddock
+                  - generic [ref=e485]: ·
+                  - generic [ref=e486]: 11 months ago
+                  - generic [ref=e487]: ·
+                  - generic [ref=e488]:
+                    - generic [ref=e489]: 
+                    - text: "1"
+                  - generic [ref=e490]: ·
+                  - generic [ref=e491]:
+                    - generic [ref=e492]: 
+                    - text: "860"
+                - generic [ref=e493]:
+                  - generic [ref=e494]:
+                    - link "Smoov" [ref=e495] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/smoov
+                    - link "Filter threads by Smoov" [ref=e496] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/smoov
+                      - generic [aria-hidden] [ref=e497]: 
+                  - generic [ref=e498]:
+                    - link "Corliss Tunnel" [ref=e499] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/corliss-tunnel
+                    - link "Filter threads by Corliss Tunnel" [ref=e500] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/corliss-tunnel
+                      - generic [aria-hidden] [ref=e501]: 
+                  - generic [ref=e502]:
+                    - link "Acid" [ref=e503] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/acid
+                    - link "View details for Acid" [ref=e504] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/acid
+                      - generic [aria-hidden] [ref=e505]: 
+                  - generic [ref=e506]:
+                    - link "Breaks" [ref=e507] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/breaks
+                    - link "View details for Breaks" [ref=e508] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/breaks
+                      - generic [aria-hidden] [ref=e509]: 
+                  - generic [ref=e510]:
+                    - link "Jungle" [ref=e511] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/jungle
+                    - link "View details for Jungle" [ref=e512] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/jungle
+                      - generic [aria-hidden] [ref=e513]: 
+                  - generic [ref=e514]: "+3"
+                - generic [ref=e515]:
+                  - generic [ref=e516]: 
+                  - link "TunnelVision" [ref=e517] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tunnelvision-1995
+          - article [ref=e518]:
+            - generic [ref=e519]:
+              - img "Geoffrey Maddock" [ref=e521]
+              - generic [ref=e522]:
+                - heading [level=3] [ref=e523]:
+                  - link "Power Rave 92" [ref=e524] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/304
+                - generic [ref=e525]:
+                  - generic [ref=e526]: Geoffrey Maddock
+                  - generic [ref=e527]: ·
+                  - generic [ref=e528]: 11 months ago
+                  - generic [ref=e529]: ·
+                  - generic [ref=e530]:
+                    - generic [ref=e531]: 
+                    - text: "2"
+                  - generic [ref=e532]: ·
+                  - generic [ref=e533]:
+                    - generic [ref=e534]: 
+                    - text: "786"
+                - generic [ref=e535]:
+                  - generic [ref=e536]:
+                    - link "Rave" [ref=e537] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/rave
+                    - link "View details for Rave" [ref=e538] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/rave
+                      - generic [aria-hidden] [ref=e539]: 
+                  - generic [ref=e540]:
+                    - link "Techno" [ref=e541] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/techno
+                    - link "View details for Techno" [ref=e542] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/techno
+                      - generic [aria-hidden] [ref=e543]: 
+                - generic [ref=e544]:
+                  - generic [ref=e545]: 
+                  - link "Power Rave 92" [ref=e546] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/power-rave-92
+          - article [ref=e547]:
+            - generic [ref=e548]:
+              - img "Geoffrey Maddock" [ref=e550]
+              - generic [ref=e551]:
+                - heading [level=3] [ref=e552]:
+                  - link "Psych-War, Deadsky, Dukkha at Rock Room" [ref=e553] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/303
+                - generic [ref=e554]:
+                  - generic [ref=e555]: Geoffrey Maddock
+                  - generic [ref=e556]: ·
+                  - generic [ref=e557]: 1 year ago
+                  - generic [ref=e558]: ·
+                  - generic [ref=e559]:
+                    - generic [ref=e560]: 
+                    - text: "863"
+                - generic [ref=e561]:
+                  - generic [ref=e562]:
+                    - link "Deadsky" [ref=e563] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/deadsky
+                    - link "Filter threads by Deadsky" [ref=e564] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/deadsky
+                      - generic [aria-hidden] [ref=e565]: 
+                  - generic [ref=e566]:
+                    - link "Profane Existance" [ref=e567] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/profane-existance
+                    - link "Filter threads by Profane Existance" [ref=e568] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/profane-existance
+                      - generic [aria-hidden] [ref=e569]: 
+                  - generic [ref=e570]:
+                    - link "Dukkha" [ref=e571] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/dukkha
+                    - link "Filter threads by Dukkha" [ref=e572] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/dukkha
+                      - generic [aria-hidden] [ref=e573]: 
+                  - generic [ref=e574]:
+                    - link "Metal" [ref=e575] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/metal
+                    - link "View details for Metal" [ref=e576] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/metal
+                      - generic [aria-hidden] [ref=e577]: 
+                  - generic [ref=e578]:
+                    - link "Punk" [ref=e579] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/punk
+                    - link "View details for Punk" [ref=e580] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/punk
+                      - generic [aria-hidden] [ref=e581]: 
+                  - generic [ref=e582]:
+                    - link "Hardcore" [ref=e583] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/hardcore
+                    - link "View details for Hardcore" [ref=e584] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/hardcore
+                      - generic [aria-hidden] [ref=e585]: 
+                - generic [ref=e586]:
+                  - generic [ref=e587]: 
+                  - link "Psych-War, Deadsky, Dukkha at Rock Room" [ref=e588] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/psych-war-deadsky-dukkha-at-rock-room
+          - article [ref=e589]:
+            - generic [ref=e590]:
+              - generic [ref=e591]: 
+              - generic [ref=e594]:
+                - heading [level=3] [ref=e595]:
+                  - 'link "November 2 @ Spirit: Blood Lemon Zine" [ref=e596] [cursor=pointer]':
+                    - /url: https://dev.arcane.city/threads/302
+                - generic [ref=e597]:
+                  - generic [ref=e598]: Dan Mistich
+                  - generic [ref=e599]: ·
+                  - generic [ref=e600]: 1 year ago
+                  - generic [ref=e601]: ·
+                  - generic [ref=e602]:
+                    - generic [ref=e603]: 
+                    - text: "1"
+                  - generic [ref=e604]: ·
+                  - generic [ref=e605]:
+                    - generic [ref=e606]: 
+                    - text: "1822"
+                - generic [ref=e608]:
+                  - link "Goth" [ref=e609] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/tag/goth
+                  - link "View details for Goth" [ref=e610] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/goth
+                    - generic [aria-hidden] [ref=e611]: 
+                - generic [ref=e612]:
+                  - generic [ref=e613]: 
+                  - link "Blood Lemon with Black Cross Hotel" [ref=e614] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/blood-lemon-2025-11-02
+          - article [ref=e615]:
+            - generic [ref=e616]:
+              - img "Tj Harris" [ref=e618]
+              - generic [ref=e619]:
+                - heading [level=3] [ref=e620]:
+                  - link "Spearmint Krush" [ref=e621] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/300
+                - generic [ref=e622]:
+                  - generic [ref=e623]: Tj Harris
+                  - generic [ref=e624]: ·
+                  - generic [ref=e625]: 1 year ago
+                  - generic [ref=e626]: ·
+                  - generic [ref=e627]:
+                    - generic [ref=e628]: 
+                    - text: "2"
+                  - generic [ref=e629]: ·
+                  - generic [ref=e630]:
+                    - generic [ref=e631]: 
+                    - text: "3205"
+                - generic [ref=e633]:
+                  - link "Edm" [ref=e634] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/tag/edm
+                  - link "View details for Edm" [ref=e635] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/edm
+                    - generic [aria-hidden] [ref=e636]: 
+                - generic [ref=e637]:
+                  - generic [ref=e638]: 
+                  - link "Spearmint Krush" [ref=e639] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/spearmint-krush
+          - article [ref=e640]:
+            - generic [ref=e641]:
+              - img "Geoffrey Maddock" [ref=e643]
+              - generic [ref=e644]:
+                - heading [level=3] [ref=e645]:
+                  - link "The Upstage Lives!" [ref=e646] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/298
+                - generic [ref=e647]:
+                  - generic [ref=e648]: Geoffrey Maddock
+                  - generic [ref=e649]: ·
+                  - generic [ref=e650]: 1 year ago
+                  - generic [ref=e651]: ·
+                  - generic [ref=e652]:
+                    - generic [ref=e653]: 
+                    - text: "1"
+                  - generic [ref=e654]: ·
+                  - generic [ref=e655]:
+                    - generic [ref=e656]: 
+                    - text: "3331"
+                - generic [ref=e657]:
+                  - generic [ref=e658]:
+                    - link "Ez Lou" [ref=e659] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/ez-lou
+                    - link "Filter threads by Ez Lou" [ref=e660] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/ez-lou
+                      - generic [aria-hidden] [ref=e661]: 
+                  - generic [ref=e662]:
+                    - link "Spirit" [ref=e663] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/spirit
+                    - link "Filter threads by Spirit" [ref=e664] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/spirit
+                      - generic [aria-hidden] [ref=e665]: 
+                  - generic [ref=e666]:
+                    - link "80s" [ref=e667] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/80s
+                    - link "View details for 80s" [ref=e668] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/80s
+                      - generic [aria-hidden] [ref=e669]: 
+                  - generic [ref=e670]:
+                    - link "Industrial" [ref=e671] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/industrial
+                    - link "View details for Industrial" [ref=e672] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/industrial
+                      - generic [aria-hidden] [ref=e673]: 
+                  - generic [ref=e674]:
+                    - link "Synth-pop" [ref=e675] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/synth-pop
+                    - link "View details for Synth-pop" [ref=e676] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/synth-pop
+                      - generic [aria-hidden] [ref=e677]: 
+                - generic [ref=e678]:
+                  - generic [ref=e679]: 
+                  - link "The Upstage Lives!" [ref=e680] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/the-upstage-lives-2024
+          - article [ref=e681]:
+            - generic [ref=e682]:
+              - img "Geoffrey Maddock" [ref=e684]
+              - generic [ref=e685]:
+                - heading [level=3] [ref=e686]:
+                  - link "GOVNAME & FRIENDS free day party at the highline" [ref=e687] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/297
+                - generic [ref=e688]:
+                  - generic [ref=e689]: Geoffrey Maddock
+                  - generic [ref=e690]: ·
+                  - generic [ref=e691]: 2 years ago
+                  - generic [ref=e692]: ·
+                  - generic [ref=e693]:
+                    - generic [ref=e694]: 
+                    - text: "1"
+                  - generic [ref=e695]: ·
+                  - generic [ref=e696]:
+                    - generic [ref=e697]: 
+                    - text: "3343"
+                - generic [ref=e698]:
+                  - generic [ref=e699]:
+                    - link "Gov Name" [ref=e700] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/gov-name
+                    - link "Filter threads by Gov Name" [ref=e701] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/gov-name
+                      - generic [aria-hidden] [ref=e702]: 
+                  - generic [ref=e703]:
+                    - link "Highline" [ref=e704] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/highline
+                    - link "Filter threads by Highline" [ref=e705] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/highline
+                      - generic [aria-hidden] [ref=e706]: 
+                  - generic [ref=e707]:
+                    - link "Hoodwink" [ref=e708] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/hoodwink
+                    - link "Filter threads by Hoodwink" [ref=e709] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/hoodwink
+                      - generic [aria-hidden] [ref=e710]: 
+                  - generic [ref=e711]: "+5"
+                  - generic [ref=e712]:
+                    - link "Bass" [ref=e713] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/bass
+                    - link "View details for Bass" [ref=e714] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/bass
+                      - generic [aria-hidden] [ref=e715]: 
+                  - generic [ref=e716]:
+                    - link "Dubstep" [ref=e717] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/dubstep
+                    - link "View details for Dubstep" [ref=e718] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/dubstep
+                      - generic [aria-hidden] [ref=e719]: 
+                  - generic [ref=e720]:
+                    - link "Electronic" [ref=e721] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e722] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e723]: 
+                  - generic [ref=e724]: "+1"
+                - generic [ref=e725]:
+                  - generic [ref=e726]: 
+                  - link "GOVNAME & FRIENDS free day party at the..." [ref=e727] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/govname-friends-free-day-party-at-the-highline
+          - article [ref=e728]:
+            - generic [ref=e729]:
+              - img "Geoffrey Maddock" [ref=e731]
+              - generic [ref=e732]:
+                - heading [level=3] [ref=e733]:
+                  - link "HIGHER SOUND B2B" [ref=e734] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/296
+                - generic [ref=e735]:
+                  - generic [ref=e736]: Geoffrey Maddock
+                  - generic [ref=e737]: ·
+                  - generic [ref=e738]: 2 years ago
+                  - generic [ref=e739]: ·
+                  - generic [ref=e740]:
+                    - generic [ref=e741]: 
+                    - text: "1"
+                  - generic [ref=e742]: ·
+                  - generic [ref=e743]:
+                    - generic [ref=e744]: 
+                    - text: "3544"
+                - generic [ref=e745]:
+                  - generic [ref=e746]:
+                    - link "Clever" [ref=e747] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/clever
+                    - link "Filter threads by Clever" [ref=e748] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/clever
+                      - generic [aria-hidden] [ref=e749]: 
+                  - generic [ref=e750]:
+                    - link "Dini Daddy" [ref=e751] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/dini-daddy
+                    - link "Filter threads by Dini Daddy" [ref=e752] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/dini-daddy
+                      - generic [aria-hidden] [ref=e753]: 
+                  - generic [ref=e754]:
+                    - link "Formosa" [ref=e755] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/formosa
+                    - link "Filter threads by Formosa" [ref=e756] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/formosa
+                      - generic [aria-hidden] [ref=e757]: 
+                  - generic [ref=e758]: "+8"
+                  - generic [ref=e759]:
+                    - link "Electronic" [ref=e760] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e761] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e762]: 
+                  - generic [ref=e763]:
+                    - link "House" [ref=e764] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/house
+                    - link "View details for House" [ref=e765] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/house
+                      - generic [aria-hidden] [ref=e766]: 
+                  - generic [ref=e767]:
+                    - link "Techno" [ref=e768] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/techno
+                    - link "View details for Techno" [ref=e769] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/techno
+                      - generic [aria-hidden] [ref=e770]: 
+                - generic [ref=e771]:
+                  - generic [ref=e772]: 
+                  - link "HIGHER SOUND B2B" [ref=e773] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/higher-sound-b2-b
+          - article [ref=e774]:
+            - generic [ref=e775]:
+              - img "Geoffrey Maddock" [ref=e777]
+              - generic [ref=e778]:
+                - heading [level=3] [ref=e779]:
+                  - link "Tsuruda, Onhell" [ref=e780] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/295
+                - generic [ref=e781]:
+                  - generic [ref=e782]: Geoffrey Maddock
+                  - generic [ref=e783]: ·
+                  - generic [ref=e784]: 2 years ago
+                  - generic [ref=e785]: ·
+                  - generic [ref=e786]:
+                    - generic [ref=e787]: 
+                    - text: "1"
+                  - generic [ref=e788]: ·
+                  - generic [ref=e789]:
+                    - generic [ref=e790]: 
+                    - text: "3390"
+                - generic [ref=e791]:
+                  - generic [ref=e792]:
+                    - link "Appalachian Sound Culture" [ref=e793] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/appalachian-sound-culture
+                    - link "Filter threads by Appalachian Sound Culture" [ref=e794] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/appalachian-sound-culture
+                      - generic [aria-hidden] [ref=e795]: 
+                  - generic [ref=e796]:
+                    - link "Rush Promo" [ref=e797] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/rush-promo
+                    - link "Filter threads by Rush Promo" [ref=e798] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/rush-promo
+                      - generic [aria-hidden] [ref=e799]: 
+                  - generic [ref=e800]:
+                    - link "Thunderbird" [ref=e801] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/thunderbird
+                    - link "Filter threads by Thunderbird" [ref=e802] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/thunderbird
+                      - generic [aria-hidden] [ref=e803]: 
+                  - generic [ref=e804]:
+                    - link "Bass" [ref=e805] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/bass
+                    - link "View details for Bass" [ref=e806] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/bass
+                      - generic [aria-hidden] [ref=e807]: 
+                  - generic [ref=e808]:
+                    - link "Dubstep" [ref=e809] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/dubstep
+                    - link "View details for Dubstep" [ref=e810] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/dubstep
+                      - generic [aria-hidden] [ref=e811]: 
+                  - generic [ref=e812]:
+                    - link "Electronic" [ref=e813] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e814] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e815]: 
+                  - generic [ref=e816]: "+1"
+                - generic [ref=e817]:
+                  - generic [ref=e818]: 
+                  - link "Tsuruda, Onhell" [ref=e819] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tsuruda-onhell
+          - article [ref=e820]:
+            - generic [ref=e821]:
+              - img "Geoffrey Maddock" [ref=e823]
+              - generic [ref=e824]:
+                - heading [level=3] [ref=e825]:
+                  - link "LAZERCRUNK w/ JON1ST (UK) + Cutups & Keebs" [ref=e826] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/294
+                - generic [ref=e827]:
+                  - generic [ref=e828]: Geoffrey Maddock
+                  - generic [ref=e829]: ·
+                  - generic [ref=e830]: 2 years ago
+                  - generic [ref=e831]: ·
+                  - generic [ref=e832]:
+                    - generic [ref=e833]: 
+                    - text: "1"
+                  - generic [ref=e834]: ·
+                  - generic [ref=e835]:
+                    - generic [ref=e836]: 
+                    - text: "3503"
+                - generic [ref=e837]:
+                  - generic [ref=e838]:
+                    - link "Cutups" [ref=e839] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cutups
+                    - link "Filter threads by Cutups" [ref=e840] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/cutups
+                      - generic [aria-hidden] [ref=e841]: 
+                  - generic [ref=e842]:
+                    - link "Keebs" [ref=e843] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/keebs
+                    - link "Filter threads by Keebs" [ref=e844] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/keebs
+                      - generic [aria-hidden] [ref=e845]: 
+                  - generic [ref=e846]:
+                    - link "Brillobox" [ref=e847] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/brillobox
+                    - link "Filter threads by Brillobox" [ref=e848] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/brillobox
+                      - generic [aria-hidden] [ref=e849]: 
+                  - generic [ref=e850]: "+1"
+                  - generic [ref=e851]:
+                    - link "Bass" [ref=e852] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/bass
+                    - link "View details for Bass" [ref=e853] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/bass
+                      - generic [aria-hidden] [ref=e854]: 
+                  - generic [ref=e855]:
+                    - link "Dubstep" [ref=e856] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/dubstep
+                    - link "View details for Dubstep" [ref=e857] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/dubstep
+                      - generic [aria-hidden] [ref=e858]: 
+                  - generic [ref=e859]:
+                    - link "Electronic" [ref=e860] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e861] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e862]: 
+                  - generic [ref=e863]: "+3"
+                - generic [ref=e864]:
+                  - generic [ref=e865]: 
+                  - link "LAZERCRUNK w/ JON1ST (UK) + Cutups & Kee..." [ref=e866] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/lazercrunk-w-jo-n1-st-uk-cutups-keebs-2024
+          - article [ref=e867]:
+            - generic [ref=e868]:
+              - img "Geoffrey Maddock" [ref=e870]
+              - generic [ref=e871]:
+                - heading [level=3] [ref=e872]:
+                  - link "JELLY FEST day to night party" [ref=e873] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/293
+                - generic [ref=e874]:
+                  - generic [ref=e875]: Geoffrey Maddock
+                  - generic [ref=e876]: ·
+                  - generic [ref=e877]: 3 years ago
+                  - generic [ref=e878]: ·
+                  - generic [ref=e879]:
+                    - generic [ref=e880]: 
+                    - text: "1"
+                  - generic [ref=e881]: ·
+                  - generic [ref=e882]:
+                    - generic [ref=e883]: 
+                    - text: "3949"
+                - generic [ref=e884]:
+                  - generic [ref=e885]:
+                    - link "Formosa" [ref=e886] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/formosa
+                    - link "Filter threads by Formosa" [ref=e887] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/formosa
+                      - generic [aria-hidden] [ref=e888]: 
+                  - generic [ref=e889]:
+                    - link "Spirit" [ref=e890] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/spirit
+                    - link "Filter threads by Spirit" [ref=e891] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/spirit
+                      - generic [aria-hidden] [ref=e892]: 
+                  - generic [ref=e893]:
+                    - link "Drag" [ref=e894] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/drag
+                    - link "View details for Drag" [ref=e895] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/drag
+                      - generic [aria-hidden] [ref=e896]: 
+                  - generic [ref=e897]:
+                    - link "House" [ref=e898] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/house
+                    - link "View details for House" [ref=e899] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/house
+                      - generic [aria-hidden] [ref=e900]: 
+                  - generic [ref=e901]:
+                    - link "Italo Disco" [ref=e902] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/italo-disco
+                    - link "View details for Italo Disco" [ref=e903] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/italo-disco
+                      - generic [aria-hidden] [ref=e904]: 
+                  - generic [ref=e905]: "+3"
+                - generic [ref=e906]:
+                  - generic [ref=e907]: 
+                  - link "JELLY FEST day to night party" [ref=e908] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/jelly-fest-day-to-night-party
+          - article [ref=e909]:
+            - generic [ref=e910]:
+              - img "Geoffrey Maddock" [ref=e912]
+              - generic [ref=e913]:
+                - heading [level=3] [ref=e914]:
+                  - link "CEX (Tigerbeat 6), Lord Grunge, Grape A Don, Girltalk" [ref=e915] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/291
+                - generic [ref=e916]:
+                  - generic [ref=e917]: Geoffrey Maddock
+                  - generic [ref=e918]: ·
+                  - generic [ref=e919]: 3 years ago
+                  - generic [ref=e920]: ·
+                  - generic [ref=e921]:
+                    - generic [ref=e922]: 
+                    - text: "1"
+                  - generic [ref=e923]: ·
+                  - generic [ref=e924]:
+                    - generic [ref=e925]: 
+                    - text: "4122"
+                - generic [ref=e926]:
+                  - generic [ref=e927]:
+                    - link "Girltalk" [ref=e928] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/girltalk
+                    - link "Filter threads by Girltalk" [ref=e929] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/girltalk
+                      - generic [aria-hidden] [ref=e930]: 
+                  - generic [ref=e931]:
+                    - link "Grand Buffet" [ref=e932] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/grand-buffet
+                    - link "Filter threads by Grand Buffet" [ref=e933] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/grand-buffet
+                      - generic [aria-hidden] [ref=e934]: 
+                  - generic [ref=e935]:
+                    - link "Millvale Industrial Theater" [ref=e936] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/mit
+                    - link "Filter threads by Millvale Industrial Theater" [ref=e937] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/mit
+                      - generic [aria-hidden] [ref=e938]: 
+                  - generic [ref=e939]:
+                    - link "Electronic" [ref=e940] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e941] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e942]: 
+                  - generic [ref=e943]:
+                    - link "Hip Hop" [ref=e944] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/hip-hop
+                    - link "View details for Hip Hop" [ref=e945] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/hip-hop
+                      - generic [aria-hidden] [ref=e946]: 
+                  - generic [ref=e947]:
+                    - link "Idm" [ref=e948] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/idm
+                    - link "View details for Idm" [ref=e949] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/idm
+                      - generic [aria-hidden] [ref=e950]: 
+                - generic [ref=e951]:
+                  - generic [ref=e952]: 
+                  - link "CEX (Tigerbeat 6), Lord Grunge, Grape A..." [ref=e953] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/cex-tigerbeat-6-lord-grunge-grape-a-don-girltalk
+          - article [ref=e954]:
+            - generic [ref=e955]:
+              - img "Geoffrey Maddock" [ref=e957]
+              - generic [ref=e958]:
+                - heading [level=3] [ref=e959]:
+                  - link "2STEP Tuesdays with Sinhaus (Boston) feat. Cutups" [ref=e960] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/289
+                - generic [ref=e961]:
+                  - generic [ref=e962]: Geoffrey Maddock
+                  - generic [ref=e963]: ·
+                  - generic [ref=e964]: 4 years ago
+                  - generic [ref=e965]: ·
+                  - generic [ref=e966]:
+                    - generic [ref=e967]: 
+                    - text: "3"
+                  - generic [ref=e968]: ·
+                  - generic [ref=e969]:
+                    - generic [ref=e970]: 
+                    - text: "4354"
+                - generic [ref=e971]:
+                  - generic [ref=e972]:
+                    - link "Cutups" [ref=e973] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/cutups
+                    - link "Filter threads by Cutups" [ref=e974] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/cutups
+                      - generic [aria-hidden] [ref=e975]: 
+                  - generic [ref=e976]:
+                    - link "Ninja Papes" [ref=e977] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/ninja-papes
+                    - link "Filter threads by Ninja Papes" [ref=e978] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/ninja-papes
+                      - generic [aria-hidden] [ref=e979]: 
+                  - generic [ref=e980]:
+                    - link "Tiki Lounge" [ref=e981] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/tiki-lounge
+                    - link "Filter threads by Tiki Lounge" [ref=e982] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/tiki-lounge
+                      - generic [aria-hidden] [ref=e983]: 
+                  - generic [ref=e984]:
+                    - link "Bass" [ref=e985] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/bass
+                    - link "View details for Bass" [ref=e986] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/bass
+                      - generic [aria-hidden] [ref=e987]: 
+                  - generic [ref=e988]:
+                    - link "Uk Garage" [ref=e989] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/uk-garage
+                    - link "View details for Uk Garage" [ref=e990] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/uk-garage
+                      - generic [aria-hidden] [ref=e991]: 
+                - generic [ref=e992]:
+                  - generic [ref=e993]: 
+                  - link "2STEP Tuesdays with Sinhaus (Boston) fea..." [ref=e994] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/-2-step-tuesdays-with-sinhaus-boston-feat-cutups
+          - article [ref=e995]:
+            - generic [ref=e996]:
+              - img "Geoffrey Maddock" [ref=e998]
+              - generic [ref=e999]:
+                - heading [level=3] [ref=e1000]:
+                  - link "Jenn Taiga [MA], Harpy [RI], Wretched Crawler, Nasty Taxi, Heather Harper" [ref=e1001] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/threads/288
+                - generic [ref=e1002]:
+                  - generic [ref=e1003]: Geoffrey Maddock
+                  - generic [ref=e1004]: ·
+                  - generic [ref=e1005]: 4 years ago
+                  - generic [ref=e1006]: ·
+                  - generic [ref=e1007]:
+                    - generic [ref=e1008]: 
+                    - text: "3"
+                  - generic [ref=e1009]: ·
+                  - generic [ref=e1010]:
+                    - generic [ref=e1011]: 
+                    - text: "4161"
+                - generic [ref=e1012]:
+                  - generic [ref=e1013]:
+                    - link "Collision" [ref=e1014] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/entities/collision
+                    - link "Filter threads by Collision" [ref=e1015] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/related-to/collision
+                      - generic [aria-hidden] [ref=e1016]: 
+                  - generic [ref=e1017]:
+                    - link "Dark" [ref=e1018] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/dark
+                    - link "View details for Dark" [ref=e1019] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/dark
+                      - generic [aria-hidden] [ref=e1020]: 
+                  - generic [ref=e1021]:
+                    - link "Electronic" [ref=e1022] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/electronic
+                    - link "View details for Electronic" [ref=e1023] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/electronic
+                      - generic [aria-hidden] [ref=e1024]: 
+                  - generic [ref=e1025]:
+                    - link "Synthwave" [ref=e1026] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/threads/tag/synthwave
+                    - link "View details for Synthwave" [ref=e1027] [cursor=pointer]:
+                      - /url: https://dev.arcane.city/tags/synthwave
+                      - generic [aria-hidden] [ref=e1028]: 
+                - generic [ref=e1029]:
+                  - generic [ref=e1030]: 
+                  - link "Jenn Taiga [MA], Harpy [RI], Wretched Cr..." [ref=e1031] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/jenn-taiga-ma-harpy-ri-wretched-crawler-nasty-taxi-heather-harper
+        - generic [ref=e1033]:
+          - generic [ref=e1034]: DEV Arcane City
+          - generic [aria-hidden] [ref=e1035]: ·
+          - link "Tonight" [ref=e1036] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=e1037]: ·
+          - link "This Week" [ref=e1038] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=e1039]: ·
+          - link "This Weekend" [ref=e1040] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=e1041]: ·
+          - link "Events" [ref=e1042] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=e1043]: ·
+          - link "Entities" [ref=e1044] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=e1045]: ·
+          - link "Series" [ref=e1046] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=e1047]: ·
+          - link "Tags" [ref=e1048] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

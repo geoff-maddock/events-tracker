@@ -1,0 +1,59 @@
+[    2652ms] [LOG] 16:05:41.322: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    2816ms] [LOG] 16:05:41.491: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3335ms] [LOG] 16:05:42.009: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3473ms] [LOG] 16:05:42.147: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3551ms] [LOG] 16:05:42.225: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3704ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    3718ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    4298ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    4333ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    4341ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    6371ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[    6472ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[    6514ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[   74266ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74267ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74283ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74284ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74313ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74314ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74322ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74322ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74343ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   74344ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   75874ms] [LOG] 16:06:54.548: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   75935ms] [LOG] 16:06:54.609: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   76046ms] [LOG] 16:06:54.720: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   76296ms] [LOG] 16:06:54.970: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   76373ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   76497ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   76565ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   76607ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   76776ms] [LOG] 16:06:55.451: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   76874ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   78397ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[   78571ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[   78643ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[   90288ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90289ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90301ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90301ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90311ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90312ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90344ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90345ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90349ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   90350ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   91922ms] [LOG] 16:07:10.596: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   91985ms] [LOG] 16:07:10.659: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   92160ms] [LOG] 16:07:10.834: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   92320ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   92422ms] [LOG] 16:07:11.096: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   92516ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   92531ms] [LOG] 16:07:11.205: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[   92746ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   93061ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   93097ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   93884ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[   93977ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54
+[   94009ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-0b92cdb4a278.js:54

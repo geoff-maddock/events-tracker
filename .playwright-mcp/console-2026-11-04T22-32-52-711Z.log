@@ -1,0 +1,15 @@
+[     122ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[     123ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[     493ms] [LOG] 22:32:53.203: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[     500ms] [LOG] 22:32:53.208: initing HTMLEmbeddedPlayer3: "neue" @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[     535ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   16830ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   16831ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   17028ms] [LOG] 22:33:09.738: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[   17034ms] [LOG] 22:33:09.744: initing HTMLEmbeddedPlayer3: "neue" @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[   17084ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   53386ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   53387ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[   53646ms] [LOG] 22:33:46.356: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[   53649ms] [LOG] 22:33:46.360: initing HTMLEmbeddedPlayer3: "neue" @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-85e36fe086f3e26d5c044c367cb65fba.js:0
+[   53775ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0

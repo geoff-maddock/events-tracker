@@ -1,0 +1,1676 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - text:                   
+    - complementary [ref=e3]:
+      - button "Close navigation" [ref=e4]:
+        - generic [aria-hidden] [ref=e5]: 
+      - generic [ref=e6]:
+        - link "DEV Arcane City" [ref=e7] [cursor=pointer]:
+          - /url: https://dev.arcane.city
+        - text: pittsburgh events guide
+      - navigation [ref=e9]:
+        - generic [ref=e10]:
+          - link " Events" [ref=e11] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+            - generic [ref=e12]: 
+            - generic [ref=e13]: Events
+          - generic [ref=e14]:
+            - link " Tonight" [ref=e15] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/tonight
+              - generic [ref=e16]: 
+              - generic [ref=e17]: Tonight
+            - link " This Week" [ref=e18] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-week
+              - generic [ref=e19]: 
+              - generic [ref=e20]: This Week
+            - link " This Weekend" [ref=e21] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/this-weekend
+              - generic [ref=e22]: 
+              - generic [ref=e23]: This Weekend
+            - link " Event Grid" [ref=e24] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/grid
+              - generic [ref=e25]: 
+              - generic [ref=e26]: Event Grid
+        - link " Event Calendar" [ref=e28] [cursor=pointer]:
+          - /url: https://dev.arcane.city/calendar
+          - generic [ref=e29]: 
+          - generic [ref=e30]: Event Calendar
+        - link " Entities" [ref=e32] [cursor=pointer]:
+          - /url: https://dev.arcane.city/entities
+          - generic [ref=e33]: 
+          - generic [ref=e34]: Entities
+        - link " Series" [ref=e35] [cursor=pointer]:
+          - /url: https://dev.arcane.city/series
+          - generic [ref=e36]: 
+          - generic [ref=e37]: Series
+        - link " Tags" [ref=e38] [cursor=pointer]:
+          - /url: https://dev.arcane.city/tags
+          - generic [ref=e39]: 
+          - generic [ref=e40]: Tags
+        - link " Forum" [ref=e41] [cursor=pointer]:
+          - /url: https://dev.arcane.city/threads/all
+          - generic [ref=e42]: 
+          - generic [ref=e43]: Forum
+        - link " About" [ref=e45] [cursor=pointer]:
+          - /url: https://dev.arcane.city/about
+          - generic [ref=e46]: 
+          - generic [ref=e47]: About
+        - link " Help" [ref=e48] [cursor=pointer]:
+          - /url: https://dev.arcane.city/help
+          - generic [ref=e49]: 
+          - generic [ref=e50]: Help
+      - generic [ref=e51]:
+        - link " My Account" [ref=e52] [cursor=pointer]:
+          - /url: https://dev.arcane.city/login
+          - generic [ref=e53]: 
+          - generic [ref=e54]: My Account
+        - link " Register" [ref=e55] [cursor=pointer]:
+          - /url: https://dev.arcane.city/register
+          - generic [ref=e56]: 
+          - generic [ref=e57]: Register
+      - button "Switch to light mode" [ref=e61]:
+        - generic [ref=e62]: 
+    - generic [ref=e63]:
+      - banner [ref=e64]:
+        - generic [ref=e65]:
+          - button "Open navigation menu" [ref=e66]:
+            - generic [aria-hidden] [ref=e67]: 
+          - link "DEV Arcane City pittsburgh events guide" [ref=e68] [cursor=pointer]:
+            - /url: https://dev.arcane.city
+            - generic [ref=e69]: DEV Arcane City
+            - generic [ref=e70]: pittsburgh events guide
+          - search [ref=e73]:
+            - generic [ref=e74]:
+              - combobox "Search" [ref=e75]
+              - generic [ref=e76]: 
+          - generic [ref=e78]:
+            - button "Add something" [ref=e79]:
+              - generic [aria-hidden] [ref=e80]: 
+            - text:   
+      - main [ref=e81]:
+        - generic [ref=e82]:
+          - heading "Event Listings" [level=1] [ref=e83]
+          - paragraph [ref=e84]: Discover and explore upcoming events.
+        - generic [ref=e85]:
+          - link " Add Event" [ref=e86] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/create
+            - generic [ref=e87]: 
+            - text: Add Event
+          - generic [ref=e88]:
+            - button "" [ref=e89]
+            - text:  
+        - generic [ref=e91]:
+          - button " Show Filters " [ref=e92]:
+            - generic [ref=e93]: 
+            - generic [ref=e94]: Show Filters
+            - generic [ref=e95]: 
+          - generic [ref=e96]: "Ages: All Ages"
+          - link "Reset " [ref=e98] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/reset
+            - text: Reset
+            - generic [ref=e99]: 
+        - text: 
+        - generic [ref=e100]:
+          - generic [ref=e101]: Showing 1 to 25 of 4326 results
+          - generic [ref=e103]:
+            - combobox [ref=e104]:
+              - option "5"
+              - option "10"
+              - option "25" [selected]
+              - option "100"
+              - option "1000"
+            - generic [ref=e105]: "Sort by:"
+            - combobox [ref=e106]:
+              - option "Name"
+              - option "Start At" [selected]
+              - option "Event Type"
+              - option "Updated At"
+            - combobox [ref=e107]:
+              - option "asc" [selected]
+              - option "desc"
+          - generic [ref=e108]:
+            - link "1" [ref=e109] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/filter?page=1
+            - link "2" [ref=e110] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/filter?page=2
+            - link "3" [ref=e111] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/filter?page=3
+        - generic [ref=e112]:
+          - article [ref=e113]:
+            - generic [ref=e114]:
+              - link "View photo for 3rd Annual Rappers Convention" [ref=e115] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1766965637_FB_IMG_1766965482782.webp
+                - img "3rd Annual Rappers Convention" [ref=e116]
+              - link "Sign in to mark 3rd Annual Rappers Convention as attending" [ref=e118] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e119]: 
+            - generic [ref=e120]:
+              - heading [level=3] [ref=e121]:
+                - link "3rd Annual Rappers Convention" [ref=e122] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/-3rd-annual-rappers-convention-1982
+              - paragraph [ref=e123]: Classic hip-hop showcase with Grandmaster Flash, Sugarhill Gang, and more at the Stanley Theatre.
+              - link "Concert" [ref=e125] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=e126]:
+                - generic [ref=e127]:
+                  - generic [ref=e128]: 
+                  - link "Tuesday, December 28, 1982 at 6:00 PM - 11:00 PM" [ref=e129] [cursor=pointer]:
+                    - /url: /events/by-date/1982/12/28
+                - generic [ref=e130]:
+                  - generic [ref=e131]: 
+                  - link "Stanley Theatre" [ref=e132] [cursor=pointer]:
+                    - /url: /entities/stanley-theatre
+                - generic [ref=e133]:
+                  - generic [ref=e134]: 
+                  - generic [ref=e135]: All Ages
+              - generic [ref=e137]:
+                - link "Stanley Theatre" [ref=e138] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/stanley-theatre
+                - link "Filter events by Stanley Theatre" [ref=e139] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/stanley-theatre
+                  - generic [aria-hidden] [ref=e140]: 
+              - generic [ref=e142]:
+                - link "Hip Hop" [ref=e143] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/hip-hop
+                - link "View details for Hip Hop" [ref=e144] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/hip-hop
+                  - generic [aria-hidden] [ref=e145]: 
+          - article [ref=e147]:
+            - generic [ref=e148]:
+              - link "View photo for Psychotronic Slackrave" [ref=e149] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778602167_1764035080_474376714_4029739667245491_8835321245381698283_n%20%281%29.webp
+                - img "Psychotronic Slackrave" [ref=e150]
+              - link "Sign in to mark Psychotronic Slackrave as attending" [ref=e152] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e153]: 
+            - generic [ref=e154]:
+              - heading [level=3] [ref=e155]:
+                - link "Psychotronic Slackrave" [ref=e156] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/psychotronic-slackrave
+              - paragraph [ref=e157]: Early Pittsburgh rave featuring DJ Deadly Buda and DJ Controlled Weirdness.
+              - link "Rave" [ref=e159] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - generic [ref=e162]: 
+                  - link "Friday, December 13, 1991 at 11:30 PM - 5:00 AM" [ref=e163] [cursor=pointer]:
+                    - /url: /events/by-date/1991/12/13
+                - generic [ref=e164]:
+                  - generic [ref=e165]: 
+                  - link "West View Fireman's Building" [ref=e166] [cursor=pointer]:
+                    - /url: /entities/west-view-fireman-s-building
+                  - link "Map for West View Fireman's Building" [ref=e167] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/LcXzfXgeGq3h9gz77
+                    - generic [aria-hidden] [ref=e168]: 
+                - generic [ref=e169]:
+                  - generic [ref=e170]: 
+                  - generic [ref=e171]: All Ages
+              - generic [ref=e172]:
+                - generic [ref=e173]:
+                  - link "Slacker" [ref=e174] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/slacker
+                  - link "Filter events by Slacker" [ref=e175] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/slacker
+                    - generic [aria-hidden] [ref=e176]: 
+                - generic [ref=e177]:
+                  - link "Deadly Buda" [ref=e178] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/deadly-bud
+                  - link "Filter events by Deadly Buda" [ref=e179] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/deadly-bud
+                    - generic [aria-hidden] [ref=e180]: 
+              - generic [ref=e181]:
+                - generic [ref=e182]:
+                  - link "Breaks" [ref=e183] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/breaks
+                  - link "View details for Breaks" [ref=e184] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/breaks
+                    - generic [aria-hidden] [ref=e185]: 
+                - generic [ref=e186]:
+                  - link "Hardcore" [ref=e187] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e188] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e189]: 
+                - generic [ref=e190]:
+                  - link "Rave" [ref=e191] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e192] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e193]: 
+                - generic [ref=e194]:
+                  - link "Uk Hardcore" [ref=e195] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/uk-hardcore
+                  - link "View details for Uk Hardcore" [ref=e196] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/uk-hardcore
+                    - generic [aria-hidden] [ref=e197]: 
+          - article [ref=e199]:
+            - generic [ref=e200]:
+              - link "View photo for Gatorave" [ref=e201] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778602233_1764033800_92-08-02-gatorave_front.webp
+                - img "Gatorave" [ref=e202]
+              - link "Sign in to mark Gatorave as attending" [ref=e204] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e205]: 
+            - generic [ref=e206]:
+              - heading [level=3] [ref=e207]:
+                - link "Gatorave" [ref=e208] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/gatorave-1992
+              - paragraph [ref=e209]: Pittsburgh’s first official hardcore rave, hosted by Muse Productions.
+              - link "Rave" [ref=e211] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e212]:
+                - generic [ref=e213]:
+                  - generic [ref=e214]: 
+                  - link "Sunday, August 2, 1992 at 10:00 PM" [ref=e215] [cursor=pointer]:
+                    - /url: /events/by-date/1992/08/02
+                - generic [ref=e216]:
+                  - generic [ref=e217]: 
+                  - link "Metropol" [ref=e218] [cursor=pointer]:
+                    - /url: /entities/metropol
+                - generic [ref=e219]:
+                  - generic [ref=e220]: 
+                  - generic [ref=e221]: All Ages
+                - generic [ref=e222]:
+                  - generic [ref=e223]: 
+                  - generic [ref=e224]: "Presale: $6"
+                  - generic [ref=e225]: "Door: $6"
+              - generic [ref=e227]:
+                - link "Strobe" [ref=e228] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/strobe
+                - link "Filter events by Strobe" [ref=e229] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/strobe
+                  - generic [aria-hidden] [ref=e230]: 
+              - generic [ref=e232]:
+                - link "Rave" [ref=e233] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/rave
+                - link "View details for Rave" [ref=e234] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/rave
+                  - generic [aria-hidden] [ref=e235]: 
+          - article [ref=e237]:
+            - generic [ref=e238]:
+              - link "View photo for Mick-E's Magical Mindrave" [ref=e239] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785205657_80cab7b0-001f-4017-b91c-7f610d16f00f.webp
+                - img "Mick-E's Magical Mindrave" [ref=e240]
+              - link "Sign in to mark Mick-E's Magical Mindrave as attending" [ref=e242] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e243]: 
+            - generic [ref=e244]:
+              - heading [level=3] [ref=e245]:
+                - link "Mick-E's Magical Mindrave" [ref=e246] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/mick-es-magical-mindrave
+              - paragraph [ref=e247]: Roman Around's psychedelic rave night at Metropol featuring 50-cent drinks, all ages welcome.
+              - link "Rave" [ref=e249] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e250]:
+                - generic [ref=e251]:
+                  - generic [ref=e252]: 
+                  - link "Sunday, October 4, 1992 at 9:00 PM" [ref=e253] [cursor=pointer]:
+                    - /url: /events/by-date/1992/10/04
+                - generic [ref=e254]:
+                  - generic [ref=e255]: 
+                  - link "Metropol" [ref=e256] [cursor=pointer]:
+                    - /url: /entities/metropol
+                - generic [ref=e257]:
+                  - generic [ref=e258]: 
+                  - generic [ref=e259]: All Ages
+              - generic [ref=e261]:
+                - link "Metropol" [ref=e262] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/metropol
+                - link "Filter events by Metropol" [ref=e263] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/metropol
+                  - generic [aria-hidden] [ref=e264]: 
+              - generic [ref=e265]:
+                - generic [ref=e266]:
+                  - link "Electronic" [ref=e267] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e268] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e269]: 
+                - generic [ref=e270]:
+                  - link "Psychedelic" [ref=e271] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/psychedelic
+                  - link "View details for Psychedelic" [ref=e272] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/psychedelic
+                    - generic [aria-hidden] [ref=e273]: 
+                - generic [ref=e274]:
+                  - link "Rave" [ref=e275] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e276] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e277]: 
+          - article [ref=e279]:
+            - generic [ref=e280]:
+              - link "View photo for Power Rave 92" [ref=e281] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778602274_1764087230_cutups_flyer_--ar_6178_--v_7_935da706-97dc-4235-89eb-13c3cfbedefe.webp
+                - img "Power Rave 92" [ref=e282]
+              - link "Sign in to mark Power Rave 92 as attending" [ref=e284] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e285]: 
+            - generic [ref=e286]:
+              - heading [level=3] [ref=e287]:
+                - link "Power Rave 92" [ref=e288] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/power-rave-92
+              - paragraph [ref=e289]: Turbo Zen Records' sonic hysteria event featuring Cybersonik and Richie Hawtin.
+              - link "Rave" [ref=e291] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e292]:
+                - generic [ref=e293]:
+                  - generic [ref=e294]: 
+                  - link "Friday, November 13, 1992 at 11:00 PM - 5:00 AM" [ref=e295] [cursor=pointer]:
+                    - /url: /events/by-date/1992/11/13
+                - generic [ref=e296]:
+                  - generic [ref=e297]: 
+                  - link "Ardmore Roller Palace" [ref=e298] [cursor=pointer]:
+                    - /url: /entities/ardmore-roller-palace
+                - generic [ref=e299]:
+                  - generic [ref=e300]: 
+                  - generic [ref=e301]: All Ages
+                - generic [ref=e302]:
+                  - generic [ref=e303]: 
+                  - generic [ref=e304]: "Presale: $8"
+                  - generic [ref=e305]: "Door: $10"
+              - generic [ref=e306]:
+                - generic [ref=e307]:
+                  - link "Deadly Buda" [ref=e308] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/deadly-bud
+                  - link "Filter events by Deadly Buda" [ref=e309] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/deadly-bud
+                    - generic [aria-hidden] [ref=e310]: 
+                - generic [ref=e311]:
+                  - link "Ardmore Roller Palace" [ref=e312] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/ardmore-roller-palace
+                  - link "Filter events by Ardmore Roller Palace" [ref=e313] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/ardmore-roller-palace
+                    - generic [aria-hidden] [ref=e314]: 
+                - generic [ref=e315]:
+                  - link "Turbo Zen" [ref=e316] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/turbo-zen
+                  - link "Filter events by Turbo Zen" [ref=e317] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/turbo-zen
+                    - generic [aria-hidden] [ref=e318]: 
+              - generic [ref=e319]:
+                - generic [ref=e320]:
+                  - link "Rave" [ref=e321] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e322] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e323]: 
+                - generic [ref=e324]:
+                  - link "Techno" [ref=e325] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e326] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e327]: 
+                - generic [ref=e328]:
+                  - link "Hardcore" [ref=e329] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e330] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e331]: 
+                - generic [ref=e332]:
+                  - link "Uk Hardcore" [ref=e333] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/uk-hardcore
+                  - link "View details for Uk Hardcore" [ref=e334] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/uk-hardcore
+                    - generic [aria-hidden] [ref=e335]: 
+            - link "Discussion for Power Rave 92" [ref=e338] [cursor=pointer]:
+              - /url: https://dev.arcane.city/threads/304
+              - generic [aria-hidden] [ref=e339]: 
+          - article [ref=e340]:
+            - generic [ref=e341]:
+              - link "View photo for High Voltage" [ref=e342] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1778602310_1764033922_highvoltage-front.webp
+                - img "High Voltage" [ref=e343]
+              - link "Sign in to mark High Voltage as attending" [ref=e345] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e346]: 
+            - generic [ref=e347]:
+              - heading [level=3] [ref=e348]:
+                - link "High Voltage" [ref=e349] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/high-voltage-1993
+              - paragraph [ref=e350]: Turbo-Zen's biggest rave in Pittsburgh to date, May 1, 1993.
+              - link "Rave" [ref=e352] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e353]:
+                - generic [ref=e354]:
+                  - generic [ref=e355]: 
+                  - link "Saturday, May 1, 1993 at 9:00 PM - 6:00 AM" [ref=e356] [cursor=pointer]:
+                    - /url: /events/by-date/1993/05/01
+                - generic [ref=e357]:
+                  - generic [ref=e358]: 
+                  - link "Irish center" [ref=e359] [cursor=pointer]:
+                    - /url: /entities/irish-center
+                  - link "Map for Irish center" [ref=e360] [cursor=pointer]:
+                    - /url: https://goo.gl/maps/J4LHwD6arKNuLqpTA
+                    - generic [aria-hidden] [ref=e361]: 
+                - generic [ref=e362]:
+                  - generic [ref=e363]: 
+                  - generic [ref=e364]: All Ages
+                - generic [ref=e365]:
+                  - generic [ref=e366]: 
+                  - generic [ref=e367]: "Presale: $10"
+                  - generic [ref=e368]: "Door: $15"
+              - generic [ref=e370]:
+                - link "Irish center" [ref=e371] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/irish-center
+                - link "Filter events by Irish center" [ref=e372] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/irish-center
+                  - generic [aria-hidden] [ref=e373]: 
+              - generic [ref=e374]:
+                - generic [ref=e375]:
+                  - link "Breaks" [ref=e376] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/breaks
+                  - link "View details for Breaks" [ref=e377] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/breaks
+                    - generic [aria-hidden] [ref=e378]: 
+                - generic [ref=e379]:
+                  - link "Hardcore" [ref=e380] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e381] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e382]: 
+                - generic [ref=e383]:
+                  - link "House" [ref=e384] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e385] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e386]: 
+                - generic [ref=e387]:
+                  - link "Rave" [ref=e388] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e389] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e390]: 
+          - article [ref=e392]:
+            - generic [ref=e393]:
+              - link "View photo for Morph 1" [ref=e394] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1764033696_94-09-03-morph.1.front.webp
+                - img "Morph 1" [ref=e395]
+              - link "Sign in to mark Morph 1 as attending" [ref=e397] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e398]: 
+            - generic [ref=e399]:
+              - heading [level=3] [ref=e400]:
+                - link "Morph 1" [ref=e401] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/morph-1-1994
+              - paragraph [ref=e402]: Massive 1994 multimedia rave at Seven Springs with DJs, bands, art, and more.
+              - link "Rave" [ref=e404] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e405]:
+                - generic [ref=e406]:
+                  - generic [ref=e407]: 
+                  - link "Saturday, September 3, 1994 at 2:00 PM" [ref=e408] [cursor=pointer]:
+                    - /url: /events/by-date/1994/09/03
+                - generic [ref=e409]:
+                  - generic [ref=e410]: 
+                  - generic [ref=e411]: All Ages
+              - generic [ref=e412]:
+                - generic [ref=e413]:
+                  - link "Jungle" [ref=e414] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e415] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e416]: 
+                - generic [ref=e417]:
+                  - link "Hardcore" [ref=e418] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e419] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e420]: 
+                - generic [ref=e421]:
+                  - link "Rave" [ref=e422] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e423] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e424]: 
+                - generic [ref=e425]:
+                  - link "Techno" [ref=e426] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e427] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e428]: 
+                - generic [ref=e429]:
+                  - link "Trance" [ref=e430] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/trance
+                  - link "View details for Trance" [ref=e431] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/trance
+                    - generic [aria-hidden] [ref=e432]: 
+          - article [ref=e434]:
+            - generic [ref=e435]:
+              - 'link "View photo for TranscendenceZ: The Afterlife" [ref=e436] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785206030_94-12-17-transcendence.2.front.webp
+                - 'img "TranscendenceZ: The Afterlife" [ref=e437]'
+              - 'link "Sign in to mark TranscendenceZ: The Afterlife as attending" [ref=e439] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e440]: 
+            - generic [ref=e441]:
+              - heading [level=3] [ref=e442]:
+                - 'link "TranscendenceZ: The Afterlife" [ref=e443] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/transcendencez-the-afterlife
+              - paragraph [ref=e444]: A massive underground rave at Washington Co. Fairgrounds warehouse featuring jungle, house, and techno DJs from across the US.
+              - link "Club Night" [ref=e446] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=e447]:
+                - generic [ref=e448]:
+                  - generic [ref=e449]: 
+                  - link "Saturday, December 17, 1994 at 9:00 PM" [ref=e450] [cursor=pointer]:
+                    - /url: /events/by-date/1994/12/17
+                - generic [ref=e451]:
+                  - generic [ref=e452]: 
+                  - link "Ask a punk" [ref=e453] [cursor=pointer]:
+                    - /url: /entities/ask-a-punk
+                  - link "Map for Ask a punk" [ref=e454] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/AH4LPYoh1HYcMAuG8
+                    - generic [aria-hidden] [ref=e455]: 
+                - generic [ref=e456]:
+                  - generic [ref=e457]: 
+                  - generic [ref=e458]: All Ages
+              - generic [ref=e460]:
+                - link "Ask a punk" [ref=e461] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/ask-a-punk
+                - link "Filter events by Ask a punk" [ref=e462] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/ask-a-punk
+                  - generic [aria-hidden] [ref=e463]: 
+              - generic [ref=e464]:
+                - generic [ref=e465]:
+                  - link "Drum And Bass" [ref=e466] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/drum-and-bass
+                  - link "View details for Drum And Bass" [ref=e467] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/drum-and-bass
+                    - generic [aria-hidden] [ref=e468]: 
+                - generic [ref=e469]:
+                  - link "Electronic" [ref=e470] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e471] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e472]: 
+                - generic [ref=e473]:
+                  - link "House" [ref=e474] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e475] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e476]: 
+                - generic [ref=e477]:
+                  - link "Jungle" [ref=e478] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e479] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e480]: 
+                - generic [ref=e481]:
+                  - link "Rave" [ref=e482] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e483] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e484]: 
+                - generic [ref=e485]: +1 more
+          - article [ref=e487]:
+            - generic [ref=e488]:
+              - link "View photo for Steel City Jungle w/ Dieselboy, SIne, Ruffian" [ref=e489] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1761781830_467778029_10169853644060471_6189252888757775962_n.webp
+                - img "Steel City Jungle w/ Dieselboy, SIne, Ruffian" [ref=e490]
+              - link "Sign in to mark Steel City Jungle w/ Dieselboy, SIne, Ruffian as attending" [ref=e492] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e493]: 
+            - generic [ref=e494]:
+              - heading [level=3] [ref=e495]:
+                - link "Steel City Jungle w/ Dieselboy, SIne, Ruffian" [ref=e496] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/steel-city-jungle-w-dieselboy-s-ine-ruffian
+              - paragraph [ref=e497]: pittsburgh's first all-jungle club night
+              - link "Club Night" [ref=e499] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=e500]:
+                - generic [ref=e501]:
+                  - generic [ref=e502]: 
+                  - link "Sunday, June 11, 1995 at 9:00 PM" [ref=e503] [cursor=pointer]:
+                    - /url: /events/by-date/1995/06/11
+                - generic [ref=e504]:
+                  - generic [ref=e505]: 
+                  - generic [ref=e506]: All Ages
+              - generic [ref=e507]:
+                - generic [ref=e508]:
+                  - link "Drum And Bass" [ref=e509] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/drum-and-bass
+                  - link "View details for Drum And Bass" [ref=e510] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/drum-and-bass
+                    - generic [aria-hidden] [ref=e511]: 
+                - generic [ref=e512]:
+                  - link "Jungle" [ref=e513] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e514] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e515]: 
+          - article [ref=e517]:
+            - generic [ref=e518]:
+              - link "View photo for TunnelVision" [ref=e519] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1766424321_30th-anniversary-of-tunnelvision-rave-in-the-corliss-tunnel-v0-4j3mdn5udy8f1.webp
+                - img "TunnelVision" [ref=e520]
+              - link "Sign in to mark TunnelVision as attending" [ref=e522] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e523]: 
+            - generic [ref=e524]:
+              - heading [level=3] [ref=e525]:
+                - link "TunnelVision" [ref=e526] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tunnelvision-1995
+              - paragraph [ref=e527]: Underground rave in a Pittsburgh tunnel featuring national and local DJs.
+              - link "Rave" [ref=e529] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e530]:
+                - generic [ref=e531]:
+                  - generic [ref=e532]: 
+                  - link "Saturday, June 24, 1995 at 10:00 PM" [ref=e533] [cursor=pointer]:
+                    - /url: /events/by-date/1995/06/24
+                - generic [ref=e534]:
+                  - generic [ref=e535]: 
+                  - link "Corliss Tunnel" [ref=e536] [cursor=pointer]:
+                    - /url: /entities/corliss-tunnel
+                - generic [ref=e537]:
+                  - generic [ref=e538]: 
+                  - generic [ref=e539]: All Ages
+                - generic [ref=e540]:
+                  - generic [ref=e541]: 
+                  - generic [ref=e542]: "Presale: $15"
+                  - generic [ref=e543]: "Door: $18"
+              - generic [ref=e544]:
+                - generic [ref=e545]:
+                  - link "Smoov" [ref=e546] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/smoov
+                  - link "Filter events by Smoov" [ref=e547] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/smoov
+                    - generic [aria-hidden] [ref=e548]: 
+                - generic [ref=e549]:
+                  - link "Corliss Tunnel" [ref=e550] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/corliss-tunnel
+                  - link "Filter events by Corliss Tunnel" [ref=e551] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/corliss-tunnel
+                    - generic [aria-hidden] [ref=e552]: 
+              - generic [ref=e553]:
+                - generic [ref=e554]:
+                  - link "Acid" [ref=e555] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/acid
+                  - link "View details for Acid" [ref=e556] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/acid
+                    - generic [aria-hidden] [ref=e557]: 
+                - generic [ref=e558]:
+                  - link "Breaks" [ref=e559] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/breaks
+                  - link "View details for Breaks" [ref=e560] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/breaks
+                    - generic [aria-hidden] [ref=e561]: 
+                - generic [ref=e562]:
+                  - link "Jungle" [ref=e563] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e564] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e565]: 
+                - generic [ref=e566]:
+                  - link "Rave" [ref=e567] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e568] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e569]: 
+                - generic [ref=e570]:
+                  - link "Techno" [ref=e571] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e572] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e573]: 
+                - generic [ref=e574]: +1 more
+            - link "Discussion for TunnelVision" [ref=e577] [cursor=pointer]:
+              - /url: https://dev.arcane.city/threads/305
+              - generic [aria-hidden] [ref=e578]: 
+          - article [ref=e579]:
+            - generic [ref=e580]:
+              - link "View photo for Groove" [ref=e581] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1773373483_pittsburg%20Pennsylvania%20rave%20flyers%20101.webp
+                - img "Groove" [ref=e582]
+              - link "Sign in to mark Groove as attending" [ref=e584] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e585]: 
+            - generic [ref=e586]:
+              - heading [level=3] [ref=e587]:
+                - link "Groove" [ref=e588] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/groove-1995-07-29
+              - paragraph [ref=e589]: Groove rave featuring Terry Mullan, Dave Trance, Dieselboy and more. July 29, 1995.
+              - link "Rave" [ref=e591] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e592]:
+                - generic [ref=e593]:
+                  - generic [ref=e594]: 
+                  - link "Saturday, July 29, 1995 at 10:00 PM" [ref=e595] [cursor=pointer]:
+                    - /url: /events/by-date/1995/07/29
+                - generic [ref=e596]:
+                  - generic [ref=e597]: 
+                  - generic [ref=e598]: All Ages
+                - generic [ref=e599]:
+                  - generic [ref=e600]: 
+                  - generic [ref=e601]: "Presale: $14"
+                  - generic [ref=e602]: "Door: $16"
+              - generic [ref=e603]:
+                - generic [ref=e604]:
+                  - link "Ambient" [ref=e605] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/ambient
+                  - link "View details for Ambient" [ref=e606] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/ambient
+                    - generic [aria-hidden] [ref=e607]: 
+                - generic [ref=e608]:
+                  - link "House" [ref=e609] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e610] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e611]: 
+                - generic [ref=e612]:
+                  - link "Jungle" [ref=e613] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e614] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e615]: 
+                - generic [ref=e616]:
+                  - link "Techno" [ref=e617] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e618] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e619]: 
+                - generic [ref=e620]:
+                  - link "Trance" [ref=e621] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/trance
+                  - link "View details for Trance" [ref=e622] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/trance
+                    - generic [aria-hidden] [ref=e623]: 
+          - article [ref=e625]:
+            - generic [ref=e626]:
+              - link "View photo for Perpetual Motion" [ref=e627] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1773373348_Pittsburgh%20Rave%20Flyers%20102.webp
+                - img "Perpetual Motion" [ref=e628]
+              - link "Sign in to mark Perpetual Motion as attending" [ref=e630] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e631]: 
+            - generic [ref=e632]:
+              - heading [level=3] [ref=e633]:
+                - link "Perpetual Motion" [ref=e634] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/perpetual-motion-1995-09-09
+              - paragraph [ref=e635]: Underground rave featuring Thee-O, Joeski, Dieselboy and more. Sept 9 1995.
+              - link "Rave" [ref=e637] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e638]:
+                - generic [ref=e639]:
+                  - generic [ref=e640]: 
+                  - link "Saturday, September 9, 1995 at 10:00 PM - 10:00 AM" [ref=e641] [cursor=pointer]:
+                    - /url: /events/by-date/1995/09/09
+                - generic [ref=e642]:
+                  - generic [ref=e643]: 
+                  - generic [ref=e644]: All Ages
+                - generic [ref=e645]:
+                  - generic [ref=e646]: 
+                  - generic [ref=e647]: "Presale: $15"
+                  - generic [ref=e648]: "Door: $20"
+              - generic [ref=e650]:
+                - link "Smoov" [ref=e651] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/smoov
+                - link "Filter events by Smoov" [ref=e652] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/smoov
+                  - generic [aria-hidden] [ref=e653]: 
+              - generic [ref=e654]:
+                - generic [ref=e655]:
+                  - link "Hip Hop" [ref=e656] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hip-hop
+                  - link "View details for Hip Hop" [ref=e657] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hip-hop
+                    - generic [aria-hidden] [ref=e658]: 
+                - generic [ref=e659]:
+                  - link "House" [ref=e660] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e661] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e662]: 
+                - generic [ref=e663]:
+                  - link "Jungle" [ref=e664] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e665] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e666]: 
+                - generic [ref=e667]:
+                  - link "Rave" [ref=e668] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e669] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e670]: 
+                - generic [ref=e671]:
+                  - link "Trance" [ref=e672] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/trance
+                  - link "View details for Trance" [ref=e673] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/trance
+                    - generic [aria-hidden] [ref=e674]: 
+            - link "External link for Perpetual Motion" [ref=e677] [cursor=pointer]:
+              - /url: http://www.pitt.edu/~jjjst9/udg
+              - generic [aria-hidden] [ref=e678]: 
+          - article [ref=e679]:
+            - generic [ref=e680]:
+              - link "View photo for The Final Comedown!!" [ref=e681] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1764032721_76441_1683320852713_3022699_n.webp
+                - img "The Final Comedown!!" [ref=e682]
+              - link "Sign in to mark The Final Comedown!! as attending" [ref=e684] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e685]: 
+            - generic [ref=e686]:
+              - heading [level=3] [ref=e687]:
+                - link "The Final Comedown!!" [ref=e688] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/the-final-comedown-1995
+              - paragraph [ref=e689]: Electro, roots, and revolution collide at this all-night flava forum at CMU.
+              - link "Rave" [ref=e691] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e692]:
+                - generic [ref=e693]:
+                  - generic [ref=e694]: 
+                  - link "Saturday, December 2, 1995 at 9:00 PM - 7:00 AM" [ref=e695] [cursor=pointer]:
+                    - /url: /events/by-date/1995/12/02
+                - generic [ref=e696]:
+                  - generic [ref=e697]: 
+                  - generic [ref=e698]: All Ages
+                - generic [ref=e699]:
+                  - generic [ref=e700]: 
+                  - generic [ref=e701]: "Door: $5"
+              - generic [ref=e702]:
+                - generic [ref=e703]:
+                  - link "CMU Activities Board" [ref=e704] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/cmu-ab
+                  - link "Filter events by CMU Activities Board" [ref=e705] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/cmu-ab
+                    - generic [aria-hidden] [ref=e706]: 
+                - generic [ref=e707]:
+                  - link "DJ Bubbles" [ref=e708] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/dj-bubbles
+                  - link "Filter events by DJ Bubbles" [ref=e709] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/dj-bubbles
+                    - generic [aria-hidden] [ref=e710]: 
+                - generic [ref=e711]:
+                  - link "Selecta" [ref=e712] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/selecta
+                  - link "Filter events by Selecta" [ref=e713] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/selecta
+                    - generic [aria-hidden] [ref=e714]: 
+                - generic [ref=e715]: +1 more
+              - generic [ref=e716]:
+                - generic [ref=e717]:
+                  - link "Ambient" [ref=e718] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/ambient
+                  - link "View details for Ambient" [ref=e719] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/ambient
+                    - generic [aria-hidden] [ref=e720]: 
+                - generic [ref=e721]:
+                  - link "Dancehall" [ref=e722] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/dancehall
+                  - link "View details for Dancehall" [ref=e723] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/dancehall
+                    - generic [aria-hidden] [ref=e724]: 
+                - generic [ref=e725]:
+                  - link "Electronic" [ref=e726] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e727] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e728]: 
+                - generic [ref=e729]:
+                  - link "Experimental" [ref=e730] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/experimental
+                  - link "View details for Experimental" [ref=e731] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/experimental
+                    - generic [aria-hidden] [ref=e732]: 
+                - generic [ref=e733]:
+                  - link "Jungle" [ref=e734] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e735] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e736]: 
+                - generic [ref=e737]: +1 more
+          - article [ref=e739]:
+            - generic [ref=e740]:
+              - link "WPTS B-Day 1996" [ref=e741] [cursor=pointer]:
+                - /url: https://dev.arcane.city/events/wpts-b-day-1996
+                - generic [aria-hidden] [ref=e743]: 
+              - link "Sign in to mark WPTS B-Day 1996 as attending" [ref=e745] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e746]: 
+            - generic [ref=e747]:
+              - heading [level=3] [ref=e748]:
+                - link "WPTS B-Day 1996" [ref=e749] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/wpts-b-day-1996
+              - paragraph [ref=e750]: the 1985. Land. Cutups
+              - link "Concert" [ref=e752] [cursor=pointer]:
+                - /url: /events/type/concert
+              - generic [ref=e753]:
+                - generic [ref=e754]:
+                  - generic [ref=e755]: 
+                  - link "Saturday, April 6, 1996 at 8:00 PM - 11:30 PM" [ref=e756] [cursor=pointer]:
+                    - /url: /events/by-date/1996/04/06
+                - generic [ref=e757]:
+                  - generic [ref=e758]: 
+                  - link "William Pitt Union Ballroom" [ref=e759] [cursor=pointer]:
+                    - /url: /entities/wpu-ballroom
+                  - link "Map for William Pitt Union Ballroom" [ref=e760] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/place/William+Pitt+Union,+3959+Fifth+Ave,+Pittsburgh,+PA+15213/@40.4434019,-79.9570197,17z/data=!3m1!4b1!4m2!3m1!1s0x8834f228f05b41ff:0x72be583090b0535d
+                    - generic [aria-hidden] [ref=e761]: 
+                - generic [ref=e762]:
+                  - generic [ref=e763]: 
+                  - generic [ref=e764]: All Ages
+                - generic [ref=e765]:
+                  - generic [ref=e766]: 
+                  - generic [ref=e767]: "Door: Free"
+              - generic [ref=e768]:
+                - generic [ref=e769]:
+                  - link "Cutups" [ref=e770] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/cutups
+                  - link "Filter events by Cutups" [ref=e771] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/cutups
+                    - generic [aria-hidden] [ref=e772]: 
+                - generic [ref=e773]:
+                  - link "William Pitt Union Ballroom" [ref=e774] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/wpu-ballroom
+                  - link "Filter events by William Pitt Union Ballroom" [ref=e775] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/wpu-ballroom
+                    - generic [aria-hidden] [ref=e776]: 
+              - generic [ref=e777]:
+                - generic [ref=e778]:
+                  - link "College Radio" [ref=e779] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/college-radio
+                  - link "View details for College Radio" [ref=e780] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/college-radio
+                    - generic [aria-hidden] [ref=e781]: 
+                - generic [ref=e782]:
+                  - link "Jungle" [ref=e783] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e784] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e785]: 
+                - generic [ref=e786]:
+                  - link "Rock" [ref=e787] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rock
+                  - link "View details for Rock" [ref=e788] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rock
+                    - generic [aria-hidden] [ref=e789]: 
+          - article [ref=e791]:
+            - generic [ref=e792]:
+              - link "B-DAYZ" [ref=e793] [cursor=pointer]:
+                - /url: https://dev.arcane.city/events/b-dayz
+                - generic [aria-hidden] [ref=e795]: 
+              - link "Sign in to mark B-DAYZ as attending" [ref=e797] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e798]: 
+            - generic [ref=e799]:
+              - heading [level=3] [ref=e800]:
+                - link "B-DAYZ" [ref=e801] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/b-dayz
+              - paragraph [ref=e802]: Projekthausparty for 187, Stephanie and Farmer T’s bdays.
+              - link "House Show" [ref=e804] [cursor=pointer]:
+                - /url: /events/type/house-show
+              - generic [ref=e805]:
+                - generic [ref=e806]:
+                  - generic [ref=e807]: 
+                  - link "Friday, May 17, 1996 at 9:00 PM - 3:00 AM" [ref=e808] [cursor=pointer]:
+                    - /url: /events/by-date/1996/05/17
+                - generic [ref=e809]:
+                  - generic [ref=e810]: 
+                  - link "Projekthaus" [ref=e811] [cursor=pointer]:
+                    - /url: /entities/projekthaus
+                - generic [ref=e812]:
+                  - generic [ref=e813]: 
+                  - generic [ref=e814]: All Ages
+              - generic [ref=e815]:
+                - generic [ref=e816]:
+                  - link "Cutups" [ref=e817] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/cutups
+                  - link "Filter events by Cutups" [ref=e818] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/cutups
+                    - generic [aria-hidden] [ref=e819]: 
+                - generic [ref=e820]:
+                  - link "Projekthaus" [ref=e821] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/projekthaus
+                  - link "Filter events by Projekthaus" [ref=e822] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/projekthaus
+                    - generic [aria-hidden] [ref=e823]: 
+              - generic [ref=e825]:
+                - link "Jungle" [ref=e826] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/tag/jungle
+                - link "View details for Jungle" [ref=e827] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/tags/jungle
+                  - generic [aria-hidden] [ref=e828]: 
+          - article [ref=e830]:
+            - generic [ref=e831]:
+              - link "Children of Thee Process" [ref=e832] [cursor=pointer]:
+                - /url: https://dev.arcane.city/events/children-of-the-process
+                - generic [aria-hidden] [ref=e834]: 
+              - link "Sign in to mark Children of Thee Process as attending" [ref=e836] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e837]: 
+            - generic [ref=e838]:
+              - heading [level=3] [ref=e839]:
+                - link "Children of Thee Process" [ref=e840] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/children-of-the-process
+              - paragraph [ref=e841]: Projekthausparty
+              - link "House Show" [ref=e843] [cursor=pointer]:
+                - /url: /events/type/house-show
+              - generic [ref=e844]:
+                - generic [ref=e845]:
+                  - generic [ref=e846]: 
+                  - link "Friday, June 14, 1996 at 9:00 PM - 3:00 AM" [ref=e847] [cursor=pointer]:
+                    - /url: /events/by-date/1996/06/14
+                - generic [ref=e848]:
+                  - generic [ref=e849]: 
+                  - link "Projekthaus" [ref=e850] [cursor=pointer]:
+                    - /url: /entities/projekthaus
+                - generic [ref=e851]:
+                  - generic [ref=e852]: 
+                  - generic [ref=e853]: All Ages
+                - generic [ref=e854]:
+                  - generic [ref=e855]: 
+                  - generic [ref=e856]: "Presale: Free"
+                  - generic [ref=e857]: "Door: Free"
+              - generic [ref=e858]:
+                - generic [ref=e859]:
+                  - link "Cutups" [ref=e860] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/cutups
+                  - link "Filter events by Cutups" [ref=e861] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/cutups
+                    - generic [aria-hidden] [ref=e862]: 
+                - generic [ref=e863]:
+                  - link "Projekthaus" [ref=e864] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/projekthaus
+                  - link "Filter events by Projekthaus" [ref=e865] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/projekthaus
+                    - generic [aria-hidden] [ref=e866]: 
+              - generic [ref=e867]:
+                - generic [ref=e868]:
+                  - link "Experimental" [ref=e869] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/experimental
+                  - link "View details for Experimental" [ref=e870] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/experimental
+                    - generic [aria-hidden] [ref=e871]: 
+                - generic [ref=e872]:
+                  - link "Hardcore" [ref=e873] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e874] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e875]: 
+                - generic [ref=e876]:
+                  - link "Techno" [ref=e877] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e878] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e879]: 
+          - article [ref=e881]:
+            - generic [ref=e882]:
+              - link "View photo for ELECTRIC KINGDOM" [ref=e883] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1787258472_89591c9a-58cb-4f4f-b839-534519c6f69b.webp
+                - img "ELECTRIC KINGDOM" [ref=e884]
+              - link "Sign in to mark ELECTRIC KINGDOM as attending" [ref=e886] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e887]: 
+            - generic [ref=e888]:
+              - heading [level=3] [ref=e889]:
+                - link "ELECTRIC KINGDOM" [ref=e890] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/electric-kingdom
+              - paragraph [ref=e891]: An all-ages electronic music and arts event presented by Telecorps and Bass Kulture Kollective at 4 Land Street Studio in Pittsburgh.
+              - link "Rave" [ref=e893] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e894]:
+                - generic [ref=e895]:
+                  - generic [ref=e896]: 
+                  - link "Friday, June 21, 1996 at 9:00 PM - 6:00 AM" [ref=e897] [cursor=pointer]:
+                    - /url: /events/by-date/1996/06/21
+                - generic [ref=e898]:
+                  - generic [ref=e899]: 
+                  - link "Artists Image Resource" [ref=e900] [cursor=pointer]:
+                    - /url: /entities/artists-image-resource
+                  - link "Map for Artists Image Resource" [ref=e901] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/place/Artists+Image+Resource+Inc/@40.4546564,-80.0023771,17z/data=!3m1!4b1!4m5!3m4!1s0x8834f3f07f385acb:0xf1abfa9b66979450!8m2!3d40.4546523!4d-80.0001884
+                    - generic [aria-hidden] [ref=e902]: 
+                - generic [ref=e903]:
+                  - generic [ref=e904]: 
+                  - generic [ref=e905]: All Ages
+                - generic [ref=e906]:
+                  - generic [ref=e907]: 
+                  - generic [ref=e908]: "Door: $10"
+              - generic [ref=e909]:
+                - generic [ref=e910]:
+                  - link "Artists Image Resource" [ref=e911] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/artists-image-resource
+                  - link "Filter events by Artists Image Resource" [ref=e912] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/artists-image-resource
+                    - generic [aria-hidden] [ref=e913]: 
+                - generic [ref=e914]:
+                  - link "Edgar Um" [ref=e915] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/edgar-um
+                  - link "Filter events by Edgar Um" [ref=e916] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/edgar-um
+                    - generic [aria-hidden] [ref=e917]: 
+                - generic [ref=e918]:
+                  - link "Margaret Cox" [ref=e919] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/entities/margaret-cox
+                  - link "Filter events by Margaret Cox" [ref=e920] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/related-to/margaret-cox
+                    - generic [aria-hidden] [ref=e921]: 
+              - generic [ref=e922]:
+                - generic [ref=e923]:
+                  - link "Ambient" [ref=e924] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/ambient
+                  - link "View details for Ambient" [ref=e925] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/ambient
+                    - generic [aria-hidden] [ref=e926]: 
+                - generic [ref=e927]:
+                  - link "Downtempo" [ref=e928] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/downtempo
+                  - link "View details for Downtempo" [ref=e929] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/downtempo
+                    - generic [aria-hidden] [ref=e930]: 
+                - generic [ref=e931]:
+                  - link "Electronic" [ref=e932] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e933] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e934]: 
+                - generic [ref=e935]:
+                  - link "Experimental" [ref=e936] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/experimental
+                  - link "View details for Experimental" [ref=e937] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/experimental
+                    - generic [aria-hidden] [ref=e938]: 
+                - generic [ref=e939]:
+                  - link "Multimedia" [ref=e940] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/multimedia
+                  - link "View details for Multimedia" [ref=e941] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/multimedia
+                    - generic [aria-hidden] [ref=e942]: 
+                - generic [ref=e943]: +1 more
+          - article [ref=e945]:
+            - generic [ref=e946]:
+              - link "View photo for Ortho w/ Skinner (Industrial Strength Records, NYC)" [ref=e947] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1763856013_ortho_skinner_june1996.webp
+                - img "Ortho w/ Skinner (Industrial Strength Records, NYC)" [ref=e948]
+              - link "Sign in to mark Ortho w/ Skinner (Industrial Strength Records, NYC) as attending" [ref=e950] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e951]: 
+            - generic [ref=e952]:
+              - heading [level=3] [ref=e953]:
+                - link "Ortho w/ Skinner (Industrial Strength Records, NYC)" [ref=e954] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/ortho-skinner-june-29-1996
+              - paragraph [ref=e955]: Free outdoor party by The Jive Turkeyz with Skinner (NYC) and local DJs, June 29, 1996.
+              - link "Rave" [ref=e957] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e958]:
+                - generic [ref=e959]:
+                  - generic [ref=e960]: 
+                  - link "Saturday, June 29, 1996 at 10:00 PM - 6:00 AM" [ref=e961] [cursor=pointer]:
+                    - /url: /events/by-date/1996/06/29
+                - generic [ref=e962]:
+                  - generic [ref=e963]: 
+                  - generic [ref=e964]: All Ages
+              - generic [ref=e965]:
+                - generic [ref=e966]:
+                  - link "Gabber" [ref=e967] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/gabber
+                  - link "View details for Gabber" [ref=e968] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/gabber
+                    - generic [aria-hidden] [ref=e969]: 
+                - generic [ref=e970]:
+                  - link "Hardcore" [ref=e971] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e972] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e973]: 
+                - generic [ref=e974]:
+                  - link "Rave" [ref=e975] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e976] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e977]: 
+          - article [ref=e979]:
+            - generic [ref=e980]:
+              - link "View photo for Vision of Rhythm" [ref=e981] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785206846_96-07-26-vision_rhythm.front.webp
+                - img "Vision of Rhythm" [ref=e982]
+              - link "Sign in to mark Vision of Rhythm as attending" [ref=e984] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e985]: 
+            - generic [ref=e986]:
+              - heading [level=3] [ref=e987]:
+                - link "Vision of Rhythm" [ref=e988] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/vision-of-rhythm
+              - paragraph [ref=e989]: A massive all-day and all-night rave event in Pittsburgh featuring 14 DJs across three venues and 22 hours of music.
+              - link "Rave" [ref=e991] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e992]:
+                - generic [ref=e993]:
+                  - generic [ref=e994]: 
+                  - link "Friday, July 26, 1996 at 5:00 PM - 3:00 PM" [ref=e995] [cursor=pointer]:
+                    - /url: /events/by-date/1996/07/26
+                - generic [ref=e996]:
+                  - generic [ref=e997]: 
+                  - link "Ask a punk" [ref=e998] [cursor=pointer]:
+                    - /url: /entities/ask-a-punk
+                  - link "Map for Ask a punk" [ref=e999] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/AH4LPYoh1HYcMAuG8
+                    - generic [aria-hidden] [ref=e1000]: 
+                - generic [ref=e1001]:
+                  - generic [ref=e1002]: 
+                  - generic [ref=e1003]: All Ages
+                - generic [ref=e1004]:
+                  - generic [ref=e1005]: 
+                  - generic [ref=e1006]: "Door: $12"
+              - generic [ref=e1008]:
+                - link "Ask a punk" [ref=e1009] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/ask-a-punk
+                - link "Filter events by Ask a punk" [ref=e1010] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/ask-a-punk
+                  - generic [aria-hidden] [ref=e1011]: 
+              - generic [ref=e1012]:
+                - generic [ref=e1013]:
+                  - link "Drum And Bass" [ref=e1014] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/drum-and-bass
+                  - link "View details for Drum And Bass" [ref=e1015] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/drum-and-bass
+                    - generic [aria-hidden] [ref=e1016]: 
+                - generic [ref=e1017]:
+                  - link "Electronic" [ref=e1018] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e1019] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e1020]: 
+                - generic [ref=e1021]:
+                  - link "House" [ref=e1022] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e1023] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e1024]: 
+                - generic [ref=e1025]:
+                  - link "Rave" [ref=e1026] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e1027] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e1028]: 
+                - generic [ref=e1029]:
+                  - link "Techno" [ref=e1030] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e1031] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e1032]: 
+          - article [ref=e1034]:
+            - generic [ref=e1035]:
+              - link "View photo for The Rewind" [ref=e1036] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1764033628_96-08-23-rewind.front.webp
+                - img "The Rewind" [ref=e1037]
+              - link "Sign in to mark The Rewind as attending" [ref=e1039] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e1040]: 
+            - generic [ref=e1041]:
+              - heading [level=3] [ref=e1042]:
+                - link "The Rewind" [ref=e1043] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/the-rewind-1996
+              - paragraph [ref=e1044]: 1996 rave featuring The Steppers, Dieselboy, Phantom 45, AK1200 and more.
+              - link "Rave" [ref=e1046] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e1047]:
+                - generic [ref=e1048]:
+                  - generic [ref=e1049]: 
+                  - link "Friday, August 23, 1996 at 10:00 PM" [ref=e1050] [cursor=pointer]:
+                    - /url: /events/by-date/1996/08/23
+                - generic [ref=e1051]:
+                  - generic [ref=e1052]: 
+                  - generic [ref=e1053]: All Ages
+              - generic [ref=e1054]:
+                - generic [ref=e1055]:
+                  - link "Jungle" [ref=e1056] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e1057] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e1058]: 
+                - generic [ref=e1059]:
+                  - link "Hardcore" [ref=e1060] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e1061] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e1062]: 
+                - generic [ref=e1063]:
+                  - link "Drum And Bass" [ref=e1064] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/drum-and-bass
+                  - link "View details for Drum And Bass" [ref=e1065] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/drum-and-bass
+                    - generic [aria-hidden] [ref=e1066]: 
+          - article [ref=e1068]:
+            - generic [ref=e1069]:
+              - link "View photo for Deep Underground Beats" [ref=e1070] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785206921_80ceb15a-e30e-4ee5-8311-aa09f391c38d.webp
+                - img "Deep Underground Beats" [ref=e1071]
+              - link "Sign in to mark Deep Underground Beats as attending" [ref=e1073] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e1074]: 
+            - generic [ref=e1075]:
+              - heading [level=3] [ref=e1076]:
+                - link "Deep Underground Beats" [ref=e1077] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/deep-underground-beats
+              - paragraph [ref=e1078]: All-ages two-floor DJ event featuring 12 DJs spinning dub, acid jazz, hard techno, jungle, funky breaks, and more at 168 in Pittsburgh.
+              - link "Club Night" [ref=e1080] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=e1081]:
+                - generic [ref=e1082]:
+                  - generic [ref=e1083]: 
+                  - link "Sunday, August 25, 1996 at 9:00 PM - 4:00 AM" [ref=e1084] [cursor=pointer]:
+                    - /url: /events/by-date/1996/08/25
+                - generic [ref=e1085]:
+                  - generic [ref=e1086]: 
+                  - link "Ask a punk" [ref=e1087] [cursor=pointer]:
+                    - /url: /entities/ask-a-punk
+                  - link "Map for Ask a punk" [ref=e1088] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/AH4LPYoh1HYcMAuG8
+                    - generic [aria-hidden] [ref=e1089]: 
+                - generic [ref=e1090]:
+                  - generic [ref=e1091]: 
+                  - generic [ref=e1092]: All Ages
+                - generic [ref=e1093]:
+                  - generic [ref=e1094]: 
+                  - generic [ref=e1095]: "Door: $8"
+              - generic [ref=e1097]:
+                - link "Ask a punk" [ref=e1098] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/ask-a-punk
+                - link "Filter events by Ask a punk" [ref=e1099] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/ask-a-punk
+                  - generic [aria-hidden] [ref=e1100]: 
+              - generic [ref=e1101]:
+                - generic [ref=e1102]:
+                  - link "Breaks" [ref=e1103] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/breaks
+                  - link "View details for Breaks" [ref=e1104] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/breaks
+                    - generic [aria-hidden] [ref=e1105]: 
+                - generic [ref=e1106]:
+                  - link "Dub" [ref=e1107] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/dub
+                  - link "View details for Dub" [ref=e1108] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/dub
+                    - generic [aria-hidden] [ref=e1109]: 
+                - generic [ref=e1110]:
+                  - link "Electronic" [ref=e1111] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e1112] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e1113]: 
+                - generic [ref=e1114]:
+                  - link "Jungle" [ref=e1115] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e1116] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e1117]: 
+          - article [ref=e1119]:
+            - generic [ref=e1120]:
+              - 'link "View photo for DUB: Deep Underground Beats" [ref=e1121] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1787693402_dc357a7a-5bc9-4b1b-aed3-e3f498683255.webp
+                - 'img "DUB: Deep Underground Beats" [ref=e1122]'
+              - 'link "Sign in to mark DUB: Deep Underground Beats as attending" [ref=e1124] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e1125]: 
+            - generic [ref=e1126]:
+              - heading [level=3] [ref=e1127]:
+                - 'link "DUB: Deep Underground Beats" [ref=e1128] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/dub-deep-underground-beats
+              - paragraph [ref=e1129]: An all-ages, two-floor, 12-DJ deep underground beats night featuring house, jungle, techno, and breakbeat DJs at 168 in downtown Pittsburgh.
+              - link "Rave" [ref=e1131] [cursor=pointer]:
+                - /url: /events/type/rave
+              - generic [ref=e1132]:
+                - generic [ref=e1133]:
+                  - generic [ref=e1134]: 
+                  - link "Sunday, August 25, 1996 at 9:00 PM - 4:00 AM" [ref=e1135] [cursor=pointer]:
+                    - /url: /events/by-date/1996/08/25
+                - generic [ref=e1136]:
+                  - generic [ref=e1137]: 
+                  - link "Ask a punk" [ref=e1138] [cursor=pointer]:
+                    - /url: /entities/ask-a-punk
+                  - link "Map for Ask a punk" [ref=e1139] [cursor=pointer]:
+                    - /url: https://maps.app.goo.gl/AH4LPYoh1HYcMAuG8
+                    - generic [aria-hidden] [ref=e1140]: 
+                - generic [ref=e1141]:
+                  - generic [ref=e1142]: 
+                  - generic [ref=e1143]: All Ages
+                - generic [ref=e1144]:
+                  - generic [ref=e1145]: 
+                  - generic [ref=e1146]: "Door: $8"
+              - generic [ref=e1148]:
+                - link "Ask a punk" [ref=e1149] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/ask-a-punk
+                - link "Filter events by Ask a punk" [ref=e1150] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/ask-a-punk
+                  - generic [aria-hidden] [ref=e1151]: 
+              - generic [ref=e1152]:
+                - generic [ref=e1153]:
+                  - link "Deep House" [ref=e1154] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/deep%20house
+                  - link "View details for Deep House" [ref=e1155] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/deep%20house
+                    - generic [aria-hidden] [ref=e1156]: 
+                - generic [ref=e1157]:
+                  - link "Electro" [ref=e1158] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electro
+                  - link "View details for Electro" [ref=e1159] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electro
+                    - generic [aria-hidden] [ref=e1160]: 
+                - generic [ref=e1161]:
+                  - link "House" [ref=e1162] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e1163] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e1164]: 
+                - generic [ref=e1165]:
+                  - link "Jungle" [ref=e1166] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e1167] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e1168]: 
+                - generic [ref=e1169]:
+                  - link "Techno" [ref=e1170] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e1171] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e1172]: 
+          - article [ref=e1174]:
+            - generic [ref=e1175]:
+              - link "View photo for Coffee Break!" [ref=e1176] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1785207091_c7b7321f-4cce-4b12-b74b-15b386e9446d.webp
+                - img "Coffee Break!" [ref=e1177]
+              - link "Sign in to mark Coffee Break! as attending" [ref=e1179] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e1180]: 
+            - generic [ref=e1181]:
+              - heading [level=3] [ref=e1182]:
+                - link "Coffee Break!" [ref=e1183] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/coffee-break
+              - paragraph [ref=e1184]: Weekly Thursday underground DJ night at Club 168 featuring techno, hip-hop, acid jazz, and progressive house.
+              - link "Club Night" [ref=e1186] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=e1187]:
+                - generic [ref=e1188]:
+                  - generic [ref=e1189]: 
+                  - link "Thursday, August 29, 1996 at 9:00 PM - 2:00 AM" [ref=e1190] [cursor=pointer]:
+                    - /url: /events/by-date/1996/08/29
+                - generic [ref=e1191]:
+                  - generic [ref=e1192]: 
+                  - link "Club 168" [ref=e1193] [cursor=pointer]:
+                    - /url: /entities/club-16
+                - generic [ref=e1194]:
+                  - generic [ref=e1195]: 
+                  - generic [ref=e1196]: All Ages
+              - generic [ref=e1198]:
+                - link "Club 168" [ref=e1199] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/club-16
+                - link "Filter events by Club 168" [ref=e1200] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/club-16
+                  - generic [aria-hidden] [ref=e1201]: 
+              - generic [ref=e1202]:
+                - generic [ref=e1203]:
+                  - link "Electronic" [ref=e1204] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e1205] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e1206]: 
+                - generic [ref=e1207]:
+                  - link "Techno" [ref=e1208] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e1209] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e1210]: 
+          - article [ref=e1212]:
+            - generic [ref=e1213]:
+              - link "View photo for Your 2nd Ago" [ref=e1214] [cursor=pointer]:
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1787803523_9d9d1f1e-3b5a-4086-8bd3-56b8820d30ca.webp
+                - img "Your 2nd Ago" [ref=e1215]
+              - link "Sign in to mark Your 2nd Ago as attending" [ref=e1217] [cursor=pointer]:
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e1218]: 
+            - generic [ref=e1219]:
+              - heading [level=3] [ref=e1220]:
+                - link "Your 2nd Ago" [ref=e1221] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/your-2nd-ago
+              - paragraph [ref=e1222]: A two-floor all-ages rave in Downtown Pittsburgh featuring hardcore techno, hard tech-house, and progressive trance DJs.
+              - link "Club Night" [ref=e1224] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=e1225]:
+                - generic [ref=e1226]:
+                  - generic [ref=e1227]: 
+                  - link "Monday, September 2, 1996 at 9:00 PM - 4:00 AM" [ref=e1228] [cursor=pointer]:
+                    - /url: /events/by-date/1996/09/02
+                - generic [ref=e1229]:
+                  - generic [ref=e1230]: 
+                  - link "Club 168" [ref=e1231] [cursor=pointer]:
+                    - /url: /entities/club-16
+                - generic [ref=e1232]:
+                  - generic [ref=e1233]: 
+                  - generic [ref=e1234]: All Ages
+                - generic [ref=e1235]:
+                  - generic [ref=e1236]: 
+                  - generic [ref=e1237]: "Door: $5"
+              - generic [ref=e1239]:
+                - link "Club 168" [ref=e1240] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/entities/club-16
+                - link "Filter events by Club 168" [ref=e1241] [cursor=pointer]:
+                  - /url: https://dev.arcane.city/events/related-to/club-16
+                  - generic [aria-hidden] [ref=e1242]: 
+              - generic [ref=e1243]:
+                - generic [ref=e1244]:
+                  - link "Electronic" [ref=e1245] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e1246] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e1247]: 
+                - generic [ref=e1248]:
+                  - link "Hardcore" [ref=e1249] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/hardcore
+                  - link "View details for Hardcore" [ref=e1250] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/hardcore
+                    - generic [aria-hidden] [ref=e1251]: 
+                - generic [ref=e1252]:
+                  - link "Rave" [ref=e1253] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/rave
+                  - link "View details for Rave" [ref=e1254] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/rave
+                    - generic [aria-hidden] [ref=e1255]: 
+                - generic [ref=e1256]:
+                  - link "Techno" [ref=e1257] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/techno
+                  - link "View details for Techno" [ref=e1258] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/techno
+                    - generic [aria-hidden] [ref=e1259]: 
+          - article [ref=e1261]:
+            - generic [ref=e1262]:
+              - 'link "View photo for Steel City Underground: Tuesday Sept. 10" [ref=e1263] [cursor=pointer]':
+                - /url: https://arcane-city-library.nyc3.digitaloceanspaces.com/prod/photos/1763856372_steelcityudg_sept_1996.webp
+                - 'img "Steel City Underground: Tuesday Sept. 10" [ref=e1264]'
+              - 'link "Sign in to mark Steel City Underground: Tuesday Sept. 10 as attending" [ref=e1266] [cursor=pointer]':
+                - /url: https://dev.arcane.city/login
+                - generic [aria-hidden] [ref=e1267]: 
+            - generic [ref=e1268]:
+              - heading [level=3] [ref=e1269]:
+                - 'link "Steel City Underground: Tuesday Sept. 10" [ref=e1270] [cursor=pointer]':
+                  - /url: https://dev.arcane.city/events/steel-city-underground-sept-10-1996
+              - paragraph [ref=e1271]: Two floors of DJs including Dieselboy, Smokin' Bob, and more at Club OneSixEight, Sept 10.
+              - link "Club Night" [ref=e1273] [cursor=pointer]:
+                - /url: /events/type/club-night
+              - generic [ref=e1274]:
+                - generic [ref=e1275]:
+                  - generic [ref=e1276]: 
+                  - link "Tuesday, September 10, 1996 at 10:00 PM - 4:00 AM" [ref=e1277] [cursor=pointer]:
+                    - /url: /events/by-date/1996/09/10
+                - generic [ref=e1278]:
+                  - generic [ref=e1279]: 
+                  - generic [ref=e1280]: All Ages
+                - generic [ref=e1281]:
+                  - generic [ref=e1282]: 
+                  - generic [ref=e1283]: "Door: $5"
+              - generic [ref=e1284]:
+                - generic [ref=e1285]:
+                  - link "Breaks" [ref=e1286] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/breaks
+                  - link "View details for Breaks" [ref=e1287] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/breaks
+                    - generic [aria-hidden] [ref=e1288]: 
+                - generic [ref=e1289]:
+                  - link "Electronic" [ref=e1290] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/electronic
+                  - link "View details for Electronic" [ref=e1291] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/electronic
+                    - generic [aria-hidden] [ref=e1292]: 
+                - generic [ref=e1293]:
+                  - link "House" [ref=e1294] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/house
+                  - link "View details for House" [ref=e1295] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/house
+                    - generic [aria-hidden] [ref=e1296]: 
+                - generic [ref=e1297]:
+                  - link "Jungle" [ref=e1298] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/events/tag/jungle
+                  - link "View details for Jungle" [ref=e1299] [cursor=pointer]:
+                    - /url: https://dev.arcane.city/tags/jungle
+                    - generic [aria-hidden] [ref=e1300]: 
+        - generic [ref=e1302]:
+          - generic [ref=e1303]: Showing 1 to 25 of 4326 results
+          - generic [ref=e1305]:
+            - combobox [ref=e1306]:
+              - option "5"
+              - option "10"
+              - option "25" [selected]
+              - option "100"
+              - option "1000"
+            - generic [ref=e1307]: "Sort by:"
+            - combobox [ref=e1308]:
+              - option "Name"
+              - option "Start At" [selected]
+              - option "Event Type"
+              - option "Updated At"
+            - combobox [ref=e1309]:
+              - option "asc" [selected]
+              - option "desc"
+          - generic [ref=e1310]:
+            - link "1" [ref=e1311] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/filter?page=1
+            - link "2" [ref=e1312] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/filter?page=2
+            - link "3" [ref=e1313] [cursor=pointer]:
+              - /url: https://dev.arcane.city/events/filter?page=3
+        - generic [ref=e1315]:
+          - generic [ref=e1316]: DEV Arcane City
+          - generic [aria-hidden] [ref=e1317]: ·
+          - link "Tonight" [ref=e1318] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/tonight
+          - generic [aria-hidden] [ref=e1319]: ·
+          - link "This Week" [ref=e1320] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-week
+          - generic [aria-hidden] [ref=e1321]: ·
+          - link "This Weekend" [ref=e1322] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events/this-weekend
+          - generic [aria-hidden] [ref=e1323]: ·
+          - link "Events" [ref=e1324] [cursor=pointer]:
+            - /url: https://dev.arcane.city/events
+          - generic [aria-hidden] [ref=e1325]: ·
+          - link "Entities" [ref=e1326] [cursor=pointer]:
+            - /url: https://dev.arcane.city/entities
+          - generic [aria-hidden] [ref=e1327]: ·
+          - link "Series" [ref=e1328] [cursor=pointer]:
+            - /url: https://dev.arcane.city/series
+          - generic [aria-hidden] [ref=e1329]: ·
+          - link "Tags" [ref=e1330] [cursor=pointer]:
+            - /url: https://dev.arcane.city/tags
+  - text:    

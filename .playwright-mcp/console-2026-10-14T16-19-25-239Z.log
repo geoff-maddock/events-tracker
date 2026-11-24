@@ -1,0 +1,7 @@
+[    3552ms] [LOG] 16:19:28.788: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3609ms] [LOG] 16:19:28.846: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-3aeba037b27d8a3666d03220bade41a6.js:0
+[    3805ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    3817ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2cd3ff9ef4992241a2f3ecb0bf082e27.js:0
+[    5716ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-b2720a3b0555.js:54
+[    5760ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-b2720a3b0555.js:54
+[    6046ms] [LOG] SoundCloud Embed Player (api-web) @ https://widget.sndcdn.com/widget-9-b2720a3b0555.js:54
