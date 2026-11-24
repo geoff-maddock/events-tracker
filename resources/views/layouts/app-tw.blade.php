@@ -119,7 +119,6 @@
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js" integrity="sha384-HCjW0//bc6Gu9bS3OISjenLhzVqjRipLVVj9LZtzKu+FYXXOZVCN7WDv2TYxCfmo" crossorigin="anonymous"></script>
 	@endif
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js"></script>
-	<script src="{{ asset('/js/jquery.ba-throttle-debounce.min.js') }}"></script>
 	<script src="{{ asset('/js/auto-submit.js') }}"></script>
 	<script src="{{ asset('/js/embed-cache.js') }}?v={{ @filemtime(public_path('js/embed-cache.js')) }}"></script>
 	<script src="{{ asset('/js/custom.js') }}?v={{ @filemtime(public_path('js/custom.js')) }}"></script>

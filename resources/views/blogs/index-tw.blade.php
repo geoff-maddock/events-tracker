@@ -110,13 +110,6 @@
 @section('scripts.footer')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-	// Auto-submit on select change
-	document.querySelectorAll('.auto-submit').forEach(function(select) {
-		select.addEventListener('change', function() {
-			this.form.submit();
-		});
-	});
-
 	// Initialize Select2
 	$('#filter_user').select2({
 		theme: 'tailwind',
