@@ -5655,7 +5655,7 @@ paths:
       tags:
         - links
       summary: Update link (PATCH)
-      description: Handled exactly like PUT. `text` and `url` must be sent, and `is_primary` becomes false when left out.
+      description: Handled exactly like PUT. `text` and `url` must be sent, and `is_primary` becomes false when left out. Allowed for the owner of an entity the link is attached to, or an admin.
       operationId: patchLinkById
       requestBody:
         content:
@@ -5669,6 +5669,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Link"
+        "403":
+          description: Not the owner of an attached entity or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/menus:
     get:
       tags:
@@ -5784,7 +5790,7 @@ paths:
       tags:
         - menus
       summary: Replace menu
-      description: Fully replaces a menu. A parent menu that is not sent is cleared. Admins only.
+      description: Fully replaces a menu. `name`, `slug`, `body` and `visibility_id` are required; a parent menu that is not sent is cleared. Admins only.
       operationId: replaceMenuById
       requestBody:
         content:
@@ -6301,7 +6307,7 @@ paths:
       tags:
         - posts
       summary: Replace Post
-      description: Fully replaces a post. A name, slug or description that is not sent is cleared. Allowed for its author or an admin.
+      description: Fully replaces a post. `body` and `visibility_id` are required. A name, slug or description that is not sent is cleared, and so are the tags and related entities when `tag_list` or `entity_list` is left out. Allowed for its author only.
       operationId: replacePostById
       requestBody:
         content:
@@ -6316,7 +6322,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Post"
         "403":
-          description: Not the author of the post or an admin
+          description: Not the author of the post
           content:
             application/json:
               schema:
@@ -6325,7 +6331,7 @@ paths:
       tags:
         - posts
       summary: Update Post
-      description: Partially updates a post; only the fields sent are changed. Allowed for its author or an admin.
+      description: Partially updates a post; only the fields sent are changed. Allowed for its author only.
       operationId: updatePostById
       requestBody:
         content:
@@ -6340,7 +6346,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Post"
         "403":
-          description: Not the author of the post or an admin
+          description: Not the author of the post
           content:
             application/json:
               schema:
@@ -6624,11 +6630,13 @@ paths:
       operationId: getAllSeriesPhotosBySlug
       responses:
         "200":
-          description: Successful response
+          description: The photos as a plain array, not paginated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Photos"
+                type: array
+                items:
+                  $ref: "#/components/schemas/PhotoResponse"
   /api/series/{id}/photos:
     post:
       parameters:
@@ -6677,11 +6685,13 @@ paths:
       operationId: getSeriesPhotos
       responses:
         "200":
-          description: Successful response
+          description: The photos as a plain array, not paginated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Photos"
+                type: array
+                items:
+                  $ref: "#/components/schemas/PhotoResponse"
         "404":
           $ref: "#/components/responses/NotFound"
   /api/series/{id}/photos/from-url:
@@ -6959,7 +6969,7 @@ paths:
       tags:
         - tags
       summary: Update Tag
-      description: Fully replaces a tag.
+      description: Updates a tag; only the fields sent are changed. Admins only.
       operationId: updateTagBySlug
       requestBody:
         content:
@@ -6986,7 +6996,7 @@ paths:
       tags:
         - tags
       summary: Update Tag (PATCH)
-      description: Handled exactly like PUT, which also changes only the fields sent. Admins only.
+      description: Handled exactly like PUT; only the fields sent are changed. Admins only.
       operationId: patchTagBySlug
       requestBody:
         content:
@@ -6998,6 +7008,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/tags/{slug}/related-tags:
     parameters:
       - name: slug
@@ -7371,14 +7387,14 @@ paths:
         - search
       summary: Search
       description: |
-        Typeahead search over events, entities, series, tags and site pages. Needs no sign-in; with
-        a token the results also include what that user may see. Events, entities and series match
-        on name, short description and description; tags on name. A keyword shorter than three
-        characters matches on name only.
+        Typeahead search over events, entities, series, tags and site pages. Needs no sign-in and
+        returns what a signed-out visitor may see; a token or basic auth is not read. (Called from
+        the site's own pages it carries the session, and then includes what that user may see.)
+        Events, entities and series match on name, short description and description; tags on
+        name. A keyword shorter than three characters matches on name only.
       operationId: search
       security:
         - {}
-        - bearerAuth: []
       parameters:
         - name: q
           in: query
@@ -7758,7 +7774,7 @@ paths:
       tags:
         - users
       summary: Update User
-      description: Fully replaces a user's profile.
+      description: Updates a user and their profile; only the fields sent are changed. Allowed for the user themselves or an admin.
       operationId: updateUserById
       requestBody:
         content:
@@ -7793,7 +7809,7 @@ paths:
       tags:
         - users
       summary: Update User (PATCH)
-      description: Handled exactly like PUT, which also changes only the fields sent. Allowed for the user themselves or an admin.
+      description: Handled exactly like PUT; only the fields sent are changed. Allowed for the user themselves or an admin.
       operationId: patchUserById
       requestBody:
         content:
@@ -7807,6 +7823,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "403":
+          description: Not the user or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/users/{userId}/events-attending:
     get:
       parameters:
@@ -8000,9 +8022,10 @@ paths:
       tags:
         - events
       summary: Get Recommended Events
-      description: Returns the events recommended for the authenticated user, soonest first, with the same filters as the events list. Needs a token; basic auth is not accepted.
+      description: Returns the events recommended for the authenticated user, soonest first, with the same filters as the events list.
       operationId: getUserRecommendedEvents
       security:
+        - basicAuth: []
         - bearerAuth: []
       responses:
         "200":
