@@ -1,5 +1,30 @@
 /* global EmbedLoader */
 /* exported App, Home */
+// toast.js (in the Vite bundle) defines window.notify; a top-level name here
+// is a property of window too, hence the different one
+var showToast = function (options) {
+    if (typeof window.notify === 'function') {
+        window.notify(options);
+    }
+};
+
+// tell the visitor a request failed, and why when the status says so
+var showRequestFailure = function (xhr, fallback) {
+    var message = fallback;
+    if (xhr && xhr.status === 401) {
+        message = 'Please sign in to do that.';
+    } else if (xhr && xhr.status === 419) {
+        message = 'Your session has expired. Reload the page and try again.';
+    } else if (xhr && xhr.status === 403) {
+        message = "You don't have permission to do that.";
+    } else if (xhr && xhr.status === 429) {
+        message = 'Too many requests. Wait a moment and try again.';
+    } else if (xhr && xhr.status === 0) {
+        message = 'Could not reach the site. Check your connection and try again.';
+    }
+    showToast({ title: 'Something went wrong', message: message, level: 'error' });
+};
+
 // App - some basic app functions for interactions
 var App = (function () {
     var init = function () {
@@ -55,6 +80,7 @@ var App = (function () {
                     $container.removeClass('playlist-id hidden');
                 }
             }).fail(function () {
+                // an embed that doesn't load leaves the card as it was; nothing to tell the visitor
             });
         }
     };
@@ -172,15 +198,15 @@ var App = (function () {
                 type: 'POST',
                 headers: { 'X-CSRF-TOKEN': csrfToken() },
             }).done(function (data) {
-                // fire a flash message
+                // a signed-out or expired session answers with the login page, not JSON
+                if (!data || typeof data !== 'object' || data.Success === undefined) {
+                    showRequestFailure(null, "That didn't work. You may need to sign in again.");
+                    return;
+                }
                 $(target).replaceWith(data.Success);
-                Swal.fire({
-                    title: "Success",
-                    text: data.Message,
-                    type: "success",
-                    timer: 2000,
-                });
-            }).fail(function () {
+                showToast({ title: 'Success', message: data.Message, level: 'success' });
+            }).fail(function (xhr) {
+                showRequestFailure(xhr, "That didn't work. Please try again.");
             });
         });
     };
@@ -351,7 +377,8 @@ var Home = (function () {
                 $('#day-position-' + num).html(data);
                 // TODO determine if we need to do this re-load, or ONLY after the days have been added?
                 App.loadEmbeds();
-            }).fail(function () {
+            }).fail(function (xhr) {
+                showRequestFailure(xhr, "Couldn't load the events. Reload the page to try again.");
             });
         }
     };
@@ -362,7 +389,8 @@ var Home = (function () {
             url: url
         }).done(function (data) {
             $('#4days').html(data);
-        }).fail(function () {
+        }).fail(function (xhr) {
+            showRequestFailure(xhr, "Couldn't load the events. Reload the page to try again.");
         });
     };
 
@@ -375,7 +403,8 @@ var Home = (function () {
                 $('.next-events').parent().remove();
                 $(target).last().after(data);
                 App.loadEmbeds();
-            }).fail(function () {
+            }).fail(function (xhr) {
+                showRequestFailure(xhr, "Couldn't load the events. Reload the page to try again.");
             });
         }
     };
