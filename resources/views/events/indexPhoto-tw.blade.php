@@ -43,17 +43,17 @@
                 <a href="{{ action([\App\Http\Controllers\EventsController::class, 'rppReset']) }}" class="btn-tw btn-secondary-tw" title="Reset">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
-                <select name="limit" class="input-tw text-sm w-20 auto-submit">
+                <select name="limit" aria-label="Results per page" class="input-tw text-sm w-20 auto-submit">
                     @foreach($limitOptions as $value => $label)
                         <option value="{{ $value }}" {{ ($limit ?? 24) == $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <select name="sort" class="input-tw text-sm w-32 auto-submit">
+                <select name="sort" aria-label="Sort by" class="input-tw text-sm w-32 auto-submit">
                     @foreach($sortOptions as $value => $label)
                         <option value="{{ $value }}" {{ ($sort ?? 'events.start_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <select name="direction" class="input-tw text-sm w-20 auto-submit">
+                <select name="direction" aria-label="Sort direction" class="input-tw text-sm w-20 auto-submit">
                     @foreach($directionOptions as $value => $label)
                         <option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach

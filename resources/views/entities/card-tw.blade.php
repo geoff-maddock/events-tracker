@@ -12,9 +12,9 @@
 		</a>
 		@else
 		<a href="/images/entity-placeholder.png"
-			data-lightbox="entity-{{ $entity->id }}">
+			data-lightbox="entity-{{ $entity->id }}" aria-label="{{ $entity->name }}">
 			<div class="w-full aspect-square bg-card flex items-center justify-center">
-				<i class="bi bi-building text-4xl text-muted-foreground/60"></i>
+				<i class="bi bi-building text-4xl text-muted-foreground/60" aria-hidden="true"></i>
 			</div>
 		</a>
 		@endif

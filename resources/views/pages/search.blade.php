@@ -70,8 +70,8 @@
 				<h2 class="text-xl font-semibold text-foreground">Events</h2>
 				<span class="badge-tw bg-muted text-foreground">{{ $eventsCount }}</span>
 			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-events')">
-				<i class="bi bi-eye-fill"></i>
+			<button type="button" class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-events')" aria-expanded="true" aria-controls="search-events" aria-label="Show or hide events" title="Show or hide">
+				<i class="bi bi-eye-fill" aria-hidden="true"></i>
 			</button>
 		</div>
 		<div id="search-events" class="p-4">
@@ -132,8 +132,8 @@
 				<h2 class="text-xl font-semibold text-foreground">Pages</h2>
 				<span class="badge-tw bg-muted text-foreground">{{ $modulesCount }}</span>
 			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-modules')">
-				<i class="bi bi-eye-fill"></i>
+			<button type="button" class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-modules')" aria-expanded="true" aria-controls="search-modules" aria-label="Show or hide pages" title="Show or hide">
+				<i class="bi bi-eye-fill" aria-hidden="true"></i>
 			</button>
 		</div>
 		<div id="search-modules" class="p-4">
@@ -164,8 +164,8 @@
 				<h2 class="text-xl font-semibold text-foreground">Entities</h2>
 				<span class="badge-tw bg-muted text-foreground">{{ $entitiesCount }}</span>
 			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-entities')">
-				<i class="bi bi-eye-fill"></i>
+			<button type="button" class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-entities')" aria-expanded="true" aria-controls="search-entities" aria-label="Show or hide entities" title="Show or hide">
+				<i class="bi bi-eye-fill" aria-hidden="true"></i>
 			</button>
 		</div>
 		<div id="search-entities" class="p-4">
@@ -191,8 +191,8 @@
 				<h2 class="text-xl font-semibold text-foreground">Series</h2>
 				<span class="badge-tw bg-muted text-foreground">{{ $seriesCount }}</span>
 			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-series')">
-				<i class="bi bi-eye-fill"></i>
+			<button type="button" class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-series')" aria-expanded="true" aria-controls="search-series" aria-label="Show or hide series" title="Show or hide">
+				<i class="bi bi-eye-fill" aria-hidden="true"></i>
 			</button>
 		</div>
 		<div id="search-series" class="p-4">
@@ -251,8 +251,8 @@
 				<h2 class="text-xl font-semibold text-foreground">Tags</h2>
 				<span class="badge-tw bg-muted text-foreground">{{ $tagsCount }}</span>
 			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-tags')">
-				<i class="bi bi-eye-fill"></i>
+			<button type="button" class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-tags')" aria-expanded="true" aria-controls="search-tags" aria-label="Show or hide tags" title="Show or hide">
+				<i class="bi bi-eye-fill" aria-hidden="true"></i>
 			</button>
 		</div>
 		<div id="search-tags" class="p-4">
@@ -276,8 +276,8 @@
 				<h2 class="text-xl font-semibold text-foreground">Threads</h2>
 				<span class="badge-tw bg-muted text-foreground">{{ $threadsCount }}</span>
 			</div>
-			<button class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-threads')">
-				<i class="bi bi-eye-fill"></i>
+			<button type="button" class="text-muted-foreground hover:text-foreground" onclick="toggleSection('search-threads')" aria-expanded="true" aria-controls="search-threads" aria-label="Show or hide threads" title="Show or hide">
+				<i class="bi bi-eye-fill" aria-hidden="true"></i>
 			</button>
 		</div>
 		<div id="search-threads" class="p-4 space-y-4">
@@ -300,7 +300,11 @@
 function toggleSection(sectionId) {
 	const section = document.getElementById(sectionId);
 	if (section) {
-		section.classList.toggle('hidden');
+		const hidden = section.classList.toggle('hidden');
+		const button = document.querySelector('[aria-controls="' + sectionId + '"]');
+		if (button) {
+			button.setAttribute('aria-expanded', String(!hidden));
+		}
 	}
 }
 </script>

@@ -10,7 +10,7 @@
                     class="w-24 h-24 rounded-full object-cover border-2 border-border hover:border-primary transition-colors">
             </a>
             @else
-            <a href="{{ route('users.show', [$user]) }}">
+            <a href="{{ route('users.show', [$user]) }}" aria-label="{{ $user->name }}">
                 <div class="w-24 h-24 rounded-full bg-card flex items-center justify-center border-2 border-border hover:border-primary transition-colors">
                     <i class="bi bi-person text-4xl text-muted-foreground/50"></i>
                 </div>

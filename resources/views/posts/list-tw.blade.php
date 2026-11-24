@@ -84,7 +84,7 @@
                     <form method="POST" action="{{ route('posts.destroy', $post->id) }}" style="display: inline;" data-confirm="You will not be able to recover this post!">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="no-button py-0 my-0"><i class="bi bi-trash-fill text-destructive" title="Delete"></i></button>
+                        <button type="submit" class="no-button py-0 my-0" title="Delete" aria-label="Delete the post"><i class="bi bi-trash-fill text-destructive" aria-hidden="true"></i></button>
                     </form>
                     @endif
                     @if ($like = (isset($likedPostIds) ? array_key_exists($post->id, $likedPostIds) : $post->likedBy($user)))

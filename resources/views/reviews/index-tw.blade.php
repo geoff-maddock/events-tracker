@@ -53,18 +53,18 @@
 				<a href="{{ url()->action([\App\Http\Controllers\ReviewsController::class, 'rppReset']) }}" class="px-3 py-2 bg-card border border-border rounded-lg hover:bg-accent transition-colors" title="Reset sort and filters">
 					<i class="bi bi-arrow-clockwise"></i>
 				</a>
-				<select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+				<select name="limit" aria-label="Results per page" class="form-select-tw text-sm py-1 auto-submit">
 					@foreach($limitOptions as $value => $label)
 					<option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
 					@endforeach
 				</select>
 				<span class="text-muted-foreground text-sm">Sort by:</span>
-				<select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+				<select name="sort" aria-label="Sort by" class="form-select-tw text-sm py-1 auto-submit">
 					@foreach($sortOptions as $value => $label)
 					<option value="{{ $value }}" {{ ($sort ?? 'name') == $value ? 'selected' : '' }}>{{ $label }}</option>
 					@endforeach
 				</select>
-				<select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+				<select name="direction" aria-label="Sort direction" class="form-select-tw text-sm py-1 auto-submit">
 					@foreach($directionOptions as $value => $label)
 					<option value="{{ $value }}" {{ ($direction ?? 'asc') == $value ? 'selected' : '' }}>{{ $label }}</option>
 					@endforeach

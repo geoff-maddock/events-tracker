@@ -53,18 +53,18 @@
     <!-- Sort Controls -->
     <div class="flex items-center gap-4">
         <form action="{{ url()->current() }}" method="GET" class="flex items-center gap-2">
-            <select name="limit" class="form-select-tw text-sm py-1 auto-submit">
+            <select name="limit" aria-label="Results per page" class="form-select-tw text-sm py-1 auto-submit">
                 @foreach($limitOptions as $value => $label)
                 <option value="{{ $value }}" {{ ($limit ?? 10) == $value ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
             <span class="text-muted-foreground text-sm">Sort by:</span>
-            <select name="sort" class="form-select-tw text-sm py-1 auto-submit">
+            <select name="sort" aria-label="Sort by" class="form-select-tw text-sm py-1 auto-submit">
                 @foreach($sortOptions as $value => $label)
                 <option value="{{ $value }}" {{ ($sort ?? 'activities.created_at') == $value ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
-            <select name="direction" class="form-select-tw text-sm py-1 auto-submit">
+            <select name="direction" aria-label="Sort direction" class="form-select-tw text-sm py-1 auto-submit">
                 @foreach($directionOptions as $value => $label)
                 <option value="{{ $value }}" {{ ($direction ?? 'desc') == $value ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
