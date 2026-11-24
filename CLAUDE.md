@@ -78,6 +78,7 @@ PHPStan has a `phpstan-baseline.neon`. Don't try to fix baseline errors as part 
 - Don't edit existing migrations — always add a new one.
 - Don't edit `database/schema/mysql-schema.sql` by hand. It is the one schema dump a fresh install loads before running the migrations, written by `php artisan schema:dump`; a column added there and not in a migration never reaches an existing database. Every schema change is a migration. `php artisan db:schema-diff` compares a database with a fresh build.
 - Don't modify the `Prod*DatabaseSeeder` files casually; they're used for fresh production installs.
+- Don't add a `setXAttribute()` mutator just to store an empty form field as null. List the attribute in the model's `BLANK_TO_NULL_DATES` or `BLANK_TO_NULL_INTS` (the `BlankToNull` trait on `Event`, `Series` and `Thread`).
 - Don't hand-write the "nothing to show" block of a list; use `<x-empty-state>` (`icon`, `boxed`, `compact`, an `actions` slot).
 - Don't wire a form field's error by hand. Put the control in `<x-ui.form-group>` (`name`, `label`, `:error`, `help-text`, `required`; `for` when the control's id isn't the name): the `x-ui` input, select, textarea and checkbox inside pick up `aria-invalid`, `aria-describedby` and `aria-required` from it. The summary of a failed form comes from `partials/session-messages`.
 - Don't add guidance to `agents.md`; it only points other agents here. This file is the source of truth.

@@ -129,10 +129,15 @@ class Series extends Eloquent implements HasPhotos
 {
     use \App\Models\Concerns\Followable;
     use \App\Models\Concerns\OwnsPhotos;
+    use \App\Models\Concerns\BlankToNull;
     use \App\Models\Concerns\HasVisibility;
     use HasFactory;
     use RecommendedByFollows;
     use RefersToEntities;
+
+    /** An empty form field is stored as null (BlankToNull). */
+    protected const BLANK_TO_NULL_DATES = ['founded_at', 'soundcheck_at', 'door_at', 'start_at', 'end_at', 'cancelled_at'];
+    protected const BLANK_TO_NULL_INTS = ['occurrence_week_id', 'occurrence_day_id', 'promoter_id', 'venue_id', 'length'];
 
     protected $attributes = [
         'hold_date' => false,
@@ -286,138 +291,6 @@ class Series extends Eloquent implements HasPhotos
     protected function orInFollowedSeries(Builder $match, array $seriesIds): void
     {
         $match->orWhereIn('series.id', $seriesIds);
-    }
-
-    /**
-     * Set the occurrence week attribute.
-     */
-    public function setOccurrenceWeekIdAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['occurrence_week_id'] = $value;
-        } else {
-            $this->attributes['occurrence_week_id'] = null;
-        }
-    }
-
-    /**
-     * Set the occurrence day attribute.
-     */
-    public function setOccurrenceDayIdAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['occurrence_day_id'] = $value;
-        } else {
-            $this->attributes['occurrence_day_id'] = null;
-        }
-    }
-
-    /**
-     * Set the promoter attribute.
-     */
-    public function setPromoterIdAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['promoter_id'] = $value;
-        } else {
-            $this->attributes['promoter_id'] = null;
-        }
-    }
-
-    /**
-     * Set the venue attribute.
-     */
-    public function setVenueIdAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['venue_id'] = $value;
-        } else {
-            $this->attributes['venue_id'] = null;
-        }
-    }
-
-    /**
-     * Set the length attribute.
-     */
-    public function setLengthAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['length'] = $value;
-        } else {
-            $this->attributes['length'] = null;
-        }
-    }
-
-    /**
-     * Set the founded_at attribute.
-     */
-    public function setFoundedAtAttribute(?string $date): void
-    {
-        if (!empty($date)) {
-            $this->attributes['founded_at'] = Carbon::parse($date);
-        } else {
-            $this->attributes['founded_at'] = null;
-        }
-    }
-
-    /**
-     * Set the cancelled_at attribute.
-     */
-    public function setCancelledAtAttribute(?string $date): void
-    {
-        if (!empty($date)) {
-            $this->attributes['cancelled_at'] = Carbon::parse($date);
-        } else {
-            $this->attributes['cancelled_at'] = null;
-        }
-    }
-
-    /**
-     * Set the soundcheck_at attribute.
-     */
-    public function setSoundcheckAtAttribute(?string $date): void
-    {
-        if (!empty($date)) {
-            $this->attributes['soundcheck_at'] = Carbon::parse($date);
-        } else {
-            $this->attributes['soundcheck_at'] = null;
-        }
-    }
-
-    /**
-     * Set the start_at attribute.
-     */
-    public function setStartAtAttribute(?string $date): void
-    {
-        if (!empty($date)) {
-            $this->attributes['start_at'] = Carbon::parse($date);
-        } else {
-            $this->attributes['start_at'] = null;
-        }
-    }
-
-    /**
-     * Set the end_at attribute.
-     */
-    public function setEndAtAttribute(?string $date): void
-    {
-        if (!empty($date)) {
-            $this->attributes['end_at'] = Carbon::parse($date);
-        } else {
-            $this->attributes['end_at'] = null;
-        }
-    }
-
-    /**
-     * Set the door_at attribute.
-     */
-    public function setDoorAtAttribute(?string $date): void
-    {
-        if (!empty($date)) {
-            $this->attributes['door_at'] = Carbon::parse($date);
-        } else {
-            $this->attributes['door_at'] = null;
-        }
     }
 
     /**

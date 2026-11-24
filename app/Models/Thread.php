@@ -100,6 +100,7 @@ use Illuminate\Support\Str;
 class Thread extends Eloquent
 {
     use \App\Models\Concerns\Followable;
+    use \App\Models\Concerns\BlankToNull;
     use \App\Models\Concerns\HasLikeCounter;
 
     protected function likeType(): string
@@ -110,6 +111,10 @@ class Thread extends Eloquent
     use \App\Models\Concerns\HasVisibility;
     use HasFactory;
     use \App\Models\Concerns\SyncsEntities;
+
+    /** An empty form field is stored as null (BlankToNull). */
+    protected const BLANK_TO_NULL_DATES = [];
+    protected const BLANK_TO_NULL_INTS = ['event_id', 'thread_category_id'];
 
     public static function boot()
     {
@@ -393,18 +398,6 @@ class Thread extends Eloquent
     }
 
     /**
-     * Set the event attribute.
-     */
-    public function setEventIdAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['event_id'] = $value;
-        } else {
-            $this->attributes['event_id'] = null;
-        }
-    }
-
-    /**
      * Create the slug from the name if none was passed.
      */
     public function setSlugAttribute(?string $value): void
@@ -426,18 +419,6 @@ class Thread extends Eloquent
         if (!empty($value)) {
             $this->attributes['name'] = $value;
             $this->attributes['slug'] = Str::slug($value);
-        }
-    }
-
-    /**
-     * Set the thread category.
-     */
-    public function setThreadCategoryIdAttribute(?int $value): void
-    {
-        if (!empty($value)) {
-            $this->attributes['thread_category_id'] = $value;
-        } else {
-            $this->attributes['thread_category_id'] = null;
         }
     }
 
