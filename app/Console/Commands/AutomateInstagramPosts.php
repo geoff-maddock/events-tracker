@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Integrations\InstagramCaption;
 use App\Mail\InstagramPostFailure;
 use App\Models\Event;
 use App\Models\EventShare;
@@ -234,7 +235,7 @@ class AutomateInstagramPosts extends Command
             }
 
             // Get the Instagram caption
-            $caption = $event->getInstagramFormat();
+            $caption = InstagramCaption::forEvent($event);
 
             if (!$caption) {
                 throw new Exception('Could not generate Instagram caption');

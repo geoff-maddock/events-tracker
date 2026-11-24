@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\Integrations\InstagramCaption;
 use App\Models\Event;
 use App\Models\Entity;
 use App\Models\EventType;
@@ -17,7 +18,7 @@ class InstagramFormatTest extends TestCase
     protected bool $seed = true;
 
     /**
-     * Test that Event getInstagramFormat includes additional handles from config.
+     * Test that the event caption includes additional handles from config.
      *
      * @return void
      */
@@ -40,14 +41,14 @@ class InstagramFormatTest extends TestCase
             'visibility_id' => $visibility->id,
         ]);
 
-        $format = $event->getInstagramFormat();
+        $format = InstagramCaption::forEvent($event);
 
         $this->assertStringContainsString('@pgh.events', $format);
         $this->assertStringContainsString('@another.handle', $format);
     }
 
     /**
-     * Test that Event getInstagramFormat works without additional handles.
+     * Test that the event caption works without additional handles.
      *
      * @return void
      */
@@ -70,7 +71,7 @@ class InstagramFormatTest extends TestCase
             'visibility_id' => $visibility->id,
         ]);
 
-        $format = $event->getInstagramFormat();
+        $format = InstagramCaption::forEvent($event);
 
         // Should still generate a valid format
         $this->assertNotEmpty($format);
@@ -78,7 +79,7 @@ class InstagramFormatTest extends TestCase
     }
 
     /**
-     * Test that Event getInstagramFormat handles whitespace in config.
+     * Test that the event caption handles whitespace in config.
      *
      * @return void
      */
@@ -101,14 +102,14 @@ class InstagramFormatTest extends TestCase
             'visibility_id' => $visibility->id,
         ]);
 
-        $format = $event->getInstagramFormat();
+        $format = InstagramCaption::forEvent($event);
 
         $this->assertStringContainsString('@pgh.events', $format);
         $this->assertStringContainsString('@another.handle', $format);
     }
 
     /**
-     * Test that Entity getInstagramFormat includes additional handles from config.
+     * Test that the entity caption includes additional handles from config.
      *
      * @return void
      */
@@ -127,14 +128,14 @@ class InstagramFormatTest extends TestCase
             'updated_by' => $user->id,
         ]);
 
-        $format = $entity->getInstagramFormat();
+        $format = InstagramCaption::forEntity($entity);
 
         $this->assertStringContainsString('@pgh.events', $format);
         $this->assertStringContainsString('#pittsburgh', $format);
     }
 
     /**
-     * Test that Entity getInstagramFormat works without additional handles.
+     * Test that the entity caption works without additional handles.
      *
      * @return void
      */
@@ -153,7 +154,7 @@ class InstagramFormatTest extends TestCase
             'updated_by' => $user->id,
         ]);
 
-        $format = $entity->getInstagramFormat();
+        $format = InstagramCaption::forEntity($entity);
 
         // Should still generate a valid format
         $this->assertNotEmpty($format);
@@ -184,7 +185,7 @@ class InstagramFormatTest extends TestCase
             'visibility_id' => $visibility->id,
         ]);
 
-        $format = $event->getInstagramFormat();
+        $format = InstagramCaption::forEvent($event);
 
         $this->assertStringContainsString('@pgh.events', $format);
         $this->assertStringContainsString('#pittsburghrocks', $format);
