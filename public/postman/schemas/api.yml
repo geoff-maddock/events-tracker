@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Arcane City
-  version: 2025.06.09
+  version: 2026.11.24
   description: |
     REST API for working with Arcane City data.
 
@@ -43,6 +43,7 @@ tags:
   - name: photos
   - name: posts
   - name: roles
+  - name: search
   - name: series
   - name: tags
   - name: tag-types
@@ -2516,6 +2517,28 @@ components:
         secret:
           type: string
           description: Secret token validating the request
+    SearchResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        name:
+          type: string
+          example: Hot Mass
+        slug:
+          type: string
+          nullable: true
+          example: hot-mass
+        subtitle:
+          type: string
+          nullable: true
+          description: The start date of an event, the short description of an entity or series, the description of a site page; null for a tag
+          example: Nov 28, 2026
+        url:
+          type: string
+          description: The page of the result on the site
+          example: https://arcane.city/events/42
     MessageResponse:
       type: object
       properties:
@@ -2716,6 +2739,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Activity"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      parameters:
+        - name: id
+          description: The unique identifier of the activity
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      tags:
+        - activities
+      summary: Delete Activity
+      description: Deletes an activity log entry. Admins only.
+      operationId: deleteActivityById
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
         "404":
           $ref: "#/components/responses/NotFound"
   /api/blogs:
@@ -5603,6 +5651,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+    patch:
+      tags:
+        - links
+      summary: Update link (PATCH)
+      description: Handled exactly like PUT. `text` and `url` must be sent, and `is_primary` becomes false when left out.
+      operationId: patchLinkById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Link"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Link"
   /api/menus:
     get:
       tags:
@@ -5714,6 +5780,30 @@ paths:
           description: Successful response
           content:
             application/json: {}
+    put:
+      tags:
+        - menus
+      summary: Replace menu
+      description: Fully replaces a menu. A parent menu that is not sent is cleared. Admins only.
+      operationId: replaceMenuById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+        "403":
+          description: Not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/locations:
     get:
       tags:
@@ -6207,6 +6297,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+    put:
+      tags:
+        - posts
+      summary: Replace Post
+      description: Fully replaces a post. A name, slug or description that is not sent is cleared. Allowed for its author or an admin.
+      operationId: replacePostById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "403":
+          description: Not the author of the post or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+    patch:
+      tags:
+        - posts
+      summary: Update Post
+      description: Partially updates a post; only the fields sent are changed. Allowed for its author or an admin.
+      operationId: updatePostById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "403":
+          description: Not the author of the post or an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/series:
     post:
       tags:
@@ -6523,6 +6661,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+    get:
+      parameters:
+        - name: id
+          description: The id or the slug of the series
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "strobe"
+      tags:
+        - series
+      summary: Get Series Photos
+      description: Returns the photos attached to the series itself. `/api/series/{slug}/all-photos` also includes the photos of its events.
+      operationId: getSeriesPhotos
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/series/{id}/photos/from-url:
     post:
       parameters:
@@ -6818,6 +6979,22 @@ paths:
       operationId: deleteTagBySlug
       responses:
         "204":
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - tags
+      summary: Update Tag (PATCH)
+      description: Handled exactly like PUT, which also changes only the fields sent. Admins only.
+      operationId: patchTagBySlug
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag"
+      responses:
+        "200":
           description: Successful response
           content:
             application/json: {}
@@ -7124,47 +7301,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Posts"
-  /api/threads/{threadId}/posts/{postId}:
-    parameters:
-      - name: threadId
-        description: The unique identifier of the thread
-        in: path
-        required: true
-        schema:
-          type: integer
-          readOnly: true
-          example: 1
-      - name: postId
-        description: The unique identifier of the post in the thread
-        in: path
-        required: true
-        schema:
-          type: integer
-          readOnly: true
-          example: 1
-    get:
-      parameters:
-        - name: threadId
-          description: The unique identifier of the thread
-          in: path
-          required: true
-          schema:
-            description: The unique identifier of a thread
-            type: integer
-            readOnly: true
-            example: 1
-      tags:
-        - threads
-      summary: Get Post in Thread
-      description: Returns a single post in a forum thread.
-      operationId: getPostInThreadById
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Post"
   /api/tokens/create:
     post:
       tags:
@@ -7207,6 +7343,106 @@ paths:
                     type: string
                     description: Valid user token
                     example: ABCDEF12345
+  /api/tokens/invalidate:
+    get:
+      tags:
+        - users
+      summary: Invalidate User Tokens
+      description: Deletes every API token of the authenticated user, including the one used for this request. Needs a token; basic auth is not accepted.
+      operationId: invalidateUserTokens
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    example: token invalidated
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/search:
+    get:
+      tags:
+        - search
+      summary: Search
+      description: |
+        Typeahead search over events, entities, series, tags and site pages. Needs no sign-in; with
+        a token the results also include what that user may see. Events, entities and series match
+        on name, short description and description; tags on name. A keyword shorter than three
+        characters matches on name only.
+      operationId: search
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: The keyword, up to 120 characters. Empty returns empty lists.
+          schema:
+            type: string
+            example: techno
+        - name: types
+          in: query
+          required: false
+          description: Comma-separated list of the result types to return (events, entities, series, tags, modules). All when left out.
+          schema:
+            type: string
+            example: events,entities
+        - name: limit
+          in: query
+          required: false
+          description: The number of results per type, 1 to 20
+          schema:
+            type: integer
+            default: 6
+            example: 6
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    example: techno
+                  results:
+                    type: object
+                    description: One list per requested type
+                    properties:
+                      events:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/SearchResult"
+                      entities:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/SearchResult"
+                      series:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/SearchResult"
+                      tags:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/SearchResult"
+                      modules:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/SearchResult"
+        "422":
+          description: A parameter is too long or the limit is out of range
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /api/auth/me:
     get:
       tags:
@@ -7553,6 +7789,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+    patch:
+      tags:
+        - users
+      summary: Update User (PATCH)
+      description: Handled exactly like PUT, which also changes only the fields sent. Allowed for the user themselves or an admin.
+      operationId: patchUserById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
   /api/users/{userId}/events-attending:
     get:
       parameters:
@@ -7712,16 +7966,9 @@ paths:
                 $ref: "#/components/schemas/Events"
         "403":
           description: The user's profile is private (allowed for the user, an admin, or when the profile is public)
-  /api/events-recommended:
+  /api/events/recommended:
     get:
       parameters:
-        - name: userId
-          description: The unique identifier of the user
-          in: query
-          required: false
-          schema:
-            type: integer
-            example: 1
         - name: limit
           in: query
           required: false
@@ -7751,10 +7998,12 @@ paths:
             type: string
             example: asc
       tags:
-        - users
-      summary: Get Events the User is Recommended
-      description: Returns events recommended for the specified user.
+        - events
+      summary: Get Recommended Events
+      description: Returns the events recommended for the authenticated user, soonest first, with the same filters as the events list. Needs a token; basic auth is not accepted.
       operationId: getUserRecommendedEvents
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: Successful response
@@ -7762,6 +8011,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Events"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/photos/{photoId}/set-primary:
     post:
       parameters:
