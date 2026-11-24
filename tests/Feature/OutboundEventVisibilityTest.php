@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\Integrations\InstagramCaption;
 use App\Mail\DailyReminder;
 use App\Mail\EntityReminder;
 use App\Mail\EntityUpdateSummary;
@@ -123,7 +124,7 @@ class OutboundEventVisibilityTest extends TestCase
     {
         $this->events(Carbon::now()->addDays(3));
 
-        $this->assertPublicOnly($this->entity->getInstagramFormat(), 'the Instagram caption');
+        $this->assertPublicOnly(InstagramCaption::forEntity($this->entity), 'the Instagram caption');
     }
 
     public function test_co_performers_and_venues_come_only_from_events_the_viewer_may_see(): void

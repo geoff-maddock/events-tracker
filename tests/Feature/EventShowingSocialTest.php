@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\Integrations\InstagramCaption;
 use App\Console\Commands\AutomateInstagramPosts;
 use App\Jobs\Discord\PostEventToDiscord;
 use App\Mail\EntityReminder;
@@ -85,15 +86,15 @@ class EventShowingSocialTest extends TestCase
 
     public function test_captions_lead_with_the_next_showing_and_list_the_rest(): void
     {
-        $this->assertStringContainsString('Showings: Thu Mar 4 7PM, Sat Mar 6 2PM', $this->run->getInstagramFormat());
+        $this->assertStringContainsString('Showings: Thu Mar 4 7PM, Sat Mar 6 2PM', InstagramCaption::forEvent($this->run));
         // the weekly carousel lists fewer, so a run can't crowd the others out
-        $this->assertStringContainsString('Showings: Thu Mar 4 7PM + 1 more', $this->run->getInstagramFormat(1));
+        $this->assertStringContainsString('Showings: Thu Mar 4 7PM + 1 more', InstagramCaption::forEvent($this->run, 1));
 
-        $this->assertStringNotContainsString('Showings:', $this->friday->getInstagramFormat());
+        $this->assertStringNotContainsString('Showings:', InstagramCaption::forEvent($this->friday));
 
         // down to its last date: the headline already says it
         Carbon::setTestNow('2027-03-05 12:00:00');
-        $this->assertStringNotContainsString('Showings:', $this->run->fresh()->getInstagramFormat());
+        $this->assertStringNotContainsString('Showings:', InstagramCaption::forEvent($this->run->fresh()));
     }
 
     public function test_the_discord_embed_leads_with_the_next_showing_and_lists_the_rest(): void

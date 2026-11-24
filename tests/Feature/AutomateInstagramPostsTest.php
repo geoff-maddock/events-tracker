@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\Integrations\InstagramCaption;
 use App\Console\Commands\AutomateInstagramPosts;
 use App\Mail\InstagramPostFailure;
 use App\Models\Event;
@@ -453,7 +454,7 @@ class AutomateInstagramPostsTest extends TestCase
         $instagram = $this->mockInstagram();
         $instagram->shouldReceive('uploadCarouselPhoto')->twice()->andReturn(222, 223);
         $instagram->shouldReceive('checkBatchStatus')->once()->with([222, 223])->andReturn(true);
-        $instagram->shouldReceive('createCarousel')->once()->with([222, 223], $event->getInstagramFormat())->andReturn(444);
+        $instagram->shouldReceive('createCarousel')->once()->with([222, 223], InstagramCaption::forEvent($event))->andReturn(444);
         $instagram->shouldReceive('checkStatus')->once()->with(444)->andReturn(true);
         $instagram->shouldReceive('publishMedia')->once()->with(444)->andReturn(777);
 
@@ -480,7 +481,7 @@ class AutomateInstagramPostsTest extends TestCase
         $instagram->shouldNotReceive('checkBatchStatus');
         $instagram->shouldNotReceive('createCarousel');
         $instagram->shouldReceive('uploadPhoto')->once()
-            ->with('http://example.com/test.jpg', urlencode($event->getInstagramFormat()))->andReturn(333);
+            ->with('http://example.com/test.jpg', urlencode(InstagramCaption::forEvent($event)))->andReturn(333);
         $instagram->shouldReceive('checkStatus')->once()->with(333)->andReturn(true);
         $instagram->shouldReceive('publishMedia')->once()->with(333)->andReturn(777);
 

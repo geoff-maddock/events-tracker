@@ -21,7 +21,6 @@ use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Str;
 use App\Services\OptionLists;
 
 /**
@@ -1120,106 +1119,4 @@ class Entity extends Eloquent implements HasPhotos
             return 'Varies by event';
         });
     }
-
- // Format the entity to post tp instagram
- public function getInstagramFormat(): ?string
- {
-     // no max length
-     // add the name
-     $format = "\n".$this->name."\n";
-
-     // include the type of entity
-     $format .= $this->entityType->name." - ".$this->getRoleString()."\n";
-
-     $location = $this->getPrimaryLocation();
-     if ($location) {
-        
-        if (!empty($location->address_one)) {
-            $format .= $location->address_one;
-        }
-        
-        if (!empty($location->address_two)) {
-            $format .= " ".$location->address_two;
-        }
-
-        if (!empty($location->neighborhood)) {
-            $format .= " ".$location->neighborhood;
-        }
-
-        if (!empty($location->city)) {
-            $format .= " ".$location->city;
-        }
-
-        if (!empty($location->state)) {
-            $format .= " ".$location->state;
-        }
-
-        if (!empty($location->country)) {
-            $format .= " ".$location->country;
-        }
-        $format .= "\n\n";
-     }
-
-     // include the description
-     if (!empty($this->description)) {
-        $format .= $this->description."\n";
-     }
-
-    if (!empty($this->instagram_username)) {
-
-        // try to use the twitter username, but not guaranteed to be the same
-        $format .= ' @'.$this->instagram_username;
-    } else {
-        // if the twitter username isn't set, then just add a hashtag
-        $format .= ' #'.Str::studly($this->slug);
-    }
-
-     // Turn related tags into hashtags
-     if (!$this->tags->isEmpty()) {
-         foreach ($this->tags as $tag) {
-             $format .= ' #'.Str::studly($tag->name);
-         }
-     }
-
-     // add default hashtag
-      $format .= " #".config('app.default_hashtag');
-
-     // add additional handles/tags from config
-     $additionalHandles = config('app.instagram_additional_handles');
-     if (!empty($additionalHandles)) {
-         $handles = array_map('trim', explode(',', $additionalHandles));
-         foreach ($handles as $handle) {
-             if (!empty($handle)) {
-                 $format .= ' '.$handle;
-             }
-         }
-     }
-
-     $format .= "\n";
-
-     // add the arcane city URL
-      $format .= ' '.rtrim(config('app.url'), '/').'/entities/'.$this->slug."\n";
-
-     // add the primary link
-     $primaryLink = $this->primaryLink();
-     if ($primaryLink) {
-         // if there are at least 23 chars remaining, add primary link
-         if (strlen($format) < 258) {
-             $format .= ' '.$primaryLink->url;
-         }
-     }
-
-     // add the next events
-     $events = $this->futureEvents(9)->items();
-     if (count($events) > 0) {
-            $format .= "\n\nUpcoming Events:";
-            foreach ($events as $event) {
-                $start = $event->start_at->format('m/d');
-                $format .= "\n\n".$start." ".$event->name." at ".($event->venueLabel() ?? 'No venue specified');
-            }
-     }
-
-     return $format;
-  }
-
 }

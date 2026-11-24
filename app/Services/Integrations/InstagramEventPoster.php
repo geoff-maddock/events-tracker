@@ -54,7 +54,7 @@ class InstagramEventPoster extends InstagramPoster
         $this->assertCredentials();
 
         $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
-        $result = $this->publishSinglePhoto($imageUrl, urlEncode($event->getInstagramFormat()));
+        $result = $this->publishSinglePhoto($imageUrl, urlEncode(InstagramCaption::forEvent($event)));
 
         $this->recordShare($event, $result, $userId);
 
@@ -69,7 +69,7 @@ class InstagramEventPoster extends InstagramPoster
         $this->assertCredentials();
 
         $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
-        $caption = $event->getInstagramFormat();
+        $caption = InstagramCaption::forEvent($event);
 
         $igContainerIds = [$this->uploadCarouselItem($imageUrl)];
 
@@ -131,7 +131,7 @@ class InstagramEventPoster extends InstagramPoster
         $this->assertCredentials();
 
         $imageUrl = $this->photoUrl($event->getPrimaryPhoto());
-        $caption = urlEncode($event->getInstagramFormat());
+        $caption = urlEncode(InstagramCaption::forEvent($event));
         $result = $this->publishStoryPhoto($imageUrl, $caption, route('events.show', $event->id));
 
         $this->recordShare($event, $result, $userId);
@@ -174,7 +174,7 @@ class InstagramEventPoster extends InstagramPoster
             }
 
             // a short run's first few dates, so it can't crowd the other events out of the caption
-            $caption .= $event->getInstagramFormat(self::WEEK_SHOWINGS_LISTED)."\n\n";
+            $caption .= InstagramCaption::forEvent($event, self::WEEK_SHOWINGS_LISTED)."\n\n";
             $included[] = $event;
         }
 

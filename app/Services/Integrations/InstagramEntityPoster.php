@@ -83,7 +83,7 @@ class InstagramEntityPoster extends InstagramPoster
      */
     private function caption(Entity $entity): string
     {
-        $caption = $entity->getInstagramFormat();
+        $caption = InstagramCaption::forEntity($entity);
         if (!$caption) {
             throw new RuntimeException('You must have an Instagram caption to post to Instagram.');
         }
