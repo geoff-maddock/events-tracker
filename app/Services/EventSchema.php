@@ -253,7 +253,7 @@ class EventSchema
         $location = $venue->getPrimaryLocation();
 
         // A Guarded address is deliberately withheld from crawlers — same rule
-        // Entity::getJsonLd() applies to the venue's own page. Nothing about
+        // EntitySchema::document() applies to the venue's own page. Nothing about
         // it is published, not even the city, so the node cannot be used to
         // narrow the venue down.
         if ($location && $location->isAddressGuarded()) {

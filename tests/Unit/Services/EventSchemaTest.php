@@ -170,7 +170,7 @@ class EventSchemaTest extends TestCase
     public function test_a_guarded_venue_address_is_withheld(): void
     {
         // JSON-LD is public output with no auth context, so a Guarded address
-        // must not reach a crawler — the rule Entity::getJsonLd() applies to
+        // must not reach a crawler — the rule EntitySchema::document() applies to
         // the venue's own page.
         $event = $this->event();
         $event->setRelation('venue', $this->venue(location: $this->location('Guarded')));

@@ -109,7 +109,7 @@ class VenueEntityPageTest extends TestCase
         // Guest (not signed in): the Guarded location's street address and
         // capacity must not leak into the facts panel, matching the
         // existing Locations card's Guarded gating. This also covers
-        // Entity::getJsonLd(), which gates its streetAddress and
+        // EntitySchema::document(), which gates its streetAddress and
         // maximumAttendeeCapacity fields on the same Guarded check -- so the
         // assertions below run against the full response body, JSON-LD
         // included, rather than stripping the <script type="application/ld+json">

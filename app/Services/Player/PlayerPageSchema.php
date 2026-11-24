@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Photo;
 use App\Models\Series;
 use App\Models\User;
+use App\Services\EntitySchema;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -117,7 +118,7 @@ class PlayerPageSchema
                 $entity = $slug ? Entity::where('slug', $slug)->first() : null;
 
                 return $entity ? [
-                    'type' => $entity->getSchemaType(),
+                    'type' => EntitySchema::type($entity),
                     'name' => (string) $entity->name,
                     'label' => $source === 'venue' ? 'Shows at '.$entity->name : (string) $entity->name,
                     'from' => $source === 'venue' ? 'shows at '.$entity->name : (string) $entity->name,
