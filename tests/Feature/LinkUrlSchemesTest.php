@@ -137,7 +137,7 @@ class LinkUrlSchemesTest extends TestCase
         $this->storedLink('javascript://bandcamp.com/%0Aalert(1)');
         $this->storedLink('https://artist.bandcamp.com');
 
-        $sameAs = $this->entity->fresh()->getSameAsLinks();
+        $sameAs = \App\Services\EntitySchema::sameAs($this->entity->fresh());
 
         $this->assertContains('https://artist.bandcamp.com', $sameAs);
         foreach ($sameAs as $url) {

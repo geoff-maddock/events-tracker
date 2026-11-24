@@ -6,7 +6,7 @@
             '@type'    => 'ListItem',
             'position' => $position++,
             'item'     => [
-                '@type' => $entity->getSchemaType(),
+                '@type' => \App\Services\EntitySchema::type($entity),
                 'name'  => $entity->name,
                 'url'   => route('entities.show', $entity->slug),
             ],

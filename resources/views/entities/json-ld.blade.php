@@ -1,8 +1,8 @@
 @php
     use App\Services\EventSchema;
 
-    $jsonLd           = $entity->getJsonLd();
-    $breadcrumbJsonLd = $entity->getBreadcrumbJsonLd();
+    $jsonLd           = \App\Services\EntitySchema::document($entity);
+    $breadcrumbJsonLd = \App\Services\EntitySchema::breadcrumbs($entity);
 
     // Add upcoming events array — powers the Google event carousel on venue/artist pages
     if (!empty($relatedEvents) && count($relatedEvents) > 0) {

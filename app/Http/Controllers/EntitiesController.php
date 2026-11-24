@@ -167,7 +167,7 @@ class EntitiesController extends Controller
         array|false $playerFilters = [],
     ): string {
         $entities = $listResultSet->getList()
-            // the card relations include roles, which index-json-ld's getSchemaType() checks
+            // the card relations include roles, which index-json-ld's EntitySchema::type() checks
             // per entity; without it that's an N+1 query per row (EVENTREPO-VN).
             ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
@@ -609,7 +609,7 @@ class EntitiesController extends Controller
 
         $stats->recordView($entity, $request, $request->user());
 
-        // eager-load relations consumed by the page + JSON-LD (getJsonLd, getBreadcrumbJsonLd, getSchemaType)
+        // eager-load relations consumed by the page + JSON-LD (App\Services\EntitySchema)
         $entity->loadMissing(['roles', 'aliases', 'photos', 'tags', 'locations.visibility', 'links', 'entityType']);
 
         // get the threads for the entity
