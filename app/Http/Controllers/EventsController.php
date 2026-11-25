@@ -49,6 +49,11 @@ class EventsController extends Controller
     use LoadsEmbeds;
 
     /**
+     * Events per page of the text feeds (#2391).
+     */
+    private const FEED_PAGE_SIZE = 100;
+
+    /**
      * Relations the text feeds (events/feed-tw) read on every row.
      */
     private const FEED_EAGER_LOAD = ['visibility', 'venue.locations.visibility', 'eventType', 'entities', 'tags', 'series'];
@@ -877,7 +882,8 @@ class EventsController extends Controller
     }
 
     /**
-     * Display a simple text feed of future events.
+     * Display a simple text feed of events: from today, soonest first, unless
+     * the request or the event list's saved filters and sort say otherwise.
      *
      * @return View
      */
@@ -891,11 +897,14 @@ class EventsController extends Controller
             $listEntityResultBuilder,
             'internal_event_index',
             Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
-            ['events.start_at' => 'desc'],
+            ['events.start_at' => 'asc'],
+            // from today, unless the request or the saved filters say otherwise
+            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
         );
 
-        // venue.locations.visibility feeds getPrimaryLocationAddress() on every row (#2172)
-        $events = $query->with(self::FEED_EAGER_LOAD)->paginate(1000);
+        // venue.locations.visibility feeds getPrimaryLocationAddress() on every row (#2172).
+        // A page of 100: this was 1,000 events of every date, 5 MB and four seconds (#2391).
+        $events = $query->with(self::FEED_EAGER_LOAD)->paginate(self::FEED_PAGE_SIZE)->withQueryString();
 
         return view('events.feed-tw', compact('events'));
     }
@@ -906,7 +915,7 @@ class EventsController extends Controller
     public function feedTags(string $tag): View
     {
         // set number of results per page
-        $events = Event::getByTag(ucfirst($tag))->future()->visible($this->user)->with(self::FEED_EAGER_LOAD)->simplePaginate(10000);
+        $events = Event::getByTag(ucfirst($tag))->future()->visible($this->user)->with(self::FEED_EAGER_LOAD)->simplePaginate(self::FEED_PAGE_SIZE);
 
         return view('events.feed-tw', compact('events'));
     }
@@ -926,7 +935,9 @@ class EventsController extends Controller
             $listEntityResultBuilder,
             'internal_event_index',
             Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
-            ['events.start_at' => 'desc'],
+            ['events.start_at' => 'asc'],
+            // from today, unless the request or the saved filters say otherwise
+            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
         );
 
         // the brief list prints each event's tags (#2172)

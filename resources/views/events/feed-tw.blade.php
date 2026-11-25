@@ -87,6 +87,23 @@
                 </div>
             @endforeach
         </div>
+
+        @if ($events->previousPageUrl() || $events->hasMorePages())
+            <nav aria-label="Pages" class="flex items-center justify-between mt-8">
+                @if ($events->previousPageUrl())
+                    <x-ui.button variant="secondary" href="{{ $events->previousPageUrl() }}" rel="prev">
+                        <i class="bi bi-chevron-left mr-1"></i>Earlier
+                    </x-ui.button>
+                @else
+                    <span></span>
+                @endif
+                @if ($events->hasMorePages())
+                    <x-ui.button variant="secondary" href="{{ $events->nextPageUrl() }}" rel="next">
+                        Later<i class="bi bi-chevron-right ml-1"></i>
+                    </x-ui.button>
+                @endif
+            </nav>
+        @endif
     @else
         <x-empty-state icon="bi-calendar-x" boxed compact>No events listed.</x-empty-state>
     @endif

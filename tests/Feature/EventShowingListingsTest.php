@@ -108,6 +108,38 @@ class EventShowingListingsTest extends TestCase
         $this->assertSame(['ZZ Run Play'], $this->ours(Event::today()->get()));
     }
 
+    public function test_a_window_takes_what_starts_or_shows_inside_it_ends_included(): void
+    {
+        // the bounded form narrows by last_start_at first (#2391)
+        $in = function (string $start, string $end) {
+            $names = $this->ours(Event::query()->occurringBetween($start, $end)->get());
+            sort($names);
+
+            return $names;
+        };
+
+        // a window between two showings of the run, holding one single-date event
+        $this->assertSame(['ZZ Tonight Gig'], $in('2027-03-02 00:00:00', '2027-03-03 23:59:59'));
+        // both ends are part of the window: the run's showing at 19:00, tonight's start at 20:00
+        $this->assertSame(['ZZ Run Play', 'ZZ Tonight Gig'], $in('2027-03-03 20:00:00', '2027-03-04 19:00:00'));
+        $this->assertSame([], $in('2027-03-03 20:00:01', '2027-03-04 18:59:59'));
+        // the run opens inside the window
+        $this->assertSame(['ZZ Run Play'], $in('2027-02-20 00:00:00', '2027-03-02 00:00:00'));
+        // everything, and nothing once the run is over
+        $this->assertSame(['ZZ Friday Gig', 'ZZ Run Play', 'ZZ Tonight Gig'], $in('2027-03-01 00:00:00', '2027-03-31 00:00:00'));
+        $this->assertSame([], $in('2027-03-06 14:00:01', '2027-03-31 00:00:00'));
+
+        // one group, so a caller's orWhere can't escape it
+        $this->assertSame(
+            ['ZZ Tonight Gig'],
+            $this->ours(Event::query()->where('events.name', 'like', 'ZZ %')->occurringBetween('2027-03-03 00:00:00', '2027-03-03 23:59:59')->get())
+        );
+        $this->assertStringContainsString(
+            'where (`events`.`last_start_at` >= ? and `events`.`start_at` <= ?',
+            Event::query()->occurringBetween('2027-03-03 00:00:00', '2027-03-03 23:59:59')->toSql()
+        );
+    }
+
     public function test_the_start_at_filter_matches_showings_and_sorts_by_them(): void
     {
         $this->actingAs($this->user, 'sanctum');
