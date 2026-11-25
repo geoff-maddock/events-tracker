@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Event;
+use App\Models\Thread;
 use App\Models\Like;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -16,7 +16,7 @@ class LikeFactory extends Factory
     protected $model = Like::class;
 
     /**
-     * A new user's like of a new event.
+     * A new user's like of a new thread: likes are kept for threads and posts.
      *
      * @return array<string, mixed>
      */
@@ -24,8 +24,8 @@ class LikeFactory extends Factory
     {
         return [
             'user_id' => fn () => User::factory()->create()->id,
-            'object_type' => 'event',
-            'object_id' => fn () => Event::factory()->create()->id,
+            'object_type' => 'thread',
+            'object_id' => fn () => Thread::factory()->create()->id,
         ];
     }
 

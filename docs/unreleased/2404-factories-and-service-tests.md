@@ -1,9 +1,10 @@
 ### Personal data export: survey responses included, old exports removed; more tests (#2404)
 
-Two faults in the personal data export, found while writing its tests:
+Three faults in the personal data export, found while writing its tests:
 
 - **Survey responses were missing from the download.** The export gathered a user's feedback survey responses and then never wrote them into the zip. It now has a `survey_responses.json`.
 - **Old exports were never deleted.** The zip is written to `storage/framework/exports`, and the daily clean-up only looked in `storage/app/exports` and the public copy. It now covers every folder an export can be written to. Production has four zips from May 2026 onwards in that folder; the next clean-up run removes them. A file the clean-up cannot delete is logged and skipped, not an error that stops the run.
+- **A failed export left its data unzipped.** The working folder is now removed whether or not the zip gets made.
 
 Tests:
 

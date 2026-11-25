@@ -23,7 +23,8 @@ class EventShowingFactory extends Factory
     {
         return [
             'event_id' => fn () => Event::factory()->create()->id,
-            'start_at' => now()->addDays(2)->setTime(20, 0),
+            // the day after the event starts: a showing is always a later date
+            'start_at' => fn (array $attributes) => Event::query()->findOrFail($attributes['event_id'])->start_at->copy()->addDay(),
             'end_at' => null,
             'door_at' => null,
         ];

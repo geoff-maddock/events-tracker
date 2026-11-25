@@ -38,32 +38,33 @@ class DataExportService
         $exportDir = $exportsRoot . '/tmp/' . $exportId;
         $this->ensureDirectoryExists($exportDir);
         
-        // Write JSON files
-        $this->writeJsonFile($exportDir . '/events.json', $exportData['events']);
-        $this->writeJsonFile($exportDir . '/series.json', $exportData['series']);
-        $this->writeJsonFile($exportDir . '/entities.json', $exportData['entities']);
-        $this->writeJsonFile($exportDir . '/posts.json', $exportData['posts']);
-        $this->writeJsonFile($exportDir . '/comments.json', $exportData['comments']);
-        $this->writeJsonFile($exportDir . '/blogs.json', $exportData['blogs']);
-        $this->writeJsonFile($exportDir . '/follows.json', $exportData['follows']);
-        $this->writeJsonFile($exportDir . '/event_responses.json', $exportData['event_responses']);
-        $this->writeJsonFile($exportDir . '/survey_responses.json', $exportData['survey_responses']);
-        $this->writeJsonFile($exportDir . '/profile.json', $exportData['profile']);
-        $this->writeJsonFile($exportDir . '/photos_metadata.json', $exportData['photos']);
-        $this->writeJsonFile($exportDir . '/constants.json', $exportData['constants']);
-        
-        // Create ZIP file
         $zipFilename = 'user_data_export_' . uniqid('', true) . '.zip';
         $zipPath = $exportsRoot . '/' . $zipFilename;
-        
-        $this->createZipArchive($exportDir, $zipPath);
 
-        // Best-effort publish to public storage for direct /storage URL access
-        $this->publishToPublicExports($zipFilename, $zipPath);
-        
-        // Clean up temporary directory
-        $this->deleteDirectory($exportDir);
-        
+        try {
+            // Write JSON files
+            $this->writeJsonFile($exportDir . '/events.json', $exportData['events']);
+            $this->writeJsonFile($exportDir . '/series.json', $exportData['series']);
+            $this->writeJsonFile($exportDir . '/entities.json', $exportData['entities']);
+            $this->writeJsonFile($exportDir . '/posts.json', $exportData['posts']);
+            $this->writeJsonFile($exportDir . '/comments.json', $exportData['comments']);
+            $this->writeJsonFile($exportDir . '/blogs.json', $exportData['blogs']);
+            $this->writeJsonFile($exportDir . '/follows.json', $exportData['follows']);
+            $this->writeJsonFile($exportDir . '/event_responses.json', $exportData['event_responses']);
+            $this->writeJsonFile($exportDir . '/survey_responses.json', $exportData['survey_responses']);
+            $this->writeJsonFile($exportDir . '/profile.json', $exportData['profile']);
+            $this->writeJsonFile($exportDir . '/photos_metadata.json', $exportData['photos']);
+            $this->writeJsonFile($exportDir . '/constants.json', $exportData['constants']);
+
+            $this->createZipArchive($exportDir, $zipPath);
+
+            // Best-effort publish to public storage for direct /storage URL access
+            $this->publishToPublicExports($zipFilename, $zipPath);
+        } finally {
+            // the working folder holds the data unzipped: it goes whether or not the zip was made
+            $this->deleteDirectory($exportDir);
+        }
+
         return [
             'zipPath' => $zipPath,
             'filename' => $zipFilename,
@@ -300,7 +301,7 @@ class DataExportService
     {
         $publicPath = 'exports/' . $filename;
 
-        $publicAbsolutePath = storage_path('app/public/' . $publicPath);
+        $publicAbsolutePath = $this->publicExportDirectory() . '/' . $filename;
         if (file_exists($publicAbsolutePath)) {
             return url('storage/' . $publicPath);
         }
@@ -320,7 +321,7 @@ class DataExportService
      */
     public function findExportPath(string $filename): ?string
     {
-        foreach ([storage_path('app/public/exports'), ...$this->privateExportRoots()] as $directory) {
+        foreach ($this->exportDirectories() as $directory) {
             if (is_file($directory . '/' . $filename)) {
                 return $directory . '/' . $filename;
             }
@@ -334,7 +335,7 @@ class DataExportService
      */
     protected function publishToPublicExports(string $filename, string $sourcePath): bool
     {
-        $publicExportsDir = storage_path('app/public/exports');
+        $publicExportsDir = $this->publicExportDirectory();
 
         try {
             $this->ensureDirectoryExists($publicExportsDir);
@@ -370,13 +371,21 @@ class DataExportService
     }
 
     /**
-     * Every directory that can hold an export: the private roots and the public copy.
+     * Where the copy served at /storage/exports is kept.
+     */
+    protected function publicExportDirectory(): string
+    {
+        return storage_path('app/public/exports');
+    }
+
+    /**
+     * Every directory that can hold an export: the public copy, then the private roots.
      *
      * @return list<string>
      */
     protected function exportDirectories(): array
     {
-        return [...$this->privateExportRoots(), storage_path('app/public/exports')];
+        return [$this->publicExportDirectory(), ...$this->privateExportRoots()];
     }
 
     /**
@@ -469,7 +478,7 @@ class DataExportService
             if (is_file($file)) {
                 // a file another account owns must not stop the rest being removed
                 if ($now - filemtime($file) >= 60 * 60 * 24 * $daysOld && !@unlink($file)) {
-                    Log::warning('Unable to remove an old export', ['file' => $file]);
+                    Log::warning('Unable to remove an old export', ['file' => $file, 'error' => error_get_last()['message'] ?? null]);
                 }
             }
         }

@@ -16,7 +16,9 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Services\DataExportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use PHPUnit\Framework\Attributes\Test;
+use ReflectionMethod;
 use Tests\TestCase;
 use ZipArchive;
 
@@ -30,14 +32,38 @@ class DataExportArchiveTest extends TestCase
 
     protected $seed = true;
 
-    /** @var list<string> files this test wrote under storage/ */
-    private array $written = [];
+    /** A folder of this test's own: storage/ is shared by the parallel test processes. */
+    private string $root;
+
+    private DataExportService $service;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->root = sys_get_temp_dir().'/zz-export-test-'.uniqid('', true);
+        $root = $this->root;
+
+        $this->service = new class($root) extends DataExportService {
+            public function __construct(private string $root)
+            {
+            }
+
+            protected function privateExportRoots(): array
+            {
+                return [$this->root.'/private'];
+            }
+
+            protected function publicExportDirectory(): string
+            {
+                return $this->root.'/public';
+            }
+        };
+    }
 
     protected function tearDown(): void
     {
-        foreach ($this->written as $file) {
-            @unlink($file);
-        }
+        File::deleteDirectory($this->root);
 
         parent::tearDown();
     }
@@ -58,10 +84,10 @@ class DataExportArchiveTest extends TestCase
      */
     private function export(User $user): array
     {
-        $result = app(DataExportService::class)->generateExport($user);
-        $this->written[] = $result['zipPath'];
-        $this->written[] = storage_path('app/public/exports/'.$result['filename']);
+        $result = $this->service->generateExport($user);
 
+        $this->assertSame($this->root.'/private/'.$result['filename'], $result['zipPath']);
+        $this->assertFileExists($this->root.'/public/'.$result['filename']);
         $this->assertFileExists($result['zipPath']);
         $this->assertSame($result['filename'], basename($result['zipPath']));
 
@@ -137,58 +163,90 @@ class DataExportArchiveTest extends TestCase
     }
 
     #[Test]
-    public function the_working_folder_is_removed_once_the_zip_is_made(): void
+    public function the_working_folder_is_removed_whether_or_not_the_zip_is_made(): void
     {
-        $user = $this->user();
-        $this->export($user);
+        $this->export($this->user());
+        $this->assertSame([], glob($this->root.'/private/tmp/*') ?: []);
 
-        foreach ([storage_path('framework/exports/tmp'), storage_path('app/exports/tmp')] as $tmp) {
-            $this->assertSame([], glob($tmp.'/export_'.$user->id.'_*') ?: []);
+        // a failure part-way must not leave the data lying unzipped
+        $failing = new class($this->root) extends DataExportService {
+            public function __construct(private string $root)
+            {
+            }
+
+            protected function privateExportRoots(): array
+            {
+                return [$this->root.'/private'];
+            }
+
+            protected function createZipArchive(string $sourceDir, string $zipPath): void
+            {
+                throw new \RuntimeException('Cannot create ZIP file');
+            }
+        };
+
+        try {
+            $failing->generateExport($this->user());
+            $this->fail('the export should have thrown');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Cannot create ZIP file', $e->getMessage());
         }
+
+        $this->assertSame([], glob($this->root.'/private/tmp/*') ?: []);
     }
 
     #[Test]
     public function the_download_link_finds_the_zip_and_falls_back_to_a_signed_route(): void
     {
-        $service = app(DataExportService::class);
-        $result = $service->generateExport($this->user());
-        $public = storage_path('app/public/exports/'.$result['filename']);
-        $this->written = [$result['zipPath'], $public];
+        $result = $this->service->generateExport($this->user());
+        $public = $this->root.'/public/'.$result['filename'];
 
         // the public copy is the one found first
-        $this->assertSame($public, $service->findExportPath($result['filename']));
-        $this->assertSame(url('storage/exports/'.$result['filename']), $service->getDownloadUrl($result['filename']));
+        $this->assertSame($public, $this->service->findExportPath($result['filename']));
+        $this->assertSame(url('storage/exports/'.$result['filename']), $this->service->getDownloadUrl($result['filename']));
 
         // without the public copy it is published again from the private one
-        @unlink($public);
-        $this->assertSame(url('storage/exports/'.$result['filename']), $service->getDownloadUrl($result['filename']));
+        unlink($public);
+        $this->assertSame($result['zipPath'], $this->service->findExportPath($result['filename']));
+        $this->assertSame(url('storage/exports/'.$result['filename']), $this->service->getDownloadUrl($result['filename']));
         $this->assertFileExists($public);
 
         // a file that is nowhere gets the signed download route
-        $this->assertNull($service->findExportPath('user_data_export_zz-missing.zip'));
-        $missing = $service->getDownloadUrl('user_data_export_zz-missing.zip');
+        $this->assertNull($this->service->findExportPath('user_data_export_zz-missing.zip'));
+        $missing = $this->service->getDownloadUrl('user_data_export_zz-missing.zip');
         $this->assertStringContainsString('exports/download/user_data_export_zz-missing.zip', $missing);
         $this->assertStringContainsString('signature=', $missing);
     }
 
     #[Test]
-    public function old_exports_are_removed_from_the_folder_they_are_written_to(): void
+    public function old_exports_are_removed_from_every_folder_that_holds_one(): void
     {
-        // The zip goes to the first writable private folder, storage/framework/exports,
-        // which the cleanup never looked at: exports stayed there for good (#2404).
-        $service = app(DataExportService::class);
-        $result = $service->generateExport($this->user());
-        $public = storage_path('app/public/exports/'.$result['filename']);
-        $this->written = [$result['zipPath'], $public];
+        $result = $this->service->generateExport($this->user());
+        $public = $this->root.'/public/'.$result['filename'];
 
-        $service->cleanupOldExports(7);
+        $this->service->cleanupOldExports(7);
         $this->assertFileExists($result['zipPath']);
+        $this->assertFileExists($public);
 
         touch($result['zipPath'], time() - 60 * 60 * 24 * 8);
         touch($public, time() - 60 * 60 * 24 * 8);
-        $service->cleanupOldExports(7);
+        $this->service->cleanupOldExports(7);
 
         $this->assertFileDoesNotExist($result['zipPath']);
         $this->assertFileDoesNotExist($public);
+    }
+
+    #[Test]
+    public function the_clean_up_covers_the_folder_exports_are_written_to(): void
+    {
+        // The zip goes to the first writable private folder, storage/framework/exports,
+        // which the clean-up never looked at: exports stayed there for good (#2404).
+        $service = new DataExportService();
+        $directories = (new ReflectionMethod($service, 'exportDirectories'))->invoke($service);
+        $roots = (new ReflectionMethod($service, 'privateExportRoots'))->invoke($service);
+
+        $this->assertSame(storage_path('framework/exports'), $roots[0]);
+        $this->assertSame([], array_diff($roots, $directories));
+        $this->assertContains(storage_path('app/public/exports'), $directories);
     }
 }

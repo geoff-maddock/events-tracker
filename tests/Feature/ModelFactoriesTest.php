@@ -89,8 +89,10 @@ class ModelFactoriesTest extends TestCase
         $this->assertSame('entity', $follow->object_type);
         $this->assertTrue($follow->user()->exists());
 
-        $like = Like::factory()->of($series)->create();
-        $this->assertSame(['series', $series->id], [$like->object_type, $like->object_id]);
+        // likes are kept for threads and posts
+        $this->assertSame('thread', Like::factory()->create()->object_type);
+        $like = Like::factory()->of($thread)->create();
+        $this->assertSame(['thread', $thread->id], [$like->object_type, $like->object_id]);
     }
 
     #[Test]
@@ -115,6 +117,10 @@ class ModelFactoriesTest extends TestCase
         $this->assertTrue($event->last_start_at->equalTo($later->start_at));
         $this->assertTrue($event->isMultiDate());
         $this->assertCount(2, $event->showings);
+
+        // left to itself a showing is the day after its event starts
+        $default = EventShowing::factory()->create();
+        $this->assertTrue($default->start_at->equalTo($default->event->start_at->copy()->addDay()));
     }
 
     #[Test]

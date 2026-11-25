@@ -28,6 +28,7 @@ The export is a ZIP file containing:
 - `blogs.json` - All blog posts you created (if applicable)
 - `follows.json` - All entities, tags, series, and threads you follow
 - `event_responses.json` - Your event responses (attending, interested, etc.)
+- `survey_responses.json` - The feedback survey responses you submitted, with your answers
 - `profile.json` - Your profile information and settings
 - `photos_metadata.json` - Metadata for all photos associated with your account (paths, names, IDs)
 - `constants.json` - Reference data (event types, statuses, visibility options, etc.)
@@ -101,9 +102,11 @@ All data is transformed using Laravel's JsonResource classes to ensure:
 
 ### File Storage
 
-- Exports are stored in `storage/app/exports/`
-- Public downloads available at `storage/app/public/exports/`
-- Both directories are excluded from version control
+- Exports are written to the first of these that is writable: `storage/framework/exports/`, `storage/app/exports/`, then a folder in the system temp directory
+- A copy for download is published to `storage/app/public/exports/`
+- `cleanup:exports` removes files older than 7 days from all of them; the account that runs the scheduler must be able to delete what the queue worker wrote
+- The unzipped working copy (`tmp/` under the export folder) is deleted as soon as the zip is made, or fails to be
+- None of these directories is in version control
 
 **Note**: For production deployments using S3 or DigitalOcean Spaces, the `getDownloadUrl()` method should be updated to use `Storage::temporaryUrl()` for signed URLs with automatic expiration.
 
