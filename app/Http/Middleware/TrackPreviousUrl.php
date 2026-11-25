@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Tracks a filtered "previous URL" in the session for use by Back buttons.
  *
  * Create and edit pages are excluded so that Back buttons on show pages
- * never return the user to a form they have already submitted.
+ * never return the user to a form they have already submitted. Signed links
+ * are excluded too.
  * Revisiting the same URL (e.g. page reload) also does not overwrite the
  * stored value.
  */
@@ -44,6 +45,12 @@ class TrackPreviousUrl
      */
     private function shouldSkip(Request $request): bool
     {
+        // a signed link (export download, unsubscribe, email verification) is a
+        // key, not a page: it is not kept in the session or offered as "Back"
+        if ($request->query->has('signature')) {
+            return true;
+        }
+
         // Check the named route first (most reliable)
         $routeName = $request->route()?->getName() ?? '';
         if (str_ends_with($routeName, '.create') || str_ends_with($routeName, '.edit')) {

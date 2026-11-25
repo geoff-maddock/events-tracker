@@ -13,7 +13,7 @@ Download Your Data
 **File:** {{ $filename }}
 
 **Important Notes:**
-- This download link will be available for 7 days
+- This download link will be available for {{ \App\Services\DataExportService::KEEP_DAYS }} days
 - The export includes all your contributed data in JSON format
 - Photo images are not included to keep file size manageable (only metadata is included)
 - The file is a ZIP archive containing:
@@ -36,7 +36,7 @@ Thanks,<br>
 If you're having trouble clicking the "Download Your Data" button, copy and paste the URL below into your web browser:
 [{{ $downloadUrl }}]({{ $downloadUrl }})
 
-This link will expire in 7 days for security purposes.
+This link will expire in {{ \App\Services\DataExportService::KEEP_DAYS }} days for security purposes.
 @endcomponent
 
 @endcomponent
