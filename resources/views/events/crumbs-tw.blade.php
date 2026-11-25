@@ -5,7 +5,7 @@
             {{ ucfirst($tag->name) }}
         </a>
         @if ($signedIn)
-            @if ($follow = $tag->followedBy($user))
+            @if ($tag->isFollowedBy($user))
                 <a data-method="post" href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="Unfollow" class="ml-1 text-success hover:text-success/80">
                     <i class="bi bi-check-circle-fill"></i>
                 </a>
@@ -29,7 +29,7 @@
             {{ ucfirst($related->name) }}
         </a>
         @if ($signedIn)
-            @if ($follow = $related->followedBy($user))
+            @if ($related->isFollowedBy($user))
                 <a data-method="post" href="{{ route('entities.unfollow', ['id' => $related->id]) }}" title="Unfollow" class="ml-1 text-success hover:text-success/80">
                     <i class="bi bi-check-circle-fill"></i>
                 </a>

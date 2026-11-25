@@ -32,7 +32,7 @@
             @endif
             
             @if ($signedIn)
-                @if ($follow = $thread->followedBy($user))
+                @if ($thread->isFollowedBy($user))
                     <a data-method="post" href="{!! route('threads.unfollow', ['id' => $thread->id]) !!}" title="Unfollow" class="text-primary hover:text-primary/90">
                         <i class="bi bi-dash-circle-fill"></i>
                     </a>

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Web;
 
+use App\Models\Entity;
+use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Photo;
 use App\Models\Tag;
@@ -83,51 +85,65 @@ class PagesControllerTest extends TestCase
         $this->get('/popular')->assertOk();
     }
 
-    public function test_popular_page_eager_loads_at_most_one_event_per_tag(): void
+    public function test_popular_page_shows_each_tag_with_its_public_event_count_and_one_thumbnail(): void
     {
-        // Regression for a prod OOM: the popular-tags query eager-loaded every
-        // visible event (plus photos) for each of the top 24 tags — 13k+ events
-        // in prod — blowing php-fpm's memory_limit. The view only renders each
-        // tag's single latest event, so only that one should be hydrated.
-        // The thumbnail query only considers events with a primary photo, so
-        // each event gets one attached.
+        // The tag block is plain data (#2390): it once eager-loaded every
+        // visible event of the top 24 tags (13k+ in prod, a php-fpm OOM), then
+        // one event per tag through a window query that took a second.
         $tag = Tag::factory()->create();
 
-        $older = Event::factory()->create([
-            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
-            'start_at' => now()->subDays(10),
-        ]);
-        $middle = Event::factory()->create([
-            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
-            'start_at' => now()->subDays(5),
-        ]);
-        $latest = Event::factory()->create([
-            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
-            'start_at' => now()->subDay(),
-        ]);
-        $tag->events()->attach([$older->id, $middle->id, $latest->id]);
-
-        foreach ([$older, $middle, $latest] as $event) {
-            $photo = Photo::factory()->create([
-                'is_primary' => 1,
-                'path' => 'test.jpg',
-                'thumbnail' => 'test_thumb.jpg',
+        $events = [];
+        foreach (['older' => 10, 'middle' => 5, 'latest' => 1] as $name => $daysAgo) {
+            $events[$name] = Event::factory()->create([
+                'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+                'start_at' => now()->subDays($daysAgo),
             ]);
-            $event->photos()->attach($photo->id);
+            $events[$name]->photos()->attach(Photo::factory()->create([
+                'is_primary' => 1,
+                'path' => $name.'.jpg',
+                'thumbnail' => $name.'_thumb.jpg',
+            ])->id);
         }
+        // a private event is neither counted nor shown
+        $events['private'] = Event::factory()->create([
+            'visibility_id' => Visibility::VISIBILITY_PRIVATE,
+            'start_at' => now()->addDay(),
+        ]);
+        $events['private']->photos()->attach(Photo::factory()->create([
+            'is_primary' => 1,
+            'path' => 'private.jpg',
+            'thumbnail' => 'private_thumb.jpg',
+        ])->id);
+        $tag->events()->attach(array_map(fn ($event) => $event->id, array_values($events)));
 
         $response = $this->get('/popular')->assertOk();
 
-        $popularTags = $response->viewData('popularTags');
-        $popularTag = $popularTags->firstWhere('id', $tag->id);
+        $popularTag = collect($response->viewData('popularTags'))->firstWhere('slug', $tag->slug);
 
         $this->assertNotNull($popularTag, 'Tag with most events should appear in popular tags');
-        $this->assertCount(1, $popularTag->events, 'Only the latest event should be eager-loaded per tag');
-        $this->assertTrue($popularTag->events->first()->is($latest));
-        $this->assertTrue($popularTag->events->first()->relationLoaded('photos'));
+        $this->assertSame(
+            ['slug' => $tag->slug, 'name' => $tag->name, 'events_count' => 3, 'thumbnail' => 'latest_thumb.jpg'],
+            $popularTag
+        );
+        $response->assertSee('latest_thumb.jpg')->assertDontSee('private_thumb.jpg');
+    }
 
-        foreach ($popularTags as $anyTag) {
-            $this->assertLessThanOrEqual(1, $anyTag->events->count());
+    public function test_popular_page_loads_its_cards_without_a_query_per_card(): void
+    {
+        $venue = Entity::factory()->create(['entity_status_id' => EntityStatus::ACTIVE]);
+        Event::factory()->count(3)->create([
+            'visibility_id' => Visibility::VISIBILITY_PUBLIC,
+            'start_at' => now()->addDays(2),
+            'venue_id' => $venue->id,
+        ]);
+
+        $response = $this->get('/popular')->assertOk();
+
+        foreach (['photos', 'threads', 'visibility', 'venue'] as $relation) {
+            $this->assertTrue($response->viewData('popularEvents')->first()->relationLoaded($relation), $relation);
+        }
+        foreach (['photos', 'links', 'aliases', 'entityStatus'] as $relation) {
+            $this->assertTrue($response->viewData('popularEntities')->first()->relationLoaded($relation), $relation);
         }
     }
 

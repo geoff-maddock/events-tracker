@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Schema;
+use Closure;
 use ReflectionMethod;
 use ReflectionNamedType;
 
@@ -41,6 +42,9 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
 
     /** @var array<string, string> friendly sort names => the field they sort by */
     private array $sortAliases = [];
+
+    /** @var array<string, Closure> sort fields the query only computes when the list is sorted by them */
+    private array $computedSorts = [];
 
     /** @var array<string, array<int, string>> column listings, cached per table for the request */
     private static array $tableColumns = [];
@@ -125,6 +129,20 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
     public function setSortAliases(array $sortAliases): ListEntityResultBuilder
     {
         $this->sortAliases = $sortAliases;
+
+        return $this;
+    }
+
+    /**
+     * Sort fields that cost something to compute (a joined total, say): each
+     * closure adds its select to the query, and runs only when the list is
+     * sorted by that field (#2390).
+     *
+     * @param array<string, Closure> $computedSorts field => fn (Builder $query): mixed
+     */
+    public function setComputedSorts(array $computedSorts): ListEntityResultBuilder
+    {
+        $this->computedSorts = $computedSorts;
 
         return $this;
     }
@@ -226,6 +244,12 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
             return;
         }
 
+        // once: the count and the result both come through here on one query
+        if (isset($this->computedSorts[$this->appliedSortField])) {
+            ($this->computedSorts[$this->appliedSortField])($this->queryBuilder);
+            unset($this->computedSorts[$this->appliedSortField]);
+        }
+
         // If sorting by a relationship count column (e.g. follows_count), add withCount
         // A relation count sort (e.g. follows_count) needs its withCount, unless
         // the query already selects that count. Only a declared relation gets
@@ -284,7 +308,7 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
         $model = $this->queryBuilder->getModel();
 
         if (!str_contains($field, '.')) {
-            if (in_array($field, $this->selectedAliases(), true)) {
+            if (isset($this->computedSorts[$field]) || in_array($field, $this->selectedAliases(), true)) {
                 return true;
             }
 

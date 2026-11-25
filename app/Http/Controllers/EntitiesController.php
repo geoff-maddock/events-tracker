@@ -114,8 +114,9 @@ class EntitiesController extends Controller
 
     /**
      * Start an entity list page (#2406): every entity list shares one session
-     * base index, the entity filters, the popularity score (events in the
-     * list's active_range filter, plus follows) and the "popularity" sort name.
+     * base index, the entity filters and the "popularity" sort, whose score
+     * (events in the list's active_range filter, plus follows) joins the query
+     * only when the list is sorted by it.
      *
      * @param Builder<Entity> $baseQuery
      * @param array<string, string> $defaultSort
@@ -143,11 +144,16 @@ class EntitiesController extends Controller
             $keyPrefix,
             action([EntitiesController::class, 'index']),
             $this->filter,
-            $this->addPopularityScoreToQuery($baseQuery, $activeRange),
+            $baseQuery,
             $defaultSort,
             $defaultFilters,
             $parentFilter,
             sortAliases: ['popularity' => 'popularity_score'],
+            // two grouped joins over follows and events: only when the list is sorted by them (#2390)
+            computedSorts: ['popularity_score' => function (Builder $query) use ($activeRange) {
+                /** @var Builder<Entity> $query */
+                $query->withPopularityScore($activeRange);
+            }],
         );
     }
 
@@ -172,7 +178,7 @@ class EntitiesController extends Controller
             ->with(Entity::CARD_EAGER_LOAD)
             ->paginate($listResultSet->getLimit());
 
-        $extra['playerQuery'] = $playerFilters === false ? null : $this->playerQuery($listResultSet, $playerFilters);
+        $extra['playerQuery'] = $playerFilters === false ? null : $this->playerQuery($listResultSet, $playerFilters, collect($entities->items())->pluck('id')->all());
 
         return view('entities.index-tw')
             ->with($this->finishList($listParamSessionStore, $listResultSet, extra: $extra))
@@ -1020,35 +1026,29 @@ class EntitiesController extends Controller
     }
 
     /**
-     * Add the computed popularity_score select (follows + events in the active range).
-     *
-     * @param Builder<Entity> $query
-     *
-     * @return Builder<Entity>
-     */
-    protected function addPopularityScoreToQuery(Builder $query, ?string $activeRange): Builder
-    {
-        return $query->withPopularityScore($activeRange);
-    }
-
-    /**
      * The audio player queue for an entity list (#2366): the list's filters
      * (user, default and the page's own role/type/tag) and its sort, or null
      * when nothing on the list is playable, which hides the button.
      *
      * @param array<string, mixed> $filters extra filters the page applies itself
+     * @param array<int, int|string> $pageIds the entities on the page shown: usually one of them is
+     *                                        playable, which saves running the whole list again
      *
      * @return array<string, mixed>|null
      */
-    protected function playerQuery(ListResultSet $listResultSet, array $filters = []): ?array
+    protected function playerQuery(ListResultSet $listResultSet, array $filters = [], array $pageIds = []): ?array
     {
-        $listed = (clone $listResultSet->getList())->reorder()->select('entities.id');
-        // the whole list, not the page paginate() left on the query
-        $listed->getQuery()->limit = null;
-        $listed->getQuery()->offset = null;
+        $onPage = $pageIds !== [] && Entity::query()->whereKey($pageIds)->playable()->exists();
 
-        if (!Entity::query()->whereIn('entities.id', $listed)->playable()->exists()) {
-            return null;
+        if (!$onPage) {
+            $listed = (clone $listResultSet->getList())->reorder()->select('entities.id');
+            // the whole list, not the page paginate() left on the query
+            $listed->getQuery()->limit = null;
+            $listed->getQuery()->offset = null;
+
+            if (!Entity::query()->whereIn('entities.id', $listed)->playable()->exists()) {
+                return null;
+            }
         }
 
         return array_filter([

@@ -227,6 +227,8 @@ class EventsController extends Controller
                 'tags',
                 'entities',
                 'photos',
+                // the resource lists each event's attendees
+                'attendees',
             ])
             ->orderByDesc('attendees_count')
             ->paginate($limit);
