@@ -11,7 +11,8 @@ use Tests\TestCase;
 /**
  * Series::cycleFromFoundedAt() used to step from the founding date to today one
  * period at a time (#2388). It now jumps most of the way; these tests hold it to
- * the dates the stepping version produced, for every schedule shape.
+ * the dates stepping produces, for every schedule shape, and to the steps
+ * themselves being right (#2422).
  */
 class SeriesNextOccurrenceTest extends TestCase
 {
@@ -100,6 +101,12 @@ class SeriesNextOccurrenceTest extends TestCase
             Carbon::setTestNow(Carbon::parse($today, 'UTC'));
 
             foreach ($founded as $date) {
+                // a yearly series is counted from its founding date, where stepping
+                // loses a 29 February for good: see the leap-day test below (#2422)
+                if ('Yearly' === $type && '2016-02-29 19:30:00' === $date) {
+                    continue;
+                }
+
                 // the reference loop takes a step a day here: keep it to a few years
                 if ('No Schedule' === $type && null !== $date && $date < '2023') {
                     continue;
@@ -113,6 +120,94 @@ class SeriesNextOccurrenceTest extends TestCase
                 $this->assertSame($expected->getTimestamp(), $actual->getTimestamp(), $label);
             }
         }
+    }
+
+    private function nextOn(string $now, Series $series): string
+    {
+        Carbon::setTestNow(Carbon::parse($now, 'America/New_York'));
+
+        return $series->cycleFromFoundedAt()->format('Y-m-d H:i');
+    }
+
+    public function test_the_last_weekday_of_the_month_does_not_skip_a_short_month(): void
+    {
+        // last Friday, founded on Friday 31 January 2025: a month added to the
+        // 31st ran into March and February was never offered (#2422)
+        $series = fn () => $this->series('Monthly', 5, 6, '2025-01-31 21:00:00');
+
+        $this->assertSame('2025-02-28 21:00', $this->nextOn('2025-02-10 12:00', $series()));
+        $this->assertSame('2025-02-28 21:00', $this->nextOn('2025-02-28 12:00', $series()));
+        $this->assertSame('2025-03-28 21:00', $this->nextOn('2025-03-01 12:00', $series()));
+        $this->assertSame('2025-02-28', $series()->cycleForward(Carbon::parse('2025-01-31 21:00:00'))->format('Y-m-d'));
+        // a five-Friday month: the last one, not the fourth
+        $this->assertSame('2025-05-30 21:00', $this->nextOn('2025-05-24 12:00', $series()));
+        $this->assertSame('2025-06-27', $series()->cycleForward(Carbon::parse('2025-05-30 21:00:00'))->format('Y-m-d'));
+    }
+
+    public function test_a_founding_date_at_the_end_of_a_month_does_not_skip_the_next_one(): void
+    {
+        // first Thursday, founded 31 January: the first step must land in February
+        $this->assertSame('2025-02-06 20:00', $this->nextOn('2025-02-01 09:00', $this->series('Monthly', 1, 5, '2025-01-31 20:00:00')));
+        // third Saturday, founded 30 January in a leap year
+        $this->assertSame('2028-02-19 20:00', $this->nextOn('2028-02-01 09:00', $this->series('Monthly', 3, 7, '2028-01-30 20:00:00')));
+        // and the founding month itself is still not offered
+        $this->assertSame('2025-02-06 20:00', $this->nextOn('2025-01-31 23:00', $this->series('Monthly', 1, 5, '2025-01-30 20:00:00')));
+    }
+
+    public function test_a_yearly_series_founded_on_a_leap_day_keeps_it(): void
+    {
+        $series = fn () => $this->series('Yearly', null, null, '2016-02-29 19:30:00');
+
+        $this->assertSame('2027-02-28 19:30', $this->nextOn('2027-01-10 12:00', $series()));
+        $this->assertSame('2028-02-29 19:30', $this->nextOn('2027-03-01 12:00', $series()));
+        $this->assertSame('2028-02-29 19:30', $this->nextOn('2028-02-29 08:00', $series()));
+        $this->assertSame('2029-02-28 19:30', $this->nextOn('2028-03-01 08:00', $series()));
+        // an ordinary date is the same day every year
+        $this->assertSame('2027-06-14 21:00', $this->nextOn('2026-11-19 12:00', $this->series('Yearly', null, null, '2005-06-14 21:00:00')));
+    }
+
+    public function test_biweekly_and_bimonthly_take_two_periods_a_step(): void
+    {
+        // founded Monday 2 November 2026: on the 16th and 30th, not the 9th or 23rd
+        $biweekly = fn () => $this->series('Biweekly', null, 2, '2026-11-02 20:00:00');
+        $this->assertSame('2026-11-16 20:00', $this->nextOn('2026-11-03 12:00', $biweekly()));
+        $this->assertSame('2026-11-16 20:00', $this->nextOn('2026-11-16 23:00', $biweekly()));
+        $this->assertSame('2026-11-30 20:00', $this->nextOn('2026-11-17 12:00', $biweekly()));
+        $this->assertSame('2030-01-07 20:00', $this->nextOn('2029-12-25 12:00', $biweekly()));
+
+        // second Wednesday, founded in January: March, May, July...
+        $bimonthly = fn () => $this->series('Bimonthly', 2, 4, '2026-01-05 19:00:00');
+        $this->assertSame('2026-03-11 19:00', $this->nextOn('2026-01-20 12:00', $bimonthly()));
+        $this->assertSame('2026-05-13 19:00', $this->nextOn('2026-03-12 12:00', $bimonthly()));
+        $this->assertSame('2027-01-13 19:00', $this->nextOn('2026-11-25 12:00', $bimonthly()));
+    }
+
+    public function test_the_shapes_the_sweep_only_checks_against_itself(): void
+    {
+        // the sweep above compares a jump with the model's own steps; these are dates worked out by hand
+
+        // every other month on its last Friday, founded in December: February, April...
+        $bimonthly = fn () => $this->series('Bimonthly', 5, 6, '2024-12-31 21:00:00');
+        $this->assertSame('2025-02-28 21:00', $this->nextOn('2025-01-05 12:00', $bimonthly()));
+        $this->assertSame('2025-04-25 21:00', $this->nextOn('2025-03-01 12:00', $bimonthly()));
+        $this->assertSame('2026-12-25 21:00', $this->nextOn('2026-11-25 12:00', $bimonthly()));
+
+        // monthly with no day named: the founding day of the month, or the last day of a shorter one
+        $unnamed = fn () => $this->series('Monthly', null, null, '2025-01-31 20:00:00');
+        $this->assertSame('2025-02-28 20:00', $this->nextOn('2025-02-10 12:00', $unnamed()));
+        $this->assertSame('2025-03-31 20:00', $this->nextOn('2025-03-01 12:00', $unnamed()));
+        $this->assertSame('2026-11-30 20:00', $this->nextOn('2026-11-25 12:00', $unnamed()));
+
+        // weekly keeps the founding weekday, across a clock change
+        $weekly = fn () => $this->series('Weekly', null, 6, '2020-01-03 21:00:00');
+        $this->assertSame('2026-03-13 21:00', $this->nextOn('2026-03-08 12:00', $weekly()));
+        $this->assertSame('2026-11-06 21:00', $this->nextOn('2026-11-01 01:30', $weekly()));
+
+        // a single step, one period or two
+        $this->assertSame('2026-12-09', $this->series('Monthly', 2, 4, null)->cycleForward(Carbon::parse('2026-11-11'))->format('Y-m-d'));
+        $this->assertSame('2027-01-13', $this->series('Bimonthly', 2, 4, null)->cycleForward(Carbon::parse('2026-11-11'))->format('Y-m-d'));
+        $this->assertSame('2026-11-25', $this->series('Biweekly', null, 4, null)->cycleForward(Carbon::parse('2026-11-11'))->format('Y-m-d'));
+        $this->assertSame('2027-02-28', $this->series('Yearly', null, null, null)->cycleForward(Carbon::parse('2026-02-28'))->format('Y-m-d'));
     }
 
     public function test_the_result_is_remembered_but_safe_to_change(): void
