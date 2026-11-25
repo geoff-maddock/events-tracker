@@ -60,9 +60,15 @@ class Tag extends Eloquent
         // a new tag missing from a form's options would be dropped when it's saved
         static::saved(fn () => OptionLists::forgetTags());
         static::deleted(fn () => OptionLists::forgetTags());
-        // a renamed or deleted tag must not stay on the popular page
-        static::saved(fn () => Cache::forget(self::MOST_USED_KEY));
-        static::deleted(fn () => Cache::forget(self::MOST_USED_KEY));
+        // a renamed or deleted tag must not stay on the popular page. Block closures:
+        // forget() answers false for a key that isn't there, and a listener that
+        // returns false stops the ones after it.
+        static::saved(function () {
+            Cache::forget(self::MOST_USED_KEY);
+        });
+        static::deleted(function () {
+            Cache::forget(self::MOST_USED_KEY);
+        });
         // Discord targets filtering on it (#2240)
         static::deleted(fn (Tag $tag) => DiscordTargetCriterion::forgetSubject($tag));
     }
