@@ -8,7 +8,7 @@ Events Tracker is a CMS designed to be set up for a music or arts community to t
 Run an instance to create your own community where events, event series, entities, attendees and other objects can be added, tagged maintained and followed.  Keep the discussion going through a related discussion forum.  
 
 
-## FEATURES (v2026.04.23 - Stable Release)
+## Features
 
 * Public filterable and sortable event listings, with built in views by time, type and tags.
 * Event creation, editing and following for registered users.
@@ -26,14 +26,14 @@ Run an instance to create your own community where events, event series, entitie
 * Export events to ical format or refer to a static link for a feed.
 * (Optional) Instagram integration to pull in posts from a specific account and tag them to events and entities.
 
-Read new feature release notes in the [changelog](docs/feature_notes.md).
+Changes are listed in the [feature notes](docs/feature_notes.md); changes since the last entry there are in [docs/unreleased](docs/unreleased).
 
 ### Built On
-* PHP 8.1
-* Laravel 10
-* MySQL 8 (can be database agnostic)
-* Tailwind CSS 4
-* Optional Integrations: Instagram
+* PHP 8.2 or newer (CI and production run 8.4)
+* Laravel 12
+* MySQL 8
+* Blade views with Tailwind CSS 4, built with Vite (Node 20.19+ or 22.12+; CI and production run 24)
+* Optional integrations: Instagram, Discord, S3 file storage, Sentry
 
 ### Roadmap
 * Improved experience on mobile
@@ -60,11 +60,9 @@ $ npm install
 ```
 
 ### Configuration
-* Configure .env based on .env.example
-* Run `composer install`
-* Run `npm install`
+* Copy `.env.example` to `.env`, fill in the database settings, and run `php artisan key:generate`
 * Run migrations to create the initial database.
-  - php artisan migrate:fresh
+  - ```php artisan migrate```
 * Seed database tables from one of the provided default seeders.  Only run this when starting the production app the first time.
   - ```php artisan db:seed --class=ProdBasicDatabaseSeeder```
     - The most basic data to run the app, some additional config will be required.
@@ -74,23 +72,24 @@ $ npm install
     - This includes everything in the ProdExtra seeder, plus some base specific data for Pittsburgh.
 * Set up DNS entry for your domain
 * Configure web server and SSL
-* Run node build for your environment
-  - ```npm run dev```
-  - ```npm run prod```
+* Build the frontend
+  - ```npm run dev``` (Vite dev server, for development)
+  - ```npm run build``` (production build)
 
-#### API Configuration
-* Generate basic auth u/p and configure in .env as per [Laravel Shield](https://github.com/vinkla/laravel-shield)
+To update a running install, see "Deploying to production" in the [deployment notes](docs/deployment_notes.md).
 
-##### API Documentation
-* [API Documentation](docs/api_notes.md)
+#### API
+The API needs no separate configuration. A request signs in with a user's email and password over HTTP basic auth, or with a token from `POST /api/tokens/create`.
+
+* [API notes and examples](docs/api_notes.md)
+* Every endpoint is listed at `/api/docs` on a running install
 
 #### Bug Reports & Feature Requests
 
 Please use the [issue tracker](https://github.com/geoff-maddock/events-tracker/issues) to report any bugs or file feature requests.
 
 #### Developing
-If you'd like to contribute, please comment on the issue or contact the author before creating a PR.
-Once the stable version is released, I'll add more notes and welcome public contributions.
+If you'd like to contribute, please comment on the issue or contact the author before creating a PR. See [CONTRIBUTING.md](CONTRIBUTING.md); pull requests go to `main`.
 
 
 ## Author

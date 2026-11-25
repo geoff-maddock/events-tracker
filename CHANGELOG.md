@@ -1,8 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+Versions are dates, `YYYY.MM.NN` (see [the release process](docs/release_process.md)).
+
+## [Unreleased]
+
+Not summarised here until a release is cut. Every change merged since 2026.05.01 is described in
+[docs/feature_notes.md](docs/feature_notes.md), and the newest in
+[docs/unreleased](docs/unreleased), one file per change.
 
 ## [2026.05.01] - 2026-05-01
 

@@ -9,7 +9,7 @@ This is a major feature release representing a large body of work accumulated si
 
 ## Upgrade Notes
 
-**This release requires action before deploying to an existing installation.** See the full upgrade steps in [deployment_notes.md](deployment_notes.md#upgrading-to-v202605).
+**This release requires action before deploying to an existing installation.** See [Upgrading an existing installation](#upgrading-an-existing-installation-to-v20260501) below.
 
 - **PHP 8.4+ required** (up from 8.1+)
 - **Node 24+ required** for asset builds
@@ -209,7 +209,7 @@ The following migrations are new in this release and must be applied with `php a
 | Component | Version |
 |-----------|---------|
 | PHP | 8.4+ |
-| Framework | Laravel 11 |
+| Framework | Laravel 10 |
 | Database | MySQL 8 |
 | Frontend CSS | Tailwind CSS v4 |
 | Build Tool | Vite |
@@ -228,6 +228,7 @@ Follow the standard installation process in [deployment_notes.md](deployment_not
 ```bash
 git clone git@github.com:geoff-maddock/events-tracker.git
 cd events-tracker
+git checkout v2026.05.01   # leave this out to install the current main instead
 composer install
 npm install
 cp .env.example .env
@@ -238,22 +239,63 @@ php artisan db:seed --class=ProdExtraDatabaseSeeder
 npm run build
 ```
 
-### For Existing Installations (Upgrading from v2025.01.01)
+### Upgrading an existing installation to v2026.05.01
 
-See the full checklist in [deployment_notes.md](deployment_notes.md#upgrading-to-v202605). Summary:
+This is a major release with a full UI refresh (Tailwind CSS / Vite), new features, and database schema changes. Follow these steps to upgrade an existing installation.
 
+#### Pre-upgrade checklist
+- [ ] Back up the database before making any changes
+- [ ] Put the app into maintenance mode: `php artisan down`
+- [ ] Confirm you are on PHP 8.4+ and Node 24+
+
+#### 1. Check out the release
+`main` has moved on since; these steps are for this release only.
 ```bash
-php artisan down
-git pull origin master
+git fetch --tags
+git checkout v2026.05.01
+```
+
+#### 2. Update PHP dependencies
+```bash
 composer install --no-dev --optimize-autoloader
+```
+
+#### 3. Update Node dependencies and rebuild assets
+The build pipeline has migrated from Laravel Mix/webpack to Vite. If you have old `webpack.mix.js`-based build artifacts, they will be replaced.
+```bash
 npm install
 npm run build
+```
+
+#### 4. Run database migrations
+Five new migrations are included. Run them against the existing database — **do not use `migrate:fresh`** as that will drop all data.
+```bash
 php artisan migrate
+```
+
+Migrations included in this release:
+- `add_description_to_tags_table`
+- `create_event_shares_table`
+- `create_click_tracks_table`
+- `add_user_id_to_click_tracks_table`
+- `create_blog_photo_table`
+
+#### 5. Clear caches
+```bash
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+```
+
+#### 6. Bring the app back online
+```bash
 php artisan up
 ```
+
+#### 7. Verify
+- Log in and confirm the UI loads correctly (dark theme by default)
+- Check that events, entities, and series pages render as expected
+- Confirm click-tracking redirects (`/go/evt-{id}`, `/go/ser-{id}`) are working if you use ticket links
 
 ---
 
