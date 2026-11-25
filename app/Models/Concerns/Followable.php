@@ -42,7 +42,8 @@ trait Followable
     /**
      * Whether the user follows this model. For lists: it reads the user's
      * followed ids, loaded once per request, where followedBy() is a query
-     * per row.
+     * per row. Right after a follow or unfollow in the same request, use
+     * followedBy(): the ids may have been read before the change.
      */
     public function isFollowedBy(?User $user): bool
     {

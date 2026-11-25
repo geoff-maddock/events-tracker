@@ -35,6 +35,11 @@ class Tag extends Eloquent
     use \App\Models\Concerns\Followable;
     use HasFactory;
 
+    /** How many tags the popular page shows, and the cache key of that block. */
+    private const MOST_USED = 24;
+
+    private const MOST_USED_KEY = 'popular-tags';
+
     /** Tag type given to tags created on the fly from a request tag_list. */
     public const DEFAULT_TAG_TYPE_ID = 1;
 
@@ -55,6 +60,9 @@ class Tag extends Eloquent
         // a new tag missing from a form's options would be dropped when it's saved
         static::saved(fn () => OptionLists::forgetTags());
         static::deleted(fn () => OptionLists::forgetTags());
+        // a renamed or deleted tag must not stay on the popular page
+        static::saved(fn () => Cache::forget(self::MOST_USED_KEY));
+        static::deleted(fn () => Cache::forget(self::MOST_USED_KEY));
         // Discord targets filtering on it (#2240)
         static::deleted(fn (Tag $tag) => DiscordTargetCriterion::forgetSubject($tag));
     }
@@ -126,7 +134,9 @@ class Tag extends Eloquent
     /**
      * Adds a grid_thumbnail subquery select — returns the thumbnail path of the soonest
      * upcoming public event photo (falling back to the most recent past event photo),
-     * falling back to the most recently created entity photo.
+     * falling back to the most recently created entity's photo. A run still
+     * on (#2375) counts as upcoming. The joins are raw, so the entity status is
+     * checked here: an unlisted entity's photo must not show.
      */
     public function scopeWithGridThumbnail(Builder $query): Builder
     {
@@ -140,8 +150,8 @@ class Tag extends Eloquent
                  WHERE et.tag_id = tags.id
                    AND p.is_primary = 1
                    AND e.visibility_id = ' . Visibility::VISIBILITY_PUBLIC . '
-                 ORDER BY (e.start_at >= CURDATE()) DESC,
-                          CASE WHEN e.start_at >= CURDATE() THEN e.start_at END ASC,
+                 ORDER BY (COALESCE(e.last_start_at, e.start_at) >= CURDATE()) DESC,
+                          CASE WHEN COALESCE(e.last_start_at, e.start_at) >= CURDATE() THEN e.start_at END ASC,
                           e.start_at DESC
                  LIMIT 1),
                 (SELECT p.thumbnail
@@ -151,6 +161,7 @@ class Tag extends Eloquent
                  JOIN entity_tag etag ON en.id = etag.entity_id
                  WHERE etag.tag_id = tags.id
                    AND p.is_primary = 1
+                   AND en.entity_status_id <> ' . EntityStatus::UNLISTED . '
                  ORDER BY en.created_at DESC
                  LIMIT 1)
             ) as grid_thumbnail
@@ -161,20 +172,24 @@ class Tag extends Eloquent
      * The tags on the most public events, each with its count and thumbnail,
      * for the popular page. The same for every viewer, so the list is kept for
      * half an hour: finding a thumbnail for the busiest tags is slow (#2390).
+     * Dropped when a tag is saved or deleted; an event's change shows when the
+     * half hour is up.
      *
      * @return list<array{slug: string, name: string, events_count: int, thumbnail: ?string}>
      */
-    public static function mostUsed(int $limit): array
+    public static function mostUsed(): array
     {
-        return Cache::remember('popular-tags:'.$limit, 1800, function () use ($limit) {
-            $counts = DB::table('event_tag')
-                ->join('events', 'events.id', '=', 'event_tag.event_id')
-                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
+        return Cache::remember(self::MOST_USED_KEY, 1800, function () {
+            $limit = self::MOST_USED;
+            $counts = Event::query()->public()
+                ->join('event_tag', 'event_tag.event_id', '=', 'events.id')
+                ->join('tags', 'tags.id', '=', 'event_tag.tag_id')
                 ->groupBy('event_tag.tag_id')
                 ->selectRaw('event_tag.tag_id, count(*) as events_count')
                 ->orderByDesc('events_count')
                 ->orderBy('event_tag.tag_id')
                 ->limit($limit)
+                ->toBase()
                 ->pluck('events_count', 'tag_id');
 
             $tags = static::query()->whereIn('tags.id', $counts->keys())->withGridThumbnail()->get()->keyBy('id');

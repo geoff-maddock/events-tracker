@@ -8,6 +8,8 @@ use App\Models\EntityType;
 use App\Models\Event;
 use App\Models\EventResponse;
 use App\Models\Follow;
+use App\Models\Link;
+use App\Models\Photo;
 use App\Models\ResponseType;
 use App\Models\Tag;
 use App\Models\User;
@@ -160,5 +162,53 @@ class WastedQueriesTest extends TestCase
 
         $first = collect($response->json('data'))->firstWhere('id', $events[0]->id);
         $this->assertSame([$user->id], array_column($first['attendees'], 'id'));
+    }
+
+    #[Test]
+    public function a_tag_thumbnail_never_comes_from_an_unlisted_entity(): void
+    {
+        $tag = Tag::factory()->create();
+        $unlisted = Entity::factory()->create(['entity_status_id' => EntityStatus::UNLISTED]);
+        $unlisted->photos()->attach(Photo::factory()->create(['is_primary' => 1, 'thumbnail' => 'unlisted_thumb.jpg'])->id);
+        $unlisted->tags()->attach($tag->id);
+
+        $this->assertNull(Tag::query()->withGridThumbnail()->findOrFail($tag->id)->getAttribute('grid_thumbnail'));
+
+        $listed = $this->entity('Zz Listed Entity');
+        $listed->photos()->attach(Photo::factory()->create(['is_primary' => 1, 'thumbnail' => 'listed_thumb.jpg'])->id);
+        $listed->tags()->attach($tag->id);
+
+        $this->assertSame('listed_thumb.jpg', Tag::query()->withGridThumbnail()->findOrFail($tag->id)->getAttribute('grid_thumbnail'));
+    }
+
+    #[Test]
+    public function the_popular_tag_block_follows_a_renamed_or_deleted_tag(): void
+    {
+        $tag = Tag::factory()->create();
+        $tag->events()->attach(Event::factory()->count(2)->create(['visibility_id' => Visibility::VISIBILITY_PUBLIC])->modelKeys());
+
+        $this->assertContains($tag->slug, array_column(Tag::mostUsed(), 'slug'));
+
+        $tag->update(['name' => 'Zz Renamed Tag', 'slug' => 'zz-renamed-tag']);
+        $this->assertContains('zz-renamed-tag', array_column(Tag::mostUsed(), 'slug'));
+
+        $tag->delete();
+        $this->assertNotContains('zz-renamed-tag', array_column(Tag::mostUsed(), 'slug'));
+    }
+
+    #[Test]
+    public function a_list_sorted_by_popularity_checks_its_own_page_for_something_to_play(): void
+    {
+        $artist = $this->entity('Zz Playable Artist');
+        $artist->links()->attach(Link::factory()->create(['url' => 'https://soundcloud.com/zz-playable'])->id);
+
+        $response = null;
+        $queries = $this->queriesOf(function () use (&$response) {
+            $response = $this->get('/entities?sort=popularity&direction=desc&filters[name]=Zz Playable')->assertOk();
+        });
+
+        $response->assertSee('Play this list');
+        // the totals join the page query and its count, not a third pass for the play button
+        $this->assertCount(2, array_filter($queries, fn ($sql) => str_contains($sql, 'entity_follows')));
     }
 }

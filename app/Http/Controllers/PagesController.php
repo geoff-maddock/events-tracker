@@ -302,7 +302,7 @@ class PagesController extends Controller
             ->get();
 
         // the most used tags with a thumbnail each: the same for everyone, and kept for half an hour
-        $popularTags = Tag::mostUsed(24);
+        $popularTags = Tag::mostUsed();
 
         return view('pages.popular-tw', compact(
             'popularEvents',

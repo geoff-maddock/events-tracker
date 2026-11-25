@@ -244,8 +244,10 @@ class ListEntityResultBuilder implements ListResultBuilderInterface
             return;
         }
 
+        // once: the count and the result both come through here on one query
         if (isset($this->computedSorts[$this->appliedSortField])) {
             ($this->computedSorts[$this->appliedSortField])($this->queryBuilder);
+            unset($this->computedSorts[$this->appliedSortField]);
         }
 
         // If sorting by a relationship count column (e.g. follows_count), add withCount

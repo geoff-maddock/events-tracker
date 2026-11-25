@@ -43,8 +43,6 @@ class TagsController extends Controller
 
     protected string $defaultSortDirection;
 
-    protected int $limit;
-
     protected string $sort;
 
     protected string $sortDirection;
@@ -73,7 +71,6 @@ class TagsController extends Controller
         // set list variables
         $this->sort = $this->defaultSort;
         $this->sortDirection = $this->defaultSortDirection;
-        $this->limit = $this->defaultLimit;
 
         $this->defaultSortCriteria = ['name' => 'desc'];
 
