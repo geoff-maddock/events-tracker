@@ -98,7 +98,7 @@ class FollowAndAttendDuplicatesTest extends TestCase
         $this->post("/events/{$event->id}/attend");
         $this->assertSame(1, $attending());
 
-        EventResponse::create(['event_id' => $event->id, 'user_id' => $this->user->id, 'response_type_id' => ResponseType::ATTENDING]);
+        // (this used to add a second row by hand; the table now refuses one, see DoubleSubmitTest)
         $this->post("/events/{$event->id}/unattend");
         $this->assertSame(0, $attending());
     }

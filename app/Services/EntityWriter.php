@@ -11,6 +11,8 @@ use App\Models\EntityType;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -60,23 +62,36 @@ class EntityWriter
     public function quickCreate(User $user, string $name, string $role, ?string $short = null, ?string $description = null): Entity
     {
         // a name with nothing sluggable in it (all punctuation) still gets a slug
-        $baseSlug = Str::slug($name) ?: 'entity';
-        $slug = $baseSlug;
-        $i = 1;
-        // unlisted entities hold their slugs too
-        while (Entity::withUnlisted()->where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$i++;
-        }
+        // room is left for the number a taken slug gets
+        $baseSlug = rtrim(substr(Str::slug($name), 0, 240), '-') ?: 'entity';
+        $roles = Role::where('name', $role)->pluck('id')->all();
 
-        return $this->create($user, [
-            'name' => $name,
-            'slug' => $slug,
-            'short' => $short ?? $name,
-            'description' => $description ?? $name,
-            'entity_type_id' => $role === 'Venue' ? EntityType::SPACE : EntityType::GROUP,
-            'entity_status_id' => EntityStatus::ACTIVE,
-            'started_at' => now(),
-        ], roles: Role::where('name', $role)->pluck('id')->all());
+        for ($attempt = 1; ; ++$attempt) {
+            $slug = $baseSlug;
+            $i = 1;
+            // unlisted entities hold their slugs too
+            while (Entity::withUnlisted()->where('slug', $slug)->exists()) {
+                $slug = $baseSlug.'-'.$i++;
+            }
+
+            try {
+                // all or nothing, so a failed attempt leaves no half-made entity for the next to count
+                return DB::transaction(fn () => $this->create($user, [
+                    'name' => $name,
+                    'slug' => $slug,
+                    'short' => $short ?? $name,
+                    'description' => $description ?? $name,
+                    'entity_type_id' => $role === 'Venue' ? EntityType::SPACE : EntityType::GROUP,
+                    'entity_status_id' => EntityStatus::ACTIVE,
+                    'started_at' => now(),
+                ], roles: $roles));
+            } catch (UniqueConstraintViolationException $e) {
+                // another request took the slug between the check and the insert: look again
+                if ($attempt >= 3) {
+                    throw $e;
+                }
+            }
+        }
     }
 
     /**
