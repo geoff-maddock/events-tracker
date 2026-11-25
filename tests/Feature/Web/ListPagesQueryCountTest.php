@@ -152,7 +152,7 @@ class ListPagesQueryCountTest extends TestCase
             $sql = $entry['query'];
 
             return str_contains($sql, 'from `events`')
-                && str_contains($sql, '`events`.`start_at` between')
+                && str_contains($sql, '`events`.`last_start_at` >=')
                 && str_contains($sql, '`event_showings`.`start_at` between')
                 && str_contains($sql, '`visibility_id`');
         });

@@ -883,7 +883,8 @@ class EventsController extends Controller
 
     /**
      * Display a simple text feed of events: from today, soonest first, unless
-     * the request or the event list's saved filters and sort say otherwise.
+     * the request or the event list's saved filters ask for other dates or
+     * another sort.
      *
      * @return View
      */
@@ -898,9 +899,16 @@ class EventsController extends Controller
             'internal_event_index',
             Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
             ['events.start_at' => 'asc'],
-            // from today, unless the request or the saved filters say otherwise
-            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
         );
+
+        // From today, unless a date filter (the request's, or one saved from the
+        // event list) asks for other dates. Not a default filter: one saved
+        // without dates would drop it and put the oldest events on page one, and
+        // it would order by next showing where the feed prints start_at.
+        $dates = $listResultSet->getFilters()['start_at'] ?? null;
+        if (!is_array($dates) || array_filter($dates) === []) {
+            $query->scopes(['occurringBetween' => [Carbon::today()]]);
+        }
 
         // venue.locations.visibility feeds getPrimaryLocationAddress() on every row (#2172).
         // A page of 100: this was 1,000 events of every date, 5 MB and four seconds (#2391).
@@ -915,7 +923,7 @@ class EventsController extends Controller
     public function feedTags(string $tag): View
     {
         // set number of results per page
-        $events = Event::getByTag(ucfirst($tag))->future()->visible($this->user)->with(self::FEED_EAGER_LOAD)->simplePaginate(self::FEED_PAGE_SIZE);
+        $events = Event::getByTag(ucfirst($tag))->future()->visible($this->user)->with(self::FEED_EAGER_LOAD)->simplePaginate(self::FEED_PAGE_SIZE)->withQueryString();
 
         return view('events.feed-tw', compact('events'));
     }
@@ -935,9 +943,7 @@ class EventsController extends Controller
             $listEntityResultBuilder,
             'internal_event_index',
             Event::query()->leftJoin('event_types', 'events.event_type_id', '=', 'event_types.id')->select('events.*'),
-            ['events.start_at' => 'asc'],
-            // from today, unless the request or the saved filters say otherwise
-            ['start_at' => ['start' => Carbon::now()->format('Y-m-d')]],
+            ['events.start_at' => 'desc'],
         );
 
         // the brief list prints each event's tags (#2172)

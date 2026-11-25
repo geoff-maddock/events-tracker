@@ -40,11 +40,15 @@ class EventFeedListsTest extends TestCase
     {
         // from today until a filter says otherwise (#2391)
         $this->get('/events/feed')->assertOk()->assertSeeInOrder(['Zzsoon show', 'Zzlater gig'])->assertDontSee('Zzpast show');
-        $this->get('/events/brief-text')->assertOk()->assertSeeInOrder(['Zzsoon show', 'Zzlater gig'])->assertDontSee('Zzpast show');
 
+        // a saved filter without dates narrows the feed; it stays from today
         $this->post('/events/filter', ['filters' => ['name' => 'show']])->assertOk();
 
-        $this->get('/events/feed')->assertOk()->assertSee('Zzsoon show')->assertSee('Zzpast show')->assertDontSee('Zzlater gig');
+        $this->get('/events/feed')->assertOk()->assertSee('Zzsoon show')->assertDontSee('Zzpast show')->assertDontSee('Zzlater gig');
+        // dates in the request reach back
+        $this->get('/events/feed?filters[name]=show&filters[start_at][start]='.now()->subDays(30)->format('Y-m-d'))->assertOk()
+            ->assertSeeInOrder(['Zzpast show', 'Zzsoon show'])->assertDontSee('Zzlater gig');
+        $this->post('/events/filter', ['filters' => ['name' => 'show']])->assertOk();
         $this->get('/events/brief-text')->assertOk()->assertSee('Zzsoon show')->assertDontSee('Zzlater gig');
         $this->get('/events/export')->assertOk()->assertSee('Zzsoon show')->assertDontSee('Zzlater gig');
 
@@ -93,6 +97,9 @@ class EventFeedListsTest extends TestCase
 
         $this->get('/events/feed?page=2')->assertOk()->assertSee('Zzlater gig')->assertDontSee('Zzsoon show')
             ->assertSee('rel="prev"', false)->assertDontSee('rel="next"', false);
+
+        // a page past the end still offers the way back
+        $this->get('/events/feed?page=9')->assertOk()->assertSee('No events listed.')->assertSee('rel="prev"', false);
     }
 
     public function test_the_feeds_leave_out_what_the_viewer_may_not_see(): void
