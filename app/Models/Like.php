@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class Like extends Eloquent
 {
+    use HasFactory;
+
     protected $fillable = [
         'object_id', 'user_id', 'object_type',
     ];

@@ -47,6 +47,7 @@ class DataExportService
         $this->writeJsonFile($exportDir . '/blogs.json', $exportData['blogs']);
         $this->writeJsonFile($exportDir . '/follows.json', $exportData['follows']);
         $this->writeJsonFile($exportDir . '/event_responses.json', $exportData['event_responses']);
+        $this->writeJsonFile($exportDir . '/survey_responses.json', $exportData['survey_responses']);
         $this->writeJsonFile($exportDir . '/profile.json', $exportData['profile']);
         $this->writeJsonFile($exportDir . '/photos_metadata.json', $exportData['photos']);
         $this->writeJsonFile($exportDir . '/constants.json', $exportData['constants']);
@@ -319,16 +320,9 @@ class DataExportService
      */
     public function findExportPath(string $filename): ?string
     {
-        $candidates = [
-            storage_path('app/public/exports/' . $filename),
-            storage_path('framework/exports/' . $filename),
-            storage_path('app/exports/' . $filename),
-            sys_get_temp_dir() . '/events-tracker-exports/' . $filename,
-        ];
-
-        foreach ($candidates as $candidate) {
-            if (is_file($candidate)) {
-                return $candidate;
+        foreach ([storage_path('app/public/exports'), ...$this->privateExportRoots()] as $directory) {
+            if (is_file($directory . '/' . $filename)) {
+                return $directory . '/' . $filename;
             }
         }
 
@@ -362,6 +356,30 @@ class DataExportService
     }
 
     /**
+     * Where an export's zip may be kept out of public reach, in order of preference.
+     *
+     * @return list<string>
+     */
+    protected function privateExportRoots(): array
+    {
+        return [
+            storage_path('framework/exports'),
+            storage_path('app/exports'),
+            sys_get_temp_dir() . '/events-tracker-exports',
+        ];
+    }
+
+    /**
+     * Every directory that can hold an export: the private roots and the public copy.
+     *
+     * @return list<string>
+     */
+    protected function exportDirectories(): array
+    {
+        return [...$this->privateExportRoots(), storage_path('app/public/exports')];
+    }
+
+    /**
      * Resolve a writable private export root.
      */
     protected function getPrivateExportRoot(): string
@@ -370,13 +388,7 @@ class DataExportService
             return $this->privateExportRoot;
         }
 
-        $candidates = [
-            storage_path('framework/exports'),
-            storage_path('app/exports'),
-            sys_get_temp_dir() . '/events-tracker-exports',
-        ];
-
-        foreach ($candidates as $candidate) {
+        foreach ($this->privateExportRoots() as $candidate) {
             if ($this->ensureDirectoryExists($candidate, false) && $this->isDirectoryWritable($candidate)) {
                 $this->privateExportRoot = $candidate;
 
@@ -431,11 +443,11 @@ class DataExportService
      */
     public function cleanupOldExports(int $daysOld = 7): void
     {
-        $exportDir = storage_path('app/exports');
-        $publicExportDir = storage_path('app/public/exports');
-        
-        $this->cleanupDirectory($exportDir, $daysOld);
-        $this->cleanupDirectory($publicExportDir, $daysOld);
+        // every place an export can be written: the private roots
+        // getPrivateExportRoot() chooses from, and the public copy
+        foreach ($this->exportDirectories() as $directory) {
+            $this->cleanupDirectory($directory, $daysOld);
+        }
     }
     
     /**
@@ -455,8 +467,9 @@ class DataExportService
         
         foreach ($files as $file) {
             if (is_file($file)) {
-                if ($now - filemtime($file) >= 60 * 60 * 24 * $daysOld) {
-                    unlink($file);
+                // a file another account owns must not stop the rest being removed
+                if ($now - filemtime($file) >= 60 * 60 * 24 * $daysOld && !@unlink($file)) {
+                    Log::warning('Unable to remove an old export', ['file' => $file]);
                 }
             }
         }

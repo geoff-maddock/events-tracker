@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,6 +44,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class EventReview extends Eloquent
 {
+    use HasFactory;
+
     protected $fillable = [
         'event_id', 'user_id', 'review_type_id', 'attended', 'confirmed', 'expectation', 'rating', 'review',
     ];
