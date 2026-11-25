@@ -508,13 +508,17 @@ class Event extends Model implements HasPhotos
             return $query->where('events.start_at', '<=', $end);
         }
 
-        return $query->where(function ($dated) use ($start, $end) {
-            $dated->whereBetween('events.start_at', [$start, $end])
-                // a run that began before the window and isn't over: look at its showings
-                ->orWhere(function ($run) use ($start, $end) {
-                    $run->where('events.start_at', '<', $start)
-                        ->where('events.last_start_at', '>=', $start)
-                        ->whereExists(function ($showing) use ($start, $end) {
+        // Written so the index on last_start_at can narrow it (#2391): a date in
+        // the window means the event isn't over at $start, has begun by $end and
+        // either starts in the window or, being a run already under way, has a
+        // showing in it. Leans on last_start_at never being null or before
+        // start_at, which the saving hook and syncShowings() keep true.
+        return $query->where(function ($window) use ($start, $end) {
+            $window->where('events.last_start_at', '>=', $start)
+                ->where('events.start_at', '<=', $end)
+                ->where(function ($dated) use ($start, $end) {
+                    $dated->where('events.start_at', '>=', $start)
+                        ->orWhereExists(function ($showing) use ($start, $end) {
                             $showing->selectRaw('1')
                                 ->from('event_showings')
                                 ->whereColumn('event_showings.event_id', 'events.id')
