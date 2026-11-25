@@ -729,10 +729,15 @@ class Series extends Eloquent implements HasPhotos
         return $this->nextOccurrenceDate()?->addHours($this->length);
     }
 
+    /** Schedules that happen every second period, and so need to know which one is "on". */
+    private const TWO_PERIOD_TYPES = ['Biweekly', 'Bimonthly'];
+
     /**
      * The next date on this series' schedule, today or later: the founding date (or
      * the created date) moved forward a period at a time until it reaches today in
-     * New York.
+     * New York. A Biweekly or Bimonthly series counts from its latest event, when
+     * it has one, so the "on" week or month is the one it has actually been
+     * keeping (#2422).
      *
      * Remembered per model for as long as the day and the schedule stay the same.
      * Each call gets its own copy, since callers add to the date they are given.
@@ -740,6 +745,7 @@ class Series extends Eloquent implements HasPhotos
     public function cycleFromFoundedAt(): ?Carbon
     {
         $today = Carbon::now('America/New_York')->startOfDay();
+        $anchor = $this->rhythmAnchor($today);
 
         $key = implode('|', [
             $today->getTimestamp(),
@@ -748,43 +754,73 @@ class Series extends Eloquent implements HasPhotos
             $this->occurrence_week_id,
             $this->occurrence_day_id,
             $this->occurrenceType?->name,
+            $anchor?->getTimestamp(),
         ]);
 
         if ($this->nextCycleDate === null || $this->nextCycleDate[0] !== $key) {
-            $this->nextCycleDate = [$key, $this->cycleFromFoundedAtTo($today)];
+            $this->nextCycleDate = [$key, $this->cycleFromFoundedAtTo($today, $anchor)];
         }
 
         return $this->nextCycleDate[1]->copy();
     }
 
     /**
-     * Steps with cycleForward(), as before, but only for the last step or two: the
-     * steps in between are skipped where skipping cannot change where they land (#2388).
+     * For a two-period schedule, the start of the series' latest event up to
+     * the end of today: the date its rhythm is counted from. Null for the other
+     * schedules, and for a series with no such event, which count from the
+     * founding date.
      */
-    private function cycleFromFoundedAtTo(Carbon $today): Carbon
+    private function rhythmAnchor(Carbon $today): ?Carbon
+    {
+        if (!$this->exists || !in_array($this->occurrenceType?->name, self::TWO_PERIOD_TYPES, true)) {
+            return null;
+        }
+
+        $latest = Event::query()
+            ->where('series_id', $this->id)
+            ->where('start_at', '<', $today->copy()->addDay())
+            ->max('start_at');
+
+        return null === $latest ? null : Carbon::parse($latest);
+    }
+
+    /**
+     * Steps with cycleForward(), but only for the last step or two: the steps in
+     * between are skipped where skipping cannot change where they land (#2388).
+     */
+    private function cycleFromFoundedAtTo(Carbon $today, ?Carbon $anchor = null): Carbon
     {
         // if no founded date, assume created at date
         $start = $this->founded_at ?: $this->created_at;
-        $next = $start;
+        $next = $anchor ?? $start;
 
         if ($next < $today) {
             $type = $this->occurrenceType->name;
 
-            if (in_array($type, ['Monthly', 'Bimonthly'], true)) {
+            if ('Yearly' === $type) {
+                // counted from the founding date each time, so a 29 February founding
+                // comes back to the 29th in a leap year (#2422)
+                $years = max(0, $today->year - $start->year - 1);
+                do {
+                    $next = Carbon::parse($start)->addYearsNoOverflow($years++);
+                } while ($next < $today);
+            } elseif ('Monthly' === $type) {
                 // the first step leaves the founding date for the schedule's day of the month
                 $next = $this->cycleForward($next);
 
                 // from there every step lands on that day of the following month, so go
-                // straight to today's month. "Last of the month" (week 5) dates can fall
-                // on the 29th to 31st, where a step can skip a month: those are stepped.
-                if ($next < $today && in_array((int) $this->occurrence_week_id, [1, 2, 3, 4], true) && in_array((int) $this->occurrence_day_id, [1, 2, 3, 4, 5, 6, 7], true)) {
-                    $next = Carbon::parse($today)->setTimezone($next->getTimezone());
-                    $next->nthOfMonth($this->occurrence_week_id, $this->occurrence_day_id - 1);
+                // straight to today's month
+                if ($next < $today && $this->hasMonthlyDay()) {
+                    $next = $this->dayOfMonth(Carbon::parse($today)->setTimezone($next->getTimezone()));
                 }
-            } elseif ($type !== 'Yearly') {
-                // weekly and daily steps are a fixed length: stop one short and let the
-                // loop below take the last one
-                $days = in_array($type, ['Weekly', 'Biweekly'], true) ? 7 : 1;
+            } elseif ('Bimonthly' !== $type) {
+                // weekly, fortnightly and daily steps are a fixed length: stop one
+                // short and let the loop below take the last one
+                $days = match ($type) {
+                    'Weekly' => 7,
+                    'Biweekly' => 14,
+                    default => 1,
+                };
                 $periods = intdiv($today->getTimestamp() - $next->getTimestamp(), $days * 86400) - 1;
 
                 if ($periods > 0) {
@@ -797,6 +833,8 @@ class Series extends Eloquent implements HasPhotos
             $next = $this->cycleForward($next);
         }
 
+        // a date worked out from an event must not change the event's own time
+        $next = Carbon::parse($next);
         $next->setHour($start->hour);
         $next->setMinute($start->minute);
 
@@ -804,37 +842,56 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
-     * Returns the date of the next occurrence of this template.
+     * Whether a monthly schedule names its day: the first to fourth, or last,
+     * of a weekday.
+     */
+    private function hasMonthlyDay(): bool
+    {
+        return in_array((int) $this->occurrence_week_id, [1, 2, 3, 4, 5], true)
+            && in_array((int) $this->occurrence_day_id, [1, 2, 3, 4, 5, 6, 7], true);
+    }
+
+    /**
+     * The schedule's day in the month of $date, e.g. its last Friday.
+     */
+    private function dayOfMonth(Carbon $date): Carbon
+    {
+        $weekday = $this->occurrence_day_id - 1;
+
+        return 5 === (int) $this->occurrence_week_id
+            ? $date->lastOfMonth($weekday)
+            : $date->nthOfMonth($this->occurrence_week_id, $weekday);
+    }
+
+    /**
+     * The occurrence after $date: one period on, or two for Biweekly and Bimonthly.
      */
     public function cycleForward(?DateTime $date): Carbon
     {
-
         $carbonDate = Carbon::parse($date);
+        $type = $this->occurrenceType->name;
+        $periods = in_array($type, self::TWO_PERIOD_TYPES, true) ? 2 : 1;
 
-        switch ($this->occurrenceType->name) {
+        switch ($type) {
             case 'Yearly':
-                $next = $carbonDate->addYear();
+                $next = $carbonDate->addYearNoOverflow();
                 break;
             case 'Monthly':
             case 'Bimonthly':
-                $next = $carbonDate->addMonth();
-
-                if ($date) {
-                    // check for last of month
-                    if ($this->occurrence_week_id == 5) {
-                        $next = $carbonDate->lastOfMonth($this->occurrence_day_id - 1);
-                     } else {
-                         $next = $carbonDate->nthOfMonth($this->occurrence_week_id, ($this->occurrence_day_id - 1));
-                     }
-
+                if ($date && $this->hasMonthlyDay()) {
+                    // from the first of the month: adding a month to the 29th-31st
+                    // can run past a shorter month and skip it (#2422)
+                    $next = $this->dayOfMonth($carbonDate->startOfMonth()->addMonths($periods));
+                } elseif ($date) {
+                    $next = $carbonDate->addMonthsNoOverflow($periods);
                 } else {
-                    $next = $carbonDate->addMonth()->startOfMonth();
+                    $next = $carbonDate->addMonths($periods)->startOfMonth();
                 }
 
                 break;
             case 'Weekly':
             case 'Biweekly':
-                $next = $carbonDate->addWeek();
+                $next = $carbonDate->addWeeks($periods);
                 break;
             default:
                 $next = $carbonDate->addDay();
