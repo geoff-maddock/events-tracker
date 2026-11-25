@@ -40,6 +40,16 @@ trait Followable
     }
 
     /**
+     * Whether the user follows this model. For lists: it reads the user's
+     * followed ids, loaded once per request, where followedBy() is a query
+     * per row.
+     */
+    public function isFollowedBy(?User $user): bool
+    {
+        return $user !== null && in_array((int) $this->getKey(), $user->followedIds($this->getMorphClass()), true);
+    }
+
+    /**
      * The users who follow this model, with the profile that holds each
      * one's notification settings.
      *

@@ -14,8 +14,6 @@ use App\Models\Tag;
 use App\Models\TagType;
 use App\Models\Visibility;
 use App\Services\StringHelper;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -105,59 +103,18 @@ class TagsController extends Controller
      */
     public function index(Request $request): View
     {
-        // count the most common tags in the recent past
-        $latestTags = Tag::withCount(['events' => function (Builder $query) {
-            $query->where('events.start_at', '>', Carbon::now()->subMonths(3))
-                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC);
-        }])
-        ->orderBy('events_count', 'desc')
-        ->paginate(6);
-
         // default to no tag
         $tag = null;
 
-        // what the signed-in user's followed tags lead to
+        // the signed-in user's followed tags, for the follow buttons of the grid
         $userTags = $this->user?->getTagsFollowing();
-        [$series, $events, $entities] = $this->followedTagContent($userTags ? $userTags->pluck('name')->all() : []);
 
         return view('tags.index-tw')
                 ->with(array_merge(
-                    compact('series', 'entities', 'events', 'tag', 'userTags', 'latestTags'),
+                    compact('tag', 'userTags'),
                     $this->tagGrid($request),
                     $this->getListControlOptions()
                 ));
-    }
-
-    /**
-     * The series, events and entities carrying any of the named tags.
-     *
-     * @param array<int, string> $tagNames
-     *
-     * @return array{0: \Illuminate\Contracts\Pagination\LengthAwarePaginator, 1: \Illuminate\Contracts\Pagination\Paginator, 2: \Illuminate\Contracts\Pagination\Paginator}
-     */
-    private function followedTagContent(array $tagNames): array
-    {
-        $taggedWith = fn ($q) => $q->whereIn('name', $tagNames);
-
-        $series = Series::whereHas('tags', $taggedWith)->visible($this->user)
-            ->orderBy('start_at', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->with('tags', 'entities', 'occurrenceType', 'occurrenceWeek', 'occurrenceDay')
-            ->paginate();
-
-        $events = Event::whereHas('tags', $taggedWith)->visible($this->user)
-            ->orderBy('start_at', 'DESC')
-            ->orderBy('name', 'ASC')
-            ->with('visibility', 'venue', 'tags', 'entities.links', 'series', 'eventType', 'threads')
-            ->simplePaginate($this->limit);
-
-        $entities = Entity::whereHas('tags', $taggedWith)->active()
-            ->orderBy('entity_type_id', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->with('tags', 'locations', 'roles')
-            ->simplePaginate($this->limit);
-
-        return [$series, $events, $entities];
     }
 
     /**

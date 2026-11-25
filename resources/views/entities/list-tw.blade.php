@@ -28,7 +28,7 @@
                     @endif
 
                     @if ($signedIn)
-                        @if ($follow = $entity->followedBy($user))
+                        @if ($entity->isFollowedBy($user))
                             <a data-method="post" href="{{ route('entities.unfollow', ['id' => $entity->id]) }}" title="Click to unfollow" class="text-primary hover:text-primary/80 transition-colors">
                                 <i class="bi bi-dash-circle-fill"></i>
                             </a>

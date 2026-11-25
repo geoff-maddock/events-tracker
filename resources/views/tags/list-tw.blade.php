@@ -9,7 +9,7 @@
                 </a>
 
                 @if ($signedIn)
-                    @if ($follow = $tag->followedBy($user))
+                    @if ($tag->isFollowedBy($user))
                         <a data-method="post" href="{{ route('tags.unfollow', ['id' => $tag->id]) }}" title="You are following this tag. Click to unfollow" class="text-primary hover:text-primary/80 transition-colors">
                             <i class="bi bi-check-circle-fill"></i>
                         </a>

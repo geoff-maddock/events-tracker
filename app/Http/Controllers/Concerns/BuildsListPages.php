@@ -43,6 +43,7 @@ trait BuildsListPages
      * @param array<string, mixed> $parentFilter filters the page itself imposes (e.g. its tag)
      * @param null|array<int, string> $allowedSortFields when given, any other sort falls back to the default
      * @param array<string, string> $sortAliases sort names the request may use => the column sorted on
+     * @param array<string, \Closure> $computedSorts sort fields added to the query only when sorted by, as field => fn (Builder $query)
      */
     protected function startList(
         ListParameterSessionStore $listParamSessionStore,
@@ -58,6 +59,7 @@ trait BuildsListPages
         ?array $allowedSortFields = null,
         ?int $defaultLimit = null,
         array $sortAliases = [],
+        array $computedSorts = [],
     ): ListResultSet {
         $this->useList($listParamSessionStore, $baseIndex, $keyPrefix);
         $listParamSessionStore->setIndexTab($indexUrl);
@@ -76,6 +78,9 @@ trait BuildsListPages
         }
         if ($sortAliases !== []) {
             $listEntityResultBuilder->setSortAliases($sortAliases);
+        }
+        if ($computedSorts !== []) {
+            $listEntityResultBuilder->setComputedSorts($computedSorts);
         }
 
         return $listEntityResultBuilder->listResultSetFactory();

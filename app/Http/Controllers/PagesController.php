@@ -246,14 +246,14 @@ class PagesController extends Controller
         // Get recommended events based on followed entities, tags, and series
         $recommendedEvents = $user->getRecommendedEvents()
             ->visible($user)
-            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->with(EventsController::cardEventEagerLoad($user))
             ->take(12)
             ->get();
 
         // Get recently added events
         $recentEvents = Event::query()->occurringBetween(Carbon::now())
             ->visible($user)
-            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->with(EventsController::cardEventEagerLoad($user))
             ->orderBy('created_at', 'desc')
             ->take(8)
             ->get();
@@ -282,7 +282,7 @@ class PagesController extends Controller
         $popularEvents = Event::query()->occurringBetween(Carbon::now())
             ->visible($user)
             ->withCount('attendees')
-            ->with(['venue', 'tags', 'entities', 'eventType'])
+            ->with(EventsController::cardEventEagerLoad($user))
             ->orderBy('attendees_count', 'desc')
             ->take(12)
             ->get();
@@ -296,36 +296,13 @@ class PagesController extends Controller
                 'SELECT COUNT(*) FROM follows WHERE follows.object_type = "entity" AND follows.object_id = entities.id',
                 'followers_count'
             )
-            ->with(['entityType', 'roles', 'tags'])
+            ->with(Entity::CARD_EAGER_LOAD)
             ->orderBy('followers_count', 'desc')
             ->take(12)
             ->get();
 
-        // Get popular tags - tags with most events.
-        // Eager-load each tag's thumbnail event plus its photos so the
-        // view can show the event's primary photo without issuing a
-        // fresh query per tag (N+1 flagged as EVENTREPO-WV). The limit(1) is
-        // applied per tag via a window function; without it every visible
-        // event for each top tag is hydrated (13k+ in prod), which exhausts
-        // php-fpm's memory_limit.
-        // Thumbnail event = soonest upcoming event with a primary photo,
-        // falling back to the most recent past one (mirrors Tag::scopeWithGridThumbnail).
-        // counted over public events only: the page is the same for everyone
-        $popularTags = Tag::withCount(['events' => fn ($q) => $q->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)])
-            ->with(['events' => function ($query) use ($user) {
-                $query->visible($user)
-                    ->whereHas('photos', function ($photo) {
-                        $photo->where('photos.is_primary', 1);
-                    })
-                    ->orderByRaw('(events.last_start_at >= CURDATE()) desc')
-                    ->orderByRaw('CASE WHEN events.last_start_at >= CURDATE() THEN start_at END asc')
-                    ->orderBy('start_at', 'desc')
-                    ->limit(1)
-                    ->with('photos');
-            }])
-            ->orderBy('events_count', 'desc')
-            ->take(24)
-            ->get();
+        // the most used tags with a thumbnail each: the same for everyone, and kept for half an hour
+        $popularTags = Tag::mostUsed(24);
 
         return view('pages.popular-tw', compact(
             'popularEvents',

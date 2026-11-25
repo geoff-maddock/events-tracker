@@ -4,7 +4,7 @@
         <a href="/tags/{{ $t->slug }}" class="text-lg font-medium text-primary hover:underline" title="Click to show all related events and entities.">
             {{ $t->name }}
         </a>
-        @if ($follow = $t->followedBy($signedIn ? $user : null))
+        @if ($t->isFollowedBy($signedIn ? $user : null))
             <a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-warning hover:text-warning/80 transition-colors" title="Click to unfollow">
                 <i class="bi bi-dash-circle-fill"></i>
             </a>
@@ -23,7 +23,7 @@
         <a href="/tags/{{ $t->slug }}" class="text-lg font-medium text-foreground hover:text-primary transition-colors">
             {{ $t->name }}
         </a>
-        @if ($follow = $t->followedBy($signedIn ? $user : null))
+        @if ($t->isFollowedBy($signedIn ? $user : null))
             <a href="{!! route('tags.unfollow', ['id' => $t->id]) !!}" data-target="#tag-{{ $t->id }}" class="ajax-action text-warning hover:text-warning/80 transition-colors" title="Click to unfollow">
                 <i class="bi bi-dash-circle-fill"></i>
             </a>

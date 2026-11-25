@@ -13,6 +13,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Filters\TagFilters;
 use App\Services\OptionLists;
@@ -154,6 +155,45 @@ class Tag extends Eloquent
                  LIMIT 1)
             ) as grid_thumbnail
         '));
+    }
+
+    /**
+     * The tags on the most public events, each with its count and thumbnail,
+     * for the popular page. The same for every viewer, so the list is kept for
+     * half an hour: finding a thumbnail for the busiest tags is slow (#2390).
+     *
+     * @return list<array{slug: string, name: string, events_count: int, thumbnail: ?string}>
+     */
+    public static function mostUsed(int $limit): array
+    {
+        return Cache::remember('popular-tags:'.$limit, 1800, function () use ($limit) {
+            $counts = DB::table('event_tag')
+                ->join('events', 'events.id', '=', 'event_tag.event_id')
+                ->where('events.visibility_id', Visibility::VISIBILITY_PUBLIC)
+                ->groupBy('event_tag.tag_id')
+                ->selectRaw('event_tag.tag_id, count(*) as events_count')
+                ->orderByDesc('events_count')
+                ->orderBy('event_tag.tag_id')
+                ->limit($limit)
+                ->pluck('events_count', 'tag_id');
+
+            $tags = static::query()->whereIn('tags.id', $counts->keys())->withGridThumbnail()->get()->keyBy('id');
+
+            $cards = [];
+            foreach ($counts as $id => $count) {
+                $tag = $tags->get($id);
+                if ($tag !== null) {
+                    $cards[] = [
+                        'slug' => $tag->slug,
+                        'name' => $tag->name,
+                        'events_count' => (int) $count,
+                        'thumbnail' => $tag->getAttribute('grid_thumbnail'),
+                    ];
+                }
+            }
+
+            return $cards;
+        });
     }
 
     /**

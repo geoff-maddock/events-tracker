@@ -87,22 +87,14 @@
         <p class="text-sm text-muted-foreground mb-4">
             Most frequently used tags across events and entities
         </p>
-        @if ($popularTags->isNotEmpty())
+        @if ($popularTags !== [])
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                 @foreach ($popularTags as $tag)
-                    @php
-                        // Events (visible, newest first) and their photos are eager-loaded
-                        // in PagesController::popular() to avoid a per-tag N+1 (EVENTREPO-WV).
-                        $event = $tag->relationLoaded('events')
-                            ? $tag->events->first()
-                            : $tag->events()->visible($user ?? null)->latest('start_at')->first();
-                        $photo = $event ? $event->getPrimaryPhoto() : null;
-                    @endphp
-                    <a href="/tags/{{ $tag->slug }}" class="group block">
+                    <a href="/tags/{{ $tag['slug'] }}" class="group block">
                         <div class="relative aspect-square bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors">
-                            @if($photo)
-                                <img src="{{ Storage::disk('external')->url($photo->getStorageThumbnail()) }}"
-                                     alt="{{ $tag->name }}"
+                            @if ($tag['thumbnail'])
+                                <img src="{{ Storage::disk('external')->url($tag['thumbnail']) }}"
+                                     alt="{{ $tag['name'] }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-muted">
@@ -111,8 +103,8 @@
                             @endif
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
                                 <div class="absolute bottom-0 left-0 right-0 p-2">
-                                    <span class="text-white text-sm font-medium block truncate">{{ $tag->name }}</span>
-                                    <span class="text-white/70 text-xs">{{ $tag->events_count ?? $tag->events()->count() }} events</span>
+                                    <span class="text-white text-sm font-medium block truncate">{{ $tag['name'] }}</span>
+                                    <span class="text-white/70 text-xs">{{ $tag['events_count'] }} events</span>
                                 </div>
                             </div>
                         </div>

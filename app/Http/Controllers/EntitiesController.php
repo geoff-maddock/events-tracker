@@ -114,8 +114,9 @@ class EntitiesController extends Controller
 
     /**
      * Start an entity list page (#2406): every entity list shares one session
-     * base index, the entity filters, the popularity score (events in the
-     * list's active_range filter, plus follows) and the "popularity" sort name.
+     * base index, the entity filters and the "popularity" sort, whose score
+     * (events in the list's active_range filter, plus follows) joins the query
+     * only when the list is sorted by it.
      *
      * @param Builder<Entity> $baseQuery
      * @param array<string, string> $defaultSort
@@ -143,11 +144,16 @@ class EntitiesController extends Controller
             $keyPrefix,
             action([EntitiesController::class, 'index']),
             $this->filter,
-            $this->addPopularityScoreToQuery($baseQuery, $activeRange),
+            $baseQuery,
             $defaultSort,
             $defaultFilters,
             $parentFilter,
             sortAliases: ['popularity' => 'popularity_score'],
+            // two grouped joins over follows and events: only when the list is sorted by them (#2390)
+            computedSorts: ['popularity_score' => function (Builder $query) use ($activeRange) {
+                /** @var Builder<Entity> $query */
+                $query->withPopularityScore($activeRange);
+            }],
         );
     }
 
@@ -1017,18 +1023,6 @@ class EntitiesController extends Controller
         $activeRange = $filters['active_range'] ?? null;
 
         return is_string($activeRange) ? $activeRange : null;
-    }
-
-    /**
-     * Add the computed popularity_score select (follows + events in the active range).
-     *
-     * @param Builder<Entity> $query
-     *
-     * @return Builder<Entity>
-     */
-    protected function addPopularityScoreToQuery(Builder $query, ?string $activeRange): Builder
-    {
-        return $query->withPopularityScore($activeRange);
     }
 
     /**
