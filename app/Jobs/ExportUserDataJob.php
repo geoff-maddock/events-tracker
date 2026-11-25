@@ -45,9 +45,9 @@ class ExportUserDataJob implements ShouldQueue
             // Get download URL
             $downloadUrl = $exportService->getDownloadUrl($exportResult['filename']);
             
+            // not the link: it is the key to the download
             Log::info('Data export completed for user: ' . $this->user->id, [
                 'filename' => $exportResult['filename'],
-                'url' => $downloadUrl
             ]);
             
             // Send email with download link

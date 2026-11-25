@@ -10,13 +10,15 @@ use App\Http\Resources\PostResource;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\PhotoResource;
 use App\Http\Resources\BlogResource;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use ZipArchive;
 
 class DataExportService
 {
+    /** How long a download link works, and how long the clean-up keeps the zip. */
+    public const KEEP_DAYS = 7;
+
     protected ?string $privateExportRoot = null;
 
     /**
@@ -57,9 +59,6 @@ class DataExportService
             $this->writeJsonFile($exportDir . '/constants.json', $exportData['constants']);
 
             $this->createZipArchive($exportDir, $zipPath);
-
-            // Best-effort publish to public storage for direct /storage URL access
-            $this->publishToPublicExports($zipFilename, $zipPath);
         } finally {
             // the working folder holds the data unzipped: it goes whether or not the zip was made
             $this->deleteDirectory($exportDir);
@@ -292,68 +291,34 @@ class DataExportService
     }
     
     /**
-     * Get a signed URL for downloading the export file with expiration
-     *
-     * @param string $filename
-     * @return string
+     * The link mailed to the user: the signed download route, good for seven
+     * days. The zip is never put where the web server would hand it out to
+     * anyone with the address.
      */
     public function getDownloadUrl(string $filename): string
     {
-        $publicPath = 'exports/' . $filename;
-
-        $publicAbsolutePath = $this->publicExportDirectory() . '/' . $filename;
-        if (file_exists($publicAbsolutePath)) {
-            return url('storage/' . $publicPath);
-        }
-
-        $sourcePath = $this->findExportPath($filename);
-        if ($sourcePath && $this->publishToPublicExports($filename, $sourcePath)) {
-            return url('storage/' . $publicPath);
-        }
-
-        return URL::temporarySignedRoute('exports.download', now()->addDays(7), [
+        return URL::temporarySignedRoute('exports.download', now()->addDays(self::KEEP_DAYS), [
             'filename' => $filename,
         ]);
     }
 
     /**
-     * Find export file path across known storage roots.
+     * The zip behind a download link, wherever it was written.
      */
     public function findExportPath(string $filename): ?string
     {
-        foreach ($this->exportDirectories() as $directory) {
+        // a name only: the route takes no slashes, and nothing else should either
+        if ($filename !== basename($filename)) {
+            return null;
+        }
+
+        foreach ($this->privateExportRoots() as $directory) {
             if (is_file($directory . '/' . $filename)) {
                 return $directory . '/' . $filename;
             }
         }
 
         return null;
-    }
-
-    /**
-     * Best-effort copy to public exports directory.
-     */
-    protected function publishToPublicExports(string $filename, string $sourcePath): bool
-    {
-        $publicExportsDir = $this->publicExportDirectory();
-
-        try {
-            $this->ensureDirectoryExists($publicExportsDir);
-            $destination = $publicExportsDir . '/' . $filename;
-
-            if (!@copy($sourcePath, $destination)) {
-                return false;
-            }
-
-            return true;
-        } catch (\Throwable $e) {
-            Log::warning('Unable to publish export to public storage', [
-                'filename' => $filename,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
-        }
     }
 
     /**
@@ -371,21 +336,15 @@ class DataExportService
     }
 
     /**
-     * Where the copy served at /storage/exports is kept.
-     */
-    protected function publicExportDirectory(): string
-    {
-        return storage_path('app/public/exports');
-    }
-
-    /**
-     * Every directory that can hold an export: the public copy, then the private roots.
+     * Every directory that can hold an export. Exports used to be copied to
+     * public storage as well (#1702); that folder is still cleaned so no old
+     * copy is left behind.
      *
      * @return list<string>
      */
     protected function exportDirectories(): array
     {
-        return [$this->publicExportDirectory(), ...$this->privateExportRoots()];
+        return [...$this->privateExportRoots(), storage_path('app/public/exports')];
     }
 
     /**
@@ -450,7 +409,7 @@ class DataExportService
      *
      * @param int $daysOld
      */
-    public function cleanupOldExports(int $daysOld = 7): void
+    public function cleanupOldExports(int $daysOld = self::KEEP_DAYS): void
     {
         // every place an export can be written: the private roots
         // getPrivateExportRoot() chooses from, and the public copy

@@ -63,42 +63,39 @@ class DataExportServiceTest extends TestCase
         $this->assertNull((new DataExportService())->findExportPath('does-not-exist-zz.zip'));
     }
 
-    public function test_find_export_path_locates_file_in_public_exports(): void
+    public function test_find_export_path_ignores_a_copy_left_in_public_storage(): void
     {
+        // exports used to be copied here and served without a signature
         $filename = 'cleanup-test-find-' . uniqid() . '.zip';
         $path = $this->publicExportDir . '/' . $filename;
         file_put_contents($path, 'present');
 
-        $resolved = (new DataExportService())->findExportPath($filename);
-
-        $this->assertSame($path, $resolved);
+        $this->assertNull((new DataExportService())->findExportPath($filename));
 
         @unlink($path);
     }
 
-    public function test_get_download_url_returns_storage_url_when_public_file_exists(): void
+    public function test_find_export_path_takes_a_file_name_only(): void
+    {
+        $this->assertNull((new DataExportService())->findExportPath('../../.env'));
+        $this->assertNull((new DataExportService())->findExportPath('tmp/anything.json'));
+    }
+
+    public function test_the_download_link_is_always_the_signed_route(): void
     {
         $filename = 'cleanup-test-' . uniqid() . '.zip';
         $path = $this->publicExportDir . '/' . $filename;
         file_put_contents($path, 'content');
 
-        $url = (new DataExportService())->getDownloadUrl($filename);
+        foreach ([$filename, 'absent-' . uniqid() . '.zip'] as $name) {
+            $url = (new DataExportService())->getDownloadUrl($name);
 
-        $this->assertStringContainsString('/storage/exports/' . $filename, $url);
+            $this->assertStringNotContainsString('/storage/exports/', $url);
+            $this->assertStringContainsString('/exports/download/' . $name, $url);
+            $this->assertStringContainsString('signature=', $url);
+            $this->assertStringContainsString('expires=', $url);
+        }
 
         @unlink($path);
-    }
-
-    public function test_get_download_url_returns_signed_route_when_file_is_missing(): void
-    {
-        $filename = 'absent-' . uniqid() . '.zip';
-
-        $url = (new DataExportService())->getDownloadUrl($filename);
-
-        // A missing file should not be served from /storage/exports/.
-        $this->assertStringNotContainsString('/storage/exports/' . $filename, $url);
-        // The fallback is a temporarySignedRoute, which always includes a signature.
-        $this->assertStringContainsString('signature=', $url);
-        $this->assertStringContainsString($filename, $url);
     }
 }

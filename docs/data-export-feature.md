@@ -103,12 +103,12 @@ All data is transformed using Laravel's JsonResource classes to ensure:
 ### File Storage
 
 - Exports are written to the first of these that is writable: `storage/framework/exports/`, `storage/app/exports/`, then a folder in the system temp directory
-- A copy for download is published to `storage/app/public/exports/`
+- The download link in the email is a signed route (`/exports/download/{filename}`) that works for 7 days. The zip is not copied to public storage: earlier versions copied it to `storage/app/public/exports/`, where the address alone was enough to fetch it
 - `cleanup:exports` removes files older than 7 days from all of them; the account that runs the scheduler must be able to delete what the queue worker wrote
 - The unzipped working copy (`tmp/` under the export folder) is deleted as soon as the zip is made, or fails to be
 - None of these directories is in version control
 
-**Note**: For production deployments using S3 or DigitalOcean Spaces, the `getDownloadUrl()` method should be updated to use `Storage::temporaryUrl()` for signed URLs with automatic expiration.
+**Note**: The signed link is built from `APP_URL`, by the queue worker. If `APP_URL` does not match the address people use (scheme included), the link is refused as invalid.
 
 ## Installation & Configuration
 
@@ -127,8 +127,7 @@ All data is transformed using Laravel's JsonResource classes to ensure:
 
 3. Create storage directories:
    ```bash
-   mkdir -p storage/app/exports
-   mkdir -p storage/app/public/exports
+   mkdir -p storage/framework/exports
    ```
 
 4. Link public storage (if not already done):

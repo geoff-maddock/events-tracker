@@ -19,6 +19,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use PHPUnit\Framework\Attributes\Test;
 use ReflectionMethod;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Tests\TestCase;
 use ZipArchive;
 
@@ -54,9 +55,9 @@ class DataExportArchiveTest extends TestCase
                 return [$this->root.'/private'];
             }
 
-            protected function publicExportDirectory(): string
+            protected function exportDirectories(): array
             {
-                return $this->root.'/public';
+                return [$this->root.'/private', $this->root.'/public'];
             }
         };
     }
@@ -87,7 +88,6 @@ class DataExportArchiveTest extends TestCase
         $result = $this->service->generateExport($user);
 
         $this->assertSame($this->root.'/private/'.$result['filename'], $result['zipPath']);
-        $this->assertFileExists($this->root.'/public/'.$result['filename']);
         $this->assertFileExists($result['zipPath']);
         $this->assertSame($result['filename'], basename($result['zipPath']));
 
@@ -196,33 +196,49 @@ class DataExportArchiveTest extends TestCase
     }
 
     #[Test]
-    public function the_download_link_finds_the_zip_and_falls_back_to_a_signed_route(): void
+    public function the_zip_is_only_handed_out_through_its_signed_link(): void
     {
+        $this->withExceptionHandling();
+        $this->app->instance(DataExportService::class, $this->service);
+
         $result = $this->service->generateExport($this->user());
-        $public = $this->root.'/public/'.$result['filename'];
 
-        // the public copy is the one found first
-        $this->assertSame($public, $this->service->findExportPath($result['filename']));
-        $this->assertSame(url('storage/exports/'.$result['filename']), $this->service->getDownloadUrl($result['filename']));
-
-        // without the public copy it is published again from the private one
-        unlink($public);
+        // nothing is copied to public storage, where the address alone would do
+        $this->assertFileDoesNotExist(storage_path('app/public/exports/'.$result['filename']));
         $this->assertSame($result['zipPath'], $this->service->findExportPath($result['filename']));
-        $this->assertSame(url('storage/exports/'.$result['filename']), $this->service->getDownloadUrl($result['filename']));
-        $this->assertFileExists($public);
 
-        // a file that is nowhere gets the signed download route
-        $this->assertNull($this->service->findExportPath('user_data_export_zz-missing.zip'));
-        $missing = $this->service->getDownloadUrl('user_data_export_zz-missing.zip');
-        $this->assertStringContainsString('exports/download/user_data_export_zz-missing.zip', $missing);
-        $this->assertStringContainsString('signature=', $missing);
+        $link = $this->service->getDownloadUrl($result['filename']);
+        $this->assertStringContainsString('/exports/download/'.$result['filename'], $link);
+
+        // no sign-in needed: the link is opened from an email
+        $download = $this->get($link)->assertOk();
+        $file = $download->baseResponse;
+        $this->assertInstanceOf(BinaryFileResponse::class, $file);
+        $this->assertSame($result['zipPath'], $file->getFile()->getPathname());
+        $this->assertStringContainsString($result['filename'], (string) $download->headers->get('content-disposition'));
+
+        // without the signature, or with another file's name under it, there is nothing
+        $this->get('/exports/download/'.$result['filename'])->assertForbidden();
+        $this->get(str_replace($result['filename'], 'user_data_export_other.zip', $link))->assertForbidden();
+
+        // a link outlives neither its seven days nor its file
+        $this->travel(DataExportService::KEEP_DAYS)->days();
+        $this->travel(1)->minutes();
+        $this->get($link)->assertForbidden();
+        $this->travelBack();
+
+        unlink($result['zipPath']);
+        $this->get($link)->assertNotFound();
     }
 
     #[Test]
     public function old_exports_are_removed_from_every_folder_that_holds_one(): void
     {
         $result = $this->service->generateExport($this->user());
+        // a copy left in public storage by an earlier version
+        File::ensureDirectoryExists($this->root.'/public');
         $public = $this->root.'/public/'.$result['filename'];
+        copy($result['zipPath'], $public);
 
         $this->service->cleanupOldExports(7);
         $this->assertFileExists($result['zipPath']);
