@@ -205,6 +205,13 @@ class DataExportArchiveTest extends TestCase
 
         // nothing is copied to public storage, where the address alone would do
         $this->assertFileDoesNotExist(storage_path('app/public/exports/'.$result['filename']));
+        $this->assertDirectoryDoesNotExist($this->root.'/public');
+
+        // a name only: a file that exists below the folder is not reachable by a path
+        file_put_contents($this->root.'/private/tmp/leftover.json', '{}');
+        $this->assertFileExists($this->root.'/private/tmp/leftover.json');
+        $this->assertNull($this->service->findExportPath('tmp/leftover.json'));
+        $this->assertNull($this->service->findExportPath('../private/'.$result['filename']));
         $this->assertSame($result['zipPath'], $this->service->findExportPath($result['filename']));
 
         $link = $this->service->getDownloadUrl($result['filename']);
@@ -212,6 +219,13 @@ class DataExportArchiveTest extends TestCase
 
         // no sign-in needed: the link is opened from an email
         $download = $this->get($link)->assertOk();
+        $this->assertStringContainsString('no-store', (string) $download->headers->get('cache-control'));
+        $this->assertStringContainsString('private', (string) $download->headers->get('cache-control'));
+        // the link is a key: it is not left in the session as the page to go back to
+        $this->assertNotSame($link, session('tracked_url'));
+        $this->assertNull(session('tracked_url'));
+        // a mail client's tracking tag doesn't break it
+        $this->get($link.'&utm_source=newsletter&fbclid=abc')->assertOk();
         $file = $download->baseResponse;
         $this->assertInstanceOf(BinaryFileResponse::class, $file);
         $this->assertSame($result['zipPath'], $file->getFile()->getPathname());

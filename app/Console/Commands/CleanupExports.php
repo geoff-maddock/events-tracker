@@ -15,7 +15,7 @@ class CleanupExports extends Command
      *
      * @var string
      */
-    protected $signature = 'cleanup:exports {--days=7 : Number of days to keep exports}';
+    protected $signature = 'cleanup:exports {--days= : Number of days to keep exports (default: as long as a download link works)}';
 
     /**
      * The console command description.
@@ -29,7 +29,7 @@ class CleanupExports extends Command
      */
     public function handle(DataExportService $exportService): int
     {
-        $days = (int) $this->option('days');
+        $days = (int) ($this->option('days') ?? DataExportService::KEEP_DAYS);
         
         $this->info("Cleaning up exports older than {$days} days...");
         

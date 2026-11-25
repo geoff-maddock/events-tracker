@@ -75,12 +75,6 @@ class DataExportServiceTest extends TestCase
         @unlink($path);
     }
 
-    public function test_find_export_path_takes_a_file_name_only(): void
-    {
-        $this->assertNull((new DataExportService())->findExportPath('../../.env'));
-        $this->assertNull((new DataExportService())->findExportPath('tmp/anything.json'));
-    }
-
     public function test_the_download_link_is_always_the_signed_route(): void
     {
         $filename = 'cleanup-test-' . uniqid() . '.zip';

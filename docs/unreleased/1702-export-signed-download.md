@@ -5,3 +5,5 @@ The zip of a user's data was also copied to public storage, where anyone with th
 Checked on the dev site: a link generated the way the queue worker does it downloads the zip; the same address without its signature, or altered, is refused. The signature is built from `APP_URL`, which must match the address people use.
 
 Copies left in `storage/app/public/exports` by earlier versions are still removed by `cleanup:exports` (production has none).
+
+Signed links in general (this one, unsubscribe, email verification): they still work when a mail client or link scanner adds a tracking tag such as `utm_source` or `fbclid`, and they are no longer remembered in the session as the page a Back button returns to. The download is marked `private, no-store`.

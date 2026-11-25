@@ -130,10 +130,7 @@ All data is transformed using Laravel's JsonResource classes to ensure:
    mkdir -p storage/framework/exports
    ```
 
-4. Link public storage (if not already done):
-   ```bash
-   php artisan storage:link
-   ```
+The web server and the queue worker must see the same export folder: the worker writes the zip and the web request serves it.
 
 ### Running the Queue Worker
 

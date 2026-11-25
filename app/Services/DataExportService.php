@@ -411,8 +411,8 @@ class DataExportService
      */
     public function cleanupOldExports(int $daysOld = self::KEEP_DAYS): void
     {
-        // every place an export can be written: the private roots
-        // getPrivateExportRoot() chooses from, and the public copy
+        // every place an export can be: the private roots getPrivateExportRoot()
+        // chooses from, and the public folder earlier versions copied it to
         foreach ($this->exportDirectories() as $directory) {
             $this->cleanupDirectory($directory, $daysOld);
         }

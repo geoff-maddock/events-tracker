@@ -785,8 +785,15 @@ class UsersController extends Controller
             abort(404);
         }
 
-        return response()->download($path, $filename, [
+        $response = response()->download($path, $filename, [
             'Content-Type' => 'application/zip',
         ]);
+
+        // one person's data: no proxy or browser cache keeps a copy past the link's
+        // life. Set on the response: a file download marks itself public when made.
+        $response->setPrivate();
+        $response->headers->addCacheControlDirective('no-store');
+
+        return $response;
     }
 }
