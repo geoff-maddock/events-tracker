@@ -121,11 +121,26 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
      */
     private ?bool $hasContributedMemo = null;
 
+    /**
+     * Such an account may not use the site or the API (CheckBanned).
+     */
+    public function isSuspendedOrBanned(): bool
+    {
+        return in_array((int) $this->user_status_id, [UserStatus::SUSPENDED, UserStatus::BANNED], true);
+    }
+
     protected static function booted(): void
     {
         static::creating(function (self $user): void {
             if (empty($user->slug)) {
                 $user->slug = self::generateUniqueSlug($user->name ?? 'user');
+            }
+        });
+
+        // A suspended or banned account loses its API tokens there and then.
+        static::updated(function (self $user): void {
+            if ($user->wasChanged('user_status_id') && $user->isSuspendedOrBanned()) {
+                $user->tokens()->delete();
             }
         });
 

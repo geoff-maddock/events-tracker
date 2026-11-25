@@ -2,10 +2,28 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\CheckBanned;
+use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Router;
 
 class Kernel extends HttpKernel
 {
+    public function __construct(Application $app, Router $router)
+    {
+        parent::__construct($app, $router);
+
+        // CheckBanned can only refuse a user it can see. It sits in the web and
+        // api groups (after the session has started), and this order moves it
+        // behind whatever signs the request in (session, token or basic auth)
+        // and behind the rate limiter, so a refused request still counts.
+        $this->addToMiddlewarePriorityAfter(AuthenticatesRequests::class, AuthenticateWithBasicAuth::class);
+        $this->addToMiddlewarePriorityAfter(ThrottleRequests::class, CheckBanned::class);
+    }
+
     /**
      * The application's global HTTP middleware stack.
      *
@@ -19,7 +37,6 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\CheckBanned::class,
         \App\Http\Middleware\SecurityHeaders::class,
     ];
 
@@ -37,11 +54,13 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\TrackPreviousUrl::class,
+            \App\Http\Middleware\CheckBanned::class,
         ],
         'api' => [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\CheckBanned::class,
         ],
     ];
 
