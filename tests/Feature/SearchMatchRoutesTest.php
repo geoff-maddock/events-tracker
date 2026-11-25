@@ -8,6 +8,8 @@ use App\Models\EntityStatus;
 use App\Models\Event;
 use App\Models\Series;
 use App\Models\Tag;
+use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\Visibility;
 use App\Services\SearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -125,6 +127,54 @@ class SearchMatchRoutesTest extends TestCase
         $this->assertSame([$byTag->id], $this->found('entities', 'zzqgenre'));
         $this->assertSame([$byAlias->id], $this->found('entities', 'zzqalias'));
         $this->assertSame([$both->id], $this->found('entities', 'zzqsame'));
+    }
+
+    #[Test]
+    public function an_unlisted_related_entity_leads_only_an_admin_to_its_events(): void
+    {
+        $event = $this->event();
+        $event->entities()->attach($this->entity(['slug' => 'zzq-hidden-act', 'entity_status_id' => EntityStatus::UNLISTED]));
+
+        $this->assertSame([], $this->found('events', 'zzq hidden act'));
+
+        $admin = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $admin->assignGroup('admin');
+        $this->actingAs($admin);
+
+        $results = app(SearchService::class)->all('zzq hidden act', $admin);
+        $this->assertSame([$event->id], collect($results['events']->items())->pluck('id')->all());
+    }
+
+    #[Test]
+    public function the_api_search_reads_a_token(): void
+    {
+        $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $private = $this->event(['name' => 'Qz private night', 'visibility_id' => Visibility::VISIBILITY_PRIVATE, 'created_by' => $owner->id]);
+        $token = $owner->createToken('search')->plainTextToken;
+
+        $ids = fn ($response) => collect($response->json('results.events'))->pluck('id')->all();
+
+        $this->assertNotContains($private->id, $ids($this->getJson('/api/search?q=qz&types=events&limit=20')));
+
+        $withToken = $this->getJson('/api/search?q=qz&types=events&limit=20', ['Authorization' => 'Bearer '.$token]);
+        $withToken->assertOk();
+        $this->assertContains($private->id, $ids($withToken));
+
+        // a token that is not one is a guest, not an error
+        $this->app['auth']->forgetGuards();
+        $this->assertNotContains($private->id, $ids($this->getJson('/api/search?q=qz&types=events&limit=20', ['Authorization' => 'Bearer nope'])->assertOk()));
+    }
+
+    #[Test]
+    public function the_api_search_still_reads_the_sites_own_session(): void
+    {
+        // the typeahead on the site's pages calls it with the session, not a token
+        $owner = User::factory()->create(['user_status_id' => UserStatus::ACTIVE]);
+        $private = $this->event(['name' => 'Qz private night', 'visibility_id' => Visibility::VISIBILITY_PRIVATE, 'created_by' => $owner->id]);
+
+        $response = $this->actingAs($owner)->getJson('/api/search?q=qz&types=events&limit=20')->assertOk();
+
+        $this->assertContains($private->id, collect($response->json('results.events'))->pluck('id')->all());
     }
 
     #[Test]

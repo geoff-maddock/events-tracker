@@ -16,12 +16,18 @@ class SearchController extends Controller
 
     /**
      * Lightweight typeahead endpoint. Public — visibility scoping is applied
-     * based on the optionally-authenticated user.
+     * based on the optionally-authenticated user: the session when the site's
+     * own pages call it, or an API token.
      *
      * GET /api/search?q=keyword&types=events,entities,series,tags&limit=6
      */
     public function index(Request $request): JsonResponse
     {
+        // the route has no auth middleware, so nothing has looked at a token yet
+        if (Auth::guard('sanctum')->check()) {
+            Auth::shouldUse('sanctum');
+        }
+
         $validated = $request->validate([
             'q'     => 'nullable|string|max:120',
             'types' => 'nullable|string|max:120',
