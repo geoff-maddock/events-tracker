@@ -182,6 +182,34 @@ class SeriesNextOccurrenceTest extends TestCase
         $this->assertSame('2027-01-13 19:00', $this->nextOn('2026-11-25 12:00', $bimonthly()));
     }
 
+    public function test_the_shapes_the_sweep_only_checks_against_itself(): void
+    {
+        // the sweep above compares a jump with the model's own steps; these are dates worked out by hand
+
+        // every other month on its last Friday, founded in December: February, April...
+        $bimonthly = fn () => $this->series('Bimonthly', 5, 6, '2024-12-31 21:00:00');
+        $this->assertSame('2025-02-28 21:00', $this->nextOn('2025-01-05 12:00', $bimonthly()));
+        $this->assertSame('2025-04-25 21:00', $this->nextOn('2025-03-01 12:00', $bimonthly()));
+        $this->assertSame('2026-12-25 21:00', $this->nextOn('2026-11-25 12:00', $bimonthly()));
+
+        // monthly with no day named: the founding day of the month, or the last day of a shorter one
+        $unnamed = fn () => $this->series('Monthly', null, null, '2025-01-31 20:00:00');
+        $this->assertSame('2025-02-28 20:00', $this->nextOn('2025-02-10 12:00', $unnamed()));
+        $this->assertSame('2025-03-31 20:00', $this->nextOn('2025-03-01 12:00', $unnamed()));
+        $this->assertSame('2026-11-30 20:00', $this->nextOn('2026-11-25 12:00', $unnamed()));
+
+        // weekly keeps the founding weekday, across a clock change
+        $weekly = fn () => $this->series('Weekly', null, 6, '2020-01-03 21:00:00');
+        $this->assertSame('2026-03-13 21:00', $this->nextOn('2026-03-08 12:00', $weekly()));
+        $this->assertSame('2026-11-06 21:00', $this->nextOn('2026-11-01 01:30', $weekly()));
+
+        // a single step, one period or two
+        $this->assertSame('2026-12-09', $this->series('Monthly', 2, 4, null)->cycleForward(Carbon::parse('2026-11-11'))->format('Y-m-d'));
+        $this->assertSame('2027-01-13', $this->series('Bimonthly', 2, 4, null)->cycleForward(Carbon::parse('2026-11-11'))->format('Y-m-d'));
+        $this->assertSame('2026-11-25', $this->series('Biweekly', null, 4, null)->cycleForward(Carbon::parse('2026-11-11'))->format('Y-m-d'));
+        $this->assertSame('2027-02-28', $this->series('Yearly', null, null, null)->cycleForward(Carbon::parse('2026-02-28'))->format('Y-m-d'));
+    }
+
     public function test_the_result_is_remembered_but_safe_to_change(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-11-19 15:00:00', 'UTC'));

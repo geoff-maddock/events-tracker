@@ -732,12 +732,17 @@ class Series extends Eloquent implements HasPhotos
     /** Schedules that happen every second period, and so need to know which one is "on". */
     private const TWO_PERIOD_TYPES = ['Biweekly', 'Bimonthly'];
 
+    /** @var array{int, int|null, Carbon|null}|null the remembered result of latestEventDay(): the day and series it was read for */
+    private ?array $latestEventDay = null;
+
     /**
      * The next date on this series' schedule, today or later: the founding date (or
      * the created date) moved forward a period at a time until it reaches today in
-     * New York. A Biweekly or Bimonthly series counts from its latest event, when
-     * it has one, so the "on" week or month is the one it has actually been
-     * keeping (#2422).
+     * New York.
+     *
+     * A Biweekly or Bimonthly series takes its "on" week or month from its latest
+     * event, when it has one, so it follows the rhythm it has actually been
+     * keeping; the weekday and the time of day still come from the series (#2422).
      *
      * Remembered per model for as long as the day and the schedule stay the same.
      * Each call gets its own copy, since callers add to the date they are given.
@@ -745,7 +750,7 @@ class Series extends Eloquent implements HasPhotos
     public function cycleFromFoundedAt(): ?Carbon
     {
         $today = Carbon::now('America/New_York')->startOfDay();
-        $anchor = $this->rhythmAnchor($today);
+        $lastHeld = $this->latestEventDay($today);
 
         $key = implode('|', [
             $today->getTimestamp(),
@@ -754,48 +759,60 @@ class Series extends Eloquent implements HasPhotos
             $this->occurrence_week_id,
             $this->occurrence_day_id,
             $this->occurrenceType?->name,
-            $anchor?->getTimestamp(),
+            $lastHeld?->getTimestamp(),
         ]);
 
         if ($this->nextCycleDate === null || $this->nextCycleDate[0] !== $key) {
-            $this->nextCycleDate = [$key, $this->cycleFromFoundedAtTo($today, $anchor)];
+            $this->nextCycleDate = [$key, $this->cycleFromFoundedAtTo($today, $lastHeld)];
         }
 
         return $this->nextCycleDate[1]->copy();
     }
 
     /**
-     * For a two-period schedule, the start of the series' latest event up to
-     * the end of today: the date its rhythm is counted from. Null for the other
-     * schedules, and for a series with no such event, which count from the
-     * founding date.
+     * For a two-period schedule, the day of the series' latest event before
+     * today that wasn't cancelled, at midnight in the series' own timezone.
+     * Null for the other schedules and for a series with no such event, which
+     * count from the founding date. Today's event is left to nextEvent().
+     *
+     * One query per model and day: lists and digests ask for the next date of
+     * each series several times over.
      */
-    private function rhythmAnchor(Carbon $today): ?Carbon
+    private function latestEventDay(Carbon $today): ?Carbon
     {
         if (!$this->exists || !in_array($this->occurrenceType?->name, self::TWO_PERIOD_TYPES, true)) {
             return null;
         }
 
-        $latest = Event::query()
-            ->where('series_id', $this->id)
-            ->where('start_at', '<', $today->copy()->addDay())
-            ->max('start_at');
+        if ($this->latestEventDay === null || $this->latestEventDay[0] !== $today->getTimestamp() || $this->latestEventDay[1] !== $this->id) {
+            // events are stored as wall-clock times: compare on the date, not the instant
+            $latest = Event::query()
+                ->where('series_id', $this->id)
+                ->where('start_at', '<', $today->format('Y-m-d').' 00:00:00')
+                ->whereNull('cancelled_at')
+                ->where(fn ($status) => $status->whereNull('event_status_id')->orWhere('event_status_id', '<>', EventStatus::CANCELLED))
+                ->max('start_at');
 
-        return null === $latest ? null : Carbon::parse($latest);
+            $this->latestEventDay = [$today->getTimestamp(), $this->id, null === $latest ? null : Carbon::parse($latest)->startOfDay()];
+        }
+
+        return $this->latestEventDay[2]?->copy();
     }
 
     /**
-     * Steps with cycleForward(), but only for the last step or two: the steps in
-     * between are skipped where skipping cannot change where they land (#2388).
+     * The first schedule date on or after $today. $lastHeld, for a two-period
+     * schedule, is the day of its latest event: that week or month was "on",
+     * so the next one is two after it.
      */
-    private function cycleFromFoundedAtTo(Carbon $today, ?Carbon $anchor = null): Carbon
+    private function cycleFromFoundedAtTo(Carbon $today, ?Carbon $lastHeld = null): Carbon
     {
         // if no founded date, assume created at date
         $start = $this->founded_at ?: $this->created_at;
-        $next = $anchor ?? $start;
+        $next = Carbon::parse($start);
 
-        if ($next < $today) {
+        if (null !== $lastHeld || $next < $today) {
             $type = $this->occurrenceType->name;
+            $periods = in_array($type, self::TWO_PERIOD_TYPES, true) ? 2 : 1;
 
             if ('Yearly' === $type) {
                 // counted from the founding date each time, so a 29 February founding
@@ -804,41 +821,78 @@ class Series extends Eloquent implements HasPhotos
                 do {
                     $next = Carbon::parse($start)->addYearsNoOverflow($years++);
                 } while ($next < $today);
-            } elseif ('Monthly' === $type) {
-                // the first step leaves the founding date for the schedule's day of the month
-                $next = $this->cycleForward($next);
-
-                // from there every step lands on that day of the following month, so go
-                // straight to today's month
-                if ($next < $today && $this->hasMonthlyDay()) {
-                    $next = $this->dayOfMonth(Carbon::parse($today)->setTimezone($next->getTimezone()));
+            } elseif (in_array($type, ['Monthly', 'Bimonthly'], true)) {
+                $next = $this->monthlyFrom($next, $lastHeld, $periods, $today);
+            } else {
+                // weekly, fortnightly and daily steps are a fixed length. A fortnightly
+                // series stays on its own weekday: the event only says which week was on.
+                if (null !== $lastHeld) {
+                    $next = $lastHeld->startOfWeek(Carbon::MONDAY)->addDays($next->dayOfWeekIso - 1)->addDays(14);
                 }
-            } elseif ('Bimonthly' !== $type) {
-                // weekly, fortnightly and daily steps are a fixed length: stop one
-                // short and let the loop below take the last one
+
+                // stop one short and let the loop below take the last step
                 $days = match ($type) {
                     'Weekly' => 7,
                     'Biweekly' => 14,
                     default => 1,
                 };
-                $periods = intdiv($today->getTimestamp() - $next->getTimestamp(), $days * 86400) - 1;
+                $skipped = intdiv($today->getTimestamp() - $next->getTimestamp(), $days * 86400) - 1;
 
-                if ($periods > 0) {
-                    $next = Carbon::parse($next)->addDays($periods * $days);
+                if ($skipped > 0) {
+                    $next = Carbon::parse($next)->addDays($skipped * $days);
+                }
+
+                while ($next < $today) {
+                    $next = $this->cycleForward($next);
                 }
             }
         }
 
-        while ($next < $today) {
-            $next = $this->cycleForward($next);
-        }
-
-        // a date worked out from an event must not change the event's own time
-        $next = Carbon::parse($next);
         $next->setHour($start->hour);
         $next->setMinute($start->minute);
 
         return $next;
+    }
+
+    /**
+     * The first monthly (or two-monthly) date on or after $today. The schedule
+     * starts the period after the founding month, or after the month of the
+     * latest event; from there it is worked out for the month wanted, not
+     * stepped to, so a short month is never skipped or leaned on (#2422).
+     */
+    private function monthlyFrom(Carbon $start, ?Carbon $lastHeld, int $periods, Carbon $today): Carbon
+    {
+        $base = $lastHeld ?? $start;
+        $here = Carbon::parse($today)->setTimezone($start->getTimezone());
+
+        // whole periods from the base month to today's month, never fewer than one
+        $ahead = ($here->year - $base->year) * 12 + $here->month - $base->month;
+        $steps = max(1, intdiv($ahead, $periods));
+
+        do {
+            $next = $this->monthlyDate($base, $steps++ * $periods);
+        } while ($next < $today);
+
+        return $next;
+    }
+
+    /**
+     * The schedule's date $months after the month of $base: its named day (the
+     * second Tuesday, the last Friday), or without one, the same day of the
+     * month as $base, or the month's last day where it has no such day.
+     */
+    private function monthlyDate(Carbon $base, int $months): Carbon
+    {
+        if (!$this->hasMonthlyDay()) {
+            return $base->copy()->addMonthsNoOverflow($months);
+        }
+
+        $month = $base->copy()->startOfMonth()->addMonths($months);
+        $weekday = $this->occurrence_day_id - 1;
+
+        return 5 === (int) $this->occurrence_week_id
+            ? $month->lastOfMonth($weekday)
+            : $month->nthOfMonth($this->occurrence_week_id, $weekday);
     }
 
     /**
@@ -852,18 +906,6 @@ class Series extends Eloquent implements HasPhotos
     }
 
     /**
-     * The schedule's day in the month of $date, e.g. its last Friday.
-     */
-    private function dayOfMonth(Carbon $date): Carbon
-    {
-        $weekday = $this->occurrence_day_id - 1;
-
-        return 5 === (int) $this->occurrence_week_id
-            ? $date->lastOfMonth($weekday)
-            : $date->nthOfMonth($this->occurrence_week_id, $weekday);
-    }
-
-    /**
      * The occurrence after $date: one period on, or two for Biweekly and Bimonthly.
      */
     public function cycleForward(?DateTime $date): Carbon
@@ -872,32 +914,14 @@ class Series extends Eloquent implements HasPhotos
         $type = $this->occurrenceType->name;
         $periods = in_array($type, self::TWO_PERIOD_TYPES, true) ? 2 : 1;
 
-        switch ($type) {
-            case 'Yearly':
-                $next = $carbonDate->addYearNoOverflow();
-                break;
-            case 'Monthly':
-            case 'Bimonthly':
-                if ($date && $this->hasMonthlyDay()) {
-                    // from the first of the month: adding a month to the 29th-31st
-                    // can run past a shorter month and skip it (#2422)
-                    $next = $this->dayOfMonth($carbonDate->startOfMonth()->addMonths($periods));
-                } elseif ($date) {
-                    $next = $carbonDate->addMonthsNoOverflow($periods);
-                } else {
-                    $next = $carbonDate->addMonths($periods)->startOfMonth();
-                }
-
-                break;
-            case 'Weekly':
-            case 'Biweekly':
-                $next = $carbonDate->addWeeks($periods);
-                break;
-            default:
-                $next = $carbonDate->addDay();
-        }
-
-        return $next;
+        return match ($type) {
+            'Yearly' => $carbonDate->addYearNoOverflow(),
+            // by the month, not by adding to the day: a month added to the 29th-31st
+            // can run past a shorter month and skip it (#2422)
+            'Monthly', 'Bimonthly' => $this->monthlyDate($carbonDate, $periods),
+            'Weekly', 'Biweekly' => $carbonDate->addWeeks($periods),
+            default => $carbonDate->addDay(),
+        };
     }
 
     /**
